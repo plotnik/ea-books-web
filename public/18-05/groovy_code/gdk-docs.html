@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5">
-<title>Чтение по программированию</title>
+<title>The Groovy Development Kit</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -417,199 +417,208 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+<style>
+.listingblock .pygments .hll { background-color: #ffffcc }
+.listingblock .pygments, .listingblock .pygments code { background: #ffffff; }
+.listingblock .pygments .tok-c { color: #177500 } /* Comment */
+.listingblock .pygments .tok-err { color: #000000 } /* Error */
+.listingblock .pygments .tok-k { color: #A90D91 } /* Keyword */
+.listingblock .pygments .tok-l { color: #1C01CE } /* Literal */
+.listingblock .pygments .tok-n { color: #000000 } /* Name */
+.listingblock .pygments .tok-o { color: #000000 } /* Operator */
+.listingblock .pygments .tok-ch { color: #177500 } /* Comment.Hashbang */
+.listingblock .pygments .tok-cm { color: #177500 } /* Comment.Multiline */
+.listingblock .pygments .tok-cp { color: #633820 } /* Comment.Preproc */
+.listingblock .pygments .tok-cpf { color: #177500 } /* Comment.PreprocFile */
+.listingblock .pygments .tok-c1 { color: #177500 } /* Comment.Single */
+.listingblock .pygments .tok-cs { color: #177500 } /* Comment.Special */
+.listingblock .pygments .tok-kc { color: #A90D91 } /* Keyword.Constant */
+.listingblock .pygments .tok-kd { color: #A90D91 } /* Keyword.Declaration */
+.listingblock .pygments .tok-kn { color: #A90D91 } /* Keyword.Namespace */
+.listingblock .pygments .tok-kp { color: #A90D91 } /* Keyword.Pseudo */
+.listingblock .pygments .tok-kr { color: #A90D91 } /* Keyword.Reserved */
+.listingblock .pygments .tok-kt { color: #A90D91 } /* Keyword.Type */
+.listingblock .pygments .tok-ld { color: #1C01CE } /* Literal.Date */
+.listingblock .pygments .tok-m { color: #1C01CE } /* Literal.Number */
+.listingblock .pygments .tok-s { color: #C41A16 } /* Literal.String */
+.listingblock .pygments .tok-na { color: #836C28 } /* Name.Attribute */
+.listingblock .pygments .tok-nb { color: #A90D91 } /* Name.Builtin */
+.listingblock .pygments .tok-nc { color: #3F6E75 } /* Name.Class */
+.listingblock .pygments .tok-no { color: #000000 } /* Name.Constant */
+.listingblock .pygments .tok-nd { color: #000000 } /* Name.Decorator */
+.listingblock .pygments .tok-ni { color: #000000 } /* Name.Entity */
+.listingblock .pygments .tok-ne { color: #000000 } /* Name.Exception */
+.listingblock .pygments .tok-nf { color: #000000 } /* Name.Function */
+.listingblock .pygments .tok-nl { color: #000000 } /* Name.Label */
+.listingblock .pygments .tok-nn { color: #000000 } /* Name.Namespace */
+.listingblock .pygments .tok-nx { color: #000000 } /* Name.Other */
+.listingblock .pygments .tok-py { color: #000000 } /* Name.Property */
+.listingblock .pygments .tok-nt { color: #000000 } /* Name.Tag */
+.listingblock .pygments .tok-nv { color: #000000 } /* Name.Variable */
+.listingblock .pygments .tok-ow { color: #000000 } /* Operator.Word */
+.listingblock .pygments .tok-mb { color: #1C01CE } /* Literal.Number.Bin */
+.listingblock .pygments .tok-mf { color: #1C01CE } /* Literal.Number.Float */
+.listingblock .pygments .tok-mh { color: #1C01CE } /* Literal.Number.Hex */
+.listingblock .pygments .tok-mi { color: #1C01CE } /* Literal.Number.Integer */
+.listingblock .pygments .tok-mo { color: #1C01CE } /* Literal.Number.Oct */
+.listingblock .pygments .tok-sa { color: #C41A16 } /* Literal.String.Affix */
+.listingblock .pygments .tok-sb { color: #C41A16 } /* Literal.String.Backtick */
+.listingblock .pygments .tok-sc { color: #2300CE } /* Literal.String.Char */
+.listingblock .pygments .tok-dl { color: #C41A16 } /* Literal.String.Delimiter */
+.listingblock .pygments .tok-sd { color: #C41A16 } /* Literal.String.Doc */
+.listingblock .pygments .tok-s2 { color: #C41A16 } /* Literal.String.Double */
+.listingblock .pygments .tok-se { color: #C41A16 } /* Literal.String.Escape */
+.listingblock .pygments .tok-sh { color: #C41A16 } /* Literal.String.Heredoc */
+.listingblock .pygments .tok-si { color: #C41A16 } /* Literal.String.Interpol */
+.listingblock .pygments .tok-sx { color: #C41A16 } /* Literal.String.Other */
+.listingblock .pygments .tok-sr { color: #C41A16 } /* Literal.String.Regex */
+.listingblock .pygments .tok-s1 { color: #C41A16 } /* Literal.String.Single */
+.listingblock .pygments .tok-ss { color: #C41A16 } /* Literal.String.Symbol */
+.listingblock .pygments .tok-bp { color: #5B269A } /* Name.Builtin.Pseudo */
+.listingblock .pygments .tok-fm { color: #000000 } /* Name.Function.Magic */
+.listingblock .pygments .tok-vc { color: #000000 } /* Name.Variable.Class */
+.listingblock .pygments .tok-vg { color: #000000 } /* Name.Variable.Global */
+.listingblock .pygments .tok-vi { color: #000000 } /* Name.Variable.Instance */
+.listingblock .pygments .tok-vm { color: #000000 } /* Name.Variable.Magic */
+.listingblock .pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
+</style>
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>Чтение по программированию</h1>
+<h1>The Groovy Development Kit</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_ionic4">ionic4</a></li>
-<li><a href="#_ng_pwa">ng_pwa</a></li>
-<li><a href="#_sass">sass</a></li>
-<li><a href="#_android_web_games">android_web_games</a></li>
-<li><a href="#_js_concur">js_concur</a></li>
-<li><a href="#_groovy">groovy</a></li>
-<li><a href="#_cordova">cordova</a></li>
-<li><a href="#_js_cre">js_cre</a></li>
-<li><a href="#_spring_boot_2">spring_boot_2</a></li>
-<li><a href="#_ionic2">ionic2</a></li>
+<li><a href="#_1_working_with_io">1. Working with IO</a>
+<ul class="sectlevel2">
+<li><a href="#_1_3_traversing_file_trees">1.3. Traversing file trees</a></li>
+</ul>
+</li>
+<li><a href="#_2_working_with_collections">2. Working with collections</a>
+<ul class="sectlevel2">
+<li><a href="#manipulating_lists">2.1.4. Manipulating lists</a>
+<ul class="sectlevel3">
+<li><a href="#_filtering_and_searching">Filtering and searching</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_ionic4">ionic4</h2>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>19-02, изменение: 26-июн-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="19-02/ionic4_code/router.html">router</a></p>
-</li>
-<li>
-<p><a href="19-02/ionic4_code/hackernews.html">hackernews</a></p>
-</li>
-</ul>
+<p><a href="http://groovy-lang.org/groovy-dev-kit.html" class="bare">http://groovy-lang.org/groovy-dev-kit.html</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_ng_pwa">ng_pwa</h2>
+<h2 id="_1_working_with_io">1. Working with IO</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>19-05, изменение: 16-июн-19</p>
+<div class="sect2">
+<h3 id="_1_3_traversing_file_trees">1.3. Traversing file trees</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="groovy"><span class="tok-n">dir</span><span class="tok-o">.</span><span class="tok-na">eachFile</span> <span class="tok-o">{</span> <span class="tok-n">file</span> <span class="tok-o">-&gt;</span>
+    <span class="tok-n">println</span> <span class="tok-n">file</span><span class="tok-o">.</span><span class="tok-na">name</span>
+<span class="tok-o">}</span>
+<span class="tok-n">dir</span><span class="tok-o">.</span><span class="tok-na">eachFileMatch</span><span class="tok-o">(~</span><span class="tok-s">/.*\.txt/</span><span class="tok-o">)</span> <span class="tok-o">{</span> <span class="tok-n">file</span> <span class="tok-o">-&gt;</span>
+    <span class="tok-n">println</span> <span class="tok-n">file</span><span class="tok-o">.</span><span class="tok-na">name</span>
+<span class="tok-o">}</span>
+
+<span class="tok-n">dir</span><span class="tok-o">.</span><span class="tok-na">eachFileRecurse</span> <span class="tok-o">{</span> <span class="tok-n">file</span> <span class="tok-o">-&gt;</span>
+    <span class="tok-n">println</span> <span class="tok-n">file</span><span class="tok-o">.</span><span class="tok-na">name</span>
+<span class="tok-o">}</span>
+<span class="tok-n">dir</span><span class="tok-o">.</span><span class="tok-na">eachFileRecurse</span><span class="tok-o">(</span><span class="tok-n">FileType</span><span class="tok-o">.</span><span class="tok-na">FILES</span><span class="tok-o">)</span> <span class="tok-o">{</span> <span class="tok-n">file</span> <span class="tok-o">-&gt;</span>
+    <span class="tok-n">println</span> <span class="tok-n">file</span><span class="tok-o">.</span><span class="tok-na">name</span>
+<span class="tok-o">}</span></code></pre>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="19-05/ng_pwa_code/ng_pwa.html">ng_pwa</a></p>
-</li>
-</ul>
+</div>
+<div class="paragraph">
+<p>For more complex traversal techniques you can use the traverse method,
+which requires you to set a special flag indicating what to do with the traversal:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="groovy"><span class="tok-n">dir</span><span class="tok-o">.</span><span class="tok-na">traverse</span> <span class="tok-o">{</span> <span class="tok-n">file</span> <span class="tok-o">-&gt;</span>
+    <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">file</span><span class="tok-o">.</span><span class="tok-na">directory</span> <span class="tok-o">&amp;&amp;</span> <span class="tok-n">file</span><span class="tok-o">.</span><span class="tok-na">name</span><span class="tok-o">==</span><span class="tok-s1">&#39;bin&#39;</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+        <span class="tok-n">FileVisitResult</span><span class="tok-o">.</span><span class="tok-na">TERMINATE</span>
+    <span class="tok-o">}</span> <span class="tok-k">else</span> <span class="tok-o">{</span>
+        <span class="tok-n">println</span> <span class="tok-n">file</span><span class="tok-o">.</span><span class="tok-na">name</span>
+        <span class="tok-n">FileVisitResult</span><span class="tok-o">.</span><span class="tok-na">CONTINUE</span>
+    <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_sass">sass</h2>
+<h2 id="_2_working_with_collections">2. Working with collections</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="manipulating_lists">2.1.4. Manipulating lists</h3>
 <div class="paragraph">
-<p>17-05, изменение: 13-мая-19</p>
+<p><a href="http://groovy-lang.org/groovy-dev-kit.html#_manipulating_lists" class="bare">http://groovy-lang.org/groovy-dev-kit.html#_manipulating_lists</a></p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="17-05/sass_code/sass.html">sass</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_android_web_games">android_web_games</h2>
-<div class="sectionbody">
+<div class="sect3">
+<h4 id="_filtering_and_searching">Filtering and searching</h4>
 <div class="paragraph">
-<p>13-01, изменение: 11-мая-19</p>
+<p>The <a href="http://www.groovy-lang.org/gdk.html">Groovy development kit</a> contains a lot of methods on collections
+that enhance the standard collections with pragmatic methods, some of which are illustrated here:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="13-01/android_web_games_code/game.html">game</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_js_concur">js_concur</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>16-11, изменение: 10-мая-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="16-11/js_concur_code/eventloop.html">eventloop</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_groovy">groovy</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>18-05, изменение: 09-мая-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="18-05/groovy_code/xml-docs.html">xml-docs</a></p>
-</li>
-<li>
-<p><a href="18-05/groovy_code/venkat.html">venkat</a></p>
-</li>
-<li>
-<p><a href="18-05/groovy_code/gdk.html">gdk</a></p>
-</li>
-<li>
-<p><a href="18-05/groovy_code/gdk-docs.html">gdk-docs</a></p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="groovy"><span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">].</span><span class="tok-na">find</span> <span class="tok-o">{</span> <span class="tok-n">it</span> <span class="tok-o">&gt;</span> <span class="tok-mi">1</span> <span class="tok-o">}</span> <span class="tok-o">==</span> <span class="tok-mi">2</span>           <span class="tok-c1">// find 1st element matching criteria</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">].</span><span class="tok-na">findAll</span> <span class="tok-o">{</span> <span class="tok-n">it</span> <span class="tok-o">&gt;</span> <span class="tok-mi">1</span> <span class="tok-o">}</span> <span class="tok-o">==</span> <span class="tok-o">[</span><span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">]</span>   <span class="tok-c1">// find all elements matching critieria</span>
+
+<span class="tok-c1">// find index of 1st element matching criteria</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-s1">&#39;a&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;b&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;d&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;e&#39;</span><span class="tok-o">].</span><span class="tok-na">findIndexOf</span> <span class="tok-o">{</span>
+    <span class="tok-n">it</span> <span class="tok-k">in</span> <span class="tok-o">[</span><span class="tok-s1">&#39;c&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;e&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;g&#39;</span><span class="tok-o">]</span>
+<span class="tok-o">}</span> <span class="tok-o">==</span> <span class="tok-mi">2</span>
+
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-s1">&#39;a&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;b&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;d&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">].</span><span class="tok-na">indexOf</span><span class="tok-o">(</span><span class="tok-s1">&#39;c&#39;</span><span class="tok-o">)</span> <span class="tok-o">==</span> <span class="tok-mi">2</span>  <span class="tok-c1">// index returned</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-s1">&#39;a&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;b&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;d&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">].</span><span class="tok-na">indexOf</span><span class="tok-o">(</span><span class="tok-s1">&#39;z&#39;</span><span class="tok-o">)</span> <span class="tok-o">==</span> <span class="tok-o">-</span><span class="tok-mi">1</span> <span class="tok-c1">// index -1 means value not in list</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-s1">&#39;a&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;b&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;d&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">].</span><span class="tok-na">lastIndexOf</span><span class="tok-o">(</span><span class="tok-s1">&#39;c&#39;</span><span class="tok-o">)</span> <span class="tok-o">==</span> <span class="tok-mi">4</span>
+
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">].</span><span class="tok-na">every</span> <span class="tok-o">{</span> <span class="tok-n">it</span> <span class="tok-o">&lt;</span> <span class="tok-mi">5</span> <span class="tok-o">}</span>   <span class="tok-c1">// returns true if all elements match the predicate</span>
+<span class="tok-k">assert</span> <span class="tok-o">![</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">].</span><span class="tok-na">every</span> <span class="tok-o">{</span> <span class="tok-n">it</span> <span class="tok-o">&lt;</span> <span class="tok-mi">3</span> <span class="tok-o">}</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">].</span><span class="tok-na">any</span> <span class="tok-o">{</span> <span class="tok-n">it</span> <span class="tok-o">&gt;</span> <span class="tok-mi">2</span> <span class="tok-o">}</span>     <span class="tok-c1">// returns true if any element matches the predicate</span>
+<span class="tok-k">assert</span> <span class="tok-o">![</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">].</span><span class="tok-na">any</span> <span class="tok-o">{</span> <span class="tok-n">it</span> <span class="tok-o">&gt;</span> <span class="tok-mi">3</span> <span class="tok-o">}</span>
+
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">,</span> <span class="tok-mi">4</span><span class="tok-o">,</span> <span class="tok-mi">5</span><span class="tok-o">,</span> <span class="tok-mi">6</span><span class="tok-o">].</span><span class="tok-na">sum</span><span class="tok-o">()</span> <span class="tok-o">==</span> <span class="tok-mi">21</span>  <span class="tok-c1">// sum anything with a plus() method</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-s1">&#39;a&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;b&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;d&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;e&#39;</span><span class="tok-o">].</span><span class="tok-na">sum</span> <span class="tok-o">{</span>
+    <span class="tok-n">it</span> <span class="tok-o">==</span> <span class="tok-s1">&#39;a&#39;</span> <span class="tok-o">?</span> <span class="tok-mi">1</span> <span class="tok-o">:</span> <span class="tok-n">it</span> <span class="tok-o">==</span> <span class="tok-s1">&#39;b&#39;</span> <span class="tok-o">?</span> <span class="tok-mi">2</span> <span class="tok-o">:</span> <span class="tok-n">it</span> <span class="tok-o">==</span> <span class="tok-s1">&#39;c&#39;</span> <span class="tok-o">?</span> <span class="tok-mi">3</span> <span class="tok-o">:</span> <span class="tok-n">it</span> <span class="tok-o">==</span> <span class="tok-s1">&#39;d&#39;</span> <span class="tok-o">?</span> <span class="tok-mi">4</span> <span class="tok-o">:</span> <span class="tok-n">it</span> <span class="tok-o">==</span> <span class="tok-s1">&#39;e&#39;</span> <span class="tok-o">?</span> <span class="tok-mi">5</span> <span class="tok-o">:</span> <span class="tok-mi">0</span>
+    <span class="tok-c1">// custom value to use in sum</span>
+<span class="tok-o">}</span> <span class="tok-o">==</span> <span class="tok-mi">15</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-s1">&#39;a&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;b&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;d&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;e&#39;</span><span class="tok-o">].</span><span class="tok-na">sum</span> <span class="tok-o">{</span> <span class="tok-o">((</span><span class="tok-kt">char</span><span class="tok-o">)</span> <span class="tok-n">it</span><span class="tok-o">)</span> <span class="tok-o">-</span> <span class="tok-o">((</span><span class="tok-kt">char</span><span class="tok-o">)</span> <span class="tok-s1">&#39;a&#39;</span><span class="tok-o">)</span> <span class="tok-o">}</span> <span class="tok-o">==</span> <span class="tok-mi">10</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-s1">&#39;a&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;b&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;d&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;e&#39;</span><span class="tok-o">].</span><span class="tok-na">sum</span><span class="tok-o">()</span> <span class="tok-o">==</span> <span class="tok-s1">&#39;abcde&#39;</span>
+<span class="tok-k">assert</span> <span class="tok-o">[[</span><span class="tok-s1">&#39;a&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;b&#39;</span><span class="tok-o">],</span> <span class="tok-o">[</span><span class="tok-s1">&#39;c&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;d&#39;</span><span class="tok-o">]].</span><span class="tok-na">sum</span><span class="tok-o">()</span> <span class="tok-o">==</span> <span class="tok-o">[</span><span class="tok-s1">&#39;a&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;b&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;c&#39;</span><span class="tok-o">,</span> <span class="tok-s1">&#39;d&#39;</span><span class="tok-o">]</span>
+
+<span class="tok-c1">// an initial value can be provided</span>
+<span class="tok-k">assert</span> <span class="tok-o">[].</span><span class="tok-na">sum</span><span class="tok-o">(</span><span class="tok-mi">1000</span><span class="tok-o">)</span> <span class="tok-o">==</span> <span class="tok-mi">1000</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">].</span><span class="tok-na">sum</span><span class="tok-o">(</span><span class="tok-mi">1000</span><span class="tok-o">)</span> <span class="tok-o">==</span> <span class="tok-mi">1006</span>
+
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">].</span><span class="tok-na">join</span><span class="tok-o">(</span><span class="tok-s1">&#39;-&#39;</span><span class="tok-o">)</span> <span class="tok-o">==</span> <span class="tok-s1">&#39;1-2-3&#39;</span>           <span class="tok-c1">// String joining</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">].</span><span class="tok-na">inject</span><span class="tok-o">(</span><span class="tok-s1">&#39;counting: &#39;</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+    <span class="tok-n">str</span><span class="tok-o">,</span> <span class="tok-n">item</span> <span class="tok-o">-&gt;</span> <span class="tok-n">str</span> <span class="tok-o">+</span> <span class="tok-n">item</span>                     <span class="tok-c1">// reduce operation</span>
+<span class="tok-o">}</span> <span class="tok-o">==</span> <span class="tok-s1">&#39;counting: 123&#39;</span>
+<span class="tok-k">assert</span> <span class="tok-o">[</span><span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-mi">2</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">].</span><span class="tok-na">inject</span><span class="tok-o">(</span><span class="tok-mi">0</span><span class="tok-o">)</span> <span class="tok-o">{</span> <span class="tok-n">count</span><span class="tok-o">,</span> <span class="tok-n">item</span> <span class="tok-o">-&gt;</span>
+    <span class="tok-n">count</span> <span class="tok-o">+</span> <span class="tok-n">item</span>
+<span class="tok-o">}</span> <span class="tok-o">==</span> <span class="tok-mi">6</span></code></pre>
 </div>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_cordova">cordova</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>16-09, изменение: 26-апр-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="16-09/cordova_code/cordova.html">cordova</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_js_cre">js_cre</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>17-01, изменение: 26-апр-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="17-01/js_cre_code/audiovideo.html">audiovideo</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_spring_boot_2">spring_boot_2</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>18-12, изменение: 17-апр-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="18-12/spring_boot_2_code/springboot2.html">springboot2</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ionic2">ionic2</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>17-05, изменение: 12-апр-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="17-05/ionic2_code/typescript.html">typescript</a></p>
-</li>
-<li>
-<p><a href="17-05/ionic2_code/socialsharing.html">socialsharing</a></p>
-</li>
-<li>
-<p><a href="17-05/ionic2_code/ionicforms.html">ionicforms</a></p>
-</li>
-</ul>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-08-21 23:38:33 +03
+Last updated 2019-05-09 16:16:45 +03
 </div>
 </div>
 </body>
