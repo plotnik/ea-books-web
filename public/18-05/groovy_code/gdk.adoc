@@ -1,0 +1,93 @@
+= Learning Groovy
+:toc: right
+:toclevels: 6
+:icons: font
+:source-highlighter: pygments
+:source-language: groovy
+:pygments-style: xcode
+
+////
+:pygments-style: borland
+:pygments-style: trac
+////
+
+[NOTE] 
+====
+- http://groovy-lang.org/documentation.html
+- link:venkat.html[]
+====
+
+== 4. GDK
+
+=== Collections
+
+NOTE: link:gdk-docs.html#manipulating_lists[]
+
+sort:: Sorts the collection (if it is sortable).
+findAll:: Finds all elements that match a closure.
+collect:: An iterator that builds a new collection.
+inject:: Loops through the values and returns a single value.
+each:: Iterates through the values using the given closure.
+eachWithIndex:: Iterates through with two parameters: a value and an index.
+find:: Finds the first element that matches a closure.
+findIndexOf:: Finds the first element that matches a closure and returns its index.
+any:: True if any element returns true for the closure.
+every:: True if all elements return true for the closure.
+reverse:: Reverses the ordering of elements in a list.
+first:: Gets the first element of a list.
+last:: Returns the last element of a list.
+tail:: Returns all elements except the first element of a list.
+
+==== Spread
+
+```
+dragons*.name.each { println it }
+```
+
+==== GPath
+
+```
+def listOfMaps = [['a': 11, 'b': 12], ['a': 21, 'b': 22]]
+assert listOfMaps.a == [11, 21] //GPath notation
+assert listOfMaps*.a == [11, 21] //spread dot notation
+
+listOfMaps = [['a': 11, 'b': 12], ['a': 21, 'b': 22], null ]
+assert listOfMaps*.a == [11, 21, null ] // caters for null values
+assert listOfMaps*.a == listOfMaps.collect { it?.a } //equivalent notation
+// But this will only collect non-null values
+assert listOfMaps.a == [11,21]
+```
+
+=== IO
+
+==== Files
+
+```
+// For binary files, you can also use the `bytes` property:
+byte[] data = new File('data').bytes
+new File('out').bytes = data
+
+// If you want to use an InputStream or reader 
+// or the corresponding OutputStream or
+// writer for output, you have the following methods:
+new File('dragons.txt').withInputStream { in -> }
+new File('dragons.txt').withReader {r -> }
+new File('dragons.txt').withOutputStream {out ->}
+new File('dragons.txt').withWriter {w -> }
+
+// You can use the `eachLine` method to read each line of a file:
+new File('dragons.txt').eachLine { line->
+    println "$line"
+}
+
+// OR
+new File('dragons.txt').eachLine { line, num ->
+    println "Line $num: $line"
+}
+```
+
+==== URLs
+
+```
+println "http://google.com".toURL().text
+```

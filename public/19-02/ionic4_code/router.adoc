@@ -1,0 +1,123 @@
+= Angular Router
+:toc: right
+:toclevels: 4
+:source-highlighter: coderay
+
+== Guide from Angular Team
+
+https://angular.io/guide/router
+
+
+=== The Basics
+
+==== Configuration
+
+.src/app/app.module.ts (excerpt)
+```js
+const appRoutes: Routes = [
+  { path: 'crisis-center', component: CrisisListComponent },
+  { path: 'hero/:id',      component: HeroDetailComponent },
+  {
+    path: 'heroes',
+    component: HeroListComponent,
+    data: { title: 'Heroes List' }
+  },
+  { path: '',
+    redirectTo: '/heroes',
+    pathMatch: 'full'
+  },
+  { path: '**', component: PageNotFoundComponent }
+];
+
+@NgModule({
+  imports: [
+    RouterModule.forRoot(
+      appRoutes,
+      { enableTracing: true } // <-- debugging purposes only
+    )
+    // other imports here
+  ],
+  ...
+})
+export class AppModule { }
+```
+
+
+== Guide from Ionic Team
+
+https://ionicframework.com/docs/angular/navigation
+
+
+=== Navigating to different routes
+
+.Configuring router
+```html
+RouterModule.forRoot([
+  { path: '', component: LoginComponent },
+  { path: 'detail', component: DetailComponent }
+]);
+```
+
+.Adding a link
+```html
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-button [routerLink]="['/detail']">Go to detail</ion-button>
+</ion-content>
+```
+
+.Navigate programmatically
+```js
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Component({
+  ...
+})
+export class LoginComponent {
+
+  constructor(private router: Router){}
+
+  navigate(){
+    this.router.navigate(['/detail'])
+  }
+}
+```
+
+=== Working with Tabs
+
+.Configuration
+```
+const routes: Routes = [
+  {
+    path: 'tabs',
+    component: TabsPage,
+    children: [
+      {
+        path: 'tab1',
+        children: [
+          {
+            path: '',
+            loadChildren: '../tab1/tab1.module#Tab1PageModule'
+          }
+        ]
+      },
+      {
+        path: '',
+        redirectTo: '/tabs/tab1',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  {
+    path: '',
+    redirectTo: '/tabs/tab1',
+    pathMatch: 'full'
+  }
+];
+```

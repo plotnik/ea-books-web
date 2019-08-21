@@ -1,0 +1,54 @@
+= Cordova in Action
+:toc: right
+:toclevels: 6
+:source-highlighter: coderay
+:icons: font
+
+====
+Cordova Plugin Development Guide::
+https://cordova.apache.org/docs/en/latest/guide/hybrid/plugins/
+====
+
+== Part 2. Core concepts
+
+=== 8. Creating custom plugins
+
+==== 8.3. Building an Android plugin
+
+===== 8.3.2. Writing the plugin code
+
+====
+- https://github.com/don/cordova-plugin-hello
+- https://github.com/a-services/apperyio-config-xml
+
+```
+cordova create hello com.example.hello HelloWorld
+
+cordova platform add ios
+
+plugman install --platform ios --project hello --plugin cordova-plugin-hello
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cordova-plugin-device" version="0.2.3">
+    <name>Device</name>
+    <description>Cordova Device Plugin</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,device</keywords>
+    <js-module src="www/device.js" name="device">
+        <clobbers target="device" />
+    </js-module>
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Device">
+                <param name="ios-package" value="CDVDevice"/>
+            </feature>
+        </config-file>
+        <header-file src="src/ios/CDVDevice.h" />
+        <source-file src="src/ios/CDVDevice.m" />
+    </platform>
+</plugin>
+```
+====

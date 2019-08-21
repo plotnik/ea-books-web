@@ -1,0 +1,1244 @@
+= Hacker News App
+:toc: right
+:toclevels: 4
+:source-highlighter: coderay
+
+== CHAPTER 4. Basic App Structure
+
+=== Understanding the Basic App Structure
+
+```
+$ ionic start hacker-news-app-v4 blank --package-id=io.vividcode.ionic4.hnc  --type angular --cordova
+
+$ ionic cordova platform add android --save
+```
+
+== CHAPTER 5. List Stories
+
+=== Define the Model
+
+.Listing 5-1. Item model
+```js
+export interface Item {
+  id: number;
+  title: string;
+  url: string;
+  by: string;
+  time: number;
+  score: number;
+}
+```
+
+.Listing 5-2. Items model
+```js
+import { Item } from './Item';
+
+export type Items =  Item[];
+```
+
+=== List Component
+
+.Listing 5-4. List with header and dividers
+```html
+<ion-list>
+  <ion-list-header>
+    Items
+  </ion-list-header>
+  <ion-item>
+    Item 1
+  </ion-item>
+  <ion-item-divider>
+    <ion-button slot="start">Start</ion-­button>
+    <ion-label>Divider</ion-label>
+    <ion-icon slot="end" name="book"></ion-­icon>
+  </ion-item-divider>
+  <ion-item>
+    Item 2
+  </ion-item>
+</ion-list>
+```
+
+==== Grouping of Items
+
+.Listing 5-5. Grouping of items
+```html
+<ion-item-group>
+  <ion-item-divider>A</ion-item-divider>
+  <ion-item>Alex</ion-item>
+  <ion-item>Amber</ion-item>
+</ion-item-group>
+<ion-item-group>
+  <ion-item-divider>B</ion-item-divider>
+  <ion-item>Bob</ion-item>
+  <ion-item>Brenda</ion-item>
+</ion-item-group>
+```
+
+==== Icons
+
+.Listing 5-6. List with icons
+```html
+<ion-list>
+  <ion-item>
+    <ion-icon name="book" slot="start"></ion-­icon>
+    Book
+  </ion-item>
+  <ion-item>
+    <ion-icon name="build" is-active="false" slot="start">
+</ion-icon>
+    Build
+    <ion-icon name="build" slot="end"></ion-­icon>
+  </ion-item>
+  <ion-item>
+    <ion-icon ios="ios-happy" md="md-sad" slot="end">
+</ion-icon>
+    Happy or Sad
+  </ion-item>
+</ion-list>
+```
+
+==== Avatars
+
+.Listing 5-7. List with avatars
+```html
+<ion-list>
+  <ion-item>
+    <ion-avatar slot="start">
+      <img src="http://placehold.it/60?text=A">
+    </ion-avatar>
+    Alex
+  </ion-item>
+  <ion-item>
+    <ion-avatar slot="start">
+      <img src="http://placehold.it/60?text=B">
+    </ion-avatar>
+    Bob
+  </ion-item>
+  <ion-item>
+    <ion-avatar slot="start">
+      <img src="http://placehold.it/60?text=D">
+    </ion-avatar>
+    David
+  </ion-item>
+</ion-list>
+```
+
+==== Thumbnails
+
+.Listing 5-8. List with thumbnails
+```html
+<ion-list>
+  <ion-item>
+    <ion-thumbnail slot="start">
+      <img src="http://placehold.it/100x60?text=F1">
+    </ion-thumbnail>
+    Apple
+  </ion-item>
+  <ion-item>
+    <ion-thumbnail slot="start">
+      <img src="http://placehold.it/100x60?text=F2">
+    </ion-thumbnail>
+    Banana
+  </ion-item>
+  <ion-item>
+    <ion-thumbnail slot="start">
+      <img src="http://placehold.it/100x60?text=F3">
+    </ion-thumbnail>
+    Orange
+  </ion-item>
+</ion-list>
+```
+
+=== Display a List of Items
+
+```
+$ ng g module components --flat false
+```
+
+https://angular.io/api/core/CUSTOM_ELEMENTS_SCHEMA
+
+.Listing 5-9. Use CUSTOM_ELEMENTS_SCHEMA in the module
+```js
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+
+@NgModule({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+})
+export class ComponentsModule { }
+```
+
+==== Item Component
+
+```
+$ ng g component components/item --flat false
+```
+
+.Listing 5-10. Item component
+```js
+import { Component, Input } from '@angular/core';
+import { Item } from '../../model/Item';
+
+@Component({
+  selector: 'item',
+  templateUrl: 'item.html',
+})
+export class ItemComponent {
+  @Input() item: Item;
+}
+```
+
+.Listing 5-11. Template of the item component
+```html
+<div>
+  <h2 class="title">{{ item.title }}</h2>
+  <div>
+    <span>
+      <ion-icon name="bulb"></ion-icon>
+      {{ item.score }}
+    </span>
+    <span>
+      <ion-icon name="person"></ion-­icon>
+      {{ item.by }}
+    </span>
+    <span>
+      <ion-icon name="time"></ion-icon>
+      {{ item.time | timeAgo }} ago
+    </span>
+  </div>
+  <div>
+    <span>
+      <ion-icon name="link"></ion-icon>
+      {{ item.url }}
+    </span>
+  </div>
+</div>
+```
+
+.Listing 5-12. timeAgo pipe
+```js
+import { Pipe, PipeTransform } from '@angular/core';
+import * as moment from 'moment';
+
+@Pipe({
+  name: 'timeAgo'
+})
+export class TimeAgoPipe implements PipeTransform {
+  transform(time: number): string {
+    return moment.duration(moment().diff(moment(time * 1000))).
+    humanize();
+  }
+}
+```
+
+.Listing 5-13. Styles of the item component
+```css
+:host {
+  width: 100%;
+}
+
+.title {
+  color: #488aff;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.link {
+  font-size: 14px;
+}
+
+div {
+  margin: 1px;
+}
+
+ion-icon {
+  margin-right: 2px;
+}
+
+div > span:not(:last-child) {
+  padding-right: 10px;
+}
+```
+
+==== Items Component
+
+.Listing 5-14. Items component
+```js
+import { Component, Input } from '@angular/core';
+import { Items } from '../../models/items';
+import { Item } from '../../models/item';
+
+@Component({
+  selector: 'app-items',
+  templateUrl: './items.component.html',
+  styleUrls: ['./items.component.scss']
+})
+export class ItemsComponent {
+  @Input() items: Items;
+}
+```
+
+.Listing 5-15. Template of items component
+```html
+<ion-list>
+  <ion-item *ngFor="let item of items">
+    <app-item [item]="item"></app-item>
+  </ion-item>
+</ion-list>
+```
+
+==== Empty List
+
+.Listing 5-16. Show empty list
+```html
+<ion-list *ngIf="items && items.length > 0">
+  <ion-item *ngFor="let item of items">
+    <app-item [item]="item"></app-item>
+  </ion-item>
+</ion-list>
+<p *ngIf="items && items.length === 0">
+  No items.
+</p>
+<p *ngIf="!items">
+  Loading...
+</p>
+```
+
+=== Unit Tests of Components
+
+==== Testing Items Component
+
+.Listing 5-20. items.components.spec.ts
+```js
+import { async, ComponentFixture } from '@angular/core/testing';
+import { ItemsComponent } from './items.component';
+import { ItemComponent } from '../item/item.component';
+import { TimeAgoPipe } from '../time-ago/time-ago.pipe';
+import { TestUtils } from '../../../testing/test-utils';
+import { By } from '@angular/platform-browser';
+
+describe('ItemsComponent', () => {
+  let component: ItemsComponent;
+  let fixture: ComponentFixture<ItemsComponent>;
+
+  beforeEach(async(() => {
+    TestUtils.beforeEachCompiler([ItemsComponent,
+    ItemComponent, TimeAgoPipe])
+      .then(compiled => {
+      fixture = compiled.fixture;
+        component = compiled.instance;
+      });
+  }));
+
+  it('should display a list of items', () => {
+    component.items = [{
+      id: 1,
+      title: 'Test item 1',
+      url: 'http://www.example.com/test1',
+      by: 'user1',
+      time: 1478576387,
+      score: 242,
+    }, {
+      id: 2,
+      title: 'Test item 2',
+      url: 'http://www.example.com/test2',
+      by: 'user2',
+      time: 1478576387,
+      score: 100,
+    }];
+    fixture.detectChanges();
+    const debugElements = fixture.debugElement.queryAll(By.css('h2'));
+    expect(debugElements.length).toBe(2);
+    expect(debugElements[0].nativeElement.textContent).toContain('Test item 1');
+    expect(debugElements[1].nativeElement.textContent).toContain('Test item 2');
+  });
+  it('should display no items', () => {
+    component.items = [];
+    fixture.detectChanges();
+    const debugElement = fixture.debugElement.query(By.css('p'));
+    expect(debugElement).not.toBeNull();
+    expect(debugElement.nativeElement.textContent).toContain('No items');
+  });
+});
+
+```
+
+.Listing 5-21. TestUtils
+```js
+import { TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
+export class TestUtils {
+  static beforeEachCompiler(components: Array<any>, providers:
+    Array<any> = []): Promise<{fixture: any, instance: any}> {
+    return TestUtils.configureIonicTestingModule(components, providers)
+      .compileComponents().then(() => {
+        const fixture: any = TestBed.createComponent(components[0]);
+        return {
+          fixture,
+          instance: fixture.componentInstance,
+        };
+      });
+  }
+
+  static configureIonicTestingModule(components: Array<any>,
+    providers: Array<any> = []): typeof TestBed {
+    return TestBed.configureTestingModule({
+      declarations: [
+        ...components,
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        ...providers,
+      ],
+      imports: [
+        FormsModule,
+        IonicModule,
+      ],
+    });
+  }
+}
+
+```
+
+=== Items Loading Service
+
+```
+$ ng g module services --flat false
+```
+
+.Listing 5-22. ItemService
+```js
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { Items } from '../../models/items';
+@Injectable()
+export class ItemService {
+  load(offset: number, limit: number): Observable<Items> {
+    return of({
+      offset: 0,
+      limit: 0,
+      total: 0,
+      results: [],
+    });
+  }
+```
+
+.Listing 5-23. Updated Item model
+```js
+import { Item } from './Item';
+export interface Items {
+  offset: number;
+  limit: number;
+  total?: number;
+  results: Item[];
+}
+```
+
+=== Top Stories Page
+
+.Listing 5-24. Generate modules and components
+```
+$ ng g module top-stories --routing
+$ ng g component top-stories -m top-stories
+```
+
+.Listing 5-25. top-stories.ts
+```js
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Items } from '../../models/items';
+import { ItemService } from '../../services/item/item.service';
+
+@Component({
+  selector: 'app-top-stories',
+  templateUrl: './top-stories.component.html',
+  styleUrls: ['./top-stories.component.scss']
+})
+export class TopStoriesComponent implements OnInit, OnDestroy {
+  items: Items;
+  private subscription: Subscription;
+  constructor(private itemService: ItemService) { }
+
+  ngOnInit() {
+    this.subscription = this.itemService.load(0, 10).
+         subscribe(items => this.items = items);
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+}
+```
+
+.Listing 5-26. top-stories.html
+```html
+<ion-app>
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Top Stories</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content padding>
+    <app-items [items]="items"></app-­items>
+  </ion-content>
+</ion-app>
+```
+
+==== Test
+
+===== Items Loading Service Mock
+
+.Listing 5-27. ItemServiceMock
+```js
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import * as range from 'lodash.range';
+import { Items } from '../model/Items';
+import { Item } from '../model/Item';
+import { ItemService } from '../services/ItemService';
+
+@Injectable()
+export class ItemServiceMock extends ItemService {
+  load(offset?: number, limit?: number): Observable<Items> {
+    const results: Item[] = range(offset, offset + limit).
+      map(index => ({
+      id: index,
+      title: `Item ${index + 1}`,
+      url: `http://www.example.com/item${index}`,
+      by: `demo`,
+      time: new Date().getTime() / 1000,
+      score: index,
+    }));
+
+    return Observable.of({
+      offset,
+      limit,
+      total: offset + limit,
+      results,
+    });
+  }
+}
+```
+
+===== Test Suite
+
+.Listing 5-28. top-stories.spec.ts
+```js
+import { ComponentFixture, async } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { DebugElement } from '@angular/core';
+import { TestUtil } from '../../test';
+import { TopStoriesComponent } from './top-stories.component';
+import { ItemsComponent } from '../../components/items/items.component';
+import { ItemComponent } from '../../components/item/item.component';
+import { TimeAgoPipe } from '../../pipes/TimeAgoPipe';
+import { ItemService } from '../../services/ItemService';
+import { ItemServiceMock } from '../../testing/ItemServiceMock';
+
+let fixture: ComponentFixture<TopStoriesComponent> = null;
+let component: any = null;
+
+describe('top stories page', () => {
+  beforeEach(async(() => TestUtils.beforeEachCompiler(
+    [TopStoriesComponent, ItemsComponent, ItemComponent, TimeAgoPipe],
+    [{provide: ItemService, useClass: ItemServiceMock}]
+  ).then(compiled => {
+    fixture = compiled.fixture;
+    component = compiled.instance;
+  })));
+  it('should display a list of 10 items', async(() => {
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();
+      let debugElements = fixture.debugElement.queryAll(By.css('h2'));
+      expect(debugElements.length).toBe(10);
+      expect(debugElements[0].nativeElement.textContent).toContain('Item 1');
+      expect(debugElements[1].nativeElement.textContent).toContain('Item 2');
+    });
+  }));
+});
+```
+
+=== Firebase Basics
+
+==== Firebase JavaScript SDK
+
+===== Setup
+
+```html
+<script src="https://www.gstatic.com/firebasejs/5.9.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDVolqj1aX7IVpMsM4TPneXowef18_j-Vk",
+    authDomain: "ionic4-code.firebaseapp.com",
+    databaseURL: "https://ionic4-code.firebaseio.com",
+    projectId: "ionic4-code",
+    storageBucket: "ionic4-code.appspot.com",
+    messagingSenderId: "251411004722"
+  };
+  firebase.initializeApp(config);
+</script>
+```
+
+===== Read Data
+
+```js
+let database = firebase.database();
+
+let ref = database.ref('products');
+```
+
+.Listing 5-31. Reading data
+```js
+ref.on('value', function(snapshot) {
+  console.log(snapshot.val());
+});
+```
+
+.Listing 5-32. Remove event listeners
+```js
+ref.off('value', valueCallback); // Remove a single listener
+
+ref.off('value'); // Remove all listeners of the event 'value'
+
+ref.off(); // Remove all listeners for all events
+```
+
+.Listing 5-33. Use events
+```js
+let ref = database.ref('products');
+ref.on('child_added', function(snapshot) {
+  console.log('product added: ' + snapshot.val().name);
+});
+
+ref.on('child_removed', function(snapshot) {
+  console.log('product removed: ' + snapshot.key);
+});
+```
+
+==== Write Data
+
+.Listing 5-34. Writing data
+```js
+let ref = database.ref('products');
+
+ref.child('00001').set({
+  "name": "New iPhone 6s plus",
+  "price": 699.99
+});
+
+ref.child('00001').update({
+  "price": 639.99
+});
+```
+
+.Listing 5-35. Pushing data to list
+```js
+let ref = database.ref('customers');
+
+ref.push({
+  "firstName": "Bob",
+  "lastName": "Lee",
+  "email": "bob@example.com"
+});
+
+ref.push().set({
+  "firstName": "Bob",
+  "lastName": "Lee",
+  "email": "bob@example.com"
+});
+```
+
+==== Query Data
+
+===== sort
+
+.Listing 5-36. Sort products by price
+```js
+let ref = database.ref('products');
+ref.orderByChild('price');
+```
+
+===== Filter
+
+.Listing 5-37. Filter to only return the first child
+```js
+let ref = database.ref('products');
+ref.orderByChild('price').limitToFirst(1);
+```
+
+==== Navigation
+
+.Listing 5-38. Navigation
+```js
+let ref = database.ref('products');
+ref.child('00001');
+// -> path is "/products/00001"
+ref.parent;
+// -> path is "/"
+ref.root;
+// -> path is "/"
+```
+=== Hacker News API
+
+==== AngularFire2
+
+```
+$ npm i firebase @angular/fire
+```
+
+.Listing 5-39. AngularFire2 configuration
+```js
+export const environment = {
+  production: false,
+  firebase: {
+    databaseURL: 'https://hacker-news.firebaseio.com',
+  },
+};
+```
+
+.Listing 5-40. AppModule with AngularFire2 config
+```js
+import { BrowserModule } from '@angular/platform-browser';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+
+import { MyApp } from './app.component';
+
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { environment } from '../environments/environment';
+
+@NgModule({
+  declarations: [
+    MyApp,
+  ],
+  imports: [
+    BrowserModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireDatabaseModule,
+  ],
+  bootstrap: [MyApp],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  providers: []
+})
+export class AppModule {}
+```
+
+.Listing 5-41. Use AngularFire2 in components
+```js
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
+import { AngularFireDatabase } from '@angular/fire/database';
+
+@Component({
+  selector: 'app-component',
+  templateUrl: 'app.component.html',
+})
+export class AppComponent {
+  items: Observable<any[]>;
+  constructor(private db: AngularFireDatabase) {
+    this.items = this.db.list('/items').valueChanges();
+  }
+}
+```
+
+```js
+let product = db.object('/products/00001').valueChanges();
+```
+
+```html
+<span>{{ (product | async)?.name }}</span>
+```
+
+==== Hacker News API
+
+.Listing 5-42. Sample JSON content of a story
+```js
+{
+  "by" : "Thorondor",
+  "descendants" : 134,
+  "id" : 9893412,
+  "kids" : [ 9894173, 9893737, ..., 9893728, 9893803 ],
+  "score" : 576,
+  "text" : "",
+  "time" : 1436987690,
+  "title" : "The Icy Mountains of Pluto",
+  "type" : "story",
+  "url" : "https://www.nasa.gov/image-feature/the-icy-mountains-of-pluto"
+}
+```
+
+==== Implement ItemService
+
+.Listing 5-43. ItemService
+```js
+import { Injectable } from '@angular/core';
+import { Observable, combineLatest } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
+
+import { Items } from '../../models/items';
+import { AngularFireDatabase } from '@angular/fire/database';
+
+@Injectable()
+export class ItemService {
+  constructor(private db: AngularFireDatabase) {}
+
+  load(offset: number, limit: number): Observable<Items> {
+    return this.db.list('/v0/topstories')
+      .valueChanges()
+      .pipe(
+        map(ids => ids.slice(offset, offset + limit)),
+        mergeMap((ids: any[]) => combineLatest(...(ids.map(
+          id => this.db.object('/v0/item/' + id).valueChanges())))),
+        map((items: any) => ({
+          offset,
+          limit,
+          total: limit,
+          results: items,
+        }))
+       );
+  }
+}
+```
+
+==== Alternative Model and Service Implementation
+
+.Listing 5-44. Updated model Items
+```js
+import { Observable } from 'rxjs';
+import { Item } from './Item';
+
+export interface Items {
+  offset: number;
+  limit: number;
+  total?: number;
+  results: Observable<Item>[];
+}
+```
+
+.Listing 5-45. Updated ItemService
+```js
+import { Injectable } from '@angular/core';
+import * as isEqual from 'lodash.isequal';
+import { Observable } from 'rxjs';
+import { map, distinctUntilChanged } from 'rxjs/operators';
+
+import { Items } from '../../models/items';
+import { AngularFireDatabase } from '@angular/fire/database';
+
+@Injectable()
+export class ItemService {
+  constructor(private db: AngularFireDatabase) {}
+
+  load(offset: number, limit: number): Observable<Items> {
+    return this.db.list('/v0/topstories')
+      .valueChanges()
+      .pipe(
+        map(ids => ids.slice(offset, offset + limit)),
+        distinctUntilChanged(isEqual),
+        map((ids: any[]) => ids.map(
+          id => this.db.object('/v0/item/' + id).valueChanges())),
+        map((items: any) => ({
+          offset,
+          limit,
+          total: limit,
+          results: items,
+        }))
+      );
+  }
+}
+```
+
+==== Further Improvements
+
+.Listing 5-46. Updated ItemService
+```js
+import { Injectable } from '@angular/core';
+import { combineLatest, merge, Observable, Subject } from 'rxjs';
+import { filter, map, skip, switchAll, take, withLatestFrom }
+from 'rxjs/operators';
+
+import { Items } from '../../models/items';
+import { Item } from '../../models/item';
+
+import { AngularFireDatabase } from '@angular/fire/database';
+import { Subject } from 'rxjs/Subject';
+
+export interface Query {
+  refresh?: boolean;
+  offset: number;
+  limit: number;
+}
+
+@Injectable()
+export class ItemService {
+  private queries: Subject<Query>;
+
+  constructor(private db: AngularFireDatabase) {
+    this.queries = new Subject<Query>();
+  }
+
+  load(query: Query) {
+    this.queries.next(query);
+  }
+
+  get(): Observable<Items> {
+    const rawItemIds = this.db.list<number>('/v0/topstories')
+      .valueChanges();
+    const itemIds = combineLatest(
+      rawItemIds,
+      this.queries
+    ).pipe(
+      filter(([ids, query]) => query.refresh),
+      map(([ids, query]) => ids)
+    );
+    const selector = ({offset, limit}, ids) =>
+      combineLatest(...(ids.slice(offset, offset + limit)
+        .map(id => this.db.object<Item>('/v0/item/' + id).valueChanges()))
+      ) as Observable<Items>;
+     return merge(
+       combineLatest(this.queries, itemIds).pipe(
+          map(([query, ids]) => selector(query, ids).pipe(take(1)))
+        ),
+       this.queries.pipe(
+         skip(1),
+         withLatestFrom(itemIds, selector)
+       )
+    ).pipe(switchAll());
+  }
+}
+```
+
+.Listing 5-47. Load more stories
+```js
+export class TopStoriesComponent implements OnInit, OnDestroy {
+
+  items: Items;
+  private subscription: Subscription;
+  private offset = 0;
+  private limit = 10;
+
+  constructor(private itemService: ItemService) { }
+
+  ngOnInit() {
+    this.subscription = this.itemService.get().subscribe(items => this.items = items);
+    this.doLoad(true);
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  doLoad(refresh: boolean) {
+    this.itemService.load({
+      offset: this.offset,
+      limit: this.limit,
+      refresh,
+    });
+    this.offset += this.limit;
+  }
+}
+```
+
+=== Pagination and Refresh
+
+==== Pagination
+
+.Listing 5-48. Add pagination buttons
+```html
+<ion-app>
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Top Stories</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content padding>
+    <div>
+      <ion-button color="light" [disabled]="!hasPrevious()" (click)="previous()">
+        <ion-icon name="arrow-back" slot="start"></ion-icon>
+        Prev
+      </ion-button>
+      <ion-button [disabled]="!canRefresh()" (click)="refresh()">
+        <ion-icon name="refresh" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button color="light" [disabled]="!hasNext()" (click)="next()">
+          <ion-icon name="arrow-forward" slot="end"></ion-icon>
+          Next
+        </ion-button>
+    </div>
+    <app-items [items]="items"></app-­items>
+  </ion-content>
+</ion-app>
+```
+
+.Listing 5-49. Updated TopStories
+```js
+export class TopStoriesComponent implements OnInit, OnDestroy {
+
+  items: Items;
+  private subscription: Subscription;
+  private offset = 0;
+  private limit = 10;
+
+  constructor(private itemService: ItemService) { }
+
+  ngOnInit() {
+    this.subscription = this.itemService.get().subscribe(items => this.items = items);
+    this.doLoad(true);
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  hasPrevious(): boolean {
+    return this.offset > 0;
+  }
+
+  previous(): void {
+    if (!this.hasPrevious()) {
+      return;
+    }
+    this.offset -= this.limit;
+    this.doLoad(false);
+  }
+
+  hasNext(): boolean {
+    return this.items != null && (this.offset + this.limit) < this.items.total;
+  }
+
+  next() {
+    if (!this.hasNext()) {
+      return;
+    }
+    this.offset += this.limit;
+    this.doLoad(false);
+  }
+
+  canRefresh(): boolean {
+    return this.items != null;
+  }
+
+  refresh() {
+    if (!this.canRefresh()) {
+      return;
+    }
+    this.offset = 0;
+    this.doLoad(true);
+  }
+
+  private doLoad(refresh: boolean) {
+    this.itemService.load({
+      offset: this.offset,
+      limit: this.limit,
+      refresh,
+    });
+  }
+}
+```
+
+=== Advanced List
+
+.Listing 5-50. Add ion-refresher and ion-infinite-scroll
+```html
+<ion-content padding>
+  <ion-refresher slot="fixed" [disabled]="!canRefresh()" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-­content>
+  </ion-refresher>
+  <hnc-items [items]="items"></hnc-­items>
+  <ion-infinite-scroll [disabled]="!hasNext()" (ionInfinite)="load($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-­content>
+  </ion-infinite-scroll>
+</ion-content>
+```
+
+.Listing 5-51. Updated TopStories
+```js
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import * as concat from 'lodash.concat';
+import { Items } from '../../models/items';
+import { ItemService } from '../../services/item/item.service';
+
+@Component({
+  selector: 'app-top-stories',
+  templateUrl: './top-stories.component.html',
+  styleUrls: ['./top-stories.component.scss']
+})
+export class TopStoriesComponent implements OnInit, OnDestroy {
+
+  items: Items;
+  private subscription: Subscription;
+  private offset = 0;
+  private limit = 10;
+  private infiniteScrollComponent: any;
+  private refresherComponent: any;
+
+  constructor(private itemService: ItemService) { }
+
+  ngOnInit() {
+    this.subscription = this.itemService.get().subscribe(items => {
+      if (items.refresh) {
+        this.items = items;
+        this.notifyRefreshComplete();
+      } else {
+        this.items = {
+          ...this.items,
+          results: concat(this.items.results, items.results),
+        };
+        this.notifyScrollComplete();
+      }
+    });
+    this.doLoad(true) ;
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  load(event) {
+    this.infiniteScrollComponent = event.target;
+    if (this.hasNext()) {
+      this.next();
+    }
+  }
+
+  hasNext(): boolean {
+    return this.items != null && (this.offset + this.limit) < this.items.total;
+  }
+
+  next() {
+    if (!this.hasNext()) {
+      return;
+    }
+    this.offset += this.limit;
+    this.doLoad(false);
+  }
+
+  canRefresh(): boolean {
+    return this.items != null;
+  }
+
+  refresh(event) {
+    this.refresherComponent = event.target;
+    if (this.canRefresh()) {
+      this.doRefresh();
+    }
+  }
+
+  doRefresh() {
+    this.offset = 0;
+    this.doLoad(true);
+  }
+
+  private doLoad(refresh: boolean) {
+    this.itemService.load({
+      offset: this.offset,
+      limit: this.limit,
+      refresh,
+    });
+  }
+
+  private notifyScrollComplete(): void {
+    if (this.infiniteScrollComponent) {
+      this.infiniteScrollComponent.complete();
+    }
+  }
+
+  private notifyRefreshComplete(): void {
+    if (this.refresherComponent) {
+      this.refresherComponent.complete();
+    }
+  }
+}
+```
+
+.Listing 5-52. Use waitFor to complete action
+```html
+<ion-infinite-scroll (ionInfinite)="load($event.detail.
+waitFor(doLoad()))">
+  <ion-infinite-scroll-content></ion-infinite-scroll-­content>
+</ion-infinite-scroll>
+```
+
+=== Customization
+
+==== ion-infinite-scroll
+
+.Listing 5-53. ion-infinite-scroll customization
+```html
+<ion-infinite-scroll-content
+  loadingSpinner="circles"
+  loadingText="Loading...">
+</ion-infinite-scroll-content>
+```
+
+==== ion-refresher
+
+.Listing 5-54. ion-refresher customization
+```html
+<ion-refresher-content
+  pullingIcon="arrow-dropdown"
+  pullingText="Pull to refresh"
+  refreshingSpinner="bubbles"
+  refreshingText="Loading...">
+</ion-refresher-content>
+```
+
+=== Testing
+
+.Listing 5-55. Test for scrolling and refresh
+```js
+let fixture: ComponentFixture<TopStoriesComponent> = null;
+let component: any = null;
+
+describe('top stories page', () => {
+
+  it('should show more items when scrolling down', async(() => {
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();
+      component.next();
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        let debugElements = fixture.debugElement.queryAll(By.css('h2'));
+        expect(debugElements.length).toBe(20);
+        expect(debugElements[10].nativeElement.textContent).toContain('Item 11');
+      });
+    });
+  }));
+
+  it('should show first 10 items when refresh', async(() => {
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();
+      component.next();
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        let debugElements = fixture.debugElement.queryAll(By.css('h2'));
+        expect(debugElements.length).toBe(20);
+        expect(debugElements[10].nativeElement.textContent).toContain('Item 11');
+        component.doRefresh();
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          let debugElements = fixture.debugElement.queryAll(By.css('h2'));
+          expect(debugElements.length).toBe(10);
+          expect(debugElements[0].nativeElement.textContent).toContain('Item 1');
+        });
+      });
+    });
+  }));
+});
+```

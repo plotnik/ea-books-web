@@ -1,0 +1,284 @@
+= Social Sharing
+:toc: right
+:toclevels: 4
+:source-highlighter: coderay
+:icons: font
+
+== Appery Ionic 3 editor
+
+====
+Appery project:: Test_SocialSharing
+Appery database:: Test_SocialSharing
+====
+
+.Typescript Error
+----
+Cannot find module '@ionic-native/social-sharing'.
+src/pages/QuotesDetail/QuotesDetail.ts
+} from 'ionic-angular';
+import SocialSharing from '@ionic-native/social-sharing';
+import {
+----
+
+.Typescript Error
+----
+Cannot find module '@ionic-native/social-sharing'.
+src/pages/ShareFacebook/ShareFacebook.ts
+SocialSharing
+} from '@ionic-native/social-sharing';
+----
+
+/Users/eabramovich/Documents/2019/19-03/WealthBuilder/astudio/Test_SocialSharing/app/www/build/1.js
+
+.line 81
+```js
+SocialSharingOriginal.prototype.shareViaTwitter = function (message, image, url) { return Object(__WEBPACK_IMPORTED_MODULE_0__ionic_native_core__["cordova"])(this, "shareViaTwitter", { "successIndex": 3, "errorIndex": 4, "platforms": ["iOS", "Android"] }, arguments); };
+```    
+
+WARNING: Object(...) is not a function
+
+https://www.dropbox.com/s/uvyucca3sfolun9/Screenshot%202019-04-08%2020.47.07.png?dl=0
+
+=== Social Sharing Cordova plugin
+
+- *GitHub:* https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin
+- *Ionic:* https://ionicframework.com/docs/v3/native/social-sharing/
+
+```
+$ ionic cordova plugin add cordova-plugin-x-socialsharing
+$ npm install --save @ionic-native/social-sharing@4
+```
+
+== CHAPTER 4. Those Famous Quotes
+
+=== Let’s Build the App
+
+==== Add Pages
+
+.Listing 4-3. src/app/app.component.ts Code
+```js
+import { QuotesListPage } from '../pages/quotes-list/quotes-list'; <1>
+
+@Component({
+  templateUrl: 'app.html'
+})
+export class MyApp {
+  rootPage = QuotesListPage; <2>
+```
+
+.Listing 4-4. src/app/app.module.ts Code
+```js
+import { QuotesListPage } from '../pages/quotes-list/quotes-list'; <1>
+import { QuotesDetailPage } from '../pages/quotes-detail/quotes-detail';
+
+@NgModule({
+  declarations: [
+    MyApp,
+    QuotesListPage, <2>
+    QuotesDetailPage
+  ], imports: [
+    IonicModule.forRoot(MyApp)
+  ],
+  bootstrap: [IonicApp],
+  entryComponents: [
+    MyApp,
+    QuotesListPage, <3>
+    QuotesDetailPage
+  ],
+  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}]
+})
+```
+
+==== Making a REST HTTP Request
+
+.Listing 4-5. src/pages/quotes-list/quotes-list.ts Imports Code
+```js
+import {Http} from '@angular/http';
+import 'rxjs/add/operator/map';
+import {QuotesDetailPage} from '../quotes-detail/quotes-detail';
+```
+
+.Listing 4-6. pages/quotes-list/quotes-list.ts Constructor Code
+```js
+quotesList = [];
+filteredQuotes = [];
+isfiltered: boolean ;
+  constructor(private http:Http, private navController: NavController) {
+    this.isfiltered = false;
+    this.http.get('quotes.json')
+    .map(res => res.json())
+    .subscribe(
+        data => {
+          this.quotesList = data.quotes;
+        },
+        err => console.log("error is "+err), // error
+        () => console.log('read quotes Complete '+ this.quotesList) // complete
+    );
+}
+```
+
+==== Search Feature
+
+.Listing 4-7. src/pages/quotes-list/quotes-list.html Code
+```html
+<ion-input type="text" placeholder="Search Quotes..." (input)="searchQuotes($event)">
+</ion-input>
+
+<ion-list *ngIf="!isfiltered">
+    <ion-item *ngFor="let quote1 of quotesList" (click)="itemTapped($event,
+    quote1)">
+            <h2>{{quote1.author}}</h2>
+            <p class="item-description">{{quote1.quote}}</p>
+    </ion-item>
+</ion-list>
+
+<ion-list *ngIf="isfiltered">
+    <ion-item *ngFor="let quote of filteredQuotes" (click)="itemTapped($event,
+    quote)">
+            <h2>{{quote.author}}</h2>
+            <p class="item-description">{{quote.quote}}</p>
+    </ion-item>
+</ion-list>
+```
+
+.Listing 4-8. pages/quotes-list/quotes-list.ts searchQuotes Code
+```js
+searchQuotes(event) {
+    if (event.target.value.length > 2) {
+    var filteredJson = this.quotesList.filter(function (row) {
+      if(row.author.indexOf(event.target.value) != -1) {
+        return true
+      } else {
+        return false;
+      }
+    });
+    this.isfiltered = true; <1>
+    this.filteredQuotes = filteredJson;
+  } 
+}
+```
+
+.Listing 4-9. pages/quotes-list/quotes-list.html Title Change Code
+```html
+<ion-navbar>
+    <ion-title>Quotes List</ion-title> <!--1-->
+</ion-navbar>
+```
+
+==== Ionic Navigation
+
+===== NavController
+
+```js
+@Component(
+  template: `<ion-nav [root]="rootPage"></ion-nav>`
+})
+```
+
+==== Add Page Navigation to the QuotesApp
+
+.Listing 4-10. page/quotes-list/quotes-list.ts itemTapped Code
+```js
+itemTapped(event, quote) {
+    console.log(quote);
+    this.navController.push(QuotesDetailPage, {
+            quote: quote
+    }); 
+}
+```
+
+.Listing 4-11. page/quotes-detail/quotes-detail.ts Constructor Code 
+```js
+quoteDetail: {quote:'', author:''};
+  constructor(private navCtrl: NavController,private navParams: NavParams) {
+    this.quoteDetail = navParams.get('quote');
+}
+```
+
+.Listing 4-12. page/quotes-detail/quotes-detail.html Code
+```html
+<ion-content padding>
+<h5>{{quoteDetail.quote}}</h5>
+<h3> -  {{quoteDetail.author}}</h3>
+</ion-content>
+```
+
+.Listing 4-13. pages/quotes-list/quotes-list.html Title Change Code
+```
+<ion-navbar>
+    <ion-title>Quotes Detail</ion-title>
+</ion-navbar>
+```  
+
+=== Share on Twitter
+
+.Listing 4-14. Social Sharing Plug-in Addition
+```
+$ ionic plugin add cordova-plugin-x-socialsharing
+```
+
+.Listing 4-15. page/quotes-detail/quotes-detail.html Code for Twitter Share
+```html
+<ion-item (click)="twitterShare()">
+  <ion-icon name="logo-twitter">Share on Twitter</ion-icon>
+</ion-item>
+```
+
+.Listing 4-16. Adding SocialSharing Plug-in
+```js
+import { SocialSharing } from 'ionic-native';
+```
+
+.Listing 4-17. page/quotes-detail/quotes-detail.ts Code for Twitter Share
+```js
+twitterShare(){
+    console.log("in twitter share");
+    let quote: string = this.quoteDetail.quote;
+    SocialSharing.shareViaTwitter(quote.substring(0,110)+"..",null /*Image*/,"http://ionicframework.com/img/homepage/ionicview-icon_2x.png")
+    .then((data )=>{
+        alert("Success "+data);
+      },
+      (err)=>{
+         alert("failed "+err)
+      }) 
+}
+```
+
+=== Running the App
+
+==== Add Platforms
+
+.Listing 4-18. Android Platform Addition 
+```
+$ ionic cordova platform add android
+```
+
+==== Running the App in Android
+
+.Listing 4-20. Android app on the emulator 
+```
+$ ionic cordova emulate android
+```
+
+.Listing 4-21. Android Platform Run 
+```
+$ ionic cordova run android
+```
+
+==== Running the App in iOS
+
+.Listing 4-22. iOS Platform Emulate 
+```
+$ ionic cordova emulate ios
+```
+
+.Listing 4-23. iOS Platform Emulate
+```
+$ ionic cordova emulate ios -target="iPhone-5, 9.3"
+```
+
+.Listing 4-24. iOS Platform Run
+```
+$ ionic cordova run ios --device
+```
+

@@ -1,0 +1,85 @@
+= Ionic Forms
+:toc: right
+:toclevels: 4
+:source-highlighter: coderay
+
+====
+. Angular Validators:
+https://angular.io/api/forms/Validators#validators
+====
+
+== CHAPTER 5. Build the Weather App
+
+=== Let’s Build the App
+
+==== Forms in Ionic
+
+===== [(ngModel)]
+
+.Listing 5-10. ngModel-Based Templates
+```html
+<form (ngSubmit)="loginForm()">
+      <ion-item>
+        <ion-label>Login </ion-label>
+        <ion-input type="text" [(ngModel)]="login.username" name="username"></ion-input>
+      </ion-item>
+      <button type="submit" block>Login</button>
+</form>
+```
+
+.Listing 5-11. ngModel-Based Form Submission
+```js
+login = {}
+loginForm () {
+    console.log(this.username)
+}
+```
+
+===== Forms with Templates
+
+.Listing 5-12. Template-Driven Forms
+```html
+<form #form="ngForm" (ngSubmit)="loginForm(form)" novalidate>
+      <ion-item>
+        <ion-label>Login</ion-label>
+        <ion-input type="text" required [(ngModel)]="login.username " ngControl="username">
+        </ion-input>
+      </ion-item>
+</form>
+```
+
+.Listing 5-13. Template-Driven Forms–Class Definition
+```js
+login = {
+    username: '',
+};
+loginForm(form) {
+    console.log(form.value)
+}
+```
+
+===== Forms with FormBuilder
+
+.Listing 5-14. FormBuilder-Based Template
+```html
+<form [formGroup]="login" (ngSubmit)="loginForm()">
+      <ion-item>
+        <ion-label>Login</ion-label>
+        <ion-input type="text" formControlName="username"></ion-input>
+      </ion-item>
+      <button type="submit" [disabled]="!login.valid">Submit</button>
+</form>
+```
+
+.Listing 5-15. FormBuilder-Based Class
+```js
+constructor(private fb: FormBuilder) {
+  this.login = this.fb.group({
+      username: ['', Validators.required]
+  });
+}
+
+  loginForm(){
+    console.log(this. login.value)
+  }
+```

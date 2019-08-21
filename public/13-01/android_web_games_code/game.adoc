@@ -1,0 +1,414 @@
+= Pro Android Web Game Apps
+:toc: right
+:toclevels: 6
+:icons: font
+:source-highlighter: coderay
+:source-language: js
+
+== Chapter 3. Creating the First Game
+
+=== HTML5 Game Skeleton
+
+==== The Standard Skeleton
+
+.Listing 3-1. The Initial HTML5 Skeleton
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <style>
+    </style>
+    <script>
+        function init() {
+        }
+    </script>
+</head>
+<body onload="init()">
+
+</body>
+</html>
+```
+
+.Listing 3-2. Viewport Meta Tag: Setting Zooming Options for a Web Page
+```html
+...
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"/>
+<style>
+...
+```
+
+.Listing 3-3. CSS for the Page: No Scrollbars, Margins, Paddings, or Borders
+```html
+<style>
+    html, body {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin:0;
+        padding:0;
+        border: 0;
+    }
+</style>
+```
+
+.Listing 3-4. Listening to Browser Events to Resize the Canvas Once the Page Is Resized
+```
+function init() {
+    var canvas = initFullScreenCanvas("mainCanvas");
+}
+
+/**
+ * Resizes the canvas element once the window is resized.
+ * @param canvasId – string id of the canvas element
+ */
+function initFullScreenCanvas(canvasId) {
+    var canvas = document.getElementById(canvasId);
+    resizeCanvas(canvas);
+    window.addEventListener("resize", function() {
+        resizeCanvas(canvas);
+    });
+    return canvas;
+}
+```
+
+.Listing 3-5. resizeCanvas, the Function That Finds the New Size of a Page and Updates the Canvas to Fit It
+```
+/**
+* Does the actual resize
+*/
+function resizeCanvas(canvas) {
+    canvas.width = document.width || document.body.clientWidth;
+    canvas.height = document.height || document.body.clientHeight;
+    // Notify the main game class that canva is resized
+}
+```
+
+.Listing 3-6. HTML5 Skeleton Modified for Game Development Needs
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"/>
+        
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin:0;
+            padding:0;
+            border: 0;
+        }
+    </style>
+    <script>
+    function init() {
+        var canvas = initFullScreenCanvas("mainCanvas");
+    }
+    
+    function initFullScreenCanvas(canvasId) {
+        var canvas = document.getElementById(canvasId);
+        resizeCanvas(canvas);
+        window.addEventListener("resize", function() {
+            resizeCanvas(canvas);
+        });
+        return canvas;
+    }
+    
+    function resizeCanvas(canvas) {
+        canvas.width = document.width || document.body.clientWidth;
+        canvas.height = document.height || document.body.clientHeight;
+        // Notify the main game class that Canvas is resized
+    }
+    </script>
+</head>
+<body onload="init()">
+    <canvas id="mainCanvas" width="100" height="100"></canvas>
+</body>
+</html>
+```
+
+==== Forced Orientation
+
+.Listing 3-7. Locking the Game’s Orientation
+```html
+<script>
+    var canvas;
+    var ctx;
+    function init() {
+        canvas = initFullScreenCanvas("mainCanvas");
+        ctx = canvas.getContext("2d");
+        repaint();
+    }
+    
+    function initFullScreenCanvas(canvasId) {
+        var canvas = document.getElementById(canvasId);
+        resizeCanvas(canvas);
+        window.addEventListener("resize", function() {
+            resizeCanvas(canvas);
+        });
+        return canvas;
+    }
+    
+    function resizeCanvas(canvas) {
+        canvas.width = document.width || document.body.clientWidth;
+        canvas.height = document.height || document.body.clientHeight;
+        // Paint something to see the effect of changed orientation
+        repaint();
+    }
+    
+    function repaint() {
+        if (!ctx)
+            return;
+            
+        // Clear background
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        reorient();
+        ctx.fillStyle = "darkgreen";
+        ctx.fillRect(10, 10, 250, 30);
+    }
+    
+    function reorient() {
+        var angle = window.orientation;
+        if (angle) {
+            var rot = -Math.PI*(angle/180);
+            ctx.translate(angle == -90 ? canvas.width : 0,
+            angle == 90 ? canvas.height : 0);
+            ctx.rotate(rot);
+        }
+    }
+</script>
+```
+
+=== Making the Game
+
+==== Rendering the Board
+
+.Listing 3-8. First Version of the BoardRenderer Constructor That Saves the Essential Parameters
+```
+function BoardRenderer(context, model) {
+    this._ctx = context;
+    this._model = model;
+}
+
+_p = BoardRenderer.prototype;
+```
+
+.Listing 3-9. The BoardRenderer Constructor, All Variables Declared
+```
+function BoardRenderer(context, model) {
+    this._ctx = context;
+    this._model = model;
+    
+    // Save for convenience
+    this._cols = model.getCols();
+    this._rows = model.getRows();
+    
+    // top left corner of the board
+    this._x = 0;
+    this._y = 0;
+    
+    // Width and height of the board rectangle
+    this._width = 0;
+    this._height = 0;
+}
+```
+
+===== Working with Different Screen Sizes
+
+.Listing 3-10. Calculating the Radius of Token and Gradient Offsets
+```
+// Token radius
+var radius = cellSize*0.4;
+
+// Center of the gradient
+var gradientX = cellSize*0.1;
+var gradientY = -cellSize*0.1;
+
+var gradient = ctx.createRadialGradient(
+    gradientX, gradientY, cellSize*0.1, // inner circle (glare)
+    gradientX, gradientY, radius*1.2); // outer circle
+```
+
+.Listing 3-11. Setting the Parameters of the Game UI: The Position of the Board Within a Canvas and the Size of a Cell
+```
+/**
+ * Sets the new position and size for a board. Should call repaint to
+ * see the changes
+ * @param x the x coordinate of the top-left corner
+ * @param y the y coordinate of the top-left corner
+ * @param cellSize optimal size of the cell in pixels
+ */
+_p.setSize = function(x, y, cellSize) {
+    this._x = x;
+    this._y = y;
+    this._cellSize = cellSize;
+    this._width = this._cellSize*this._cols;
+    this._height = this._cellSize*this._rows;
+};
+```
+
+===== Rendering Board
+
+.Listing 3-12. Functions That Render the UI of the Board: A Background, a Grid, and a Token in a Given Cell
+```
+_p._drawBackground = function() {
+    var ctx = this._ctx;
+    
+    // Background
+    var gradient = ctx.createLinearGradient(0, 0, 0, this._height);
+    gradient.addColorStop(0, "#fffbb3");
+    gradient.addColorStop(1, "#f6f6b2");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, this._width, this._height);
+    
+    // Drawing curves
+    var co = this._width/6; // curve offset
+    ctx.strokeStyle = "#dad7ac";
+    ctx.fillStyle = "#f6f6b2";
+    
+    // First curve
+    ctx.beginPath();
+    ctx.moveTo(co, this._height);
+    ctx.bezierCurveTo(this._width + co*3, -co,
+                      -co*3, -co, this._width - co, this._height);
+    ctx.fill();
+    
+    // Second curve
+    ctx.beginPath();
+    ctx.moveTo(co, 0);
+    ctx.bezierCurveTo(this._width + co*3, this._height + co,
+                     -co*3, this._height + co, this._width - co, 0);
+    ctx.fill();
+};
+
+_p._drawGrid = function() {
+    var ctx = this._ctx;
+    ctx.beginPath();
+    // Drawing horizontal lines
+    for (var i = 0; i <= this._cols; i++) {
+        ctx.moveTo(i*this._cellSize + 0.5, 0.5);
+        ctx.lineTo(i*this._cellSize + 0.5, this._height + 0.5)
+    }
+    
+    // Drawing vertical lines
+    for (var j = 0; j <= this._rows; j++) {
+        ctx.moveTo(0.5, j*this._cellSize + 0.5);
+        ctx.lineTo(this._width + 0.5, j*this._cellSize + 0.5);
+    }
+    
+    // Stroking to show them on the screen
+    ctx.strokeStyle = "#CCC";
+    ctx.stroke();
+};
+
+
+_p.drawToken = function(cellX, cellY) {
+    var ctx = this._ctx;
+    var cellSize = this._cellSize;
+    var tokenType = this._model.getPiece(cellX, cellY);
+    
+    // Cell is empty
+    if (!tokenType)
+        return;
+    
+    var colorCode = "black";
+    switch(tokenType) {
+        case BoardModel.RED:
+            colorCode = "red";
+        break;
+        case BoardModel.GREEN:
+            colorCode = "green";
+        break;
+    }     
+    
+    // Center of the token
+    var x = this._x + (cellX + 0.5)*cellSize;
+    var y = this._y + (cellY + 0.5)*cellSize;
+    ctx.save();
+    ctx.translate(x, y);
+    
+    // Token radius
+    var radius = cellSize*0.4;
+    
+    // Center of the gradient
+    var gradientX = cellSize*0.1;
+    var gradientY = -cellSize*0.1;
+    
+    var gradient = ctx.createRadialGradient(
+        gradientX, gradientY, cellSize*0.1, // inner circle (glare)
+        gradientX, gradientY, radius*1.2); // outer circle
+        
+    gradient.addColorStop(0, "yellow"); // the color of the "light"
+    gradient.addColorStop(1, colorCode); // the color of the token
+    ctx.fillStyle = gradient;
+    
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, 2*Math.PI, true);
+    ctx.fill();
+    ctx.restore();
+};
+```
+
+.Listing 3-13. The Repaint Function Renders the Whole Board from Scratch
+```
+_p.repaint = function() {
+    this._ctx.save();
+    this._ctx.translate(this._x, this._y);
+    this._drawBackground();
+    this._drawGrid();
+    this._ctx.restore();
+    
+    for (var i = 0; i < this._cols; i++) {
+        for (var j = 0; j < this._rows; j++) {
+            this.drawToken(i, j);
+        }
+    }
+};
+```
+
+==== Game State and Logic
+
+.Listing 3-14. The BoardModel Constructor
+```
+function BoardModel(cols, rows) {
+    this._cols = cols || 7;
+    this._rows = rows || 6;
+    this._data = [];
+    
+    this._currentPlayer = BoardModel.RED;
+    this._totalTokens = 0;
+    
+    this.reset();
+}
+
+_p = BoardModel.prototype;
+```
+
+.Listing 3-15. The Code That Uses “Constants” Instead of Numbers Are Easier to Read
+```
+BoardModel.EMPTY = 0;
+BoardModel.RED = 1;
+BoardModel.GREEN = 2;
+```
+
+.Listing 3-16. Resetting the Game Board to the Initial State
+```
+_p.reset = function() {
+	this._data = [];
+	for (var i = 0; i < this._rows; i++) {
+		this._data[i] = [];
+		for (var j = 0; j < this._cols; j++) {
+			this._data[i][j] = BoardModel.EMPTY;
+		}
+	}
+	
+	this._currentPlayer = BoardModel.RED;
+	this._totalTokens = 0;
+};
+```

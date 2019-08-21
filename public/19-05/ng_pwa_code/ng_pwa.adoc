@@ -1,0 +1,123 @@
+= PWA with Angular
+:toc: right
+:toclevels: 6
+:icons: font
+:source-highlighter: pygments
+:pygments-style: xcode
+
+https://github.com/mhadaily/awesome-apress-pwa
+
+== CHAPTER 1. Setup Requirements
+
+=== Scaffolding Our Project
+
+==== Generating New Angular App with CLI
+
+```
+ng new lovely-offline –-routing –-style=scss
+```
+
+==== Adding Angular Material Design
+
+```
+npm install --save @angular/material @angular/cdk @angular/animations
+```
+
+```
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+```
+
+=== Setting Up a Mobile Device
+
+https://developers.google.com/web/tools/chrome-devtools/remote-debugging/
+
+
+== CHAPTER 2. Deploying to Firebase as the Back End
+
+=== Deploying to Firebase
+
+==== Generating a New Angular App
+
+```
+ng build --prod
+
+npm install -g firebase-tools
+
+firebase login
+```
+
+==== Initializing the App
+
+```
+firebase init
+```
+
+==== Deploying Our App
+
+```
+firebase deploy
+```
+
+==== Setting Up AngularFire
+
+https://github.com/angular/angularfire2
+
+```
+npm install firebase @angular/fire –-save
+```
+
+```ts
+import { Component } from '@angular/core';
+import { AngularFirestore } from 'angularfire2/firestore';
+import { Observable } from 'rxjs';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <h1>Bind Firestore collection example</h1>
+    <ul>
+      <li class="text" *ngFor="let note of notes$ | async">
+        {{note.title}}
+      </li>
+    </ul>
+    <router-outlet></router-outlet>
+  `,
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  notes$: Observable<any[]>;
+  constructor(db: AngularFirestore) {
+    this.notes$ = db.collection('notes').valueChanges();
+  }
+}
+```
+
+== CHAPTER 3. Completing an Angular App
+
+=== Implementing Our UI
+
+==== Installing and Setting Up Angular Material, CDK, and Animations
+
+===== Installing @angular/material Automatically with Angular CLI
+
+```
+ng add @angular/material
+```
+
+=== Creating a Core Module / Shared Module
+
+```
+ng generate module modules/core
+
+ng generate module modules/shared
+```
+
+==== Header, Footer, and Body Components
+
+```
+ng g m modules/layout
+
+ng generate component modules/layout/header
+
+ng generate component modules/layout/footer
+```

@@ -1,0 +1,1241 @@
+= JavaScript Concurrency
+:toc: right
+:toclevels: 6
+:source-highlighter: pygments
+:source-language: js
+:pygments-style: trac
+:icons: font
+
+====
+Tutorial by Flavio Copes: The JavaScript Event Loop::
+https://flaviocopes.com/javascript-event-loop/
+
+Truly understanding Async/Await::
+https://medium.com/@rafaelvidaurre/truly-understanding-async-await-491dd580500e
+====
+
+== 1. Why JavaScript Concurrency?
+
+=== JavaScript concurrency principles
+
+==== Parallelize
+
+==== Synchronize
+
+==== Conserve
+
+== 2. The JavaScript Execution Model
+
+=== Everything is a task
+
+==== Meet the players
+
+Execution environment::
+This container gets created whenever a new web page is opened.
+
+JavaScript interpreter::
+This is the component that's responsible for parsing and executing our JavaScript source code. It's the browser's job to augment the interpreter with globals, such as `window`, and `XMLHttpRequest`.
+
+Task queue::
+Tasks are queued whenever something needs to happen. An execution environment has at least one of these queues, but typically, it has several of them
+
+Event loop::
+An execution environment has a single event loop that's responsible for servicing all task queues. There's only one event loop, because there's only one thread.
+
+=== Execution contexts
+
+There's always an active JavaScript context, and within the interpreter, we'll find
+a stack of contexts.
+
+==== Job queues
+
+The job queues within the JavaScript interpreter are actually much more straightforward than the task queues that are used to coordinate all the web browser components. There are only two essential queues. One is for creating new execution context stacks (call stacks). The other is specific to promise resolution callback functions.
+
+=== Creating tasks using timers
+
+==== Using setTimeout()
+
+```js
+// Be careful, this function hogs the CPU...
+function expensive(n = 25000) {
+  var i = 0;
+  while (++i < n * n) {}
+  return i;
+}
+
+// Creates a timer, the callback uses
+// "console.timeEnd()" to see how long we
+// really waited, compared to the 300MS
+// we were expecting.
+var timer = setTimeout(() => {
+   console.timeEnd('setTimeout');
+}, 300);
+
+console.time('setTimeout');
+
+// This takes a number of seconds to
+// complete on most CPUs. All the while, a
+// task has been queued to run our callback
+// function. But the event loop can't get
+// to that task until "expensive()" completes.
+expensive();
+```
+
+==== Using setInterval()
+
+```js
+// A counter for keeping track of which
+// interval we're on.
+var cnt = 0;
+
+// Set up an interval timer. The callback will
+// log which interval scheduled the callback.
+var timer = setInterval(() => {
+   console.log('Interval', ++cnt);
+}, 3000);
+
+// Block the CPU for a while. When we're no longer
+// blocking the CPU, the first interval is called,
+// as expected. Then the second, when expected. And
+// so on. So while we block the callback tasks, we're
+// also blocking tasks that schedule the next interval.
+expensive(50000);
+```
+
+=== Responding to DOM events
+
+==== Event targets
+
+```js
+// A generic event callback, logs the event timestamp.
+function onClick(e) {
+   console.log('click', new Date(e.timeStamp));
+}
+
+// The element we're going to use as the event
+// target.
+var button = document.querySelector('button');
+
+// Setup our "onClick" function as the
+// event listener for "click" events on this target.
+button.addEventListener('click', onClick);
+
+// In addition to users clicking the button, the
+// EventTarget interface lets us manually dispatch
+// events.
+button.dispatchEvent(new Event('click'));
+```
+
+==== Managing event frequency
+
+```js
+// Keeps track of the number of "mousemove" events.
+var events = 0;
+
+// The "debounce()" takes the provided "func" an limits
+// the frequency at which it is called using "limit"
+// milliseconds.
+function debounce(func, limit) {
+    var timer;
+
+    return function debounced(...args) {
+       // Remove any existing timers.
+       clearTimeout(timer);
+
+       // Call the function after "limit" milliseconds.
+       timer = setTimeout(() => {
+         timer = null;
+         func.apply(this, args);
+       }, limit);
+    };
+}
+
+// Log what's being typed into the text input.
+function onInput(e) {
+    console.log('input', e.target.value);
+}
+
+// Listen to the "mousemove" event using the debounced
+// version of the "onMouseMove()" function. If we
+// didn't wrap this callback with "debounce()"
+window.addEventListener('mousemove', debounce(onMouseMove, 300));
+
+// Listen to the "input" event using the debounced version
+// of the "onInput()" function to prevent triggering events
+// on every keystroke.
+document.querySelector('input')
+   .addEventListener('input', debounce(onInput, 250));
+```
+
+=== Responding to network events
+
+==== Making requests
+
+```js
+// Callback for successful network request,
+// parses JSON data.
+function onLoad(e) {
+   console.log('load', JSON.parse(this.responseText));
+}
+
+// Callback for problematic network request,
+// logs error.
+function onError() {
+   console.error('network', this.statusText || 'unknown error');
+}
+
+// Callback for a cancelled network request,
+// logs warning.
+function onAbort() {
+   console.warn('request aborted...');
+}
+
+var request = new XMLHttpRequest();
+
+// Uses the "EventTarget" interface to attach event
+// listeners, for each of the potential conditions.
+request.addEventListener('load', onLoad);
+request.addEventListener('error', onError);
+request.addEventListener('abort', onAbort);
+
+// Sends a "GET" request for "api.json".
+request.open('get', 'api.json');
+request.send();
+```
+
+==== Coordinating requests
+
+```js
+// The function that's called when a response arrives ,
+// it's also responsible for coordinating responses.
+function onLoad() {
+
+    // When the response is ready, we push the parsed
+    // response onto the "responses" array, so that we
+    // can use responses later on when the rest of them
+    // arrive.
+    responses.push(JSON.parse(this.responseText));
+
+    // Have all the respected responses showed up yet?
+    if (responses.length === 3) {
+        // How we can do whatever we need to, in order
+        // to render the UI component because we have
+        // all the data.
+        for (let response of responses) {
+            console.log('hello', response.hello);
+        }
+    }
+}
+
+// Creates our API request instances, and a "responses"
+// array used to hold out-of-sync responses.
+var req1 = new XMLHttpRequest(),
+    req2 = new XMLHttpRequest(),
+    req3 = new XMLHttpRequest(),
+    responses = [];
+
+// Issue network requests for all our network requests.
+for (let req of [ req1, req2, req3 ]) {
+    req.addEventListener('load', onLoad);
+    req.open('get', 'api.json');
+    req.send();
+}
+```
+
+== 3. Synchronizing with Promises
+
+=== Resolving and rejecting promises
+
+==== Resolving promises
+
+```js
+// The executor function used by our promise.
+// The first argument is the resolver function,
+// which is called in 1 second to resolve the promise.
+function executor(resolve) {
+   setTimeout(resolve, 1000);
+}
+
+// The fulfillment callback for our promise. This
+// simply stopsthe fullfillment timer that was
+// started after our executor function was run.
+function fulfilled() {
+   console.timeEnd('fulfillment');
+}
+
+// Creates the promise, which will run the executor
+// function immediately. Then we start a timer to see
+// how long it takes for our fulfillment function to
+// be called.
+var promise = new Promise(executor);
+promise.then(fulfilled);
+console.time('fulfillment');
+```
+
+---
+
+```js
+// The executor function used by our promise.
+// Sets a timeout that calls "resolve()" one second
+// after the promise is created. It's resolving
+// a string value - "done!".
+function executor(resolve) {
+    setTimeout(() => {
+        resolve('done!');
+    }, 1000);
+}
+
+// The fulfillment callback for our promise accepts
+// a value argument. This is the value that's passed
+// to the resolver.
+function fulfilled(value) {
+    console.log('resolved', value);
+}
+
+// Create our promise, providing the executor and
+// fulfillment function callbacks.
+var promise = new Promise(executor);
+promise.then(fulfilled);
+```
+
+==== Rejecting promises
+
+```js
+// This executor function rejects the promise after
+// a timeout of one second. It uses the rejector function
+// to change the state, and to provide the rejected
+// callbacks with a value.
+function executor(resolve, reject) {
+    setTimeout(() => {
+        reject('Failed');
+    }, 1000);
+}
+
+// The function used as a rejected callback function. It
+// expects a reason for the rejection to be provided.
+function rejected(reason) {
+    console.error(reason);
+}
+
+// Creates the promise, and runs the executor. Uses the
+// "catch()" method to assing the rejector callback function.
+var promise = new Promise(executor);
+promise.catch(rejected);
+```
+---
+
+```js
+// This promise executor throws an error, and the rejected
+// callback function is called as a result.
+new Promise(() => {
+    throw new Error('Problem executing promise');
+}).catch((reason) => {
+    console.error(reason);
+});
+
+// This promise executor catches an error, and rejects
+// the promise with a more useful message.
+new Promise((resolve, reject) => {
+    try {
+        var size = this.name.length;
+    } catch(error) {
+        reject(error instanceof TypeError ? 'Missing "name" property' : error);
+    }
+}).catch((reason) => {
+    console.error(reason);
+});
+```
+
+==== Empty promises
+
+```js
+// This promise is able to run the executor
+// function without issue. The "then()" callback
+// is never executed.
+new Promise(() => {
+    console.log('executing promise');
+}).then(() => {
+    console.log('never called');
+});
+
+// At this point, we have no idea what's
+// wrong with the promise.
+console.log('finished executing, promise hangs');
+```
+
+---
+
+```js
+// A wrapper for promise executor functions, that
+// throws an error after the given timeout.
+function executorWrapper(func, timeout) {
+
+    // This is the function that's actually called by the
+    // promise. It takes the resolver and rejector functions
+    // as arguments.
+    return function executor(resolve, reject) {
+        // Setup our timer. When time runs out, we can
+        // reject the promise with a timeout message.
+        var timer = setTimeout(() => {
+            reject(`Promise timed out after ${timeout}MS`);
+        }, timeout);
+
+        // Call the original executor function that we're
+        // wrapping. We're actually wrapping the resolver
+        // and rejector functions as well, so that when the
+        // executor calls them, the timer is cleared.
+        func((value) => {
+            clearTimeout(timer);
+            resolve(value);
+        }, (value) => {
+            clearTimeout(timer);
+            reject(value);
+        });
+    };
+}
+
+// This promise executor times out, and a timeout
+// error message is passed to the rejected callback.
+new Promise(executorWrapper((resolve, reject) => {
+    setTimeout(() => {
+        resolve('done');
+    }, 2000);
+}, 1000)).catch((reason) => {
+    console.error(reason);
+});
+
+// This promise resolves as expected, since the executor
+// calls "resolve()" before time's up.
+new Promise(executorWrapper((resolve, reject) => {
+    setTimeout(() => {
+        resolve(true);
+    }, 500);
+}, 1000)).then((value) => {
+    console.log('resolved', value);
+});
+```
+
+=== Reacting to promises
+
+==== Resolution job queues
+
+```js
+// Creates 5 promises that log when they're
+// executing, and when they're reacting to a
+// resolved value.
+for (let i = 0; i < 5; i++) {
+    new Promise((resolve) => {
+        console.log('executing promise');
+        resolve(i);
+    }).then((value) => {
+        console.log('resolved', i);
+    });
+}
+
+// This is called before any of the fulfilled
+// callbacks, because this call stack job needs
+// to complete before the interpreter reaches into
+// the promise resolution callback queue, where
+// the 5 "then()" callbacks are currently sitting.
+console.log('done executing');
+
+// →
+// executing promise
+// executing promise
+// ...
+// done executing
+// resolved 1
+// resolved 2
+// ...
+```
+
+==== Using promised data
+
+```js
+// A generic function used to fetch resources
+// from the server, returns a promise.
+function get(path) {
+    return new Promise((resolve, reject) => {
+        var request = new XMLHttpRequest();
+
+        // The promise is resolved with the parsed
+        // JSON data when the data is loaded.
+        request.addEventListener('load', (e) => {
+            resolve(JSON.parse(e.target.responseText));
+        });
+
+        // When there's an error with the request, the
+        // promise is rejected with the appropriate reason.
+        request.addEventListener('error', (e) => {
+            reject(e.target.statusText || 'unknown error');
+        });
+
+        // If the request is aborted, we simply resolve the
+        // request.
+        request.addEventListener('abort', resolve);
+
+        request.open('get', path);
+        request.send();
+    });
+}
+
+// We can attach our "then()" handler directly
+// to "get()" since it returns a promise. The
+// value used here was a true asynchronous operation
+// that had to go fetch a remote value, and parse it,
+// before resolving it here.
+get('api.json').then((value) => {
+    console.log('hello', value.hello);
+});
+```
+
+==== Error callbacks
+
+```js
+// This promise executor will randomly resolve
+// or reject the promise.
+function executor(resolve, reject) {
+    cnt++;
+    Math.round(Math.random()) ?
+        resolve(`fulfilled promise ${cnt}`) :
+        reject(`rejected promise ${cnt}`);
+}
+
+// Make "log()" and "error()" functions for easy
+// callback functions.
+var log = console.log.bind(console),
+    error = console.error.bind(console),
+    cnt = 0;
+
+// Creates a promise, then assigns the error
+// callback via the "catch()" method.
+new Promise(executor).then(log).catch(error);
+
+// Creates a promise, then assigns the error
+// callback via the "then()" method.
+new Promise(executor).then(log, error);
+```
+
+==== Always reacting
+
+```js
+// Extends the promise prototype with an "always()"
+// method. The given function will always be called,
+// whether the promise is fulfilled or rejected.
+Promise.prototype.always = function(func) {
+    return this.then(func, func);
+};
+
+// Creates a promise that's randomly resolved or
+// rejected.
+var promise = new Promise((resolve, reject) => {
+    Math.round(Math.random()) ?
+        resolve('fulfilled') : reject('rejected');
+});
+
+// Give the promise fulfillment and rejection callbacks.
+promise.then((value) => {
+    console.log(value);
+}, (reason) => {
+    console.error(reason);
+});
+
+// This callback is always called after the one of
+// the callbacks above.
+promise.always((value) => {
+    console.log('cleaning up...');
+});
+```
+
+==== Resolving other promises
+
+```js
+// Keeps a list of resolver functions.
+var resolvers = [];
+
+// Creates 5 new promises, and in each executor
+// function, the resolver is pushed onto the
+// "resolvers" array. We also give each promise
+// a fulfillment callback.
+for (let i = 0; i < 5; i++) {
+    new Promise((resolve) => {
+        resolvers.push(resolve);
+    }).then((value) => {
+        console.log(`resolved ${i + 1}`, value);
+    });
+}
+
+// Sets a timeout that runs the function after 2
+// seconds. When it runs, we iterate over every
+// resolver function in the "resolvers" array,
+// and we call it with a value.
+setTimeout(() => {
+    for (let resolver of resolvers) {
+        resolver(true);
+    }
+}, 2000);
+```
+
+==== Promise–like objects
+
+```js
+// The "Promise.resolve()" method can resolve thenable
+// objects. This is an object with a "then()" method
+// which serves as the executor. This executor will
+// randomly resolve or reject the promise.
+Promise.resolve({ then: (resolve, reject) => {
+    Math.round(Math.random()) ?
+        resolve('fulfilled') : reject('rejected');
+
+// This method returns a promise, so we're able
+// to setup our fulfilled and rejected callbacks as
+// usual.
+}}).then((value) => {
+    console.log('resolved', value);
+}, (reason) => {
+    console.error('reason', reason);
+});
+```
+
+=== Building callback chains
+
+==== Promises only change state once
+
+```js
+// This executor function attempts to resolve the
+// promise twice, but the fulfilled callback is
+// only called once.
+new Promise((resolve, reject) => {
+    resolve('fulfilled');
+    resolve('fulfilled');
+}).then((value) => {
+    console.log('then', value);
+});
+
+// This executor function attempts to reject the
+// promise twice, but the rejected callback is
+// only called once.
+new Promise((resolve, reject) => {
+    reject('rejected');
+    reject('rejected');
+}).catch((reason) => {
+    console.error('reason');
+});
+```
+
+---
+
+```js
+// This executor function resolves the promise immediately.
+// By the time the "then()" callback is added, the promise
+// is already resolved. But the callback is still called
+// with the resolved value.
+new Promise((resolve, reject) => {
+    resolve('done');
+    console.log('executor', 'resolved');
+}).then((value) => {
+    console.log('then', value);
+});
+
+// Creates a new promise that's resolved immediately by
+// the executor function.
+var promise = new Promise((resolve, reject) => {
+    resolve('done');
+    console.log('executor', 'resolved');
+});
+
+// This callback is run immediately, since the promise
+// has already been resolved.
+promise.then((value) => {
+    console.log('then 1', value);
+});
+
+// This callback isn't added to the promise for another
+// second after it's been resolved. It's still called
+// right away with the resolved value.
+setTimeout(() => {
+    promise.then((value) => {
+        console.log('then 2', value);
+    });
+}, 1000);
+```
+
+==== Immutable promises
+
+```js
+// Creates a promise that's resolved immediately, and
+// is stored in "promise1".
+var promise1 = new Promise((resolve, reject) => {
+    resolve('fulfilled');
+});
+
+// Use the "then()" method of "promise1" to create a
+// new promise instance, which is stored in "promise2".
+var promise2 = promise1.then((value) => {
+    console.log('then 1', value);
+    // → then 1 fulfilled
+});
+
+// Create a "then()" callback for "promise2". This actually
+// creates a third promise instance, but we don't do anything
+// with it.
+promise2.then((value) => {
+    console.log('then 2', value);
+    // → then 2 undefined
+});
+
+// Make sure that "promise1" and "promise2" are in fact
+// different objects.
+console.log('equal', promise1 === promise2);
+// → equal false
+```
+
+==== Many then callbacks, many promises
+
+```js
+// Creates a new promise that's randomly resolved or
+// rejected.
+new Promise((resolve, reject) => {
+    Math.round(Math.random()) ?
+        resolve('fulfilled') : reject('rejected');
+}).then((value) => {
+    // Called when the original promise is resolved,
+    // returns the value in case there's another
+    // promise chained to this one.
+    console.log('then 1', value);
+    return value;
+}).catch((reason) => {
+    // Chained to the second promise, called
+    // when it's rejected.
+    console.error('catch 1', reason);
+}).then((value) => {
+    // Chained to the third promise, gets the
+    // value as expected, and returns it for any
+    // downstream promise callbacks to consume.
+    console.log('then 2', value);
+    return value;
+}).catch((reason) => {
+    // This is never called - rejections do not
+    // proliferate through promise chains.
+    console.error('catch 2', reason)
+});
+```
+
+==== Passing promises around
+
+```js
+// Simple utilty to compose a larger function, out
+// of smaller functions.
+function compose(...funcs) {
+    return function(value) {
+        var result = value;
+
+        for (let func of funcs) {
+            result = func(value);
+        }
+
+        return result;
+    };
+}
+
+// Accepts a promise or a resolved value. If it's a promise,
+// it adds a "then()" callback and returns a new promise.
+// Otherwise, it performs the "update" and returns the
+// value.
+function updateFirstName(value) {
+    if (value instanceof Promise) {
+        return value.then(updateFirstName);
+    }
+
+    console.log('first name', value.first);
+    return value;
+}
+
+// Works the same way as the above function, except it
+// performs a different UI "update".
+function updateLastName(value) {
+    if (value instanceof Promise) {
+        return value.then(updateLastName);
+    }
+
+    console.log('last name', value.last);
+    return value;
+}
+
+// Works the same way as the above function, except it
+// performs a different UI "update".
+function updateAge(value) {
+    if (value instanceof Promise) {
+        return value.then(updateAge);
+    }
+
+    console.log('age', value.age);
+    return value;
+}
+
+// A promise object that's resolved with a data object
+// after one second.
+var promise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve({
+            first: 'John',
+            last: 'Smith',
+            age: 37
+        });
+    }, 1000);
+});
+
+// We compose an "update()" function that updates the
+// various UI components.
+var update = compose(
+    updateFirstName,
+    updateLastName,
+    updateAge
+);
+
+// Call our update function with a promise.
+update(promise);
+```
+
+=== Synchronizing several promises
+
+==== Waiting on promises
+
+```js
+// Utility to send a "GET" HTTP request, and return
+// a promise that's resolved with the parsed response.
+function get(path) {
+    return new Promise((resolve, reject) => {
+        var request = new XMLHttpRequest();
+
+        // The promise is resolved with the parsed
+        // JSON data when the data is loaded.
+        request.addEventListener('load', (e) => {
+            resolve(JSON.parse(e.target.responseText));
+        });
+
+        // When there's an error with the request, the
+        // promise is rejected with the appropriate reason.
+        request.addEventListener('error', (e) => {
+            reject(e.target.statusText || 'unknown error');
+        });
+
+        // If the request is aborted, we simply resolve the
+        // request.
+        request.addEventListener('abort', resolve);
+
+        request.open('get', path);
+        request.send();
+    });
+}
+
+// For our request promises.
+var requests = [];
+
+// Issues 5 API requests, and places the 5 corresponding
+// promises in the "requests" array.
+for (let i = 0; i < 5; i++) {
+    requests.push(get('api.json'));
+}
+
+// Using "Promise.all()" let's us pass in an array of
+// promises, returning a new promise that's resolved
+// when all promises resolve. Our callback gets an array
+// of resolved values that correspond to the promises.
+Promise.all(requests).then((values) => {
+    console.log('first', values.map(x => x[0]));
+    console.log('second', values.map(x => x[1]));
+});
+```
+
+==== Cancelling promises
+
+```js
+// The resolver function used to cancel data requests.
+var cancelResolver;
+
+// A simple "constant" value, used to resolved cancel
+// promises.
+var CANCELLED = {};
+
+// Our UI components.
+var buttonLoad = document.querySelector('button.load'),
+    buttonCancel = document.querySelector('button.cancel');
+
+// Requests data, returns a promise.
+function getDataPromise() {
+
+    // Creates the cancel promise. The executor assigns
+    // the "resolve" function to "cancelResolver", so
+    // it can be called later.
+    var cancelPromise = new Promise((resolve) => {
+        cancelResolver = resolve;
+    });
+
+    // The actual data we want. This would normally be
+    // an HTTP request, but we're simulating one here
+    // for brevity using setTimeout().
+    var dataPromise = new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({ hello: 'world' });
+        }, 3000);
+    });
+
+    // The "Promise.race()" method returns a new promise,
+    // and it's resolved with whichever input promise is
+    // resolved first.
+    return Promise.race([
+        cancelPromise,
+        dataPromise
+    ]);
+}
+
+// When the cancel button is clicked, we use the
+// "cancelResolver()" function to resolve the
+// cancel promise.
+buttonCancel.addEventListener('click', () => {
+    cancelResolver(CANCELLED);
+});
+
+// When the load button is clicked, we make a request
+// for data using "getDataPromise()".
+buttonLoad.addEventListener('click', () => {
+    buttonLoad.disabled = true;
+
+    getDataPromise().then((value) => {
+        buttonLoad.disabled = false;
+
+        // The promise was resolved, but it was because
+        // the user cancelled the request. So we exit
+        // here by returning the CANCELLED "constant".
+        // Otherwise, we have data to work with.
+        if (Object.is(value, CANCELLED)) {
+            return value;
+        }
+
+        console.log('loaded data', value);
+    });
+});
+```
+
+=== Promises without executors
+
+```js
+// Example function that returns "value" from
+// a cache, or "fetchs" it asynchronously.
+function getData(value) {
+
+    // If it exists in the cache, we return
+    // this value.
+    var index = getData.cache.indexOf(value);
+    if (index > -1) {
+        return getData.cache[index];
+    }
+
+    // Otherwise, we have to go "fetch" it. This
+    // "resolve()" call would typically be found in
+    // a network request callback function.
+    return new Promise((resolve) => {
+        getData.cache.push(value);
+        resolve(value);
+    });
+}
+
+// Creates the cache.
+getData.cache = [];
+console.log('getting foo', getData('foo'));
+// → getting foo Promise
+console.log('getting bar', getData('bar'));
+// → getting bar Promise
+console.log('getting foo', getData('foo'));
+// → getting foo foo
+```
+---
+
+```js
+// Example function that returns "value" from
+// a cache, or "fetchs" it asynchronously.
+function getData(value) {
+    var cache = getData.cache;
+
+    // If there's no cache for this function, let's
+    // reject the promise. Gotta have cache.
+    if (!Array.isArray(cache)) {
+        return Promise.reject('missing cache');
+    }
+
+    // If it exists in the cache, we return
+    // a promise that's resolved using the
+    // cached value.
+    var index = getData.cache.indexOf(value);
+
+    if (index > -1) {
+        return Promise.resolve(getData.cache[index]);
+    }
+
+    // Otherwise, we have to go "fetch" it. This
+    // "resolve()" call would typically be found in
+    // a network request callback function.
+    return new Promise((resolve) => {
+        getData.cache.push(value);
+        resolve(value);
+    });
+}
+
+// Creates the cache.
+getData.cache = [];
+
+// Each call to "getData()" is consistent. Even
+// when synchronous values are used, they still
+// get resolved as promises.
+getData('foo').then((value) => {
+    console.log('getting foo', `"${value}"`);
+}, (reason) => {
+    console.error(reason);
+});
+
+getData('bar').then((value) => {
+    console.log('getting bar', `"${value}"`);
+}, (reason) => {
+    console.error(reason);
+});
+
+getData('foo').then((value) => {
+    console.log('getting foo', `"${value}"`);
+}, (reason) => {
+    console.error(reason);
+});
+```
+
+== 4. Lazy Evaluation with Generators
+
+=== Creating generators and yielding values
+
+==== Generator function syntax
+
+```js
+// Generator functions use an asterisk to
+// denote a that a generator instance is returned.
+// We can return values from generators, but instead
+// of the caller getting that value, they'll always
+// get a generator instance.
+function* gen() {
+    return 'hello world';
+}
+
+// Creates the generator instance.
+var generator = gen();
+
+// Let's see what this looks like.
+console.log('generator', generator);
+// → generator Generator
+
+// Here's how we get the return value. Looks awkward,
+// because we would never use a generator function
+// that simply returns a single value.
+console.log('return', generator.next().value);
+// → return hello world
+```
+
+==== Yielding values
+
+```js
+// This function yields values, in order. There's no
+// container structure, like an array. Instead, each time
+// the yield statement is called, control is yielded
+// back to the caller, and the position in the function
+// is bookmarked.
+function* gen() {
+    yield 'first';
+    yield 'second';
+    yield 'third';
+}
+
+var generator = gen();
+
+// Each time we call "next()", control is passed back
+// to the generator function's execution context. Then,
+// the generator looks up the bookmark for where it
+// last yielded control.
+console.log(generator.next().value);
+console.log(generator.next().value);
+console.log(generator.next().value);
+```
+
+==== Iterating over generators
+
+```
+// A basic generator function that yields
+// sequential values.
+function* gen() {
+    yield 'first';
+    yield 'second';
+    yield 'third';
+}
+
+// Creates the generator.
+var generator = gen();
+
+// Loop till the sequence is finished.
+while(true) {
+
+    // Gets the next item from the sequence.
+    let item = generator.next();
+
+    // Is there a next value, or are we done?
+    if (item.done) {
+        break;
+    }
+
+    console.log('while', item.value);
+}
+```
+
+---
+
+```
+// The "for..of" loop removes the need to explicitly
+// call generator constructs, like "next()", "value",
+// and "done".
+for (let item of generator) {
+    console.log('for..of', item);
+}
+```
+
+=== Infinite sequences
+
+==== No end in sight
+
+```
+// Generates an infinite Fibonacci sequence.
+function* fib() {
+    var seq = [ 0, 1 ],
+        next;
+
+    // This loop doesn't actually run infinitely,
+    // only as long as items from the sequence
+    // are requested using "next()".
+    while (true) {
+
+        // Yields the next item in the sequence.
+        yield (next = seq[0] + seq[1]);
+
+        // Stores state necessary to compute the
+        // item in the next iteration.
+        seq[0] = seq[1];
+        seq[1] = next;
+    }
+}
+
+// Launch the generator. This will never be "done"
+// generating values. However, it's lazy - it only
+// generates what we ask for.
+var generator = fib();
+
+// Gets the first 5 items of the sequence.
+for (let i = 0; i < 5; i++) {
+    console.log('item', generator.next().value);
+}
+```
+
+==== Alternating sequences
+
+```
+// A generic generator that will infinitely iterate
+// over the provided arguments, yielding each item.
+function* alternate(...seq) {
+    while (true) {
+        for (let item of seq) {
+            yield item;
+        }
+    }
+}
+```
+
+---
+
+```
+// Create a generator that alternates between
+// the provided arguments.
+var alternator = alternate(true, false);
+
+console.log('true/false', alternator.next().value);
+console.log('true/false', alternator.next().value);
+console.log('true/false', alternator.next().value);
+console.log('true/false', alternator.next().value);
+// →
+// true/false true
+// true/false false
+// true/false true
+// true/false false
+```
+
+---
+
+```
+// Create a new generator instance, with new values
+// to alternate with each iteration.
+alternator = alternate('one', 'two', 'three');
+
+// Gets the first 10 items from the infinite sequence.
+for (let i = 0; i< 10; i++) {
+    console.log('one/two/three',
+        `"${alternator.next().value}"`);
+}
+
+// →
+// one/two/three "one"
+// one/two/three "two"
+// one/two/three "three"
+// one/two/three "one"
+// one/two/three "two"
+// one/two/three "three"
+// one/two/three "one"
+// one/two/three "two"
+// one/two/three "three"
+// one/two/three "one"
+```
+
+== 9. Advanced NodeJS Concurrency
+
+=== Coroutines with Co
+
+==== Awaiting values
+
+```
+// This is the ES7 syntax, where the function is
+// marked as "async". Then, the "await" calls
+// pause execution till their operands resolve.
+(async function() {
+    var result;
+    result = await Promise.resolve('hello');
+    console.log('async result', `"${result}"`);
+    // → async result "hello"
+    
+    result = await Promise.resolve('world');
+    console.log('async result', `"${result}"`);
+    // → async result "world"
+}());
+```
+
+---
+
+```
+// We need the "co()" function.
+var co = require('co');
+
+// The differences between the ES7 and "co()" are
+// subtle, the overall structure is the same. The
+// function is a generator, and we pause execution
+// by yielding generators.
+co(function*() {
+    var result;
+    result = yield Promise.resolve('hello');
+    console.log('co result', `"${result}"`);
+    // → co result "hello"
+    
+    result = yield Promise.resolve('world');
+    console.log('co result', `"${result}"`);
+    // → co result "world"
+});
+```

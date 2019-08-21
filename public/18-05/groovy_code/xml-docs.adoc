@@ -1,0 +1,101 @@
+= Processing XML
+:toc: right
+:toclevels: 6
+:icons: font
+:source-highlighter: pygments
+:source-language: groovy
+:pygments-style: xcode
+:a: *
+
+http://groovy-lang.org/processing-xml.html
+
+== 2. GPath
+
+.String books
+```xml
+<response version-api="2.0">
+    <value>
+        <books>
+            <book available="20" id="1">
+                <title>Don Quixote</title>
+                <author id="1">Miguel de Cervantes</author>
+            </book>
+            <book available="14" id="2">
+                <title>Catcher in the Rye</title>
+               <author id="2">JD Salinger</author>
+           </book>
+           <book available="13" id="3">
+               <title>Alice in Wonderland</title>
+               <author id="3">Lewis Carroll</author>
+           </book>
+           <book available="5" id="4">
+               <title>Don Quixote</title>
+               <author id="4">Miguel de Cervantes</author>
+           </book>
+       </books>
+   </value>
+</response>
+```
+
+=== 2.2. Flexible navigation with children ({a}), depthFirst ({a}{a}) and breadthFirst
+
+```
+def response = new XmlSlurper().parseText(books)
+
+// .'*' could be replaced by .children()
+def catcherInTheRye = response.value.books.'*'.find { node ->
+    // node.@id == 2 could be expressed as node['@id'] == 2
+    node.name() == 'book' && node.@id == '2'
+}
+
+assert catcherInTheRye.title.text() == 'Catcher in the Rye'
+```
+
+---
+
+```
+def response = new XmlSlurper().parseText(books)
+
+// .'**' could be replaced by .depthFirst()
+def bookId = response.'**'.find { book ->
+    book.author.text() == 'Lewis Carroll'
+}.@id
+
+assert bookId == 3
+```
+
+---
+
+```
+def response = new XmlSlurper().parseText(books)
+
+def titles = response.'**'.findAll { node -> node.name() == 'title' }*.text()
+
+assert titles.size() == 4
+```
+
+---
+
+```
+def response = new XmlSlurper().parseText(books)
+def nodeName = { node -> node.name() }
+def withId2or3 = { node -> node.@id in [2, 3] }
+
+assert ['book', 'author', 'book', 'author'] ==
+        response.value.books.depthFirst().findAll(withId2or3).collect(nodeName)
+assert ['book', 'book', 'author', 'author'] ==
+        response.value.books.breadthFirst().findAll(withId2or3).collect(nodeName)
+```
+
+---
+
+```
+def response = new XmlSlurper().parseText(books)
+
+def titles = response.value.books.book.findAll { book ->
+    /* You can use toInteger() over the GPathResult object */
+    book.@id.toInteger() > 2
+}*.title
+
+assert titles.size() == 2
+```
