@@ -6,6 +6,8 @@
 
 */
 dropboxFolder = "/home/egor/Dropbox/Public/books"
+publicFolder = 'public'
+eaBooksFile = 'index.adoc'
 
 long tstr(tstamp) {
 	return (tstamp-1550000000000)/100000
@@ -73,9 +75,6 @@ void writeToFile(f) {
 		}		
 	}
 }
-
-publicFolder = 'public'
-eaBooksFile = 'ea-books.adoc'
 
 String htmlName(adocName) {
 	assert adocName.endsWith('.adoc')
