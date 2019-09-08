@@ -1,0 +1,104 @@
+= Learn Computer Vision Using OpenCV
+:toc: right
+:toclevels: 4
+:source-highlighter: coderay
+:source-language: python
+
+.Adrian Rosebrock
+====
+OpenCV OCR and text recognition with Tesseract::
+https://www.pyimagesearch.com/2018/09/17/opencv-ocr-and-text-recognition-with-tesseract/
+====
+
+== CHAPTER 4. Image Manipulation and Segmentation
+
+.OpenCV docs
+====
+Image Processing in OpenCV::
+https://docs.opencv.org/4.1.1/d2/d96/tutorial_py_table_of_contents_imgproc.html
+====
+
+=== Image Segmentation
+
+```
+import cv2
+import numpy as np
+image = cv2.imread('nh_label.jpg')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+edged = cv2.Canny(gray, 50, 200)
+cv2.imshow('1 Canny Edges', edged)
+cv2.waitKey(0)
+```
+
+.OpenCV docs
+====
+Canny Edge Detection Tutorial::
+https://docs.opencv.org/4.1.1/da/d22/tutorial_py_canny.html
+====
+
+
+== CHAPTER 5. Object Detection and Recognition
+
+=== Basics of Object Detection
+
+==== Template Matching
+
+.OpenCV docs
+====
+Template Matching::
+https://docs.opencv.org/4.1.1/d4/dc6/tutorial_py_template_matching.html
+====
+
+```
+import cv2
+import numpy as np
+
+colorImage = cv2.imread('nh_label.jpg')
+colorIcon = cv2.imread('use_by_date.jpg')
+
+grayImage = cv2.cvtColor(colorImage, cv2.COLOR_BGR2GRAY)
+grayIcon = cv2.cvtColor(colorIcon, cv2.COLOR_BGR2GRAY)
+
+w,h = grayIcon.shape[::-1]
+
+result = cv2.matchTemplate(grayImage, grayIcon, cv2.TM_CCOEFF)
+min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+
+# Create Bounding Box
+top_left = max_loc
+bottom_right = (top_left[0] + w, top_left[1] + h)
+cv2.rectangle(grayImage, top_left, bottom_right, (0,0,255), 5)
+cv2.imshow('Match Template', grayImage)
+cv2.waitKey(0)
+```
+
+=== Feature Matching
+
+.Adrian Rosebrock
+====
+OpenCV Text Detection (EAST text detector::
+https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/
+====
+
+==== Harris Corner Algorithm
+
+.OpenCV docs
+====
+Harris Corner Detection::
+https://docs.opencv.org/4.1.1/dc/d0d/tutorial_py_features_harris.html
+====
+
+.Matplotlib docs
+====
+Matplotlib gallery::
+https://matplotlib.org/gallery.html
+====
+
+==== Scale-Invariant Feature Transform
+
+.OpenCV docs
+====
+Introduction to SIFT::
+https://docs.opencv.org/4.1.1/da/df5/tutorial_py_sift_intro.html
+====
+

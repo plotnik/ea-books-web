@@ -1,0 +1,56 @@
+= Python, PyGame, and Raspberry Pi Game Development
+:toc: right
+:toclevels: 4
+:source-highlighter: coderay
+:source-language: python
+
+.pygame docs
+====
+Pygame Community Projects::
+https://www.pygame.org/tags/all
+
+Pygame Examples::
+https://www.pygame.org/docs/ref/examples.html
+
+Pygame Front Page::
+https://www.pygame.org/docs/
+
+Pygame Tutorials::
+https://www.pygame.org/wiki/tutorials
+====
+
+----
+python -m pygame.examples.aliens
+----
+
+== CHAPTER 9. Basic Introduction to PyGame
+
+.PyGame Intro/BasicFramework.py
+```
+#!/usr/bin/python
+
+import pygame
+from pygame.locals import *
+
+windowSize = (640, 480)
+
+pygame.init()
+fpsClock = pygame.time.Clock()
+
+windowSurfaceObj = pygame.display.set_mode(windowSize)
+pygame.display.set_caption('Image Example');
+
+background = pygame.Color(100, 149, 237) # cornflower blue
+
+while True:
+	
+	windowSurfaceObj.fill(background)
+	
+	for event in pygame.event.get():
+		if event.type == QUIT:
+			pygame.quit()
+			sys.exit()
+			
+	pygame.display.update()
+	fpsClock.tick(30)          
+```
