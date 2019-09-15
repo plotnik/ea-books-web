@@ -15,7 +15,7 @@ https://github.com/mhadaily/awesome-apress-pwa
 ==== Generating New Angular App with CLI
 
 ```
-ng new lovely-offline –-routing –-style=scss
+ng new lovely-offline --routing --style=scss
 ```
 
 ==== Adding Angular Material Design
@@ -123,18 +123,29 @@ ng generate component modules/layout/header
 ng generate component modules/layout/footer
 ```
 
-.header.component.html
-```html
-<mat-toolbar color="primary">
-  <span>ApressNote-PWA</span>
-  <span class="space-between"></span>
-  <button mat-icon-button [mat-menu-trigger-for]="menu">
-    <mat-icon>more_vert</mat-icon>
-  </button>
-</mat-toolbar>
-<mat-menu x-position="before" #menu="matMenu">
-  <button mat-menu-item>Home</button>
-  <button mat-menu-item>Profile</button>
-  <button mat-menu-item>Add Note</button>
-</mat-menu>
+- header.component.html
+- header.component.scss
+- header.component.ts
+- footer.component.html
+- footer.component.scss
+- footer.component.ts
+- style.scss
+
+.src/app/app.component.ts
+```ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  template: `
+  <div class="appress-pwa-note">
+    <app-header></app-header>
+    <div class="main"> 
+      <router-outlet></router-outlet>
+    </div>
+    <app-footer></app-footer>
+  </div>
+  `,
+})
+export class AppComponent { }
 ```
