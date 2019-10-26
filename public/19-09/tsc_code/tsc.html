@@ -518,7 +518,24 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel1">
 <li><a href="#_chapter_1_your_first_typescript_application">CHAPTER 1. Your First TypeScript Application</a>
 <ul class="sectlevel2">
-<li><a href="#_creating_the_project">Creating the Project</a></li>
+<li><a href="#_using_a_third_party_package">Using a Third-Party Package</a></li>
+</ul>
+</li>
+<li><a href="#_chapter_6_testing_and_debugging_typescript">CHAPTER 6. Testing and Debugging TypeScript</a>
+<ul class="sectlevel2">
+<li><a href="#_unit_testing_typescript">Unit Testing TypeScript</a>
+<ul class="sectlevel3">
+<li><a href="#_configuring_the_test_framework">Configuring the Test Framework</a></li>
+<li><a href="#_creating_unit_tests">Creating Unit Tests</a></li>
+<li><a href="#_starting_the_test_framework">Starting the Test Framework</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_chapter_9_using_arrays_tuples_and_enums">CHAPTER 9. Using Arrays, Tuples, and Enums</a>
+<ul class="sectlevel2">
+<li><a href="#_using_enums">Using Enums</a></li>
+<li><a href="#_using_type_aliases">Using Type Aliases</a></li>
 </ul>
 </li>
 </ul>
@@ -546,32 +563,83 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="_chapter_1_your_first_typescript_application">CHAPTER 1. Your First TypeScript Application</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_creating_the_project">Creating the Project</h3>
-<div class="listingblock">
-<div class="title">Initializing the Project</div>
-<div class="content">
-<pre>cd todo
-npm init --yes</pre>
+<h3 id="_using_a_third_party_package">Using a Third-Party Package</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Command line prompts</dt>
+<dd>
+<p><a href="https://github.com/SBoudrias/Inquirer.js" class="bare">https://github.com/SBoudrias/Inquirer.js</a></p>
+</dd>
+</dl>
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chapter_6_testing_and_debugging_typescript">CHAPTER 6. Testing and Debugging TypeScript</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_unit_testing_typescript">Unit Testing TypeScript</h3>
 <div class="listingblock">
-<div class="title">Listing 1-6. The Contents of the tsconfig.json File in the todo Folder</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">compilerOptions</span><span class="delimiter">&quot;</span></span>: {
-        <span class="key"><span class="delimiter">&quot;</span><span class="content">target</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">es2018</span><span class="delimiter">&quot;</span></span>,
-        <span class="key"><span class="delimiter">&quot;</span><span class="content">outDir</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">./dist</span><span class="delimiter">&quot;</span></span>,
-        <span class="key"><span class="delimiter">&quot;</span><span class="content">rootDir</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">./src</span><span class="delimiter">&quot;</span></span>,
-        <span class="key"><span class="delimiter">&quot;</span><span class="content">module</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">commonjs</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
-    }
+<pre>npm install --save-dev jest
+npm install --save-dev @types/jest
+npm install --save-dev ts-jest</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_configuring_the_test_framework">Configuring the Test Framework</h4>
+<div class="listingblock">
+<div class="title">jest.config.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">module.exports = {
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">roots</span><span class="delimiter">&quot;</span></span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">src</span><span class="delimiter">&quot;</span></span>],
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">transform</span><span class="delimiter">&quot;</span></span>: {<span class="key"><span class="delimiter">&quot;</span><span class="content">^.+</span><span class="char">\\</span><span class="content">.tsx?$</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ts-jest</span><span class="delimiter">&quot;</span></span>}
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_creating_unit_tests">Creating Unit Tests</h4>
 <div class="listingblock">
-<div class="title">Compiling and Executing the Code</div>
+<div class="title">Listing 6-16. The Contents of the calc.test.ts File in the src Folder</div>
 <div class="content">
-<pre>tsc
-node dist/index.js</pre>
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">import</span> { sum } from <span class="string"><span class="delimiter">&quot;</span><span class="content">./calc</span><span class="delimiter">&quot;</span></span>;
+test(<span class="string"><span class="delimiter">&quot;</span><span class="content">check result value</span><span class="delimiter">&quot;</span></span>, () =&gt; {
+    let result = sum(<span class="integer">10</span>, <span class="integer">20</span>, <span class="integer">30</span>);
+    expect(result).toBe(<span class="integer">60</span>);
+});</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_starting_the_test_framework">Starting the Test Framework</h4>
+<div class="listingblock">
+<div class="content">
+<pre>npx jest</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chapter_9_using_arrays_tuples_and_enums">CHAPTER 9. Using Arrays, Tuples, and Enums</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_using_enums">Using Enums</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">enum</span> Product { Hat, Gloves, Umbrella }</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_using_type_aliases">Using Type Aliases</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">enum</span> City { London = <span class="string"><span class="delimiter">&quot;</span><span class="content">LON</span><span class="delimiter">&quot;</span></span>, Paris = <span class="string"><span class="delimiter">&quot;</span><span class="content">PAR</span><span class="delimiter">&quot;</span></span>, Chicago = <span class="string"><span class="delimiter">&quot;</span><span class="content">CHI</span><span class="delimiter">&quot;</span></span> }
+type comboType = [string, number | <span class="predefined-constant">true</span>, <span class="integer">1</span> | <span class="integer">2</span> | <span class="integer">3</span> | City.London][];</code></pre>
 </div>
 </div>
 </div>
@@ -580,7 +648,7 @@ node dist/index.js</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-09-08 12:41:52 +03
+Last updated 2019-10-13 23:05:22 +03
 </div>
 </div>
 </body>

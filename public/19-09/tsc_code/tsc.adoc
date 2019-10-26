@@ -13,28 +13,59 @@ https://github.com/Apress/essential-typescript
 
 == CHAPTER 1. Your First TypeScript Application
 
-=== Creating the Project
+=== Using a Third-Party Package
 
-.Initializing the Project
+Command line prompts::
+https://github.com/SBoudrias/Inquirer.js
+
+== CHAPTER 6. Testing and Debugging TypeScript
+
+=== Unit Testing TypeScript
+
 ----
-cd todo
-npm init --yes
+npm install --save-dev jest
+npm install --save-dev @types/jest
+npm install --save-dev ts-jest
 ----
 
-.Listing 1-6. The Contents of the tsconfig.json File in the todo Folder
-```json
-{
-    "compilerOptions": {
-        "target": "es2018",
-        "outDir": "./dist",
-        "rootDir": "./src",
-        "module": "commonjs" <1>
-    }
+==== Configuring the Test Framework
+
+.jest.config.js
+```
+module.exports = {
+    "roots": ["src"],
+    "transform": {"^.+\\.tsx?$": "ts-jest"}
 }
 ```
 
-.Compiling and Executing the Code
+==== Creating Unit Tests
+
+.Listing 6-16. The Contents of the calc.test.ts File in the src Folder
+```
+import { sum } from "./calc";
+test("check result value", () => {
+    let result = sum(10, 20, 30);
+    expect(result).toBe(60);
+});
+```
+
+==== Starting the Test Framework
+
 ----
-tsc
-node dist/index.js
+npx jest
 ----
+
+== CHAPTER 9. Using Arrays, Tuples, and Enums
+
+=== Using Enums
+
+```
+enum Product { Hat, Gloves, Umbrella }
+```
+
+=== Using Type Aliases
+
+```
+enum City { London = "LON", Paris = "PAR", Chicago = "CHI" }
+type comboType = [string, number | true, 1 | 2 | 3 | City.London][];
+```
