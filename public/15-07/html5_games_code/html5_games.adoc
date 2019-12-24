@@ -1,0 +1,91 @@
+= Advanced Game Design with HTML5 and JavaScript
+Rex van der Spuy
+:toc: right
+:toclevels: 4
+:source-highlighter: coderay
+:source-language: js
+:icons: font
+
+== Chapter 1. Level Up!
+
+=== Some New JavaScript Tricks
+
+==== Getting Loopy with Arrays
+
+.Using forEach
+```
+let planets = ["jupiter", "venus", "saturn", "mars"];
+planets.forEach(planet => console.log(planet));
+```
+
+.Using a for of Loop
+```
+for (let planet of planets) {
+  console.log(planet);
+}
+
+//An *array comprehension*
+let numbers = [1, 2, 3, 4, 5];
+let squared = [for (x of numbers) x * x];
+```
+
+.Looping through Objects
+```
+Object.keys(room).forEach((key) => {
+  let value = room[key];
+  console.log("key: " + key + ", value: " + value);
+});
+
+//Or the same thing with a good old-fashioned for in loop
+for(let key in room) {
+  if(room.hasOwnProperty(key)) {
+    let value = room[key];
+    console.log("key: " + key + ", value: " + value);
+  }
+}
+```
+
+.Looping through Only Some Array Elements
+```
+let instruments = ["guitar", "piano", "tabla", "ocarina", "tabla"];
+let found = instruments.some(instrument => instrument === "tabla");
+if (found) console.log("tabla found!");
+```
+
+.Finding Array Elements
+```
+let found = instruments.find(x => x === "tabla");
+console.log(found);
+//Displays: tabla
+
+let index = instruments.findIndex(x => x === "tabla");
+console.log(index);
+//Displays: 2
+```
+
+.Mapping an Old Array to a New Array
+```
+let words = ["fun", "boring", "exciting"];
+let betterWords = words.map(x => x + "ish");
+```
+
+.Filtering Elements from an Array
+```
+let numbers = [11, 43, 9, 112, 64, 312, 92];
+numbers = numbers.filter(x => x < 100);
+```
+
+.Reducing Array Elements to a Single Value
+```
+let numbers = [73, 19, 2, 144, 43, 7];
+total = numbers.reduce((a, b) => a + b);
+console.log(total);
+```
+
+==== Making Variables from Arrays with Destructuring
+
+```
+let statistics = [16, 170, 10];
+let [age, height, grade] = statistics;
+console.log(`Age: ${age} Height: ${height} Grade: ${grade}`);
+```
