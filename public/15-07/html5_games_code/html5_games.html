@@ -528,8 +528,14 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_making_variables_from_arrays_with_destructuring">Making Variables from Arrays with Destructuring</a></li>
 </ul>
 </li>
+<li><a href="#_creating_objects">Creating Objects</a>
+<ul class="sectlevel3">
+<li><a href="#_making_objects_from_other_objects">Making Objects from Other Objects</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a href="#_chapter_3_working_with_game_assets">Chapter 3. Working with Game Assets</a></li>
 </ul>
 </div>
 </div>
@@ -631,12 +637,57 @@ console.log(<span class="error">`</span>Age: <span class="predefined">$</span>{a
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_creating_objects">Creating Objects</h3>
+<div class="sect3">
+<h4 id="_making_objects_from_other_objects">Making Objects from Other Objects</h4>
+<div class="listingblock">
+<div class="title">Configuring Objects</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="keyword">function</span> <span class="function">animal</span>(config) {
+  <span class="comment">//Create the animal template</span>
+  let newObject = {
+    <span class="key">legs</span>: <span class="integer">4</span>,
+    <span class="key">eyes</span>: <span class="integer">2</span>,
+    <span class="key">say</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Huh?</span><span class="delimiter">&quot;</span></span>,
+    speak() {
+      console.log(<span class="local-variable">this</span>.say);
+    }
+  };
+  <span class="comment">//Copy the config object's properties onto the animal</span>
+  Object.assign(newObject, config);
+  <span class="comment">//Return the newObject</span>
+  <span class="keyword">return</span> newObject;
+}
+
+<span class="comment">//Make a cat, and change the &quot;say&quot; value</span>
+let cat = animal({
+  <span class="key">say</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Meow!</span><span class="delimiter">&quot;</span></span>,
+  <span class="key">fur</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">black</span><span class="delimiter">&quot;</span></span>
+});
+
+cat.speak();
+console.log(Object.keys(cat))
+
+<span class="comment">//Displays:</span>
+<span class="comment">//Meow!</span>
+<span class="comment">//[&quot;legs&quot;, &quot;eyes&quot;, &quot;say&quot;, &quot;speak&quot;, &quot;fur&quot;]</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chapter_3_working_with_game_assets">Chapter 3. Working with Game Assets</h2>
+<div class="sectionbody">
+
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-12-25 00:44:28 +03
+Last updated 2019-12-27 18:09:02 +03
 </div>
 </div>
 </body>

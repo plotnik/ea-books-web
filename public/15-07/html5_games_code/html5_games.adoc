@@ -89,3 +89,41 @@ let statistics = [16, 170, 10];
 let [age, height, grade] = statistics;
 console.log(`Age: ${age} Height: ${height} Grade: ${grade}`);
 ```
+
+=== Creating Objects
+
+==== Making Objects from Other Objects
+
+.Configuring Objects
+```
+function animal(config) {
+  //Create the animal template
+  let newObject = {
+    legs: 4,
+    eyes: 2,
+    say: "Huh?",
+    speak() {
+      console.log(this.say);
+    }
+  };
+  //Copy the config object's properties onto the animal
+  Object.assign(newObject, config);
+  //Return the newObject
+  return newObject;
+}
+
+//Make a cat, and change the "say" value
+let cat = animal({
+  say: "Meow!",
+  fur: "black"
+});
+
+cat.speak();
+console.log(Object.keys(cat))
+
+//Displays:
+//Meow!
+//["legs", "eyes", "say", "speak", "fur"]
+```
+
+== Chapter 3. Working with Game Assets
