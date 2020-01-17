@@ -9,6 +9,12 @@ dropboxFolder = "/home/egor/Dropbox/Public/books"
 publicFolder = 'public'
 eaBooksFile = 'index.adoc'
 
+import javax.swing.JOptionPane;
+
+JOptionPane.showMessageDialog(null, 
+    "<html><h3>Копирование документов <br> из дропбокса с книгами на <code>netlify", 
+    "ea-books", 1);
+    
 long tstr(tstamp) {
 	return (tstamp-1550000000000)/100000
 }
@@ -101,3 +107,6 @@ for (book in bookList) {
 	}
 }
 
+JOptionPane.showMessageDialog(null, 
+    "<html><h3>Документы из дропбокса с книгами &nbsp; <br> скопированы на <code>netlify", 
+    "ea-books", 1);

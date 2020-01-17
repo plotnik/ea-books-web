@@ -5,6 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5">
+<meta name="author" content="Adam Freeman">
 <title>Essential TypeScript</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -513,12 +514,24 @@ table.CodeRay td.code>pre{padding:0}
 <body class="article toc2 toc-right">
 <div id="header">
 <h1>Essential TypeScript</h1>
+<div class="details">
+<span id="author" class="author">Adam Freeman</span><br>
+</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_chapter_1_your_first_typescript_application">CHAPTER 1. Your First TypeScript Application</a>
 <ul class="sectlevel2">
 <li><a href="#_using_a_third_party_package">Using a Third-Party Package</a></li>
+</ul>
+</li>
+<li><a href="#_chapter_3_javascript_primer_part_1">CHAPTER 3. JavaScript Primer, Part 1</a>
+<ul class="sectlevel2">
+<li><a href="#_understanding_the_this_keyword">Understanding the this Keyword</a>
+<ul class="sectlevel3">
+<li><a href="#_changing_the_behavior_of_the_this_keyword">Changing the Behavior of the this Keyword</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_chapter_4_javascript_primer_part_2">CHAPTER 4. JavaScript Primer, Part 2</a>
@@ -537,12 +550,17 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 </ul>
 </li>
+<li><a href="#_chapter_7_understanding_static_types">CHAPTER 7. Understanding Static Types</a></li>
+<li><a href="#_chapter_8_using_functions">CHAPTER 8. Using Functions</a></li>
 <li><a href="#_chapter_9_using_arrays_tuples_and_enums">CHAPTER 9. Using Arrays, Tuples, and Enums</a>
 <ul class="sectlevel2">
 <li><a href="#_using_enums">Using Enums</a></li>
 <li><a href="#_using_type_aliases">Using Type Aliases</a></li>
 </ul>
 </li>
+<li><a href="#_chapter_10_working_with_objects">CHAPTER 10. Working with Objects</a></li>
+<li><a href="#_chapter_11_working_with_classes_and_interfaces">CHAPTER 11.Working with Classes and Interfaces</a></li>
+<li><a href="#__span_class_icon_i_class_fa_fa_bookmark_i_span_chapter_12_using_generic_types"><span class="icon"><i class="fa fa-bookmark"></i></span> CHAPTER 12. Using Generic Types</a></li>
 <li><a href="#_chapter_15_creating_a_stand_alone_web_app_part_1">CHAPTER 15. Creating a Stand-Alone Web App, Part 1</a></li>
 </ul>
 </div>
@@ -563,6 +581,22 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 </div>
+<div class="exampleblock">
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<mark>PART I. Getting Started with TypeScript</mark>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -577,6 +611,33 @@ table.CodeRay td.code>pre{padding:0}
 <p><a href="https://github.com/SBoudrias/Inquirer.js" class="bare">https://github.com/SBoudrias/Inquirer.js</a></p>
 </dd>
 </dl>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chapter_3_javascript_primer_part_1">CHAPTER 3. JavaScript Primer, Part 1</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_understanding_the_this_keyword">Understanding the this Keyword</h3>
+<div class="sect3">
+<h4 id="_changing_the_behavior_of_the_this_keyword">Changing the Behavior of the this Keyword</h4>
+<div class="listingblock">
+<div class="title">Listing 3-34. Setting the this Value in the index.js File in the primer Folder</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">let myObject = {
+    <span class="key">greeting</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Hi, there</span><span class="delimiter">&quot;</span></span>,
+    writeMessage(message) {
+        console.log(<span class="error">`</span><span class="predefined">$</span>{<span class="local-variable">this</span>.greeting}, <span class="predefined">$</span>{message}<span class="error">`</span>);
+    }
+}
+myObject.writeMessage = myObject.writeMessage.bind(myObject); <i class="conum" data-value="1"></i><b>(1)</b>
+greeting = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello</span><span class="delimiter">&quot;</span></span>;
+myObject.writeMessage(<span class="string"><span class="delimiter">&quot;</span><span class="content">It is sunny today</span><span class="delimiter">&quot;</span></span>);
+let myFunction = myObject.writeMessage;
+myFunction(<span class="string"><span class="delimiter">&quot;</span><span class="content">It is sunny today</span><span class="delimiter">&quot;</span></span>);</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -644,6 +705,114 @@ test(<span class="string"><span class="delimiter">&quot;</span><span class="cont
 <pre>npx jest</pre>
 </div>
 </div>
+<div class="exampleblock">
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<mark>PART II. Working with TypeScript</mark>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chapter_7_understanding_static_types">CHAPTER 7. Understanding Static Types</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="title">Example 2. Chapter Summary</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Specify a type</dt>
+<dd>
+<p>Use a type annotation or allow the compiler to infer a type</p>
+</dd>
+<dt class="hdlist1">Inspect the types that the compiler infers</dt>
+<dd>
+<p>Enable the <code>declarations</code> compiler option and inspect the compiled code</p>
+</dd>
+<dt class="hdlist1">Allow any type to be used</dt>
+<dd>
+<p>Specify the <code>any</code> or unknown types</p>
+</dd>
+<dt class="hdlist1">Prevent the compiler from inferring the <code>any</code> type</dt>
+<dd>
+<p>Enable the <code>noImplicityAny</code> compiler option</p>
+</dd>
+<dt class="hdlist1">Combine types</dt>
+<dd>
+<p>Use a type union</p>
+</dd>
+<dt class="hdlist1">Override the type expected by the compiler</dt>
+<dd>
+<p>Use a type assertion</p>
+</dd>
+<dt class="hdlist1">Test for a primitive value type</dt>
+<dd>
+<p>Use the <code>typeof</code> operator as a type guard</p>
+</dd>
+<dt class="hdlist1">Prevent <code>null</code> or <code>undefined</code> from being accepted as values of other types</dt>
+<dd>
+<p>Enable the <code>strictNullChecks</code> compiler option</p>
+</dd>
+<dt class="hdlist1">Override the compiler to remove <code>null</code> values from a union</dt>
+<dd>
+<p>Use a non-null assertion or use a type guard</p>
+</dd>
+<dt class="hdlist1">Allow a variable to be used when it has not been assigned a value</dt>
+<dd>
+<p>Use the definite assignment assertion</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chapter_8_using_functions">CHAPTER 8. Using Functions</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="title">Example 3. Chapter Summary</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Allow a function to be called with fewer arguments than parameters</dt>
+<dd>
+<p>Define optional parameters or define parameters with default values.</p>
+</dd>
+<dt class="hdlist1">Allow a function to be called with more arguments than parameters</dt>
+<dd>
+<p>Use a rest parameter</p>
+</dd>
+<dt class="hdlist1">Restrict the types that can be used for parameter values and results</dt>
+<dd>
+<p>Apply type annotations to parameters or function signatures</p>
+</dd>
+<dt class="hdlist1">Prevent null values from being used as function arguments</dt>
+<dd>
+<p>Enable the <code>strictNullChecks</code> compiler option</p>
+</dd>
+<dt class="hdlist1">Ensure that all function code paths return a result</dt>
+<dd>
+<p>Enable the <code>noImplicitReturns</code> compiler option</p>
+</dd>
+<dt class="hdlist1">Describe the relationship between the types of a function’s parameters and result</dt>
+<dd>
+<p>Overload the function’s types</p>
+</dd>
+</dl>
+</div>
 </div>
 </div>
 </div>
@@ -651,6 +820,36 @@ test(<span class="string"><span class="delimiter">&quot;</span><span class="cont
 <div class="sect1">
 <h2 id="_chapter_9_using_arrays_tuples_and_enums">CHAPTER 9. Using Arrays, Tuples, and Enums</h2>
 <div class="sectionbody">
+<div class="exampleblock">
+<div class="title">Example 4. Chapter Summary</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Restrict the range of types that an array can contain</dt>
+<dd>
+<p>Apply a type annotation or allow the compiler to infer the types from the
+value used to initialize the array</p>
+</dd>
+<dt class="hdlist1">Define fixed-length arrays with specified types for each value</dt>
+<dd>
+<p>Use a tuple</p>
+</dd>
+<dt class="hdlist1">Refer to a collection of related values through a single name</dt>
+<dd>
+<p>Use an enum</p>
+</dd>
+<dt class="hdlist1">Define a type that can be assigned only specific values</dt>
+<dd>
+<p>Use a literal value type</p>
+</dd>
+<dt class="hdlist1">Avoid duplication when describing a complex type</dt>
+<dd>
+<p>Use a type alias</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
 <div class="sect2">
 <h3 id="_using_enums">Using Enums</h3>
 <div class="listingblock">
@@ -671,8 +870,182 @@ type comboType = [string, number | <span class="predefined-constant">true</span>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_chapter_10_working_with_objects">CHAPTER 10. Working with Objects</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="title">Example 5. Chapter Summary</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Describe an object to the TypeScript compiler</dt>
+<dd>
+<p>Use a shape type</p>
+</dd>
+<dt class="hdlist1">Describe irregular shape types</dt>
+<dd>
+<p>Use optional properties</p>
+</dd>
+<dt class="hdlist1">Use the same shape to describe multiple objects</dt>
+<dd>
+<p>Use a type alias</p>
+</dd>
+<dt class="hdlist1">Prevent compiler errors when a type contains a superset of the properties in a shape</dt>
+<dd>
+<p>Enable the <code>suppressExcessPropertyErrors</code> compiler option</p>
+</dd>
+<dt class="hdlist1">Combine shape types</dt>
+<dd>
+<p>Use type unions or intersections</p>
+</dd>
+<dt class="hdlist1">Type guard for object types</dt>
+<dd>
+<p>Check the properties defined by an object using the <code>in</code> keyword</p>
+</dd>
+<dt class="hdlist1">Reuse a type guard</dt>
+<dd>
+<p>Define a predicate function</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chapter_11_working_with_classes_and_interfaces">CHAPTER 11.Working with Classes and Interfaces</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="title">Example 6. Chapter Summary</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Create objects consistently</dt>
+<dd>
+<p>Use a constructor function or define a class</p>
+</dd>
+<dt class="hdlist1">Prevent access to properties and methods</dt>
+<dd>
+<p>Use the TypeScript access control keywords</p>
+</dd>
+<dt class="hdlist1">Prevent properties from being modified</dt>
+<dd>
+<p>Use the <code>readonly</code> keyword</p>
+</dd>
+<dt class="hdlist1">Receive a constructor parameter and create an instance property in a single step</dt>
+<dd>
+<p>Use the concise constructor syntax</p>
+</dd>
+<dt class="hdlist1">Define partial common functionality that will be inherited by subclasses</dt>
+<dd>
+<p>Define an abstract class</p>
+</dd>
+<dt class="hdlist1">Define a shape that classes can implement</dt>
+<dd>
+<p>Define an interface</p>
+</dd>
+<dt class="hdlist1">Define a property dynamically</dt>
+<dd>
+<p>Use an index signature</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Interfaces</dt>
+<dd>
+<p><a href="http://www.typescriptlang.org/docs/handbook/interfaces.html" class="bare">http://www.typescriptlang.org/docs/handbook/interfaces.html</a></p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">interface</span> Person {
+    <span class="key">name</span>: string;
+    getDetails(): string;
+}
+<span class="reserved">class</span> Employee <span class="reserved">implements</span> Person {
+    constructor(<span class="reserved">public</span> readonly id: string, <span class="reserved">public</span> name: string,
+            <span class="reserved">private</span> dept: string, <span class="reserved">public</span> city: string) {
+        <span class="comment">// no statements required</span>
+    }
+    getDetails() {
+        <span class="keyword">return</span> <span class="error">`</span><span class="predefined">$</span>{<span class="local-variable">this</span>.name} works <span class="keyword">in</span> <span class="predefined">$</span>{<span class="local-variable">this</span>.dept}<span class="error">`</span>;
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="__span_class_icon_i_class_fa_fa_bookmark_i_span_chapter_12_using_generic_types"><span class="icon"><i class="fa fa-bookmark"></i></span> CHAPTER 12. Using Generic Types</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="title">Example 7. Chapter Summary</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Define a class or function that can safely operate on different types</dt>
+<dd>
+<p>Define a generic type parameter</p>
+</dd>
+<dt class="hdlist1">Resolve a type for a generic type parameter</dt>
+<dd>
+<p>Use a generic type argument when instantiating the class or invoking the function</p>
+</dd>
+<dt class="hdlist1">Extend a generic class</dt>
+<dd>
+<p>Create a class that passes on, restricts, or fixes the
+generic type parameter inherited from the superclass</p>
+</dd>
+<dt class="hdlist1">Type guard a generic type</dt>
+<dd>
+<p>Use a type predicate function</p>
+</dd>
+<dt class="hdlist1">Describe a generic type without providing an implementation</dt>
+<dd>
+<p>Define an interface with a generic type parameter</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<mark>PART III. Creating Web Applications</mark>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_chapter_15_creating_a_stand_alone_web_app_part_1">CHAPTER 15. Creating a Stand-Alone Web App, Part 1</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://webpack.js.org/guides/getting-started/" class="bare">https://webpack.js.org/guides/getting-started/</a></p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre>npx webpack</pre>
@@ -683,7 +1056,7 @@ type comboType = [string, number | <span class="predefined-constant">true</span>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-12-08 05:15:36 +03
+Last updated 2020-01-17 22:51:22 +03
 </div>
 </div>
 </body>

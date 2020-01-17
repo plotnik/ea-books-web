@@ -4,11 +4,16 @@
 :source-highlighter: coderay
 :source-language: js
 :icons: font
+Adam Freeman
 
 .Source Code
 ====
 GitHub::
 https://github.com/Apress/essential-typescript
+====
+
+====
+NOTE: #PART I. Getting Started with TypeScript#
 ====
 
 == CHAPTER 1. Your First TypeScript Application
@@ -17,6 +22,30 @@ https://github.com/Apress/essential-typescript
 
 Command line prompts::
 https://github.com/SBoudrias/Inquirer.js
+
+
+
+== CHAPTER 3. JavaScript Primer, Part 1
+
+=== Understanding the this Keyword
+
+==== Changing the Behavior of the this Keyword
+
+
+.Listing 3-34. Setting the this Value in the index.js File in the primer Folder
+```
+let myObject = {
+    greeting: "Hi, there",
+    writeMessage(message) {
+        console.log(`${this.greeting}, ${message}`);
+    }
+}
+myObject.writeMessage = myObject.writeMessage.bind(myObject); <1>
+greeting = "Hello";
+myObject.writeMessage("It is sunny today");
+let myFunction = myObject.writeMessage;
+myFunction("It is sunny today");
+```
 
 == CHAPTER 4. JavaScript Primer, Part 2
 
@@ -65,7 +94,86 @@ test("check result value", () => {
 npx jest
 ----
 
+
+====
+NOTE: #PART II. Working with TypeScript#
+====
+
+== CHAPTER 7. Understanding Static Types
+
+.Chapter Summary
+====
+Specify a type:: Use a type annotation or allow the compiler to infer a type
+
+Inspect the types that the compiler infers:: 
+Enable the `declarations` compiler option and inspect the compiled code
+
+Allow any type to be used:: Specify the `any` or unknown types
+
+Prevent the compiler from inferring the `any` type:: 
+Enable the `noImplicityAny` compiler option
+
+Combine types:: Use a type union
+
+Override the type expected by the compiler:: Use a type assertion
+
+Test for a primitive value type:: Use the `typeof` operator as a type guard
+
+Prevent `null` or `undefined` from being accepted as values of other types:: 
+Enable the `strictNullChecks` compiler option
+
+Override the compiler to remove `null` values from a union:: 
+Use a non-null assertion or use a type guard
+
+Allow a variable to be used when it has not been assigned a value:: 
+Use the definite assignment assertion
+====
+
+
+== CHAPTER 8. Using Functions
+
+.Chapter Summary
+====
+Allow a function to be called with fewer arguments than parameters:: 
+Define optional parameters or define parameters with default values.
+
+Allow a function to be called with more arguments than parameters:: 
+Use a rest parameter
+
+Restrict the types that can be used for parameter values and results:: 
+Apply type annotations to parameters or function signatures
+
+Prevent null values from being used as function arguments:: 
+Enable the `strictNullChecks` compiler option
+
+Ensure that all function code paths return a result:: 
+Enable the `noImplicitReturns` compiler option
+
+Describe the relationship between the types of a function’s parameters and result::
+Overload the function’s types
+====
+
+
 == CHAPTER 9. Using Arrays, Tuples, and Enums
+
+.Chapter Summary
+====
+Restrict the range of types that an array can contain:: 
+Apply a type annotation or allow the compiler to infer the types from the
+value used to initialize the array
+
+Define fixed-length arrays with specified types for each value:: 
+Use a tuple
+
+Refer to a collection of related values through a single name:: 
+Use an enum
+
+Define a type that can be assigned only specific values:: 
+Use a literal value type
+
+Avoid duplication when describing a complex type:: 
+Use a type alias
+====
 
 === Using Enums
 
@@ -80,7 +188,99 @@ enum City { London = "LON", Paris = "PAR", Chicago = "CHI" }
 type comboType = [string, number | true, 1 | 2 | 3 | City.London][];
 ```
 
+== CHAPTER 10. Working with Objects
+
+.Chapter Summary
+====
+Describe an object to the TypeScript compiler:: Use a shape type
+
+Describe irregular shape types:: Use optional properties
+
+Use the same shape to describe multiple objects:: Use a type alias
+
+Prevent compiler errors when a type contains a superset of the properties in a shape:: 
+Enable the `suppressExcessPropertyErrors` compiler option
+
+Combine shape types:: Use type unions or intersections
+
+Type guard for object types:: 
+Check the properties defined by an object using the `in` keyword
+
+Reuse a type guard:: Define a predicate function
+====
+
+
+== CHAPTER 11.Working with Classes and Interfaces
+
+.Chapter Summary
+====
+Create objects consistently:: Use a constructor function or define a class
+
+Prevent access to properties and methods:: Use the TypeScript access control keywords
+
+Prevent properties from being modified:: Use the `readonly` keyword
+
+Receive a constructor parameter and create an instance property in a single step:: 
+Use the concise constructor syntax
+
+Define partial common functionality that will be inherited by subclasses:: 
+Define an abstract class
+
+Define a shape that classes can implement:: Define an interface
+
+Define a property dynamically:: Use an index signature
+====
+
+[NOTE] 
+====
+Interfaces::
+http://www.typescriptlang.org/docs/handbook/interfaces.html
+====
+
+```
+interface Person {
+    name: string;
+    getDetails(): string;
+}
+class Employee implements Person {
+    constructor(public readonly id: string, public name: string,
+            private dept: string, public city: string) {
+        // no statements required
+    }
+    getDetails() {
+        return `${this.name} works in ${this.dept}`;
+    }
+}
+```
+
+== icon:bookmark[] CHAPTER 12. Using Generic Types
+
+.Chapter Summary
+====
+Define a class or function that can safely operate on different types:: 
+Define a generic type parameter
+
+Resolve a type for a generic type parameter:: 
+Use a generic type argument when instantiating the class or invoking the function
+
+Extend a generic class:: 
+Create a class that passes on, restricts, or fixes the
+generic type parameter inherited from the superclass
+
+Type guard a generic type:: Use a type predicate function
+
+Describe a generic type without providing an implementation:: 
+Define an interface with a generic type parameter
+====
+
+
+====
+NOTE: #PART III. Creating Web Applications#
+====
+
 == CHAPTER 15. Creating a Stand-Alone Web App, Part 1
+
+https://webpack.js.org/guides/getting-started/
 
 ----
 npx webpack
