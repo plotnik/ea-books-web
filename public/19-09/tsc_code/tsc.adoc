@@ -284,4 +284,39 @@ https://webpack.js.org/guides/getting-started/
 
 ----
 npx webpack
+npx webpack-dev-server
 ----
+
+http://localhost:4500/
+
+=== Creating the Data Model
+
+++++
+<iframe height="200" width="500" src="15-data-model.html"></iframe>
+++++
+
+.Order
+```
+public addProduct(prod: Product, quantity: number) {
+    if (this.lines.has(prod.id)) {
+        if (quantity === 0) {
+            this.removeProduct(prod.id);
+        } else {
+            this.lines.get(prod.id)!.quantity += quantity; <1>
+        }
+    } else {
+        this.lines.set(prod.id, new OrderLine(prod, quantity));
+    }
+}
+```
+
+<1> link:http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator[Non-null assertion operator]
+
+
+==== icon:bookmark[] Creating the Data Source
+
+```
+export type ProductProp = keyof Product; <1>
+```
+
+<1> link:http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-1.html#keyof-and-lookup-types[keyof and Lookup Types]

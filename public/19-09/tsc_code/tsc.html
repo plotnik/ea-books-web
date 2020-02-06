@@ -561,7 +561,15 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_chapter_10_working_with_objects">CHAPTER 10. Working with Objects</a></li>
 <li><a href="#_chapter_11_working_with_classes_and_interfaces">CHAPTER 11.Working with Classes and Interfaces</a></li>
 <li><a href="#__span_class_icon_i_class_fa_fa_bookmark_i_span_chapter_12_using_generic_types"><span class="icon"><i class="fa fa-bookmark"></i></span> CHAPTER 12. Using Generic Types</a></li>
-<li><a href="#_chapter_15_creating_a_stand_alone_web_app_part_1">CHAPTER 15. Creating a Stand-Alone Web App, Part 1</a></li>
+<li><a href="#_chapter_15_creating_a_stand_alone_web_app_part_1">CHAPTER 15. Creating a Stand-Alone Web App, Part 1</a>
+<ul class="sectlevel2">
+<li><a href="#_creating_the_data_model">Creating the Data Model</a>
+<ul class="sectlevel3">
+<li><a href="#__span_class_icon_i_class_fa_fa_bookmark_i_span_creating_the_data_source"><span class="icon"><i class="fa fa-bookmark"></i></span> Creating the Data Source</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1048,7 +1056,55 @@ generic type parameter inherited from the superclass</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>npx webpack</pre>
+<pre>npx webpack
+npx webpack-dev-server</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="http://localhost:4500/" class="bare">http://localhost:4500/</a></p>
+</div>
+<div class="sect2">
+<h3 id="_creating_the_data_model">Creating the Data Model</h3>
+<iframe height="200" width="500" src="15-data-model.html"></iframe>
+<div class="listingblock">
+<div class="title">Order</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">public</span> addProduct(prod: Product, <span class="key">quantity</span>: number) {
+    <span class="keyword">if</span> (<span class="local-variable">this</span>.lines.has(prod.id)) {
+        <span class="keyword">if</span> (quantity === <span class="integer">0</span>) {
+            <span class="local-variable">this</span>.removeProduct(prod.id);
+        } <span class="keyword">else</span> {
+            <span class="local-variable">this</span>.lines.get(prod.id)!.quantity += quantity; <i class="conum" data-value="1"></i><b>(1)</b>
+        }
+    } <span class="keyword">else</span> {
+        <span class="local-variable">this</span>.lines.set(prod.id, <span class="keyword">new</span> OrderLine(prod, quantity));
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><a href="http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator">Non-null assertion operator</a></td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="__span_class_icon_i_class_fa_fa_bookmark_i_span_creating_the_data_source"><span class="icon"><i class="fa fa-bookmark"></i></span> Creating the Data Source</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">export</span> type ProductProp = keyof Product; <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><a href="http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-1.html#keyof-and-lookup-types">keyof and Lookup Types</a></td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -1056,7 +1112,7 @@ generic type parameter inherited from the superclass</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-01-17 22:51:22 +03
+Last updated 2020-02-06 21:58:14 +03
 </div>
 </div>
 </body>
