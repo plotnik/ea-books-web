@@ -5,9 +5,14 @@
 и скопировать на netlify
 
 */
-dropboxFolder = "/home/egor/Dropbox/Public/books"
 publicFolder = 'public'
 eaBooksFile = 'index.adoc'
+
+if (System.getProperty("os.name")=="Mac OS X") {
+    dropboxFolder = "/Users/eabramovich/Dropbox/Public/books"
+} else {
+    dropboxFolder = "/home/egor/Dropbox/Public/books"
+}
 
 import javax.swing.JOptionPane;
 
