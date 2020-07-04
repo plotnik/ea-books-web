@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5">
-<title>19-05 PWA with Angular</title>
+<title>AngularFire</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -417,413 +417,228 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
-<style>
-.listingblock .pygments .hll { background-color: #ffffcc }
-.listingblock .pygments, .listingblock .pygments code { background: #ffffff; }
-.listingblock .pygments .tok-c { color: #177500 } /* Comment */
-.listingblock .pygments .tok-err { color: #000000 } /* Error */
-.listingblock .pygments .tok-k { color: #A90D91 } /* Keyword */
-.listingblock .pygments .tok-l { color: #1C01CE } /* Literal */
-.listingblock .pygments .tok-n { color: #000000 } /* Name */
-.listingblock .pygments .tok-o { color: #000000 } /* Operator */
-.listingblock .pygments .tok-ch { color: #177500 } /* Comment.Hashbang */
-.listingblock .pygments .tok-cm { color: #177500 } /* Comment.Multiline */
-.listingblock .pygments .tok-cp { color: #633820 } /* Comment.Preproc */
-.listingblock .pygments .tok-cpf { color: #177500 } /* Comment.PreprocFile */
-.listingblock .pygments .tok-c1 { color: #177500 } /* Comment.Single */
-.listingblock .pygments .tok-cs { color: #177500 } /* Comment.Special */
-.listingblock .pygments .tok-kc { color: #A90D91 } /* Keyword.Constant */
-.listingblock .pygments .tok-kd { color: #A90D91 } /* Keyword.Declaration */
-.listingblock .pygments .tok-kn { color: #A90D91 } /* Keyword.Namespace */
-.listingblock .pygments .tok-kp { color: #A90D91 } /* Keyword.Pseudo */
-.listingblock .pygments .tok-kr { color: #A90D91 } /* Keyword.Reserved */
-.listingblock .pygments .tok-kt { color: #A90D91 } /* Keyword.Type */
-.listingblock .pygments .tok-ld { color: #1C01CE } /* Literal.Date */
-.listingblock .pygments .tok-m { color: #1C01CE } /* Literal.Number */
-.listingblock .pygments .tok-s { color: #C41A16 } /* Literal.String */
-.listingblock .pygments .tok-na { color: #836C28 } /* Name.Attribute */
-.listingblock .pygments .tok-nb { color: #A90D91 } /* Name.Builtin */
-.listingblock .pygments .tok-nc { color: #3F6E75 } /* Name.Class */
-.listingblock .pygments .tok-no { color: #000000 } /* Name.Constant */
-.listingblock .pygments .tok-nd { color: #000000 } /* Name.Decorator */
-.listingblock .pygments .tok-ni { color: #000000 } /* Name.Entity */
-.listingblock .pygments .tok-ne { color: #000000 } /* Name.Exception */
-.listingblock .pygments .tok-nf { color: #000000 } /* Name.Function */
-.listingblock .pygments .tok-nl { color: #000000 } /* Name.Label */
-.listingblock .pygments .tok-nn { color: #000000 } /* Name.Namespace */
-.listingblock .pygments .tok-nx { color: #000000 } /* Name.Other */
-.listingblock .pygments .tok-py { color: #000000 } /* Name.Property */
-.listingblock .pygments .tok-nt { color: #000000 } /* Name.Tag */
-.listingblock .pygments .tok-nv { color: #000000 } /* Name.Variable */
-.listingblock .pygments .tok-ow { color: #000000 } /* Operator.Word */
-.listingblock .pygments .tok-mb { color: #1C01CE } /* Literal.Number.Bin */
-.listingblock .pygments .tok-mf { color: #1C01CE } /* Literal.Number.Float */
-.listingblock .pygments .tok-mh { color: #1C01CE } /* Literal.Number.Hex */
-.listingblock .pygments .tok-mi { color: #1C01CE } /* Literal.Number.Integer */
-.listingblock .pygments .tok-mo { color: #1C01CE } /* Literal.Number.Oct */
-.listingblock .pygments .tok-sa { color: #C41A16 } /* Literal.String.Affix */
-.listingblock .pygments .tok-sb { color: #C41A16 } /* Literal.String.Backtick */
-.listingblock .pygments .tok-sc { color: #2300CE } /* Literal.String.Char */
-.listingblock .pygments .tok-dl { color: #C41A16 } /* Literal.String.Delimiter */
-.listingblock .pygments .tok-sd { color: #C41A16 } /* Literal.String.Doc */
-.listingblock .pygments .tok-s2 { color: #C41A16 } /* Literal.String.Double */
-.listingblock .pygments .tok-se { color: #C41A16 } /* Literal.String.Escape */
-.listingblock .pygments .tok-sh { color: #C41A16 } /* Literal.String.Heredoc */
-.listingblock .pygments .tok-si { color: #C41A16 } /* Literal.String.Interpol */
-.listingblock .pygments .tok-sx { color: #C41A16 } /* Literal.String.Other */
-.listingblock .pygments .tok-sr { color: #C41A16 } /* Literal.String.Regex */
-.listingblock .pygments .tok-s1 { color: #C41A16 } /* Literal.String.Single */
-.listingblock .pygments .tok-ss { color: #C41A16 } /* Literal.String.Symbol */
-.listingblock .pygments .tok-bp { color: #5B269A } /* Name.Builtin.Pseudo */
-.listingblock .pygments .tok-fm { color: #000000 } /* Name.Function.Magic */
-.listingblock .pygments .tok-vc { color: #000000 } /* Name.Variable.Class */
-.listingblock .pygments .tok-vg { color: #000000 } /* Name.Variable.Global */
-.listingblock .pygments .tok-vi { color: #000000 } /* Name.Variable.Instance */
-.listingblock .pygments .tok-vm { color: #000000 } /* Name.Variable.Magic */
-.listingblock .pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
-</style>
 </head>
-<body class="article toc2 toc-right">
+<body class="article">
 <div id="header">
-<h1>19-05 PWA with Angular</h1>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_chapter_1_setup_requirements">CHAPTER 1. Setup Requirements</a>
-<ul class="sectlevel2">
-<li><a href="#_scaffolding_our_project">Scaffolding Our Project</a>
-<ul class="sectlevel3">
-<li><a href="#_generating_new_angular_app_with_cli">Generating New Angular App with CLI</a></li>
-<li><a href="#_adding_angular_material_design">Adding Angular Material Design</a></li>
-</ul>
-</li>
-<li><a href="#_setting_up_a_mobile_device">Setting Up a Mobile Device</a></li>
-</ul>
-</li>
-<li><a href="#_chapter_2_deploying_to_firebase_as_the_back_end">CHAPTER 2. Deploying to Firebase as the Back End</a>
-<ul class="sectlevel2">
-<li><a href="#_deploying_to_firebase">Deploying to Firebase</a>
-<ul class="sectlevel3">
-<li><a href="#_generating_a_new_angular_app">Generating a New Angular App</a></li>
-<li><a href="#_initializing_the_app">Initializing the App</a></li>
-<li><a href="#_deploying_our_app">Deploying Our App</a></li>
-<li><a href="#_setting_up_angularfire">Setting Up AngularFire</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#_chapter_3_completing_an_angular_app">CHAPTER 3. Completing an Angular App</a>
-<ul class="sectlevel2">
-<li><a href="#_implementing_our_ui">Implementing Our UI</a>
-<ul class="sectlevel3">
-<li><a href="#_installing_and_setting_up_angular_material_cdk_and_animations">Installing and Setting Up Angular Material, CDK, and Animations</a>
-<ul class="sectlevel4">
-<li><a href="#_installing_angular_material_automatically_with_angular_cli">Installing @angular/material Automatically with Angular CLI</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#_creating_a_core_module_shared_module">Creating a Core Module / Shared Module</a>
-<ul class="sectlevel3">
-<li><a href="#_header_footer_and_body_components">Header, Footer, and Body Components</a></li>
-<li><a href="#_login_profile_page">Login / Profile Page</a></li>
-<li><a href="#_adding_login_signup_and_profile_ui_and_functionalities">Adding Login, Signup, and Profile UI and Functionalities</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
+<h1>AngularFire</h1>
 </div>
 <div id="content">
-<div id="preamble">
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<a href="angularfire.html">&lt;AngularFire Docs&gt;</a>
-</td>
-</tr>
-</table>
-</div>
 <div class="exampleblock">
 <div class="content">
 <div class="dlist">
 <dl>
-<dt class="hdlist1">GitHub</dt>
+<dt class="hdlist1">Add Firebase to your JavaScript project</dt>
 <dd>
-<p><a href="https://github.com/mhadaily/awesome-apress-pwa" class="bare">https://github.com/mhadaily/awesome-apress-pwa</a></p>
-</dd>
-<dt class="hdlist1">App</dt>
-<dd>
-<p><a href="https://ionic4-code.firebaseapp.com/" class="bare">https://ionic4-code.firebaseapp.com/</a></p>
+<p><a href="https://firebase.google.com/docs/web/setup" class="bare">https://firebase.google.com/docs/web/setup</a></p>
 </dd>
 </dl>
 </div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_chapter_1_setup_requirements">CHAPTER 1. Setup Requirements</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_scaffolding_our_project">Scaffolding Our Project</h3>
-<div class="sect3">
-<h4 id="_generating_new_angular_app_with_cli">Generating New Angular App with CLI</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code>ng new lovely-offline --routing --style=scss</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_adding_angular_material_design">Adding Angular Material Design</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>npm install --save @angular/material @angular/cdk @angular/animations</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>@import "~@angular/material/prebuilt-themes/indigo-pink.css";</code></pre>
+<pre class="highlight"><code>ng add @angular/fire</code></pre>
 </div>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_setting_up_a_mobile_device">Setting Up a Mobile Device</h3>
-<div class="paragraph">
-<p><a href="https://developers.google.com/web/tools/chrome-devtools/remote-debugging/" class="bare">https://developers.google.com/web/tools/chrome-devtools/remote-debugging/</a></p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_chapter_2_deploying_to_firebase_as_the_back_end">CHAPTER 2. Deploying to Firebase as the Back End</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_deploying_to_firebase">Deploying to Firebase</h3>
-<div class="sect3">
-<h4 id="_generating_a_new_angular_app">Generating a New Angular App</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>ng build --prod
-
-npm install -g firebase-tools
-
-firebase login</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_initializing_the_app">Initializing the App</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>firebase init</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_deploying_our_app">Deploying Our App</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>firebase deploy</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_setting_up_angularfire">Setting Up AngularFire</h4>
-<div class="paragraph">
-<p><a href="https://github.com/angular/angularfire" class="bare">https://github.com/angular/angularfire</a></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>npm install firebase @angular/fire --save</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ts"><span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
-<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">AngularFirestore</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;angularfire2/firestore&#39;</span><span class="tok-p">;</span>
-<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Observable</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;rxjs&#39;</span><span class="tok-p">;</span>
-
-<span class="tok-kd">@Component</span><span class="tok-p">({</span>
-  <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-root&#39;</span><span class="tok-p">,</span>
-  <span class="tok-nx">template</span><span class="tok-o">:</span> <span class="tok-sb">`</span>
-<span class="tok-sb">    &lt;h1&gt;Bind Firestore collection example&lt;/h1&gt;</span>
-<span class="tok-sb">    &lt;ul&gt;</span>
-<span class="tok-sb">      &lt;li class=&quot;text&quot; *ngFor=&quot;let note of notes$ | async&quot;&gt;</span>
-<span class="tok-sb">        {{note.title}}</span>
-<span class="tok-sb">      &lt;/li&gt;</span>
-<span class="tok-sb">    &lt;/ul&gt;</span>
-<span class="tok-sb">    &lt;router-outlet&gt;&lt;/router-outlet&gt;</span>
-<span class="tok-sb">  `</span><span class="tok-p">,</span>
-  <span class="tok-nx">styleUrls</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-s1">&#39;./app.component.scss&#39;</span><span class="tok-p">]</span>
-<span class="tok-p">})</span>
-<span class="tok-kr">export</span> <span class="tok-kr">class</span> <span class="tok-nx">AppComponent</span> <span class="tok-p">{</span>
-  <span class="tok-nx">notes$</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">any</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span><span class="tok-p">;</span>
-  <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-nx">db</span>: <span class="tok-kt">AngularFirestore</span><span class="tok-p">)</span> <span class="tok-p">{</span>
-    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">notes$</span> <span class="tok-o">=</span> <span class="tok-nx">db</span><span class="tok-p">.</span><span class="tok-nx">collection</span><span class="tok-p">(</span><span class="tok-s1">&#39;notes&#39;</span><span class="tok-p">).</span><span class="tok-nx">valueChanges</span><span class="tok-p">();</span>
-  <span class="tok-p">}</span>
-<span class="tok-p">}</span></code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_chapter_3_completing_an_angular_app">CHAPTER 3. Completing an Angular App</h2>
-<div class="sectionbody">
+<div class="quoteblock">
+<blockquote>
 <div class="dlist">
 <dl>
-<dt class="hdlist1">Firebase Web Codelab</dt>
+<dt class="hdlist1">AngularFire</dt>
 <dd>
-<p><a href="https://codelabs.developers.google.com/codelabs/firebase-web/#0" class="bare">https://codelabs.developers.google.com/codelabs/firebase-web/#0</a></p>
+<p><a href="https://github.com/angular/angularfire" class="bare">https://github.com/angular/angularfire</a></p>
 </dd>
-<dt class="hdlist1">Ionic - Publishing PWA</dt>
+<dt class="hdlist1">AngularFire Quickstart</dt>
 <dd>
-<p><a href="https://ionicframework.com/docs/publishing/progressive-web-app" class="bare">https://ionicframework.com/docs/publishing/progressive-web-app</a></p>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/install-and-setup.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/install-and-setup.md</a></p>
 </dd>
 </dl>
 </div>
-<div class="sect2">
-<h3 id="_implementing_our_ui">Implementing Our UI</h3>
-<div class="sect3">
-<h4 id="_installing_and_setting_up_angular_material_cdk_and_animations">Installing and Setting Up Angular Material, CDK, and Animations</h4>
-<div class="sect4">
-<h5 id="_installing_angular_material_automatically_with_angular_cli">Installing @angular/material Automatically with Angular CLI</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>ng add @angular/material</code></pre>
+</blockquote>
 </div>
+<div class="quoteblock">
+<div class="title">firestore</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">2. Documents in AngularFirestore</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/firestore/documents.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/firestore/documents.md</a></p>
+</dd>
+<dt class="hdlist1">3. Collections in AngularFirestore</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/firestore/collections.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/firestore/collections.md</a></p>
+</dd>
+<dt class="hdlist1">4. Querying Collections in AngularFirestore</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/firestore/querying-collections.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/firestore/querying-collections.md</a></p>
+</dd>
+<dt class="hdlist1">Offline Data in Firestore</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/firestore/offline-data.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/firestore/offline-data.md</a></p>
+</dd>
+</dl>
 </div>
+</blockquote>
 </div>
+<div class="quoteblock">
+<div class="title">auth</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">5. Getting started with Firebase Authentication</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md</a></p>
+</dd>
+</dl>
 </div>
+</blockquote>
 </div>
-<div class="sect2">
-<h3 id="_creating_a_core_module_shared_module">Creating a Core Module / Shared Module</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>ng generate module modules/core
-
-ng generate module modules/shared</code></pre>
+<div class="quoteblock">
+<div class="title">rtdb</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">2. Retrieving data as objects</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/rtdb/objects.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/rtdb/objects.md</a></p>
+</dd>
+<dt class="hdlist1">3. Retrieving data as lists</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/rtdb/lists.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/rtdb/lists.md</a></p>
+</dd>
+<dt class="hdlist1">4. Querying lists</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/rtdb/querying-lists.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/rtdb/querying-lists.md</a></p>
+</dd>
+</dl>
 </div>
+</blockquote>
 </div>
-<div class="sect3">
-<h4 id="_header_footer_and_body_components">Header, Footer, and Body Components</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>ng g m modules/layout
-
-ng generate component modules/layout/header
-
-ng generate component modules/layout/footer</code></pre>
+<div class="quoteblock">
+<div class="title">functions</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">AngularFireFunctions</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/functions/functions.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/functions/functions.md</a></p>
+</dd>
+</dl>
 </div>
+</blockquote>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>header.component.html</p>
-</li>
-<li>
-<p>header.component.scss</p>
-</li>
-<li>
-<p>header.component.ts</p>
-</li>
-<li>
-<p>footer.component.html</p>
-</li>
-<li>
-<p>footer.component.scss</p>
-</li>
-<li>
-<p>footer.component.ts</p>
-</li>
-<li>
-<p>styles.scss</p>
-</li>
-</ul>
+<div class="quoteblock">
+<div class="title">ionic</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Installation and Setup with Ionic CLI</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/ionic/cli.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/ionic/cli.md</a></p>
+</dd>
+<dt class="hdlist1">Using AngularFire with Ionic 3</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/ionic/v3.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/ionic/v3.md</a></p>
+</dd>
+<dt class="hdlist1">Authentication</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/ionic/authentication.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/ionic/authentication.md</a></p>
+</dd>
+</dl>
 </div>
-<div class="listingblock">
-<div class="title">src/app/app.component.ts</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ts"><span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
-
-<span class="tok-kd">@Component</span><span class="tok-p">({</span>
-  <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-root&#39;</span><span class="tok-p">,</span>
-  <span class="tok-nx">template</span><span class="tok-o">:</span> <span class="tok-sb">`</span>
-<span class="tok-sb">  &lt;div class=&quot;appress-pwa-note&quot;&gt;</span>
-<span class="tok-sb">    &lt;app-header&gt;&lt;/app-header&gt;</span>
-<span class="tok-sb">    &lt;div class=&quot;main&quot;&gt;</span>
-<span class="tok-sb">      &lt;router-outlet&gt;&lt;/router-outlet&gt;</span>
-<span class="tok-sb">    &lt;/div&gt;</span>
-<span class="tok-sb">    &lt;app-footer&gt;&lt;/app-footer&gt;</span>
-<span class="tok-sb">  &lt;/div&gt;</span>
-<span class="tok-sb">  `</span><span class="tok-p">,</span>
-<span class="tok-p">})</span>
-<span class="tok-kr">export</span> <span class="tok-kr">class</span> <span class="tok-nx">AppComponent</span> <span class="tok-p">{</span> <span class="tok-p">}</span></code></pre>
+</blockquote>
 </div>
+<div class="quoteblock">
+<div class="title">storage</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">AngularFireStorage</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/storage/storage.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/storage/storage.md</a></p>
+</dd>
+</dl>
 </div>
+</blockquote>
 </div>
-<div class="sect3">
-<h4 id="_login_profile_page">Login / Profile Page</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>ng generate module modules/user --routing
-
-ng generate component modules/user/userContainer --flat</code></pre>
+<div class="quoteblock">
+<div class="title">messaging</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">AngularFireMessaging</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/messaging/messaging.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/messaging/messaging.md</a></p>
+</dd>
+</dl>
 </div>
+</blockquote>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>UserModuleRouting</p>
-</li>
-<li>
-<p>AppModuleRouting</p>
-</li>
-</ul>
+<div class="quoteblock">
+<div class="title">analytics</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Getting started with Google Analytics</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/analytics/getting-started.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/analytics/getting-started.md</a></p>
+</dd>
+</dl>
 </div>
+</blockquote>
 </div>
-<div class="sect3">
-<h4 id="_adding_login_signup_and_profile_ui_and_functionalities">Adding Login, Signup, and Profile UI and Functionalities</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code>ng generate service modules/core/firebaseAuth</code></pre>
+<div class="quoteblock">
+<div class="title">universal</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Getting started with AngularFire and Universal</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/universal/getting-started.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/universal/getting-started.md</a></p>
+</dd>
+<dt class="hdlist1">Deploying your Universal application on Cloud Functions for Firebase</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/universal/cloud-functions.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/universal/cloud-functions.md</a></p>
+</dd>
+<dt class="hdlist1">Prerendering your Universal application</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/universal/prerendering.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/universal/prerendering.md</a></p>
+</dd>
+</dl>
 </div>
+</blockquote>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>src/app/modules/core/firebase-auth.service.ts</p>
-</li>
-<li>
-<p>src/app/modules/user/user-container.component.ts</p>
-</li>
-<li>
-<p>src/app/modules/user/user-container.component.html</p>
-</li>
-<li>
-<p>src/app/modules/user/user-container.component.scss</p>
-</li>
-</ul>
+<div class="quoteblock">
+<div class="title">remote-config</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Getting started with Remote Config β</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/remote-config/getting-started.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/remote-config/getting-started.md</a></p>
+</dd>
+</dl>
 </div>
+</blockquote>
 </div>
+<div class="quoteblock">
+<div class="title">performance</div>
+<blockquote>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Getting started with Performance Monitoring</dt>
+<dd>
+<p><a href="https://github.com/angular/angularfire/blob/master/docs/performance/getting-started.md" class="bare">https://github.com/angular/angularfire/blob/master/docs/performance/getting-started.md</a></p>
+</dd>
+</dl>
 </div>
-</div>
+</blockquote>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-07-04 17:58:48 +03
+Last updated 2020-07-04 18:12:52 +03
 </div>
 </div>
 </body>
