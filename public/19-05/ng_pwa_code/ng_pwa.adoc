@@ -102,17 +102,13 @@ export class AppComponent {
 
 == CHAPTER 3. Completing an Angular App
 
+====
 Firebase Web Codelab::
 https://codelabs.developers.google.com/codelabs/firebase-web/#0
 
 Ionic - Publishing PWA::
 https://ionicframework.com/docs/publishing/progressive-web-app
-
-=== Implementing Our UI
-
-==== Installing and Setting Up Angular Material, CDK, and Animations
-
-===== Installing @angular/material Automatically with Angular CLI
+====
 
 ```
 ng add @angular/material
@@ -136,13 +132,18 @@ ng generate component modules/layout/header
 ng generate component modules/layout/footer
 ```
 
-- header.component.html
-- header.component.scss
-- header.component.ts
-- footer.component.html
-- footer.component.scss
-- footer.component.ts
-- styles.scss
+----
+- src/app/modules/layout/header
+    - header.component.html
+    - header.component.scss
+    - header.component.ts
+- src/app/modules/layout/footer
+    - footer.component.html
+    - footer.component.scss
+    - footer.component.ts
+- src    
+    - styles.scss
+----
 
 .src/app/app.component.ts
 ```ts
@@ -171,8 +172,10 @@ ng generate module modules/user --routing
 ng generate component modules/user/userContainer --flat
 ```
 
-- UserModuleRouting
-- AppModuleRouting
+----
+- UserRoutingModule
+- AppRoutingModule
+----
 
 ==== Adding Login, Signup, and Profile UI and Functionalities
 
@@ -180,7 +183,29 @@ ng generate component modules/user/userContainer --flat
 ng generate service modules/core/firebaseAuth
 ```
 
-- src/app/modules/core/firebase-auth.service.ts
-- src/app/modules/user/user-container.component.ts
-- src/app/modules/user/user-container.component.html
-- src/app/modules/user/user-container.component.scss
+----
+- src/app/modules/core/
+    - firebase-auth.service.ts
+- src/app/modules/user/
+    - user-container.component.ts
+    - user-container.component.html
+    - user-container.component.scss
+----
+
+==== Firebase CRUD Operations for Note Module
+
+===== List, Add, and Detail Note Views
+
+```
+ng generate module modules/notes --routing
+
+ng generate component modules/notes/notesList
+ng generate component modules/notes/notesAdd
+ng generate component modules/notes/noteDetails
+```
+
+====== Authentication Service
+
+```
+ng generate service modules/core/auth
+```
