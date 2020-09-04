@@ -1,7 +1,9 @@
 = Pro Angular 6
 :toc: right
 :toclevels: 4
-:source-highlighter: coderay
+:source-highlighter: pygments
+:pygments-style: xcode
+:source-language: js
 :icons: font
 Adam Freeman
 
@@ -9,7 +11,6 @@ Adam Freeman
 |===
 | Angular          | https://angular.io/
 | Angular CLI      | https://cli.angular.io/
-| Deployment       | https://angular.io/guide/deployment
 | Angular Material | https://material.angular.io/
 | Angular Tutorial | https://angular.io/start
 | Book Code        | https://github.com/Apress/pro-angular-6
@@ -26,39 +27,10 @@ Adam Freeman
 
 == CHAPTER 7. SportsStore: A Real Application
 
-////
 [cols="1,3"]
 |===
 | Path | /mnt/disk2/home/egor/prog/ng-lists/books/
 | File | src/app/app.component.html
-|===
-////
-
-[cols="1,1"]
-|===
-
-a|
-```
-ng new SportsStore
-```
-a|
-```
-$ ng new beta-lists
-? Would you like to add Angular routing? No
-? Which stylesheet format would you like to use? CSS
-```
-
-a|
-```
-npm install bootstrap@4.1.1
-npm install font-awesome@4.7.0
-```
-a|
-```
-npm install bootstrap --save
-npm install font-awesome --save
-```
-
 |===
 
 === Adding the CSS Style Sheets to the Application
@@ -90,3 +62,50 @@ ng add @ng-bootstrap/ng-bootstrap
 angular.json::
 https://angular.io/guide/workspace-config
 
+=== Starting the Data Model
+
+==== Creating the Model Repository
+
+.Listing 7-11
+```ts
+import { Injectable } from "@angular/core";
+import { Product } from "./product.model";
+import { StaticDataSource } from "./static.datasource";
+
+@Injectable()
+export class ProductRepository {
+
+    private products: Product[] = [];
+    private categories: string[] = [];
+
+    constructor(private dataSource: StaticDataSource) {
+        dataSource.getProducts().subscribe(data => {
+            this.products = data;
+            this.categories = data
+                .map(p => p.category)
+                .filter((c, index, array) => array.indexOf(c) == index).sort(); <1>
+        });
+    }
+
+    getProducts(category: string = null): Product[] { <2>
+        return this.products
+            .filter(p => 
+                category == null || 
+                category == p.category);
+    }
+
+    getProduct(id: number): Product {
+        return this.products.find(p => <3>
+            p.id == id);
+    }
+
+    getCategories(): string[] {
+        return this.categories;
+    }
+}
+```
+====
+<1> `array.indexOf` выдает индекс первого вхождения, то есть таким образом удаляются дубликаты 
+<2> Для параметра `null` возвращается весь список
+<3> В этом фрагменте используются методы массива `map, filter, find`
+====

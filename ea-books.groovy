@@ -16,9 +16,17 @@ if (System.getProperty("os.name")=="Mac OS X") {
 
 import javax.swing.JOptionPane;
 
-JOptionPane.showMessageDialog(null, 
-    "<html><h3>Копирование документов <br> из дропбокса с книгами на <code>netlify", 
-    "ea-books", 1);
+useSwing = false
+
+void printStatus(String msg) {
+	if (useSwing) {
+        JOptionPane.showMessageDialog(null, msg, "ea-books", 1);
+	} else {
+		println msg
+	}
+}
+
+printStatus("<html><h3>Копирование документов <br> из дропбокса с книгами на <code>netlify")
     
 long tstr(tstamp) {
 	return (tstamp-1550000000000)/100000
@@ -112,6 +120,4 @@ for (book in bookList) {
 	}
 }
 
-JOptionPane.showMessageDialog(null, 
-    "<html><h3>Документы из дропбокса с книгами &nbsp; <br> скопированы на <code>netlify", 
-    "ea-books", 1);
+printStatus("<html><h3>Документы из дропбокса с книгами &nbsp; <br> скопированы на <code>netlify")
