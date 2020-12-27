@@ -1,4 +1,5 @@
 = Pro Angular 6
+// :folding=explicit:collapseFolds=1:
 :toc: right
 :toclevels: 4
 :source-highlighter: pygments
@@ -15,6 +16,11 @@ Adam Freeman
 | Angular Tutorial | https://angular.io/start
 | Book Code        | https://github.com/Apress/pro-angular-6
 |===
+
+====
+NOTE: Tutorial by Matt Ramble:
+https://developer.okta.com/blog/2020/03/02/angular-bootstrap
+====
 
 == CHAPTER 2. Your First Angular App
 
@@ -34,6 +40,7 @@ Adam Freeman
 |===
 
 === Adding the CSS Style Sheets to the Application
+// {{{
 
 [cols="1,1"]
 |===
@@ -46,21 +53,65 @@ https://ng-bootstrap.github.io/
 
 ```sh
 ng add @ng-bootstrap/ng-bootstrap
+
+npm install ngx-markdown --save
 ```
 
 |===
 
-.angular.json
+.Listing 7-1. Adding CSS to the `angular.json` file in the SportsStore Folder
 ```json
-    "styles": [
-      "src/styles.css",
-      "node_modules/bootstrap/dist/css/bootstrap.min.css",
-      "node_modules/font-awesome/css/font-awesome.min.css"
-    ],
+      ...
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/SportsStore",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "src/tsconfig.app.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css", <1>
+              "node_modules/font-awesome/css/font-awesome.min.css" <2>          
+            ],
+            "scripts": []
+          },
+          ...
+```
+
+```
+npm install bootstrap --save
+npm install font-awesome --save
 ```
 
 angular.json::
 https://angular.io/guide/workspace-config
+// }}}
+
+=== Preparing the HTML File
+
+.Listing 7-5. Preparing the `index.html` File in the src Folder
+```
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SportsStore</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body class="m-2"> <!--1-->
+  <app>SportsStore Will Go Here</app>
+</body>
+</html>
+```
 
 === Starting the Data Model
 
