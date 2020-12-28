@@ -1,13 +1,14 @@
-/*
-
-Найти документы adoc в дропбоксе с книгами,
-отсортировать их по дате последней модификации
-и скопировать на netlify
-
-*/
+/**
+ * Найти документы adoc в дропбоксе с книгами,
+ * отсортировать их по дате последней модификации
+ * и скопировать на netlify
+ */
+ 
 publicFolder = 'public'
 eaBooksFile = 'index.adoc'
 
+/* На разных машинах каталоги Dropbox расположены по-разному.
+ */
 if (System.getProperty("os.name")=="Mac OS X") {
     dropboxFolder = "/Users/eabramovich/Dropbox/Public/books"
 } else {
@@ -18,6 +19,9 @@ import javax.swing.JOptionPane;
 
 useSwing = false
 
+/* В зависимости от настроек мы можем выводить сообщения о текущем статусе
+ * в свинговое окошко либо на консоль.
+ */
 void printStatus(String msg) {
 	if (useSwing) {
         JOptionPane.showMessageDialog(null, msg, "ea-books", 1);
@@ -39,16 +43,27 @@ void debugList(noteList, delim) {
 	println delim
 }
 
-
+/* В списке `bookList` будем сохранять последний timestamp для папки каждого месяца
+ * и список заметок для этой папки.
+ */
 bookList = []
 dirs = new File(dropboxFolder).listFiles()
 for (dir in dirs) {
+    
+    /* Пройдемся по дропбоксу и выделим свои папки формата `ГГ-ММ`
+     * с разбивкой по месяцам.
+     */
     if (!dir.isDirectory()) continue;
     if (!(dir.name ==~ /\d{2}-\d{2}/)) continue;
+    
     subdirs = dir.listFiles()
     for (subdir in subdirs) {
     	if (!subdir.isDirectory()) continue;
     	if (!subdir.name.endsWith('_code')) continue;
+    	
+    	/* Для указанного месяца найдем папки с заметками
+    	 * и сохраним имена файлов заметок в `noteList`.
+    	 */
     	noteList = []
     	afiles = subdir.listFiles()
     	for (afile in afiles) {
@@ -58,11 +73,11 @@ for (dir in dirs) {
     	}
     	if (noteList.size()>0) {
     		//debugList(noteList, "------")
-    		noteList.sort { a,b -> b.lastModified() - a.lastModified() }
+    		noteList.sort { a,b -> a.lastModified() - b.lastModified() }
     		//debugList(noteList, "======")
     		tstamp = noteList[0].lastModified()
     		//println "     tstamp: " + tstr(tstamp)
-    		bookList << [ tstamp: tstamp, notes: noteList ]
+    		bookList << [ tstamp: tstamp, notes: noteList, mdir: dir.name ]
     	}
     }
 }
@@ -72,7 +87,7 @@ bookList.sort { a,b ->
   if (b.tstamp > a.tstamp) return 1;
   return 0;
 }
-//bookList.each { println it.tstamp - 1555508398000 }
+//bookList.each { println it.mdir + " : " + tstr(it.tstamp)} // - 1555508398000 }
 
 void writeToFile(f) {
 	f.println "= Чтение по программированию"
