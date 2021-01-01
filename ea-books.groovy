@@ -3,17 +3,28 @@
  * отсортировать их по дате последней модификации
  * и скопировать на netlify
  */
- 
-publicFolder = 'public'
-eaBooksFile = 'index.adoc'
+
+@Grab('info.picocli:picocli-groovy:4.6.0')
+import static picocli.CommandLine.*
+import groovy.transform.Field
+
+@Command(name = 'ea-books', mixinStandardHelpOptions = true, version = '1.0',
+  description = 'Generate book index for Netlify.')
+@picocli.groovy.PicocliScript
 
 /* На разных машинах каталоги Dropbox расположены по-разному.
  */
-if (System.getProperty("os.name")=="Mac OS X") {
-    dropboxFolder = "/Users/eabramovich/Dropbox/Public/books"
-} else {
-    dropboxFolder = "/home/egor/Dropbox/Public/books"
-}
+@Parameters(index = '0', description = 'Dropbox folder.')
+@Field String dropboxFolder
+
+@Option(names = ['-f'], description = 'Public folder.')
+@Field publicFolder = 'public'
+
+@Option(names = ['-o'], description = 'Index file to generate.')
+@Field eaBooksFile = 'index.adoc'
+
+@Option(names = ['--verbose'], description = 'Verbose info on specified folder.')
+@Field String verboseFolder = ''
 
 import javax.swing.JOptionPane;
 
@@ -30,15 +41,21 @@ void printStatus(String msg) {
 	}
 }
 
-printStatus("<html><h3>Копирование документов <br> из дропбокса с книгами на <code>netlify")
+printStatus("Generate book index for Netlify")
     
 long tstr(tstamp) {
 	return (tstamp-1550000000000)/100000
 }
 
+/** 
+ * Распечатать список документов с датами, найденный для указанной папки. 
+ * @param noteList  List of File
+ * @param delim     Напечатать разделитель
+ */
 void debugList(noteList, delim) {
-	noteList.each {
-		println tstr(it.lastModified()) + " | " + it.path.substring(dropboxFolder.length()) 
+    noteList.each {
+	    String path = it.path.substring(dropboxFolder.length());
+		println tstr(it.lastModified()) + " | " + path
 	}
 	println delim
 }
@@ -72,11 +89,43 @@ for (dir in dirs) {
     	    noteList << afile
     	}
     	if (noteList.size()>0) {
-    		//debugList(noteList, "------")
-    		noteList.sort { a,b -> a.lastModified() - b.lastModified() }
-    		//debugList(noteList, "======")
-    		tstamp = noteList[0].lastModified()
-    		//println "     tstamp: " + tstr(tstamp)
+            /* Отсортировать документы в папке по дате, более новые сверху.
+             */
+            boolean showDebugInfo = verboseFolder == dir.name
+            if (showDebugInfo) {
+                debugList(noteList, "-------------------^ before sort")
+            }
+            noteList.sort { a,b -> 
+              if (b.lastModified() > a.lastModified()) {
+                  return 1
+              } else 
+              if (b.lastModified() < a.lastModified()) {
+                  return -1
+              } else {
+                  return 0
+              }
+            }
+            // TODO: можно перевести этот скрипт на jbang, а то разность между 
+            //       двумя числами long как-то не очень в groovy работает...
+            //noteList.sort { a,b -> b.lastModified() - a.lastModified() }
+            /*
+            noteList.sort { a,b -> 
+                long result = a.lastModified() - b.lastModified();
+                if (showDebugInfo) {
+                    println "a: ${tstr(a.lastModified())} ${a.name} | b: ${tstr(b.lastModified())} ${b.name} | result: $result"
+                }
+                return result;
+            } */
+            if (showDebugInfo) {
+                debugList(noteList, "===================^ after sort")
+            }
+                
+            /* Выбрать самую свежую дату файла документа и присвоить ее текущей папке 
+             */
+            tstamp = noteList[0].lastModified()
+            if (showDebugInfo) {
+                println "-------------------^ tstamp result: " + tstr(tstamp)
+            }
     		bookList << [ tstamp: tstamp, notes: noteList, mdir: dir.name ]
     	}
     }
@@ -87,7 +136,13 @@ bookList.sort { a,b ->
   if (b.tstamp > a.tstamp) return 1;
   return 0;
 }
-//bookList.each { println it.mdir + " : " + tstr(it.tstamp)} // - 1555508398000 }
+
+bookList.each { 
+    if (verboseFolder==it.mdir) {
+        println it.mdir + " : " + tstr(it.tstamp)
+    }
+}
+
 
 void writeToFile(f) {
 	f.println "= Чтение по программированию"
@@ -135,4 +190,4 @@ for (book in bookList) {
 	}
 }
 
-printStatus("<html><h3>Документы из дропбокса с книгами &nbsp; <br> скопированы на <code>netlify")
+printStatus("Dropbox documents copied to Netlify folder")
