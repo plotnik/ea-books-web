@@ -1,0 +1,47 @@
+= Chapter 14. Spring Java Enterprise Services and Remoting Technologies
+:toc: right
+:icons: font
+:source-highlighter: coderay
+Spring Recipes
+
+
+== 14-10. Introduction to contract first SOAP Web Services
+
+== Spring Guides
+
+All guides::
+https://spring.io/guides
+
+----
+mvn spring-boot:run
+----
+
+Spring Web Services Reference Documentation::
+- link:soap/Spring%20Web%20Services%20Reference%20Documentation.pdf[]
+- https://docs.spring.io/spring-ws/docs/3.0.10.RELEASE/reference/
+
+=== Producing a SOAP web service
+
+Guide::
+https://spring.io/guides/gs/producing-web-service/
+
+WSDL::
+http://localhost:8080/ws/countries.wsdl
+
+.WebServiceConfig
+```java
+include::soap/gs-producing-web-service/complete/src/main/java/com/example/producingwebservice/WebServiceConfig.java[]
+```
+
+----
+curl --header "content-type: text/xml" -d @request.xml http://localhost:8080/ws
+----
+
+.request.xml
+```xml
+include::soap/gs-producing-web-service/complete/request.xml[]
+```
+
+=== Consuming a SOAP web service
+
+https://spring.io/guides/gs/consuming-web-service/
