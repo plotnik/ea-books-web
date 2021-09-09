@@ -516,16 +516,16 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <li><a href="#_useful_links">Useful Links</a></li>
 <li><a href="#_template_driven_forms">Template-Driven Forms</a>
 <ul class="sectlevel3">
-<li><a href="#_signup_component_html">signup.component.html</a></li>
-<li><a href="#_signup_component_ts">signup.component.ts</a></li>
-<li><a href="#_signup_component_css">signup.component.css</a></li>
+<li><a href="#_signup_component_html"><code>signup.component.html</code></a></li>
+<li><a href="#_signup_component_ts"><code>signup.component.ts</code></a></li>
+<li><a href="#_signup_component_css"><code>signup.component.css</code></a></li>
 </ul>
 </li>
 <li><a href="#_reactive_forms">Reactive Forms</a>
 <ul class="sectlevel3">
-<li><a href="#_login_component_html">login.component.html</a></li>
-<li><a href="#_login_component_ts">login.component.ts</a></li>
-<li><a href="#_login_component_css">login.component.css</a></li>
+<li><a href="#_login_component_html"><code>login.component.html</code></a></li>
+<li><a href="#_login_component_ts"><code>login.component.ts</code></a></li>
+<li><a href="#_login_component_css"><code>login.component.css</code></a></li>
 </ul>
 </li>
 </ul>
@@ -534,15 +534,25 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <ul class="sectlevel2">
 <li><a href="#_adding_some_cards">Adding some "Cards"</a>
 <ul class="sectlevel3">
-<li><a href="#_new_training_component_html">new-training.component.html</a></li>
+<li><a href="#_new_training_component_html"><code>new-training.component.html</code></a></li>
 </ul>
 </li>
 <li><a href="#_adding_a_spinner_to_the_training_screen">Adding a Spinner to the Training Screen</a>
 <ul class="sectlevel3">
-<li><a href="#_training_component_html">training.component.html</a></li>
+<li><a href="#_training_component_html"><code>training.component.html</code></a></li>
 </ul>
 </li>
 <li><a href="#_useful_resources_links">Useful Resources &amp; Links</a></li>
+</ul>
+</li>
+<li><a href="#_section_5_working_with_data_and_angular_material">Section 5: Working with Data and Angular Material</a>
+<ul class="sectlevel2">
+<li><a href="#_implementing_authentication">Implementing Authentication</a>
+<ul class="sectlevel3">
+<li><a href="#_auth_service_ts"><code>auth.service.ts</code></a></li>
+<li><a href="#_header_component_ts"><code>header.component.ts</code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -605,7 +615,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <div class="sect2">
 <h3 id="_template_driven_forms">Template-Driven Forms</h3>
 <div class="sect3">
-<h4 id="_signup_component_html">signup.component.html</h4>
+<h4 id="_signup_component_html"><code>signup.component.html</code></h4>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -659,13 +669,14 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 </div>
 </div>
 <div class="sect3">
-<h4 id="_signup_component_ts">signup.component.ts</h4>
+<h4 id="_signup_component_ts"><code>signup.component.ts</code></h4>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">OnInit</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
 <span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">NgForm</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/forms&#39;</span><span class="tok-p">;</span>
+<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">AuthService</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;../auth.service&#39;</span><span class="tok-p">;</span>
 
 <span class="tok-kd">@Component</span><span class="tok-p">({</span>
   <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-signup&#39;</span><span class="tok-p">,</span>
@@ -676,7 +687,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 
   <span class="tok-nx">maxDate</span><span class="tok-p">;</span>
 
-  <span class="tok-kr">constructor</span><span class="tok-p">()</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
+  <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-kr">private</span> <span class="tok-nx">authService</span>: <span class="tok-kt">AuthService</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
 
   <span class="tok-nx">ngOnInit</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
     <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">maxDate</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-nb">Date</span><span class="tok-p">();</span>
@@ -684,7 +695,10 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
   <span class="tok-p">}</span>
 
   <span class="tok-nx">onSubmit</span><span class="tok-p">(</span><span class="tok-nx">form</span>: <span class="tok-kt">NgForm</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
-    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">form</span><span class="tok-p">);</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">authService</span><span class="tok-p">.</span><span class="tok-nx">registerUser</span><span class="tok-p">({</span>
+      <span class="tok-nx">email</span>: <span class="tok-kt">form.value.email</span><span class="tok-p">,</span>
+      <span class="tok-nx">password</span>: <span class="tok-kt">form.value.password</span>
+    <span class="tok-p">});</span>
   <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
@@ -693,7 +707,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 </div>
 </div>
 <div class="sect3">
-<h4 id="_signup_component_css">signup.component.css</h4>
+<h4 id="_signup_component_css"><code>signup.component.css</code></h4>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -710,7 +724,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <div class="sect2">
 <h3 id="_reactive_forms">Reactive Forms</h3>
 <div class="sect3">
-<h4 id="_login_component_html">login.component.html</h4>
+<h4 id="_login_component_html"><code>login.component.html</code></h4>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -751,13 +765,14 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 </div>
 </div>
 <div class="sect3">
-<h4 id="_login_component_ts">login.component.ts</h4>
+<h4 id="_login_component_ts"><code>login.component.ts</code></h4>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">OnInit</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
 <span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">FormGroup</span><span class="tok-p">,</span> <span class="tok-nx">FormControl</span><span class="tok-p">,</span> <span class="tok-nx">Validators</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/forms&#39;</span><span class="tok-p">;</span>
+<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">AuthService</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;../auth.service&#39;</span><span class="tok-p">;</span>
 
 <span class="tok-kd">@Component</span><span class="tok-p">({</span>
   <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-login&#39;</span><span class="tok-p">,</span>
@@ -768,7 +783,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 
   <span class="tok-nx">loginForm</span>: <span class="tok-kt">FormGroup</span><span class="tok-p">;</span>
 
-  <span class="tok-kr">constructor</span><span class="tok-p">()</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
+  <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-kr">private</span> <span class="tok-nx">authService</span>: <span class="tok-kt">AuthService</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
 
   <span class="tok-nx">ngOnInit</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
     <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">loginForm</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-nx">FormGroup</span><span class="tok-p">({</span>
@@ -779,6 +794,10 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 
   <span class="tok-nx">onSubmit</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
     <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">loginForm</span><span class="tok-p">);</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">authService</span><span class="tok-p">.</span><span class="tok-nx">login</span><span class="tok-p">({</span>
+      <span class="tok-nx">email</span>: <span class="tok-kt">this.loginForm.value.email</span><span class="tok-p">,</span>
+      <span class="tok-nx">password</span>: <span class="tok-kt">this.loginForm.value.password</span>
+    <span class="tok-p">});</span>
   <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
@@ -787,7 +806,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 </div>
 </div>
 <div class="sect3">
-<h4 id="_login_component_css">login.component.css</h4>
+<h4 id="_login_component_css"><code>login.component.css</code></h4>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -837,7 +856,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <div class="sect2">
 <h3 id="_adding_some_cards">Adding some "Cards"</h3>
 <div class="sect3">
-<h4 id="_new_training_component_html">new-training.component.html</h4>
+<h4 id="_new_training_component_html"><code>new-training.component.html</code></h4>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -871,7 +890,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <div class="sect2">
 <h3 id="_adding_a_spinner_to_the_training_screen">Adding a Spinner to the Training Screen</h3>
 <div class="sect3">
-<h4 id="_training_component_html">training.component.html</h4>
+<h4 id="_training_component_html"><code>training.component.html</code></h4>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -912,10 +931,110 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_section_5_working_with_data_and_angular_material">Section 5: Working with Data and Angular Material</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_implementing_authentication">Implementing Authentication</h3>
+<div class="sect3">
+<h4 id="_auth_service_ts"><code>auth.service.ts</code></h4>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">AuthData</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;./auth-data.model&#39;</span><span class="tok-p">;</span>
+<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">User</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;./user.model&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Subject</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;rxjs/Subject&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kr">export</span> <span class="tok-kr">class</span> <span class="tok-nx">AuthService</span> <span class="tok-p">{</span>
+
+    <span class="tok-nx">authChange</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-nx">Subject</span><span class="tok-o">&lt;</span><span class="tok-kr">boolean</span><span class="tok-o">&gt;</span><span class="tok-p">();</span>
+    <span class="tok-kr">private</span> <span class="tok-nx">user</span>: <span class="tok-kt">User</span><span class="tok-p">;</span>
+
+    <span class="tok-nx">registerUser</span><span class="tok-p">(</span><span class="tok-nx">authData</span>: <span class="tok-kt">AuthData</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">user</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+            <span class="tok-nx">email</span>: <span class="tok-kt">authData.email</span><span class="tok-p">,</span>
+            <span class="tok-nx">userId</span>: <span class="tok-kt">Math.round</span><span class="tok-p">(</span><span class="tok-nb">Math</span><span class="tok-p">.</span><span class="tok-nx">random</span><span class="tok-p">()</span> <span class="tok-o">*</span> <span class="tok-mi">10000</span><span class="tok-p">).</span><span class="tok-nx">toString</span><span class="tok-p">()</span>
+        <span class="tok-p">};</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">authChange</span><span class="tok-p">.</span><span class="tok-nx">next</span><span class="tok-p">(</span><span class="tok-kc">true</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-nx">login</span><span class="tok-p">(</span><span class="tok-nx">authData</span>: <span class="tok-kt">AuthData</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">user</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+            <span class="tok-nx">email</span>: <span class="tok-kt">authData.email</span><span class="tok-p">,</span>
+            <span class="tok-nx">userId</span>: <span class="tok-kt">Math.round</span><span class="tok-p">(</span><span class="tok-nb">Math</span><span class="tok-p">.</span><span class="tok-nx">random</span><span class="tok-p">()</span> <span class="tok-o">*</span> <span class="tok-mi">10000</span><span class="tok-p">).</span><span class="tok-nx">toString</span><span class="tok-p">()</span>
+        <span class="tok-p">};</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">authChange</span><span class="tok-p">.</span><span class="tok-nx">next</span><span class="tok-p">(</span><span class="tok-kc">true</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-nx">logout</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">user</span> <span class="tok-o">=</span> <span class="tok-kc">null</span><span class="tok-p">;</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">authChange</span><span class="tok-p">.</span><span class="tok-nx">next</span><span class="tok-p">(</span><span class="tok-kc">false</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-nx">getUser</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-nx">User</span> <span class="tok-p">{</span>
+        <span class="tok-k">return</span> <span class="tok-p">{</span> <span class="tok-p">...</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">user</span> <span class="tok-p">};</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-nx">isAuth</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-kr">boolean</span> <span class="tok-p">{</span>
+        <span class="tok-k">return</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">user</span> <span class="tok-o">!=</span> <span class="tok-kc">null</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_header_component_ts"><code>header.component.ts</code></h4>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">OnInit</span><span class="tok-p">,</span> <span class="tok-nx">EventEmitter</span><span class="tok-p">,</span> <span class="tok-nx">Output</span><span class="tok-p">,</span> <span class="tok-nx">OnDestroy</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">AuthService</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;src/app/auth/auth.service&#39;</span><span class="tok-p">;</span>
+<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Subscription</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;rxjs/Subscription&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Component</span><span class="tok-p">({</span>
+  <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-header&#39;</span><span class="tok-p">,</span>
+  <span class="tok-nx">templateUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./header.component.html&#39;</span><span class="tok-p">,</span>
+  <span class="tok-nx">styleUrls</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-s1">&#39;./header.component.css&#39;</span><span class="tok-p">]</span>
+<span class="tok-p">})</span>
+<span class="tok-kr">export</span> <span class="tok-kr">class</span> <span class="tok-nx">HeaderComponent</span> <span class="tok-kr">implements</span> <span class="tok-nx">OnInit</span><span class="tok-p">,</span> <span class="tok-nx">OnDestroy</span> <span class="tok-p">{</span>
+
+  <span class="tok-kd">@Output</span><span class="tok-p">()</span> <span class="tok-nx">sidenavToggle</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-nx">EventEmitter</span><span class="tok-o">&lt;</span><span class="tok-k">void</span><span class="tok-o">&gt;</span><span class="tok-p">();</span>
+  <span class="tok-nx">isAuth</span> <span class="tok-o">=</span> <span class="tok-kc">false</span><span class="tok-p">;</span>
+  <span class="tok-nx">authSubscription</span>: <span class="tok-kt">Subscription</span><span class="tok-p">;</span>
+
+  <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-kr">private</span> <span class="tok-nx">authService</span>: <span class="tok-kt">AuthService</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
+
+  <span class="tok-nx">ngOnInit</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">authSubscription</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">authService</span><span class="tok-p">.</span><span class="tok-nx">authChange</span><span class="tok-p">.</span><span class="tok-nx">subscribe</span><span class="tok-p">(</span><span class="tok-nx">authStatus</span> <span class="tok-o">=&gt;</span> <span class="tok-p">{</span>
+      <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">isAuth</span> <span class="tok-o">=</span> <span class="tok-nx">authStatus</span><span class="tok-p">;</span>
+    <span class="tok-p">});</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">onToggleSidenav() {</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">sidenavToggle</span><span class="tok-p">.</span><span class="tok-nx">emit</span><span class="tok-p">();</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">ngOnDestroy</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">authSubscription</span><span class="tok-p">.</span><span class="tok-nx">unsubscribe</span><span class="tok-p">();</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-08-28 14:35:19 +0300
+Last updated 2021-09-09 20:03:12 +0300
 </div>
 </div>
 </body>
