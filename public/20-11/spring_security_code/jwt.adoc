@@ -1,5 +1,192 @@
 = Spring Security in Action
 :icons: font
 :toc: right
+:toclevels: 10
+:source-highlighter: coderay
+:example-caption!:
+
+Start example server::
+`mvn spring-boot:run`
+
 
 == Chapter 15. OAuth 2: Using JWT and cryptographic signatures
+
+=== 15.1 Using tokens signed with symmetric keys with JWT
+
+==== 15.1.1 Using JWTs
+
+===== 15.1.2 Implementing an authorization server to issue JWTs
+
+.ssia-ch15-ex1-as
+====
+.pom.xml
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-oauth2</artifactId>
+</dependency>
+```
+
+.AuthServerConfig.java
+```java
+@Configuration
+@EnableAuthorizationServer
+public class AuthServerConfig
+        extends AuthorizationServerConfigurerAdapter {
+
+    @Value("${jwt.key}")
+    private String jwtKey;  <1>
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()
+                .withClient("client")
+                .secret("secret")
+                .authorizedGrantTypes("password", "refresh_token")
+                .scopes("read");
+    }
+
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
+        endpoints
+          .authenticationManager(authenticationManager)
+          .tokenStore(tokenStore())                           <2>
+          .accessTokenConverter(jwtAccessTokenConverter());
+    }
+
+    @Bean
+    public TokenStore tokenStore() {
+        return new JwtTokenStore(jwtAccessTokenConverter());  <3>
+    }
+
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        var converter = new JwtAccessTokenConverter();
+        converter.setSigningKey(jwtKey);                      <4>
+        return converter;
+    }
+}
+```
+
+<1> Gets the value of the symmetric key from the application.properties file
+<2> Configures the token store and the access token converter objects
+<3> Creates a token store with an access token converter associated to it
+<4> Sets the value of the symmetric key for the access token converter object
+
+.WebSecurityConfig.java
+```java
+@Configuration
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Bean
+    public UserDetailsService uds() {
+        var uds = new InMemoryUserDetailsManager();
+
+        var u = User.withUsername("john")
+                .password("12345")
+                .authorities("read")
+                .build();
+
+        uds.createUser(u);
+
+        return uds;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+    }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+}
+```
+====
+
+----
+curl -v -XPOST -u client:secret http://localhost:8080/oauth/token?grant_type=password&username=john&password=12345&scope=read
+----
+
+===== 15.1.3 Implementing a resource server that uses JWT
+
+.ssia-ch15-ex1-rs
+====
+.pom.xml
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-oauth2</artifactId>
+</dependency>    
+```
+
+.HelloController.java
+```java
+@RestController
+public class HelloController {
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello!";
+    }
+}
+```
+
+```java
+@Configuration
+@EnableResourceServer
+public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
+
+    @Value("${jwt.key}")
+    private String jwtKey;     <1>
+
+    @Override
+    public void configure(ResourceServerSecurityConfigurer resources) {
+        resources.tokenStore(tokenStore());                      <2>
+    }
+
+    @Bean
+    public TokenStore tokenStore() {
+        return new JwtTokenStore(jwtAccessTokenConverter());     <3>
+    }
+
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        var converter = new JwtAccessTokenConverter();           <4>
+        converter.setSigningKey(jwtKey);
+        return converter;
+    }
+}
+```
+
+<1>  Injects the key value from the application.properties file
+<2>  Configures the TokenStore
+<3>  Declares the TokenStore and adds it to the Spring context
+<4>  Creates an access token converter and sets the symmetric key used to validate token signatures
+====
+
+----
+curl -H "Authorization:Bearer eyJhbGciOiJIUzI1NiIs..." http://localhost:9090/hello
+----
