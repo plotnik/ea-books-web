@@ -533,14 +533,38 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
+<li><a href="#_chapter_14_oauth_2_implementing_the_resource_server">Chapter 14. OAuth 2: Implementing the resource server</a>
+<ul class="sectlevel2">
+<li><a href="#_14_1_implementing_a_resource_server">14.1 Implementing a resource server</a>
+<ul class="sectlevel3">
+<li><a href="#_ssia_ch14_ex1_rs"><code>ssia-ch14-ex1-rs</code></a></li>
+</ul>
+</li>
+<li><a href="#_14_2_checking_the_token_remotely">14.2 Checking the token remotely</a>
+<ul class="sectlevel3">
+<li><a href="#_ssia_ch14_ex1_as"><code>ssia-ch14-ex1-as</code></a></li>
+<li><a href="#_ssia_ch14_ex1_rs_migration"><code>ssia-ch14-ex1-rs-migration</code></a></li>
+</ul>
+</li>
+<li><a href="#_14_3_implementing_blackboarding_with_a_jdbctokenstore"><span class="icon"><i class="fa fa-bookmark"></i></span> 14.3 Implementing blackboarding with a JdbcTokenStore</a></li>
+</ul>
+</li>
 <li><a href="#_chapter_15_oauth_2_using_jwt_and_cryptographic_signatures">Chapter 15. OAuth 2: Using JWT and cryptographic signatures</a>
 <ul class="sectlevel2">
 <li><a href="#_15_1_using_tokens_signed_with_symmetric_keys_with_jwt">15.1 Using tokens signed with symmetric keys with JWT</a>
 <ul class="sectlevel3">
 <li><a href="#_15_1_1_using_jwts">15.1.1 Using JWTs</a>
 <ul class="sectlevel4">
-<li><a href="#_15_1_2_implementing_an_authorization_server_to_issue_jwts">15.1.2 Implementing an authorization server to issue JWTs</a></li>
-<li><a href="#_15_1_3_implementing_a_resource_server_that_uses_jwt">15.1.3 Implementing a resource server that uses JWT</a></li>
+<li><a href="#_15_1_2_implementing_an_authorization_server_to_issue_jwts">15.1.2 Implementing an authorization server to issue JWTs</a>
+<ul class="sectlevel5">
+<li><a href="#_ssia_ch15_ex1_as"><code>ssia-ch15-ex1-as</code></a></li>
+</ul>
+</li>
+<li><a href="#_15_1_3_implementing_a_resource_server_that_uses_jwt">15.1.3 Implementing a resource server that uses JWT</a>
+<ul class="sectlevel5">
+<li><a href="#_ssia_ch15_ex1_rs"><code>ssia-ch15-ex1-rs</code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -564,6 +588,190 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </div>
 </div>
 <div class="sect1">
+<h2 id="_chapter_14_oauth_2_implementing_the_resource_server">Chapter 14. OAuth 2: Implementing the resource server</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_14_1_implementing_a_resource_server">14.1 Implementing a resource server</h3>
+<div class="sect3">
+<h4 id="_ssia_ch14_ex1_rs"><code>ssia-ch14-ex1-rs</code></h4>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-starter-oauth2-resource-server<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.cloud<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-cloud-starter-oauth2<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependencyManagement&gt;</span>
+    <span class="tag">&lt;dependencies&gt;</span>
+        <span class="tag">&lt;dependency&gt;</span>
+            <span class="tag">&lt;groupId&gt;</span>org.springframework.cloud<span class="tag">&lt;/groupId&gt;</span>
+            <span class="tag">&lt;artifactId&gt;</span>spring-cloud-dependencies<span class="tag">&lt;/artifactId&gt;</span>
+            <span class="tag">&lt;version&gt;</span>${spring-cloud.version}<span class="tag">&lt;/version&gt;</span>
+            <span class="tag">&lt;type&gt;</span>pom<span class="tag">&lt;/type&gt;</span>
+            <span class="tag">&lt;scope&gt;</span>import<span class="tag">&lt;/scope&gt;</span>
+        <span class="tag">&lt;/dependency&gt;</span>
+    <span class="tag">&lt;/dependencies&gt;</span>
+<span class="tag">&lt;/dependencyManagement&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">HelloController.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@RestController</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">HelloController</span> {
+
+    <span class="annotation">@GetMapping</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> <span class="predefined-type">String</span> hello() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello!</span><span class="delimiter">&quot;</span></span>;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">ResourceServerConfig.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="annotation">@EnableResourceServer</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ResourceServerConfig</span> {
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_14_2_checking_the_token_remotely">14.2 Checking the token remotely</h3>
+<div class="sect3">
+<h4 id="_ssia_ch14_ex1_as"><code>ssia-ch14-ex1-as</code></h4>
+<div class="listingblock">
+<div class="title">AuthServerConfig.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="annotation">@EnableAuthorizationServer</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">AuthServerConfig</span>
+        <span class="directive">extends</span> AuthorizationServerConfigurerAdapter {
+
+    <span class="annotation">@Autowired</span>
+    <span class="directive">private</span> AuthenticationManager authenticationManager;
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> configure(ClientDetailsServiceConfigurer clients) <span class="directive">throws</span> <span class="exception">Exception</span> {
+        clients.inMemory()
+                .withClient(<span class="string"><span class="delimiter">&quot;</span><span class="content">client</span><span class="delimiter">&quot;</span></span>)
+                .secret(<span class="string"><span class="delimiter">&quot;</span><span class="content">secret</span><span class="delimiter">&quot;</span></span>)
+                .authorizedGrantTypes(<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">refresh_token</span><span class="delimiter">&quot;</span></span>)
+                .scopes(<span class="string"><span class="delimiter">&quot;</span><span class="content">read</span><span class="delimiter">&quot;</span></span>)
+        .and()
+                .withClient(<span class="string"><span class="delimiter">&quot;</span><span class="content">resourceserver</span><span class="delimiter">&quot;</span></span>)            <i class="conum" data-value="2"></i><b>(2)</b>
+                .secret(<span class="string"><span class="delimiter">&quot;</span><span class="content">resourceserversecret</span><span class="delimiter">&quot;</span></span>);
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> configure(AuthorizationServerEndpointsConfigurer endpoints) {
+        endpoints.authenticationManager(authenticationManager);
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> configure(AuthorizationServerSecurityConfigurer security) {
+        security.checkTokenAccess(<span class="string"><span class="delimiter">&quot;</span><span class="content">isAuthenticated()</span><span class="delimiter">&quot;</span></span>);   <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Specifies the condition for which we can call the check_token endpoint</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Adds a set of credentials for the resource server to use when calling the /oauth/ check_token endpoint</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -v -XPOST -u client:secret "http://localhost:8080/oauth/token?grant_type=password&amp;username=john&amp;password=12345&amp;scope=read"
+
+curl -XPOST -u resourceserver:resourceserversecret "http://localhost:8080/oauth/check_token?token=ef63fec7-fd58-4fed-a381-cd4f4e223b16"
+
+curl -H "Authorization: bearer ef63fec7-fd58-4fed-a381-cd4f4e223b16" "http://localhost:9090/hello"</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ssia_ch14_ex1_rs_migration"><code>ssia-ch14-ex1-rs-migration</code></h4>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.security<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-security-oauth2-resource-server<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>5.2.1.RELEASE<span class="tag">&lt;/version&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>com.nimbusds<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>oauth2-oidc-sdk<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>8.4<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;scope&gt;</span>runtime<span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">ResourceServerConfig.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ResourceServerConfig</span>
+        <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+        http.authorizeRequests()
+                .anyRequest().authenticated()
+                .and().oauth2ResourceServer(
+                c -&gt; c.opaqueToken(
+                        o -&gt; {
+                            o.introspectionUri(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:8080/oauth/check_token</span><span class="delimiter">&quot;</span></span>);
+                            o.introspectionClientCredentials(<span class="string"><span class="delimiter">&quot;</span><span class="content">resourceserver</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">resourceserversecret</span><span class="delimiter">&quot;</span></span>);
+                        })
+        );
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_14_3_implementing_blackboarding_with_a_jdbctokenstore"><span class="icon"><i class="fa fa-bookmark"></i></span> 14.3 Implementing blackboarding with a JdbcTokenStore</h3>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+2022-01-20: To be continued&#8230;&#8203;
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_chapter_15_oauth_2_using_jwt_and_cryptographic_signatures">Chapter 15. OAuth 2: Using JWT and cryptographic signatures</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -572,9 +780,8 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <h4 id="_15_1_1_using_jwts">15.1.1 Using JWTs</h4>
 <div class="sect4">
 <h5 id="_15_1_2_implementing_an_authorization_server_to_issue_jwts">15.1.2 Implementing an authorization server to issue JWTs</h5>
-<div class="exampleblock">
-<div class="title">ssia-ch15-ex1-as</div>
-<div class="content">
+<div class="sect5">
+<h6 id="_ssia_ch15_ex1_as"><code>ssia-ch15-ex1-as</code></h6>
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
@@ -691,19 +898,17 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 }</code></pre>
 </div>
 </div>
-</div>
-</div>
 <div class="listingblock">
 <div class="content">
 <pre>curl -v -XPOST -u client:secret http://localhost:8080/oauth/token?grant_type=password&amp;username=john&amp;password=12345&amp;scope=read</pre>
 </div>
 </div>
 </div>
+</div>
 <div class="sect4">
 <h5 id="_15_1_3_implementing_a_resource_server_that_uses_jwt">15.1.3 Implementing a resource server that uses JWT</h5>
-<div class="exampleblock">
-<div class="title">ssia-ch15-ex1-rs</div>
-<div class="content">
+<div class="sect5">
+<h6 id="_ssia_ch15_ex1_rs"><code>ssia-ch15-ex1-rs</code></h6>
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
@@ -782,8 +987,6 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </tr>
 </table>
 </div>
-</div>
-</div>
 <div class="listingblock">
 <div class="content">
 <pre>curl -H "Authorization:Bearer eyJhbGciOiJIUzI1NiIs..." http://localhost:9090/hello</pre>
@@ -795,9 +998,10 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-01-18 15:52:15 +0300
+Last updated 2022-01-20 14:37:28 +0300
 </div>
 </div>
 </body>

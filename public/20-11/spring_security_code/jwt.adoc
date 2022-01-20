@@ -8,6 +8,156 @@
 Start example server::
 `mvn spring-boot:run`
 
+== Chapter 14. OAuth 2: Implementing the resource server
+
+=== 14.1 Implementing a resource server
+
+==== `ssia-ch14-ex1-rs`
+
+.pom.xml
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-oauth2</artifactId>
+</dependency>
+```
+
+.pom.xml
+```xml
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>${spring-cloud.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+.HelloController.java
+```java               
+@RestController
+public class HelloController {
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello!";
+    }
+}
+```
+
+.ResourceServerConfig.java
+```java  
+@Configuration
+@EnableResourceServer
+public class ResourceServerConfig {
+}
+```
+
+
+=== 14.2 Checking the token remotely
+
+==== `ssia-ch14-ex1-as`
+
+.AuthServerConfig.java
+```java
+@Configuration
+@EnableAuthorizationServer
+public class AuthServerConfig
+        extends AuthorizationServerConfigurerAdapter {
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()
+                .withClient("client")
+                .secret("secret")
+                .authorizedGrantTypes("password", "refresh_token")
+                .scopes("read")
+        .and()
+                .withClient("resourceserver")            <2>
+                .secret("resourceserversecret");
+    }
+
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
+        endpoints.authenticationManager(authenticationManager);
+    }
+
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) {
+        security.checkTokenAccess("isAuthenticated()");   <1>
+    }
+}
+```
+
+<1> Specifies the condition for which we can call the check_token endpoint
+<2> Adds a set of credentials for the resource server to use when calling the /oauth/ check_token endpoint
+
+----
+curl -v -XPOST -u client:secret "http://localhost:8080/oauth/token?grant_type=password&username=john&password=12345&scope=read"
+
+curl -XPOST -u resourceserver:resourceserversecret "http://localhost:8080/oauth/check_token?token=ef63fec7-fd58-4fed-a381-cd4f4e223b16"
+
+curl -H "Authorization: bearer ef63fec7-fd58-4fed-a381-cd4f4e223b16" "http://localhost:9090/hello"
+----
+
+==== `ssia-ch14-ex1-rs-migration`
+
+.pom.xml
+```xml
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-oauth2-resource-server</artifactId>
+    <version>5.2.1.RELEASE</version>
+</dependency>
+<dependency>
+    <groupId>com.nimbusds</groupId>
+    <artifactId>oauth2-oidc-sdk</artifactId>
+    <version>8.4</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+.ResourceServerConfig.java
+```java
+@Configuration
+public class ResourceServerConfig
+        extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .anyRequest().authenticated()
+                .and().oauth2ResourceServer(
+                c -> c.opaqueToken(
+                        o -> {
+                            o.introspectionUri("http://localhost:8080/oauth/check_token");
+                            o.introspectionClientCredentials("resourceserver", "resourceserversecret");
+                        })
+        );
+    }
+}
+```
+
+=== icon:bookmark[] 14.3 Implementing blackboarding with a JdbcTokenStore
+
+WARNING: 2022-01-20: To be continued...
+
+
 
 == Chapter 15. OAuth 2: Using JWT and cryptographic signatures
 
@@ -17,8 +167,8 @@ Start example server::
 
 ===== 15.1.2 Implementing an authorization server to issue JWTs
 
-.ssia-ch15-ex1-as
-====
+====== `ssia-ch15-ex1-as`
+
 .pom.xml
 ```xml
 <dependency>
@@ -116,7 +266,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 }
 ```
-====
 
 ----
 curl -v -XPOST -u client:secret http://localhost:8080/oauth/token?grant_type=password&username=john&password=12345&scope=read
@@ -124,8 +273,8 @@ curl -v -XPOST -u client:secret http://localhost:8080/oauth/token?grant_type=pas
 
 ===== 15.1.3 Implementing a resource server that uses JWT
 
-.ssia-ch15-ex1-rs
-====
+====== `ssia-ch15-ex1-rs`
+
 .pom.xml
 ```xml
 <dependency>
@@ -185,7 +334,6 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 <2>  Configures the TokenStore
 <3>  Declares the TokenStore and adds it to the Spring context
 <4>  Creates an access token converter and sets the symmetric key used to validate token signatures
-====
 
 ----
 curl -H "Authorization:Bearer eyJhbGciOiJIUzI1NiIs..." http://localhost:9090/hello
