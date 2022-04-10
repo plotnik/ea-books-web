@@ -38,3 +38,66 @@ See also::
 <p>{{ birthday | date:'shortTime' }}</p> <!-- will display '3:30 PM' -->
 ```
 
+== Chapter 19. Forms
+
+=== 19.1. Forms, dear forms
+
+.FormControl attributes
+[cols="1,3"]
+|===
+
+| `valid` | if the field is valid, regarding the requirements and validations applied on it.
+
+| `invalid` | if the field is invalid, regarding the requirements and validations applied on it. • errors: an object containing the field errors
+
+| `dirty` | false until the user has modified its value.
+
+| `pristine` | the opposite of dirty.
+
+| `touched` | false until the user has entered it.
+
+| `untouched` | the opposite of touched.
+
+| `value` | the value of the field.
+
+| `valueChanges` | an Observable emitting every time there is a change on the field
+|===
+
+=== 19.3. Code-driven
+
+```html+ng2
+<h2>Sign up</h2>
+<form (ngSubmit)="register()" [formGroup]="userForm">
+  <div>
+    <label>Username</label><input formControlName="username">
+  </div>
+  <div>
+    <label>Password</label><input type="password" formControlName="password">
+  </div>
+  <button type="submit">Register</button>
+</form>
+```
+
+```ts
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: './register-form.component.html'
+})
+export class RegisterFormComponent {
+  userForm: FormGroup;
+
+  constructor(fb: FormBuilder) {
+    this.userForm = fb.group({
+      username: fb.control(''),
+      password: fb.control('')
+    });
+  }
+
+  register(): void {
+    console.log(this.userForm.value);
+  }
+}
+```

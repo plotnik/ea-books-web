@@ -529,6 +529,12 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_12_11_date">12.11. date</a></li>
 </ul>
 </li>
+<li><a href="#_chapter_19_forms">Chapter 19. Forms</a>
+<ul class="sectlevel2">
+<li><a href="#_19_1_forms_dear_forms">19.1. Forms, dear forms</a></li>
+<li><a href="#_19_3_code_driven">19.3. Code-driven</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -599,10 +605,101 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_chapter_19_forms">Chapter 19. Forms</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_19_1_forms_dear_forms">19.1. Forms, dear forms</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. FormControl attributes</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>valid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">if the field is valid, regarding the requirements and validations applied on it.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>invalid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">if the field is invalid, regarding the requirements and validations applied on it. • errors: an object containing the field errors</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dirty</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false until the user has modified its value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>pristine</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the opposite of dirty.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>touched</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false until the user has entered it.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>untouched</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the opposite of touched.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>value</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the value of the field.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>valueChanges</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">an Observable emitting every time there is a change on the field</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_19_3_code_driven">19.3. Code-driven</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="html+ng2"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">h2</span><span class="tok-p">&gt;</span>Sign up<span class="tok-p">&lt;/</span><span class="tok-nt">h2</span><span class="tok-p">&gt;</span>
+<span class="tok-p">&lt;</span><span class="tok-nt">form</span> <span class="tok-p">(</span><span class="tok-na">ngSubmit</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-s">&quot;register()&quot;</span> <span class="tok-p">[</span><span class="tok-na">formGroup</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;userForm&quot;</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;</span><span class="tok-nt">div</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">label</span><span class="tok-p">&gt;</span>Username<span class="tok-p">&lt;/</span><span class="tok-nt">label</span><span class="tok-p">&gt;&lt;</span><span class="tok-nt">input</span> <span class="tok-na">formControlName</span><span class="tok-o">=</span><span class="tok-s">&quot;username&quot;</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;/</span><span class="tok-nt">div</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;</span><span class="tok-nt">div</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">label</span><span class="tok-p">&gt;</span>Password<span class="tok-p">&lt;/</span><span class="tok-nt">label</span><span class="tok-p">&gt;&lt;</span><span class="tok-nt">input</span> <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;password&quot;</span> <span class="tok-na">formControlName</span><span class="tok-o">=</span><span class="tok-s">&quot;password&quot;</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;/</span><span class="tok-nt">div</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;submit&quot;</span><span class="tok-p">&gt;</span>Register<span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
+<span class="tok-p">&lt;/</span><span class="tok-nt">form</span><span class="tok-p">&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">FormBuilder</span><span class="tok-p">,</span> <span class="tok-nx">FormGroup</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/forms&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Component</span><span class="tok-p">({</span>
+  <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;ns-register&#39;</span><span class="tok-p">,</span>
+  <span class="tok-nx">templateUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./register-form.component.html&#39;</span>
+<span class="tok-p">})</span>
+<span class="tok-kr">export</span> <span class="tok-kr">class</span> <span class="tok-nx">RegisterFormComponent</span> <span class="tok-p">{</span>
+  <span class="tok-nx">userForm</span>: <span class="tok-kt">FormGroup</span><span class="tok-p">;</span>
+
+  <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-nx">fb</span>: <span class="tok-kt">FormBuilder</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">userForm</span> <span class="tok-o">=</span> <span class="tok-nx">fb</span><span class="tok-p">.</span><span class="tok-nx">group</span><span class="tok-p">({</span>
+      <span class="tok-nx">username</span>: <span class="tok-kt">fb.control</span><span class="tok-p">(</span><span class="tok-s1">&#39;&#39;</span><span class="tok-p">),</span>
+      <span class="tok-nx">password</span>: <span class="tok-kt">fb.control</span><span class="tok-p">(</span><span class="tok-s1">&#39;&#39;</span><span class="tok-p">)</span>
+    <span class="tok-p">});</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">register</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">userForm</span><span class="tok-p">.</span><span class="tok-nx">value</span><span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-04-05 13:46:29 +0300
+Last updated 2022-04-10 18:42:00 +0300
 </div>
 </div>
 </body>

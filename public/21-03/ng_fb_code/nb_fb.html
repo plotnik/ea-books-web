@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.16">
+<meta name="generator" content="Asciidoctor 2.0.17">
 <meta name="author" content="Maximilian Schwarzmüller">
 <title>Angular (Full App) with Angular Material, Angularfire &amp; NgRx</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -194,7 +194,8 @@ body.toc2.toc-right{padding-left:0;padding-right:20em}}
 #content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
 details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
 details{margin-left:1.25rem}
-details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;-webkit-tap-highlight-color:transparent}
+details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;outline:none;-webkit-tap-highlight-color:transparent}
+details>summary::-webkit-details-marker{display:none}
 details>summary::before{content:"";border:solid transparent;border-left:solid;border-width:.3em 0 .3em .5em;position:absolute;top:.5em;left:-1.25rem;transform:translateX(15%)}
 details[open]>summary::before{border:solid transparent;border-top:solid;border-width:.5em .3em 0;transform:translateY(15%)}
 details>summary::after{content:"";width:1.25rem;height:1em;position:absolute;top:.3em;left:-1.25rem}
@@ -236,9 +237,8 @@ pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
 table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
 table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
 table.linenotable td.code{padding-left:.75em}
-table.linenotable td.linenos{border-right:1px solid;opacity:.35;padding-right:.5em}
-pre.pygments .lineno{border-right:1px solid;opacity:.35;display:inline-block;margin-right:.75em}
-pre.pygments .lineno::before{content:"";margin-right:-.125em}
+table.linenotable td.linenos,pre.pygments .linenos{border-right:1px solid;opacity:.35;padding-right:.5em;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+pre.pygments span.linenos{display:inline-block;margin-right:.75em}
 .quoteblock{margin:0 1em 1.25em 1.5em;display:table}
 .quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
 .quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
@@ -275,7 +275,7 @@ table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-c
 table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
 table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
 table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
-table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd),table.stripes-even tr:nth-of-type(even),table.stripes-hover tr:hover{background:#f8f8f7}
+table.stripes-all>*>tr,table.stripes-odd>*>tr:nth-of-type(odd),table.stripes-even>*>tr:nth-of-type(even),table.stripes-hover>*>tr:hover{background:#f8f8f7}
 th.halign-left,td.halign-left{text-align:left}
 th.halign-right,td.halign-right{text-align:right}
 th.halign-center,td.halign-center{text-align:center}
@@ -291,10 +291,11 @@ ol{margin-left:1.75em}
 ul li ol{margin-left:1.5em}
 dl dd{margin-left:1.125em}
 dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
-ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
 ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
 ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
 ul.unstyled,ol.unstyled{margin-left:0}
+li>p:empty:only-child::before{content:"";display:inline-block}
 ul.checklist>li>p:first-child{margin-left:-1em}
 ul.checklist>li>p:first-child>.fa-square-o:first-child,ul.checklist>li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
 ul.checklist>li>p:first-child>input[type=checkbox]:first-child{margin-right:.25em}
@@ -337,8 +338,6 @@ sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
 #footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
 #footnotes .footnote:last-of-type{margin-bottom:0}
 #content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
-.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
-.gist .file-data>table td.line-data{width:99%}
 div.unbreakable{page-break-inside:avoid}
 .big{font-size:larger}
 .small{font-size:smaller}
@@ -440,68 +439,74 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 pre.pygments .hll { background-color: #ffffcc }
-pre.pygments  { background: #ffffff; }
-pre.pygments .tok-c { color: #177500 } /* Comment */
-pre.pygments .tok-err { color: #000000 } /* Error */
-pre.pygments .tok-k { color: #A90D91 } /* Keyword */
-pre.pygments .tok-l { color: #1C01CE } /* Literal */
-pre.pygments .tok-n { color: #000000 } /* Name */
-pre.pygments .tok-o { color: #000000 } /* Operator */
-pre.pygments .tok-ch { color: #177500 } /* Comment.Hashbang */
-pre.pygments .tok-cm { color: #177500 } /* Comment.Multiline */
-pre.pygments .tok-cp { color: #633820 } /* Comment.Preproc */
-pre.pygments .tok-cpf { color: #177500 } /* Comment.PreprocFile */
-pre.pygments .tok-c1 { color: #177500 } /* Comment.Single */
-pre.pygments .tok-cs { color: #177500 } /* Comment.Special */
-pre.pygments .tok-kc { color: #A90D91 } /* Keyword.Constant */
-pre.pygments .tok-kd { color: #A90D91 } /* Keyword.Declaration */
-pre.pygments .tok-kn { color: #A90D91 } /* Keyword.Namespace */
-pre.pygments .tok-kp { color: #A90D91 } /* Keyword.Pseudo */
-pre.pygments .tok-kr { color: #A90D91 } /* Keyword.Reserved */
-pre.pygments .tok-kt { color: #A90D91 } /* Keyword.Type */
-pre.pygments .tok-ld { color: #1C01CE } /* Literal.Date */
-pre.pygments .tok-m { color: #1C01CE } /* Literal.Number */
-pre.pygments .tok-s { color: #C41A16 } /* Literal.String */
-pre.pygments .tok-na { color: #836C28 } /* Name.Attribute */
-pre.pygments .tok-nb { color: #A90D91 } /* Name.Builtin */
-pre.pygments .tok-nc { color: #3F6E75 } /* Name.Class */
-pre.pygments .tok-no { color: #000000 } /* Name.Constant */
-pre.pygments .tok-nd { color: #000000 } /* Name.Decorator */
-pre.pygments .tok-ni { color: #000000 } /* Name.Entity */
-pre.pygments .tok-ne { color: #000000 } /* Name.Exception */
-pre.pygments .tok-nf { color: #000000 } /* Name.Function */
-pre.pygments .tok-nl { color: #000000 } /* Name.Label */
-pre.pygments .tok-nn { color: #000000 } /* Name.Namespace */
-pre.pygments .tok-nx { color: #000000 } /* Name.Other */
-pre.pygments .tok-py { color: #000000 } /* Name.Property */
-pre.pygments .tok-nt { color: #000000 } /* Name.Tag */
-pre.pygments .tok-nv { color: #000000 } /* Name.Variable */
-pre.pygments .tok-ow { color: #000000 } /* Operator.Word */
-pre.pygments .tok-mb { color: #1C01CE } /* Literal.Number.Bin */
-pre.pygments .tok-mf { color: #1C01CE } /* Literal.Number.Float */
-pre.pygments .tok-mh { color: #1C01CE } /* Literal.Number.Hex */
-pre.pygments .tok-mi { color: #1C01CE } /* Literal.Number.Integer */
-pre.pygments .tok-mo { color: #1C01CE } /* Literal.Number.Oct */
-pre.pygments .tok-sa { color: #C41A16 } /* Literal.String.Affix */
-pre.pygments .tok-sb { color: #C41A16 } /* Literal.String.Backtick */
-pre.pygments .tok-sc { color: #2300CE } /* Literal.String.Char */
-pre.pygments .tok-dl { color: #C41A16 } /* Literal.String.Delimiter */
-pre.pygments .tok-sd { color: #C41A16 } /* Literal.String.Doc */
-pre.pygments .tok-s2 { color: #C41A16 } /* Literal.String.Double */
-pre.pygments .tok-se { color: #C41A16 } /* Literal.String.Escape */
-pre.pygments .tok-sh { color: #C41A16 } /* Literal.String.Heredoc */
-pre.pygments .tok-si { color: #C41A16 } /* Literal.String.Interpol */
-pre.pygments .tok-sx { color: #C41A16 } /* Literal.String.Other */
-pre.pygments .tok-sr { color: #C41A16 } /* Literal.String.Regex */
-pre.pygments .tok-s1 { color: #C41A16 } /* Literal.String.Single */
-pre.pygments .tok-ss { color: #C41A16 } /* Literal.String.Symbol */
-pre.pygments .tok-bp { color: #5B269A } /* Name.Builtin.Pseudo */
-pre.pygments .tok-fm { color: #000000 } /* Name.Function.Magic */
-pre.pygments .tok-vc { color: #000000 } /* Name.Variable.Class */
-pre.pygments .tok-vg { color: #000000 } /* Name.Variable.Global */
-pre.pygments .tok-vi { color: #000000 } /* Name.Variable.Instance */
-pre.pygments .tok-vm { color: #000000 } /* Name.Variable.Magic */
-pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
+pre.pygments  { background: #f8f8f8; }
+pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+pre.pygments .tok-o { color: #666666 } /* Operator */
+pre.pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+pre.pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+pre.pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+pre.pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+pre.pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+pre.pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+pre.pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+pre.pygments .tok-ge { font-style: italic } /* Generic.Emph */
+pre.pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+pre.pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+pre.pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+pre.pygments .tok-go { color: #888888 } /* Generic.Output */
+pre.pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+pre.pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+pre.pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+pre.pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+pre.pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+pre.pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+pre.pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+pre.pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+pre.pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+pre.pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+pre.pygments .tok-m { color: #666666 } /* Literal.Number */
+pre.pygments .tok-s { color: #BA2121 } /* Literal.String */
+pre.pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+pre.pygments .tok-nb { color: #008000 } /* Name.Builtin */
+pre.pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+pre.pygments .tok-no { color: #880000 } /* Name.Constant */
+pre.pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+pre.pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+pre.pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+pre.pygments .tok-nf { color: #0000FF } /* Name.Function */
+pre.pygments .tok-nl { color: #A0A000 } /* Name.Label */
+pre.pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+pre.pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+pre.pygments .tok-nv { color: #19177C } /* Name.Variable */
+pre.pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+pre.pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+pre.pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+pre.pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+pre.pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+pre.pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+pre.pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+pre.pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+pre.pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+pre.pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+pre.pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+pre.pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+pre.pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+pre.pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+pre.pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+pre.pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+pre.pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+pre.pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+pre.pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+pre.pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+pre.pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+pre.pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+pre.pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+pre.pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+pre.pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </style>
 </head>
 <body class="article toc2 toc-right">
@@ -581,7 +586,11 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <li><a href="#_77_useful_resources_links">77. Useful Resources &amp; Links</a></li>
 </ul>
 </li>
-<li><a href="#_section_6_using_angularfire_firebase">Section 6: Using Angularfire &amp; Firebase</a></li>
+<li><a href="#_section_6_using_angularfire_firebase">Section 6: Using Angularfire &amp; Firebase</a>
+<ul class="sectlevel2">
+<li><a href="#_listening_to_value_changes_of_firestore">Listening to Value Changes (of Firestore)</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -647,8 +656,8 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="html"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">section</span> <span class="tok-na">class</span><span class="tok-o">=</span><span class="tok-s">&quot;signup-form&quot;</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">form</span> <span class="tok-na">fxLayout</span><span class="tok-o">=</span><span class="tok-s">&quot;column&quot;</span> <span class="tok-na">fxLayoutGap</span><span class="tok-o">=</span><span class="tok-s">&quot;10px&quot;</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center center&quot;</span> <span class="tok-err">#</span><span class="tok-na">f</span><span class="tok-o">=</span><span class="tok-s">&quot;ngForm&quot;</span> <span class="tok-err">(</span><span class="tok-na">ngSubmit</span><span class="tok-err">)=&quot;</span><span class="tok-na">onSubmit</span><span class="tok-err">(</span><span class="tok-na">f</span><span class="tok-err">)&quot;</span><span class="tok-p">&gt;</span>
+<pre class="pygments highlight"><code data-lang="html+ng2"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">section</span> <span class="tok-na">class</span><span class="tok-o">=</span><span class="tok-s">&quot;signup-form&quot;</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">form</span> <span class="tok-na">fxLayout</span><span class="tok-o">=</span><span class="tok-s">&quot;column&quot;</span> <span class="tok-na">fxLayoutGap</span><span class="tok-o">=</span><span class="tok-s">&quot;10px&quot;</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center center&quot;</span> <span class="tok-p">#</span><span class="tok-na">f</span><span class="tok-o">=</span><span class="tok-s">&quot;ngForm&quot;</span> <span class="tok-p">(</span><span class="tok-na">ngSubmit</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-s">&quot;onSubmit(f)&quot;</span><span class="tok-p">&gt;</span>
         <span class="tok-p">&lt;</span><span class="tok-nt">mat-form-field</span><span class="tok-p">&gt;</span>
             <span class="tok-p">&lt;</span><span class="tok-nt">input</span>
                 <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;email&quot;</span>
@@ -669,8 +678,8 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
                 <span class="tok-na">name</span><span class="tok-o">=</span><span class="tok-s">&quot;password&quot;</span>
                 <span class="tok-na">required</span>
                 <span class="tok-na">minLength</span><span class="tok-o">=</span><span class="tok-s">&quot;6&quot;</span>
-                <span class="tok-err">#</span><span class="tok-na">pwInput</span><span class="tok-o">=</span><span class="tok-s">&quot;ngModel&quot;</span><span class="tok-p">&gt;</span>
-            <span class="tok-p">&lt;</span><span class="tok-nt">mat-hint</span> <span class="tok-na">align</span><span class="tok-o">=</span><span class="tok-s">&quot;end&quot;</span><span class="tok-p">&gt;</span> {{ pwInput.value?.length }} / 6 <span class="tok-p">&lt;/</span><span class="tok-nt">mat-hint</span><span class="tok-p">&gt;</span>
+                <span class="tok-p">#</span><span class="tok-na">pwInput</span><span class="tok-o">=</span><span class="tok-s">&quot;ngModel&quot;</span><span class="tok-p">&gt;</span>
+            <span class="tok-p">&lt;</span><span class="tok-nt">mat-hint</span> <span class="tok-na">align</span><span class="tok-o">=</span><span class="tok-s">&quot;end&quot;</span><span class="tok-p">&gt;</span> <span class="tok-cp">{{</span> <span class="tok-nv">pwInput.value</span><span class="tok-err">?</span><span class="tok-nv">.length</span> <span class="tok-cp">}}</span> / 6 <span class="tok-p">&lt;/</span><span class="tok-nt">mat-hint</span><span class="tok-p">&gt;</span>
         <span class="tok-p">&lt;/</span><span class="tok-nt">mat-form-field</span><span class="tok-p">&gt;</span>
         <span class="tok-p">&lt;</span><span class="tok-nt">mat-form-field</span><span class="tok-p">&gt;</span>
             <span class="tok-p">&lt;</span><span class="tok-nt">input</span>
@@ -679,15 +688,15 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
                 <span class="tok-na">ngModel</span>
                 <span class="tok-na">name</span><span class="tok-o">=</span><span class="tok-s">&quot;birthdate&quot;</span>
                 <span class="tok-na">required</span>
-                <span class="tok-err">[</span><span class="tok-na">max</span><span class="tok-err">]=&quot;</span><span class="tok-na">maxDate</span><span class="tok-err">&quot;</span>
-                <span class="tok-err">[</span><span class="tok-na">matDatepicker</span><span class="tok-err">]=&quot;</span><span class="tok-na">picker</span><span class="tok-err">&quot;</span><span class="tok-p">&gt;</span>
-            <span class="tok-p">&lt;</span><span class="tok-nt">mat-datepicker-toggle</span> <span class="tok-na">matSuffix</span> <span class="tok-err">[</span><span class="tok-na">for</span><span class="tok-err">]=&quot;</span><span class="tok-na">picker</span><span class="tok-err">&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">mat-datepicker-toggle</span><span class="tok-p">&gt;</span>
-            <span class="tok-p">&lt;</span><span class="tok-nt">mat-datepicker</span> <span class="tok-err">#</span><span class="tok-na">picker</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">mat-datepicker</span><span class="tok-p">&gt;</span>
+                <span class="tok-p">[</span><span class="tok-na">max</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;maxDate&quot;</span>
+                <span class="tok-p">[</span><span class="tok-na">matDatepicker</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;picker&quot;</span><span class="tok-p">&gt;</span>
+            <span class="tok-p">&lt;</span><span class="tok-nt">mat-datepicker-toggle</span> <span class="tok-na">matSuffix</span> <span class="tok-p">[</span><span class="tok-na">for</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;picker&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">mat-datepicker-toggle</span><span class="tok-p">&gt;</span>
+            <span class="tok-p">&lt;</span><span class="tok-nt">mat-datepicker</span> <span class="tok-p">#</span><span class="tok-na">picker</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">mat-datepicker</span><span class="tok-p">&gt;</span>
         <span class="tok-p">&lt;/</span><span class="tok-nt">mat-form-field</span><span class="tok-p">&gt;</span>
 
         <span class="tok-p">&lt;</span><span class="tok-nt">mat-checkbox</span> <span class="tok-na">ngModel</span> <span class="tok-na">name</span><span class="tok-o">=</span><span class="tok-s">&quot;agree&quot;</span> <span class="tok-na">color</span><span class="tok-o">=</span><span class="tok-s">&quot;primary&quot;</span> <span class="tok-na">required</span><span class="tok-p">&gt;</span>Agree to Terms and Conditions.<span class="tok-p">&lt;/</span><span class="tok-nt">mat-checkbox</span><span class="tok-p">&gt;</span>
 
-        <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;submit&quot;</span> <span class="tok-na">color</span><span class="tok-o">=</span><span class="tok-s">&quot;primary&quot;</span> <span class="tok-na">mat-raised-button</span> <span class="tok-err">[</span><span class="tok-na">disabled</span><span class="tok-err">]=&quot;</span><span class="tok-na">f</span><span class="tok-err">.</span><span class="tok-na">invalid</span><span class="tok-err">&quot;</span><span class="tok-p">&gt;</span>Submit<span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
+        <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;submit&quot;</span> <span class="tok-na">color</span><span class="tok-o">=</span><span class="tok-s">&quot;primary&quot;</span> <span class="tok-na">mat-raised-button</span> <span class="tok-p">[</span><span class="tok-na">disabled</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;f.invalid&quot;</span><span class="tok-p">&gt;</span>Submit<span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
     <span class="tok-p">&lt;/</span><span class="tok-nt">form</span><span class="tok-p">&gt;</span>
 <span class="tok-p">&lt;/</span><span class="tok-nt">section</span><span class="tok-p">&gt;</span></code></pre>
 </div>
@@ -756,13 +765,13 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="html"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">section</span> <span class="tok-na">class</span><span class="tok-o">=</span><span class="tok-s">&quot;login-form&quot;</span><span class="tok-p">&gt;</span>
+<pre class="pygments highlight"><code data-lang="html+ng2"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">section</span> <span class="tok-na">class</span><span class="tok-o">=</span><span class="tok-s">&quot;login-form&quot;</span><span class="tok-p">&gt;</span>
     <span class="tok-p">&lt;</span><span class="tok-nt">form</span>
         <span class="tok-na">fxLayout</span><span class="tok-o">=</span><span class="tok-s">&quot;column&quot;</span>
         <span class="tok-na">fxLayoutGap</span><span class="tok-o">=</span><span class="tok-s">&quot;10px&quot;</span>
         <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center center&quot;</span>
-        <span class="tok-err">[</span><span class="tok-na">formGroup</span><span class="tok-err">]=&quot;</span><span class="tok-na">loginForm</span><span class="tok-err">&quot;</span>
-        <span class="tok-err">(</span><span class="tok-na">ngSubmit</span><span class="tok-err">)=&quot;</span><span class="tok-na">onSubmit</span><span class="tok-err">()&quot;</span><span class="tok-p">&gt;</span>
+        <span class="tok-p">[</span><span class="tok-na">formGroup</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;loginForm&quot;</span>
+        <span class="tok-p">(</span><span class="tok-na">ngSubmit</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-s">&quot;onSubmit()&quot;</span><span class="tok-p">&gt;</span>
         <span class="tok-p">&lt;</span><span class="tok-nt">mat-form-field</span><span class="tok-p">&gt;</span>
             <span class="tok-p">&lt;</span><span class="tok-nt">input</span>
                 <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;email&quot;</span>
@@ -782,7 +791,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
             <span class="tok-p">&lt;</span><span class="tok-nt">mat-error</span><span class="tok-p">&gt;</span>Missing password<span class="tok-p">&lt;/</span><span class="tok-nt">mat-error</span><span class="tok-p">&gt;</span>
         <span class="tok-p">&lt;/</span><span class="tok-nt">mat-form-field</span>
         <span class="tok-p">&gt;</span>
-        <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;submit&quot;</span> <span class="tok-na">color</span><span class="tok-o">=</span><span class="tok-s">&quot;primary&quot;</span> <span class="tok-na">mat-raised-button</span> <span class="tok-err">[</span><span class="tok-na">disabled</span><span class="tok-err">]=&quot;</span><span class="tok-na">loginForm</span><span class="tok-err">.</span><span class="tok-na">invalid</span><span class="tok-err">&quot;</span><span class="tok-p">&gt;</span>Submit<span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
+        <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;submit&quot;</span> <span class="tok-na">color</span><span class="tok-o">=</span><span class="tok-s">&quot;primary&quot;</span> <span class="tok-na">mat-raised-button</span> <span class="tok-p">[</span><span class="tok-na">disabled</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;loginForm.invalid&quot;</span><span class="tok-p">&gt;</span>Submit<span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
 
     <span class="tok-p">&lt;/</span><span class="tok-nt">form</span><span class="tok-p">&gt;</span>
 <span class="tok-p">&lt;/</span><span class="tok-nt">section</span><span class="tok-p">&gt;</span></code></pre>
@@ -891,7 +900,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="html"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">mat-tab-group</span> <span class="tok-err">*</span><span class="tok-na">ngIf</span><span class="tok-o">=</span><span class="tok-s">&quot;!ongoingTraining&quot;</span><span class="tok-p">&gt;</span>
+<pre class="pygments highlight"><code data-lang="html+ng2"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">mat-tab-group</span> <span class="tok-p">*</span><span class="tok-na">ngIf</span><span class="tok-o">=</span><span class="tok-s">&quot;!ongoingTraining&quot;</span><span class="tok-p">&gt;</span>
     <span class="tok-p">&lt;</span><span class="tok-nt">mat-tab</span> <span class="tok-na">label</span><span class="tok-o">=</span><span class="tok-s">&quot;New Exercise&quot;</span><span class="tok-p">&gt;</span>
         <span class="tok-p">&lt;</span><span class="tok-nt">app-new-training</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">app-new-training</span><span class="tok-p">&gt;</span>
     <span class="tok-p">&lt;/</span><span class="tok-nt">mat-tab</span><span class="tok-p">&gt;</span>
@@ -899,7 +908,7 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
          <span class="tok-p">&lt;</span><span class="tok-nt">app-past-trainings</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">app-past-trainings</span><span class="tok-p">&gt;</span>
     <span class="tok-p">&lt;/</span><span class="tok-nt">mat-tab</span><span class="tok-p">&gt;</span>
 <span class="tok-p">&lt;/</span><span class="tok-nt">mat-tab-group</span><span class="tok-p">&gt;</span>
-<span class="tok-p">&lt;</span><span class="tok-nt">app-current-training</span> <span class="tok-err">*</span><span class="tok-na">ngIf</span><span class="tok-o">=</span><span class="tok-s">&quot;ongoingTraining&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">app-current-training</span><span class="tok-p">&gt;</span></code></pre>
+<span class="tok-p">&lt;</span><span class="tok-nt">app-current-training</span> <span class="tok-p">*</span><span class="tok-na">ngIf</span><span class="tok-o">=</span><span class="tok-s">&quot;ongoingTraining&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">app-current-training</span><span class="tok-p">&gt;</span></code></pre>
 </div>
 </div>
 </div>
@@ -1177,23 +1186,23 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="html"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">section</span> <span class="tok-na">class</span><span class="tok-o">=</span><span class="tok-s">&quot;new-training&quot;</span> <span class="tok-na">fxLayout</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center&quot;</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">form</span> <span class="tok-err">(</span><span class="tok-na">ngSubmit</span><span class="tok-err">)=&quot;</span><span class="tok-na">onStartTraining</span><span class="tok-err">(</span><span class="tok-na">f</span><span class="tok-err">)&quot;</span> <span class="tok-err">#</span><span class="tok-na">f</span><span class="tok-o">=</span><span class="tok-s">&quot;ngForm&quot;</span><span class="tok-p">&gt;</span>
+<pre class="pygments highlight"><code data-lang="html+ng2"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">section</span> <span class="tok-na">class</span><span class="tok-o">=</span><span class="tok-s">&quot;new-training&quot;</span> <span class="tok-na">fxLayout</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center&quot;</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">form</span> <span class="tok-p">(</span><span class="tok-na">ngSubmit</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-s">&quot;onStartTraining(f)&quot;</span> <span class="tok-p">#</span><span class="tok-na">f</span><span class="tok-o">=</span><span class="tok-s">&quot;ngForm&quot;</span><span class="tok-p">&gt;</span>
         <span class="tok-p">&lt;</span><span class="tok-nt">mat-card</span> <span class="tok-na">fxFlex</span><span class="tok-err">.</span><span class="tok-na">xs</span><span class="tok-o">=</span><span class="tok-s">&quot;100%&quot;</span> <span class="tok-na">fxFlex</span><span class="tok-o">=</span><span class="tok-s">&quot;400px&quot;</span><span class="tok-p">&gt;</span>
             <span class="tok-p">&lt;</span><span class="tok-nt">mat-card-title</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center&quot;</span><span class="tok-p">&gt;</span>Time to start a workout!<span class="tok-p">&lt;/</span><span class="tok-nt">mat-card-title</span><span class="tok-p">&gt;</span>
             <span class="tok-p">&lt;</span><span class="tok-nt">mat-card-content</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center&quot;</span><span class="tok-p">&gt;</span>
 
                 <span class="tok-p">&lt;</span><span class="tok-nt">mat-form-field</span><span class="tok-p">&gt;</span>
                     <span class="tok-p">&lt;</span><span class="tok-nt">mat-select</span> <span class="tok-na">ngModel</span> <span class="tok-na">name</span><span class="tok-o">=</span><span class="tok-s">&quot;selectedId&quot;</span> <span class="tok-na">placeholder</span><span class="tok-o">=</span><span class="tok-s">&quot;Your workout&quot;</span> <span class="tok-na">required</span><span class="tok-p">&gt;</span>
-                        <span class="tok-p">&lt;</span><span class="tok-nt">mat-option</span> <span class="tok-err">*</span><span class="tok-na">ngFor</span><span class="tok-o">=</span><span class="tok-s">&quot;let e of exercises&quot;</span> <span class="tok-err">[</span><span class="tok-na">value</span><span class="tok-err">]=&quot;</span><span class="tok-na">e</span><span class="tok-err">.</span><span class="tok-na">id</span><span class="tok-err">&quot;</span><span class="tok-p">&gt;</span>
-                            {{e.name}}
+                        <span class="tok-p">&lt;</span><span class="tok-nt">mat-option</span> <span class="tok-p">*</span><span class="tok-na">ngFor</span><span class="tok-o">=</span><span class="tok-s">&quot;let e of exercises&quot;</span> <span class="tok-p">[</span><span class="tok-na">value</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;e.id&quot;</span><span class="tok-p">&gt;</span>
+                            <span class="tok-cp">{{</span><span class="tok-nv">e.name</span><span class="tok-cp">}}</span>
                         <span class="tok-p">&lt;/</span><span class="tok-nt">mat-option</span><span class="tok-p">&gt;</span>
                     <span class="tok-p">&lt;/</span><span class="tok-nt">mat-select</span><span class="tok-p">&gt;</span>
                 <span class="tok-p">&lt;/</span><span class="tok-nt">mat-form-field</span><span class="tok-p">&gt;</span>
 
             <span class="tok-p">&lt;/</span><span class="tok-nt">mat-card-content</span><span class="tok-p">&gt;</span>
             <span class="tok-p">&lt;</span><span class="tok-nt">mat-card-actions</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center&quot;</span><span class="tok-p">&gt;</span>
-                <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;submit&quot;</span> <span class="tok-na">mat-button</span> <span class="tok-err">[</span><span class="tok-na">disabled</span><span class="tok-err">]=&quot;</span><span class="tok-na">f</span><span class="tok-err">.</span><span class="tok-na">invalid</span><span class="tok-err">&quot;</span><span class="tok-p">&gt;</span>Start<span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
+                <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;submit&quot;</span> <span class="tok-na">mat-button</span> <span class="tok-p">[</span><span class="tok-na">disabled</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;f.invalid&quot;</span><span class="tok-p">&gt;</span>Start<span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
             <span class="tok-p">&lt;/</span><span class="tok-nt">mat-card-actions</span><span class="tok-p">&gt;</span>
         <span class="tok-p">&lt;/</span><span class="tok-nt">mat-card</span><span class="tok-p">&gt;</span>
     <span class="tok-p">&lt;/</span><span class="tok-nt">form</span><span class="tok-p">&gt;</span>
@@ -1258,51 +1267,51 @@ pre.pygments .tok-il { color: #1C01CE } /* Literal.Number.Integer.Long */
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="html"><span></span>import { Component, OnInit } from &#39;@angular/core&#39;;
-import { MatDialog } from &#39;@angular/material/dialog&#39;;
-import { TrainingService } from &#39;../training.service&#39;;
-import { StopTrainingComponent } from &#39;./stop-training.component&#39;;
+<pre class="pygments highlight"><code data-lang="html+ng2"><span></span>import <span class="tok-err">{</span> Component, OnInit } from &#39;@angular/core&#39;;
+import <span class="tok-err">{</span> MatDialog } from &#39;@angular/material/dialog&#39;;
+import <span class="tok-err">{</span> TrainingService } from &#39;../training.service&#39;;
+import <span class="tok-err">{</span> StopTrainingComponent } from &#39;./stop-training.component&#39;;
 
-@Component({
+@Component<span class="tok-err">({</span>
   selector: &#39;app-current-training&#39;,
   templateUrl: &#39;./current-training.component.html&#39;,
-  styleUrls: [&#39;./current-training.component.css&#39;]
+  styleUrls: <span class="tok-err">[</span>&#39;./current-training.component.css&#39;]
 })
-export class CurrentTrainingComponent implements OnInit {
+export class CurrentTrainingComponent implements OnInit <span class="tok-err">{</span>
 
   progress = 0;
   timer: any;
 
-  constructor(private dialog: MatDialog, private trainingService: TrainingService) { }
+  constructor<span class="tok-err">(</span>private dialog: MatDialog, private trainingService: TrainingService) <span class="tok-err">{</span> }
 
-  ngOnInit(): void {
-    this.startTimer();
+  ngOnInit<span class="tok-err">(</span>): void <span class="tok-err">{</span>
+    this.startTimer<span class="tok-err">(</span>);
   }
 
-  startTimer(): void {
-    const step = this.trainingService.getRunningExercise().duration / 100 * 1000;
-    this.timer = setInterval(() =&gt; {
+  startTimer<span class="tok-err">(</span>): void <span class="tok-err">{</span>
+    const step = this.trainingService.getRunningExercise<span class="tok-err">(</span>).duration / 100 <span class="tok-err">*</span> 1000;
+    this.timer = setInterval<span class="tok-err">((</span>) =&gt; <span class="tok-err">{</span>
       this.progress += 10;
-      if (this.progress &gt;= 100) {
-        this.trainingService.completeExercise();
-        clearInterval(this.timer);
+      if <span class="tok-err">(</span>this.progress &gt;= 100) <span class="tok-err">{</span>
+        this.trainingService.completeExercise<span class="tok-err">(</span>);
+        clearInterval<span class="tok-p">(</span><span class="tok-na">this.timer</span><span class="tok-p">)</span>;
       }
     }, step);
   }
 
-  onStop(): void {
-    clearInterval(this.timer);
-    const dialogRef = this.dialog.open(StopTrainingComponent, {
-      data: {
+  onStop<span class="tok-err">(</span>): void <span class="tok-err">{</span>
+    clearInterval<span class="tok-p">(</span><span class="tok-na">this.timer</span><span class="tok-p">)</span>;
+    const dialogRef = this.dialog.open<span class="tok-err">(</span>StopTrainingComponent, <span class="tok-err">{</span>
+      data: <span class="tok-err">{</span>
         progress: this.progress
       }
     });
 
-    dialogRef.afterClosed().subscribe(result =&gt; {
-      if (result) {
-        this.trainingService.cancelExercise(this.progress);
-      } else {
-        this.startTimer();
+    dialogRef.afterClosed<span class="tok-err">(</span>).subscribe<span class="tok-err">(</span>result =&gt; <span class="tok-err">{</span>
+      if <span class="tok-p">(</span><span class="tok-na">result</span><span class="tok-p">)</span> <span class="tok-err">{</span>
+        this.trainingService.cancelExercise<span class="tok-p">(</span><span class="tok-na">this.progress</span><span class="tok-p">)</span>;
+      } else <span class="tok-err">{</span>
+        this.startTimer<span class="tok-err">(</span>);
       }
     });
   }
@@ -1318,11 +1327,11 @@ export class CurrentTrainingComponent implements OnInit {
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="html"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">section</span> <span class="tok-na">class</span><span class="tok-o">=</span><span class="tok-s">&quot;current-training&quot;</span> <span class="tok-na">fxLayout</span><span class="tok-o">=</span><span class="tok-s">&quot;column&quot;</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center center&quot;</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-progress-spinner</span> <span class="tok-na">mode</span><span class="tok-o">=</span><span class="tok-s">&quot;determinate&quot;</span> <span class="tok-err">[</span><span class="tok-na">value</span><span class="tok-err">]=&quot;</span><span class="tok-na">progress</span><span class="tok-err">&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">mat-progress-spinner</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">h1</span><span class="tok-p">&gt;</span>{{progress}}%<span class="tok-p">&lt;/</span><span class="tok-nt">h1</span><span class="tok-p">&gt;</span>
+<pre class="pygments highlight"><code data-lang="html+ng2"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">section</span> <span class="tok-na">class</span><span class="tok-o">=</span><span class="tok-s">&quot;current-training&quot;</span> <span class="tok-na">fxLayout</span><span class="tok-o">=</span><span class="tok-s">&quot;column&quot;</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center center&quot;</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-progress-spinner</span> <span class="tok-na">mode</span><span class="tok-o">=</span><span class="tok-s">&quot;determinate&quot;</span> <span class="tok-p">[</span><span class="tok-na">value</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;progress&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">mat-progress-spinner</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">h1</span><span class="tok-p">&gt;</span><span class="tok-cp">{{</span><span class="tok-nv">progress</span><span class="tok-cp">}}</span>%<span class="tok-p">&lt;/</span><span class="tok-nt">h1</span><span class="tok-p">&gt;</span>
     <span class="tok-p">&lt;</span><span class="tok-nt">p</span><span class="tok-p">&gt;</span>Keep training!<span class="tok-p">&lt;/</span><span class="tok-nt">p</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">mat-raised-button</span> <span class="tok-na">color</span><span class="tok-o">=</span><span class="tok-s">&quot;accent&quot;</span> <span class="tok-err">(</span><span class="tok-na">click</span><span class="tok-err">)=&quot;</span><span class="tok-na">onStop</span><span class="tok-err">()&quot;</span><span class="tok-p">&gt;</span>Stop<span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">mat-raised-button</span> <span class="tok-na">color</span><span class="tok-o">=</span><span class="tok-s">&quot;accent&quot;</span> <span class="tok-p">(</span><span class="tok-na">click</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-s">&quot;onStop()&quot;</span><span class="tok-p">&gt;</span>Stop<span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
 <span class="tok-p">&lt;/</span><span class="tok-nt">section</span><span class="tok-p">&gt;</span></code></pre>
 </div>
 </div>
@@ -1338,42 +1347,42 @@ export class CurrentTrainingComponent implements OnInit {
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="html"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">div</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center center&quot;</span><span class="tok-p">&gt;</span>
+<pre class="pygments highlight"><code data-lang="html+ng2"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">div</span> <span class="tok-na">fxLayoutAlign</span><span class="tok-o">=</span><span class="tok-s">&quot;center center&quot;</span><span class="tok-p">&gt;</span>
   <span class="tok-p">&lt;</span><span class="tok-nt">mat-form-field</span> <span class="tok-na">fxFlex</span><span class="tok-o">=</span><span class="tok-s">&quot;40%&quot;</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">input</span> <span class="tok-na">matInput</span> <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;text&quot;</span> <span class="tok-err">(</span><span class="tok-na">keyup</span><span class="tok-err">)=&quot;</span><span class="tok-na">doFilter</span><span class="tok-err">($</span><span class="tok-na">event</span><span class="tok-err">.</span><span class="tok-na">target</span><span class="tok-err">.</span><span class="tok-na">value</span><span class="tok-err">)&quot;</span> <span class="tok-na">placeholder</span><span class="tok-o">=</span><span class="tok-s">&quot;Filter&quot;</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">input</span> <span class="tok-na">matInput</span> <span class="tok-na">type</span><span class="tok-o">=</span><span class="tok-s">&quot;text&quot;</span> <span class="tok-p">(</span><span class="tok-na">keyup</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-s">&quot;doFilter($event.target.value)&quot;</span> <span class="tok-na">placeholder</span><span class="tok-o">=</span><span class="tok-s">&quot;Filter&quot;</span><span class="tok-p">&gt;</span>
   <span class="tok-p">&lt;/</span><span class="tok-nt">mat-form-field</span><span class="tok-p">&gt;</span>
 <span class="tok-p">&lt;/</span><span class="tok-nt">div</span><span class="tok-p">&gt;</span>
-<span class="tok-p">&lt;</span><span class="tok-nt">mat-table</span> <span class="tok-err">[</span><span class="tok-na">dataSource</span><span class="tok-err">]=&quot;</span><span class="tok-na">dataSource</span><span class="tok-err">&quot;</span> <span class="tok-na">matSort</span><span class="tok-p">&gt;</span>
+<span class="tok-p">&lt;</span><span class="tok-nt">mat-table</span> <span class="tok-p">[</span><span class="tok-na">dataSource</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;dataSource&quot;</span> <span class="tok-na">matSort</span><span class="tok-p">&gt;</span>
   <span class="tok-p">&lt;</span><span class="tok-nt">ng-container</span> <span class="tok-na">matColumnDef</span><span class="tok-o">=</span><span class="tok-s">&quot;date&quot;</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-cell</span> <span class="tok-err">*</span><span class="tok-na">matHeaderCellDef</span> <span class="tok-na">mat-sort-header</span><span class="tok-p">&gt;</span>Date<span class="tok-p">&lt;/</span><span class="tok-nt">mat-header-cell</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-cell</span> <span class="tok-err">*</span><span class="tok-na">matCellDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let element&quot;</span><span class="tok-p">&gt;</span>{{ element.date | date }}<span class="tok-p">&lt;/</span><span class="tok-nt">mat-cell</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-cell</span> <span class="tok-p">*</span><span class="tok-na">matHeaderCellDef</span><span class="tok-p"> </span><span class="tok-na">mat-sort-header</span><span class="tok-p">&gt;</span>Date<span class="tok-p">&lt;/</span><span class="tok-nt">mat-header-cell</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-cell</span> <span class="tok-p">*</span><span class="tok-na">matCellDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let element&quot;</span><span class="tok-p">&gt;</span><span class="tok-cp">{{</span> <span class="tok-nv">element.date</span> | <span class="tok-nv">date</span> <span class="tok-cp">}}</span><span class="tok-p">&lt;/</span><span class="tok-nt">mat-cell</span><span class="tok-p">&gt;</span>
   <span class="tok-p">&lt;/</span><span class="tok-nt">ng-container</span><span class="tok-p">&gt;</span>
 
   <span class="tok-p">&lt;</span><span class="tok-nt">ng-container</span> <span class="tok-na">matColumnDef</span><span class="tok-o">=</span><span class="tok-s">&quot;name&quot;</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-cell</span> <span class="tok-err">*</span><span class="tok-na">matHeaderCellDef</span> <span class="tok-na">mat-sort-header</span><span class="tok-p">&gt;</span>Name<span class="tok-p">&lt;/</span><span class="tok-nt">mat-header-cell</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-cell</span> <span class="tok-err">*</span><span class="tok-na">matCellDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let element&quot;</span><span class="tok-p">&gt;</span>{{ element.name }}<span class="tok-p">&lt;/</span><span class="tok-nt">mat-cell</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-cell</span> <span class="tok-p">*</span><span class="tok-na">matHeaderCellDef</span><span class="tok-p"> </span><span class="tok-na">mat-sort-header</span><span class="tok-p">&gt;</span>Name<span class="tok-p">&lt;/</span><span class="tok-nt">mat-header-cell</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-cell</span> <span class="tok-p">*</span><span class="tok-na">matCellDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let element&quot;</span><span class="tok-p">&gt;</span><span class="tok-cp">{{</span> <span class="tok-nv">element.name</span> <span class="tok-cp">}}</span><span class="tok-p">&lt;/</span><span class="tok-nt">mat-cell</span><span class="tok-p">&gt;</span>
   <span class="tok-p">&lt;/</span><span class="tok-nt">ng-container</span><span class="tok-p">&gt;</span>
 
   <span class="tok-p">&lt;</span><span class="tok-nt">ng-container</span> <span class="tok-na">matColumnDef</span><span class="tok-o">=</span><span class="tok-s">&quot;calories&quot;</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-cell</span> <span class="tok-err">*</span><span class="tok-na">matHeaderCellDef</span> <span class="tok-na">mat-sort-header</span><span class="tok-p">&gt;</span>Calories<span class="tok-p">&lt;/</span><span class="tok-nt">mat-header-cell</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-cell</span> <span class="tok-err">*</span><span class="tok-na">matCellDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let element&quot;</span><span class="tok-p">&gt;</span>{{ element.calories | number }}<span class="tok-p">&lt;/</span><span class="tok-nt">mat-cell</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-cell</span> <span class="tok-p">*</span><span class="tok-na">matHeaderCellDef</span><span class="tok-p"> </span><span class="tok-na">mat-sort-header</span><span class="tok-p">&gt;</span>Calories<span class="tok-p">&lt;/</span><span class="tok-nt">mat-header-cell</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-cell</span> <span class="tok-p">*</span><span class="tok-na">matCellDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let element&quot;</span><span class="tok-p">&gt;</span><span class="tok-cp">{{</span> <span class="tok-nv">element.calories</span> | <span class="tok-nv">number</span> <span class="tok-cp">}}</span><span class="tok-p">&lt;/</span><span class="tok-nt">mat-cell</span><span class="tok-p">&gt;</span>
   <span class="tok-p">&lt;/</span><span class="tok-nt">ng-container</span><span class="tok-p">&gt;</span>
 
   <span class="tok-p">&lt;</span><span class="tok-nt">ng-container</span> <span class="tok-na">matColumnDef</span><span class="tok-o">=</span><span class="tok-s">&quot;duration&quot;</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-cell</span> <span class="tok-err">*</span><span class="tok-na">matHeaderCellDef</span> <span class="tok-na">mat-sort-header</span><span class="tok-p">&gt;</span>Duration<span class="tok-p">&lt;/</span><span class="tok-nt">mat-header-cell</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-cell</span> <span class="tok-err">*</span><span class="tok-na">matCellDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let element&quot;</span><span class="tok-p">&gt;</span>{{ element.duration | number }}<span class="tok-p">&lt;/</span><span class="tok-nt">mat-cell</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-cell</span> <span class="tok-p">*</span><span class="tok-na">matHeaderCellDef</span><span class="tok-p"> </span><span class="tok-na">mat-sort-header</span><span class="tok-p">&gt;</span>Duration<span class="tok-p">&lt;/</span><span class="tok-nt">mat-header-cell</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-cell</span> <span class="tok-p">*</span><span class="tok-na">matCellDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let element&quot;</span><span class="tok-p">&gt;</span><span class="tok-cp">{{</span> <span class="tok-nv">element.duration</span> | <span class="tok-nv">number</span> <span class="tok-cp">}}</span><span class="tok-p">&lt;/</span><span class="tok-nt">mat-cell</span><span class="tok-p">&gt;</span>
   <span class="tok-p">&lt;/</span><span class="tok-nt">ng-container</span><span class="tok-p">&gt;</span>
 
   <span class="tok-p">&lt;</span><span class="tok-nt">ng-container</span> <span class="tok-na">matColumnDef</span><span class="tok-o">=</span><span class="tok-s">&quot;state&quot;</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-cell</span> <span class="tok-err">*</span><span class="tok-na">matHeaderCellDef</span> <span class="tok-na">mat-sort-header</span><span class="tok-p">&gt;</span>State<span class="tok-p">&lt;/</span><span class="tok-nt">mat-header-cell</span><span class="tok-p">&gt;</span>
-    <span class="tok-p">&lt;</span><span class="tok-nt">mat-cell</span> <span class="tok-err">*</span><span class="tok-na">matCellDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let element&quot;</span><span class="tok-p">&gt;</span>{{ element.state }}<span class="tok-p">&lt;/</span><span class="tok-nt">mat-cell</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-cell</span> <span class="tok-p">*</span><span class="tok-na">matHeaderCellDef</span><span class="tok-p"> </span><span class="tok-na">mat-sort-header</span><span class="tok-p">&gt;</span>State<span class="tok-p">&lt;/</span><span class="tok-nt">mat-header-cell</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-cell</span> <span class="tok-p">*</span><span class="tok-na">matCellDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let element&quot;</span><span class="tok-p">&gt;</span><span class="tok-cp">{{</span> <span class="tok-nv">element.state</span> <span class="tok-cp">}}</span><span class="tok-p">&lt;/</span><span class="tok-nt">mat-cell</span><span class="tok-p">&gt;</span>
   <span class="tok-p">&lt;/</span><span class="tok-nt">ng-container</span><span class="tok-p">&gt;</span>
 
-  <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-row</span> <span class="tok-err">*</span><span class="tok-na">matHeaderRowDef</span><span class="tok-o">=</span><span class="tok-s">&quot;displayedColumns&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">mat-header-row</span><span class="tok-p">&gt;</span>
-  <span class="tok-p">&lt;</span><span class="tok-nt">mat-row</span> <span class="tok-err">*</span><span class="tok-na">matRowDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let row; columns: displayedColumns;&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">mat-row</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;</span><span class="tok-nt">mat-header-row</span> <span class="tok-p">*</span><span class="tok-na">matHeaderRowDef</span><span class="tok-o">=</span><span class="tok-s">&quot;displayedColumns&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">mat-header-row</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;</span><span class="tok-nt">mat-row</span> <span class="tok-p">*</span><span class="tok-na">matRowDef</span><span class="tok-o">=</span><span class="tok-s">&quot;let row; columns: displayedColumns;&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">mat-row</span><span class="tok-p">&gt;</span>
 <span class="tok-p">&lt;/</span><span class="tok-nt">mat-table</span><span class="tok-p">&gt;</span>
 
-<span class="tok-p">&lt;</span><span class="tok-nt">mat-paginator</span> <span class="tok-err">[</span><span class="tok-na">pageSize</span><span class="tok-err">]=&quot;</span><span class="tok-na">2</span><span class="tok-err">&quot;</span> <span class="tok-err">[</span><span class="tok-na">pageSizeOptions</span><span class="tok-err">]=&quot;[</span><span class="tok-na">2</span><span class="tok-err">,</span> <span class="tok-na">5</span><span class="tok-err">,</span> <span class="tok-na">10</span><span class="tok-err">,</span> <span class="tok-na">20</span><span class="tok-err">]&quot;</span><span class="tok-p">&gt;</span>
+<span class="tok-p">&lt;</span><span class="tok-nt">mat-paginator</span> <span class="tok-p">[</span><span class="tok-na">pageSize</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;2&quot;</span> <span class="tok-p">[</span><span class="tok-na">pageSizeOptions</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;[2, 5, 10, 20]&quot;</span><span class="tok-p">&gt;</span>
 <span class="tok-p">&lt;/</span><span class="tok-nt">mat-paginator</span><span class="tok-p">&gt;</span></code></pre>
 </div>
 </div>
@@ -1479,13 +1488,16 @@ export class CurrentTrainingComponent implements OnInit {
 <div class="sect1">
 <h2 id="_section_6_using_angularfire_firebase">Section 6: Using Angularfire &amp; Firebase</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_listening_to_value_changes_of_firestore">Listening to Value Changes (of Firestore)</h3>
 
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-10-04 18:38:46 +0300
+Last updated 2022-04-05 13:56:37 +0300
 </div>
 </div>
 </body>
