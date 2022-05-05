@@ -1267,55 +1267,55 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="html+ng2"><span></span>import <span class="tok-err">{</span> Component, OnInit } from &#39;@angular/core&#39;;
-import <span class="tok-err">{</span> MatDialog } from &#39;@angular/material/dialog&#39;;
-import <span class="tok-err">{</span> TrainingService } from &#39;../training.service&#39;;
-import <span class="tok-err">{</span> StopTrainingComponent } from &#39;./stop-training.component&#39;;
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">OnInit</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatDialog</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/material/dialog&#39;</span><span class="tok-p">;</span>
+<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">TrainingService</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;../training.service&#39;</span><span class="tok-p">;</span>
+<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">StopTrainingComponent</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;./stop-training.component&#39;</span><span class="tok-p">;</span>
 
-@Component<span class="tok-err">({</span>
-  selector: &#39;app-current-training&#39;,
-  templateUrl: &#39;./current-training.component.html&#39;,
-  styleUrls: <span class="tok-err">[</span>&#39;./current-training.component.css&#39;]
-})
-export class CurrentTrainingComponent implements OnInit <span class="tok-err">{</span>
+<span class="tok-kd">@Component</span><span class="tok-p">({</span>
+  <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-current-training&#39;</span><span class="tok-p">,</span>
+  <span class="tok-nx">templateUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./current-training.component.html&#39;</span><span class="tok-p">,</span>
+  <span class="tok-nx">styleUrls</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-s1">&#39;./current-training.component.css&#39;</span><span class="tok-p">]</span>
+<span class="tok-p">})</span>
+<span class="tok-kr">export</span> <span class="tok-kr">class</span> <span class="tok-nx">CurrentTrainingComponent</span> <span class="tok-kr">implements</span> <span class="tok-nx">OnInit</span> <span class="tok-p">{</span>
 
-  progress = 0;
-  timer: any;
+  <span class="tok-nx">progress</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+  <span class="tok-nx">timer</span>: <span class="tok-kt">any</span><span class="tok-p">;</span>
 
-  constructor<span class="tok-err">(</span>private dialog: MatDialog, private trainingService: TrainingService) <span class="tok-err">{</span> }
+  <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-kr">private</span> <span class="tok-nx">dialog</span>: <span class="tok-kt">MatDialog</span><span class="tok-p">,</span> <span class="tok-kr">private</span> <span class="tok-nx">trainingService</span>: <span class="tok-kt">TrainingService</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
 
-  ngOnInit<span class="tok-err">(</span>): void <span class="tok-err">{</span>
-    this.startTimer<span class="tok-err">(</span>);
-  }
+  <span class="tok-nx">ngOnInit</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">startTimer</span><span class="tok-p">();</span>
+  <span class="tok-p">}</span>
 
-  startTimer<span class="tok-err">(</span>): void <span class="tok-err">{</span>
-    const step = this.trainingService.getRunningExercise<span class="tok-err">(</span>).duration / 100 <span class="tok-err">*</span> 1000;
-    this.timer = setInterval<span class="tok-err">((</span>) =&gt; <span class="tok-err">{</span>
-      this.progress += 10;
-      if <span class="tok-err">(</span>this.progress &gt;= 100) <span class="tok-err">{</span>
-        this.trainingService.completeExercise<span class="tok-err">(</span>);
-        clearInterval<span class="tok-p">(</span><span class="tok-na">this.timer</span><span class="tok-p">)</span>;
-      }
-    }, step);
-  }
+  <span class="tok-nx">startTimer</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
+    <span class="tok-kr">const</span> <span class="tok-nx">step</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">trainingService</span><span class="tok-p">.</span><span class="tok-nx">getRunningExercise</span><span class="tok-p">().</span><span class="tok-nx">duration</span> <span class="tok-o">/</span> <span class="tok-mi">100</span> <span class="tok-o">*</span> <span class="tok-mi">1000</span><span class="tok-p">;</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">timer</span> <span class="tok-o">=</span> <span class="tok-nx">setInterval</span><span class="tok-p">(()</span> <span class="tok-o">=&gt;</span> <span class="tok-p">{</span>
+      <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">progress</span> <span class="tok-o">+=</span> <span class="tok-mi">10</span><span class="tok-p">;</span>
+      <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">progress</span> <span class="tok-o">&gt;=</span> <span class="tok-mi">100</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">trainingService</span><span class="tok-p">.</span><span class="tok-nx">completeExercise</span><span class="tok-p">();</span>
+        <span class="tok-nx">clearInterval</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">timer</span><span class="tok-p">);</span>
+      <span class="tok-p">}</span>
+    <span class="tok-p">},</span> <span class="tok-nx">step</span><span class="tok-p">);</span>
+  <span class="tok-p">}</span>
 
-  onStop<span class="tok-err">(</span>): void <span class="tok-err">{</span>
-    clearInterval<span class="tok-p">(</span><span class="tok-na">this.timer</span><span class="tok-p">)</span>;
-    const dialogRef = this.dialog.open<span class="tok-err">(</span>StopTrainingComponent, <span class="tok-err">{</span>
-      data: <span class="tok-err">{</span>
-        progress: this.progress
-      }
-    });
+  <span class="tok-nx">onStop</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-k">void</span> <span class="tok-p">{</span>
+    <span class="tok-nx">clearInterval</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">timer</span><span class="tok-p">);</span>
+    <span class="tok-kr">const</span> <span class="tok-nx">dialogRef</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">dialog</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-nx">StopTrainingComponent</span><span class="tok-p">,</span> <span class="tok-p">{</span>
+      <span class="tok-nx">data</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+        <span class="tok-nx">progress</span>: <span class="tok-kt">this.progress</span>
+      <span class="tok-p">}</span>
+    <span class="tok-p">});</span>
 
-    dialogRef.afterClosed<span class="tok-err">(</span>).subscribe<span class="tok-err">(</span>result =&gt; <span class="tok-err">{</span>
-      if <span class="tok-p">(</span><span class="tok-na">result</span><span class="tok-p">)</span> <span class="tok-err">{</span>
-        this.trainingService.cancelExercise<span class="tok-p">(</span><span class="tok-na">this.progress</span><span class="tok-p">)</span>;
-      } else <span class="tok-err">{</span>
-        this.startTimer<span class="tok-err">(</span>);
-      }
-    });
-  }
-}</code></pre>
+    <span class="tok-nx">dialogRef</span><span class="tok-p">.</span><span class="tok-nx">afterClosed</span><span class="tok-p">().</span><span class="tok-nx">subscribe</span><span class="tok-p">(</span><span class="tok-nx">result</span> <span class="tok-o">=&gt;</span> <span class="tok-p">{</span>
+      <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">result</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">trainingService</span><span class="tok-p">.</span><span class="tok-nx">cancelExercise</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">progress</span><span class="tok-p">);</span>
+      <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">startTimer</span><span class="tok-p">();</span>
+      <span class="tok-p">}</span>
+    <span class="tok-p">});</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1488,6 +1488,14 @@ export class CurrentTrainingComponent implements OnInit <span class="tok-err">{<
 <div class="sect1">
 <h2 id="_section_6_using_angularfire_firebase">Section 6: Using Angularfire &amp; Firebase</h2>
 <div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Academind: Understanding RxJS</dt>
+<dd>
+<p><a href="https://www.youtube.com/embed/T9wOu11uU6U" class="bare">https://www.youtube.com/embed/T9wOu11uU6U</a></p>
+</dd>
+</dl>
+</div>
 <div class="sect2">
 <h3 id="_listening_to_value_changes_of_firestore">Listening to Value Changes (of Firestore)</h3>
 
@@ -1497,7 +1505,7 @@ export class CurrentTrainingComponent implements OnInit <span class="tok-err">{<
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-04-05 13:56:37 +0300
+Last updated 2022-05-05 21:26:17 +0300
 </div>
 </div>
 </body>

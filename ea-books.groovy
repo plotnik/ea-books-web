@@ -27,6 +27,7 @@ import groovy.transform.Field
 @Field String verboseFolder = ''
 
 import javax.swing.JOptionPane;
+import groovy.ant.AntBuilder;
 
 useSwing = false
 
