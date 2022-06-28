@@ -103,3 +103,54 @@ export class RegisterFormComponent {
   }
 }
 ```
+
+== Chapter 22. Advanced observables
+
+=== 22.2. Leveraging operators
+
+.PonyTypeAheadComponent
+```ts
+import { Component, OnInit } from '@angular/core'; 
+import { FormControl } from '@angular/forms';
+import { PonyService, PonyModel } from './pony.service';
+
+@Component({
+    selector: 'ns-typeahead',
+    template: `
+      <div>
+        <input [formControl]="input" />
+        <ul>
+          <li *ngFor="let pony of ponies">{{ pony.name }}</li>
+        </ul>
+      </div> `
+})
+export class PonyTypeAheadComponent implements OnInit {
+    input = new FormControl(); 
+    ponies: Array<PonyModel> = [];
+    
+    constructor(private ponyService: PonyService) {}
+    
+    ngOnInit(): void {
+        // todo: do something with the input
+    } 
+}
+```
+
+.Search operator
+```ts
+this.input.valueChanges
+  .pipe(
+    filter(query => query.length >= 3),      <1>
+    debounceTime(400),                       <2>
+    distinctUntilChanged(),                  <3>
+    switchMap(value =>                       <4>
+      this.ponyService.search(value)
+      .pipe(catchError(error => of([])))) )  <5>
+  .subscribe(results => (this.ponies = results));
+```
+
+<1> в запросе должно быть не менее 3х символов
+<2> ждем указанное время после последнего нажатия клавиши
+<3> не отсылаем повторно тот же запрос
+<4> process only the last value emitted
+<5> process request errors
