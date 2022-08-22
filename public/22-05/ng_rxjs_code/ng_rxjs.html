@@ -439,7 +439,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 pre.pygments .hll { background-color: #ffffcc }
-pre.pygments  { background: #f8f8f8; }
+pre.pygments { background: #f8f8f8; }
 pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
 pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
 pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
@@ -523,12 +523,29 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_using_rxjs_in_angular_and_its_advantages">Using RxJS in Angular and its advantages</a>
 <ul class="sectlevel3">
 <li><a href="#_the_http_client_module">The HTTP client module</a></li>
-<li><a href="#_the_router_module">The router module</a></li>
+<li><a href="#_the_router_module">The router module</a>
+<ul class="sectlevel4">
+<li><a href="#_the_activated_route">The activated route</a></li>
+</ul>
+</li>
+<li><a href="#_reactive_forms">Reactive forms</a></li>
+<li><a href="#_the_event_emitter">The event emitter</a></li>
+<li><a href="#_the_async_pipe">The async pipe</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#_chapter_2_rxjs_7_the_major_features">Chapter 2. RxJS 7 – The Major Features</a></li>
+<li><a href="#_chapter_2_rxjs_7_the_major_features">Chapter 2. RxJS 7 – The Major Features</a>
+<ul class="sectlevel2">
+<li><a href="#_understanding_the_topromise_deprecation">Understanding the toPromise() deprecation</a>
+<ul class="sectlevel3">
+<li><a href="#_the_firstvaluefrom_method">The firstValueFrom() method</a></li>
+<li><a href="#_the_lastvaluefrom_method">The lastValueFrom() method</a></li>
+<li><a href="#_empty_errors">Empty errors</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -541,18 +558,18 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <div class="sect3">
 <h4 id="_the_http_client_module">The HTTP client module</h4>
 <div class="listingblock">
-<div class="title">HttpClient.get() method:</div>
+<div class="title">HttpClient.get() method</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Injectable</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
-<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">HttpClient</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@angular/common/http&#39;</span><span class="tok-p">;</span>
-<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">Observable</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;rxjs&#39;</span><span class="tok-p">;</span>
-<span class="tok-kr">import</span> <span class="tok-p">{</span> <span class="tok-nx">environment</span> <span class="tok-p">}</span> <span class="tok-nx">from</span> <span class="tok-s1">&#39;@env/environment&#39;</span><span class="tok-p">;</span>
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Injectable</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">HttpClient</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/common/http&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Observable</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;rxjs&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">environment</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@env/environment&#39;</span><span class="tok-p">;</span>
 
-<span class="tok-kr">const</span> <span class="tok-nx">BASE_PATH</span> <span class="tok-o">=</span> <span class="tok-nx">environment</span><span class="tok-p">.</span><span class="tok-nx">basePath</span><span class="tok-p">;</span>
+<span class="tok-kd">const</span> <span class="tok-nx">BASE_PATH</span> <span class="tok-o">=</span> <span class="tok-nx">environment</span><span class="tok-p">.</span><span class="tok-nx">basePath</span><span class="tok-p">;</span>
 
 <span class="tok-kd">@Injectable</span><span class="tok-p">()</span>
-<span class="tok-kr">export</span> <span class="tok-kr">class</span> <span class="tok-nx">RecipesService</span> <span class="tok-p">{</span>
-	<span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-kr">private</span> <span class="tok-nx">http</span>: <span class="tok-kt">HttpClient</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">RecipesService</span> <span class="tok-p">{</span>
+	<span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-k">private</span> <span class="tok-nx">http</span>: <span class="tok-kt">HttpClient</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
 	<span class="tok-nx">getRecipes</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">Recipe</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span> <span class="tok-p">{</span>
 		<span class="tok-k">return</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">http</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-o">&lt;</span><span class="tok-nx">Recipe</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-sb">`</span><span class="tok-si">${</span><span class="tok-nx">BASE_PATH</span><span class="tok-si">}</span><span class="tok-sb">/recipes/search/all`</span><span class="tok-p">);</span>
 	<span class="tok-p">}</span>
@@ -562,7 +579,177 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </div>
 <div class="sect3">
 <h4 id="_the_router_module">The router module</h4>
+<div class="listingblock">
+<div class="title">RouterEvent</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Injectable</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Router</span><span class="tok-p">,</span> <span class="tok-nx">RouterEvent</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/router&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">filter</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;rxjs/operators&#39;</span><span class="tok-p">;</span>
 
+<span class="tok-kd">@Injectable</span><span class="tok-p">()</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">CustomRouteService</span> <span class="tok-p">{</span>
+    <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-k">public</span> <span class="tok-nx">router</span>: <span class="tok-kt">Router</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">router</span><span class="tok-p">.</span><span class="tok-nx">events</span><span class="tok-p">.</span><span class="tok-nx">pipe</span><span class="tok-p">(</span>
+            <span class="tok-nx">filter</span><span class="tok-p">(</span><span class="tok-nx">event</span> <span class="tok-p">=&gt;</span> <span class="tok-nx">event</span> <span class="tok-ow">instanceof</span> <span class="tok-nx">RouterEvent</span><span class="tok-p">)</span>
+        <span class="tok-p">).</span><span class="tok-nx">subscribe</span><span class="tok-p">((</span><span class="tok-nx">event</span>: <span class="tok-kt">RouterEvent</span><span class="tok-p">)</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+            <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-sb">`The current event is : </span><span class="tok-si">${</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">id</span><span class="tok-si">}</span><span class="tok-sb"> | event.url`</span><span class="tok-p">);</span>
+        <span class="tok-p">});</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">NavigationStart</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Injectable</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">NavigationStart</span><span class="tok-p">,</span> <span class="tok-nx">Router</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/router&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">filter</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;rxjs/operators&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Injectable</span><span class="tok-p">()</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">CustomRouteService</span> <span class="tok-p">{</span>
+    <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-k">public</span> <span class="tok-nx">router</span>: <span class="tok-kt">Router</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">router</span><span class="tok-p">.</span><span class="tok-nx">events</span><span class="tok-p">.</span><span class="tok-nx">pipe</span><span class="tok-p">(</span>
+            <span class="tok-nx">filter</span><span class="tok-p">(</span><span class="tok-nx">event</span> <span class="tok-p">=&gt;</span> <span class="tok-nx">event</span> <span class="tok-ow">instanceof</span> <span class="tok-nx">NavigationStart</span><span class="tok-p">)</span>
+        <span class="tok-p">).</span><span class="tok-nx">subscribe</span><span class="tok-p">((</span><span class="tok-nx">event</span>: <span class="tok-kt">NavigationStart</span><span class="tok-p">)</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+            <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-sb">`The current event is : </span><span class="tok-si">${</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">id</span><span class="tok-si">}</span><span class="tok-sb"> | event.url`</span><span class="tok-p">);</span>
+        <span class="tok-p">});</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_the_activated_route">The activated route</h5>
+<div class="listingblock">
+<div class="title">ActivatedRoute</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kd">class</span> <span class="tok-nx">ActivatedRoute</span> <span class="tok-p">{</span>
+    <span class="tok-nx">snapshot</span>: <span class="tok-kt">ActivatedRouteSnapshot</span>
+    <span class="tok-nx">url</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">UrlSegment</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span>
+    <span class="tok-nx">params</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">Params</span><span class="tok-o">&gt;</span>
+    <span class="tok-nx">queryParams</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">Params</span><span class="tok-o">&gt;</span>
+    <span class="tok-nx">fragment</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-kt">string</span> <span class="tok-o">|</span> <span class="tok-kc">null</span><span class="tok-o">&gt;</span>
+    <span class="tok-nx">data</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">Data</span><span class="tok-o">&gt;</span>
+    <span class="tok-nx">outlet</span>: <span class="tok-kt">string</span>
+    <span class="tok-nx">component</span>: <span class="tok-kt">Type</span><span class="tok-o">&lt;</span><span class="tok-nx">any</span><span class="tok-o">&gt;</span> <span class="tok-o">|</span> <span class="tok-kt">string</span> <span class="tok-o">|</span> <span class="tok-kc">null</span>
+    <span class="tok-nx">routeConfig</span>: <span class="tok-kt">Route</span> <span class="tok-o">|</span> <span class="tok-kc">null</span>
+    <span class="tok-nx">root</span>: <span class="tok-kt">ActivatedRoute</span>
+    <span class="tok-nx">parent</span>: <span class="tok-kt">ActivatedRoute</span> <span class="tok-o">|</span> <span class="tok-kc">null</span>
+    <span class="tok-nx">firstChild</span>: <span class="tok-kt">ActivatedRoute</span> <span class="tok-o">|</span> <span class="tok-kc">null</span>
+    <span class="tok-nx">children</span>: <span class="tok-kt">ActivatedRoute</span><span class="tok-p">[]</span>
+    <span class="tok-nx">pathFromRoot</span>: <span class="tok-kt">ActivatedRoute</span><span class="tok-p">[]</span>
+    <span class="tok-nx">paramMap</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">ParamMap</span><span class="tok-o">&gt;</span>
+    <span class="tok-nx">queryParamMap</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">ParamMap</span><span class="tok-o">&gt;</span>
+    <span class="tok-nx">toString</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-kt">string</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">RecipesComponent</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">OnInit</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">ActivatedRoute</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/router&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Component</span><span class="tok-p">({</span>
+    <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-recipes&#39;</span><span class="tok-p">,</span>
+    <span class="tok-nx">templateUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./recipes.component.html&#39;</span>
+<span class="tok-p">})</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">RecipesComponent</span> <span class="tok-k">implements</span> <span class="tok-nx">OnInit</span> <span class="tok-p">{</span>
+    <span class="tok-nx">criteria</span>: <span class="tok-kt">any</span><span class="tok-p">;</span>
+    <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-k">private</span> <span class="tok-nx">activatedRoute</span>: <span class="tok-kt">ActivatedRoute</span><span class="tok-p">)</span> <span class="tok-p">{</span> 
+    <span class="tok-p">}</span>
+    <span class="tok-nx">ngOnInit</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">activatedRoute</span><span class="tok-p">.</span><span class="tok-nx">url</span>
+            <span class="tok-p">.</span><span class="tok-nx">subscribe</span><span class="tok-p">(</span><span class="tok-nx">url</span> <span class="tok-p">=&gt;</span> <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;The URL changed to: &#39;</span> <span class="tok-o">+</span> <span class="tok-nx">url</span><span class="tok-p">));</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">activatedRoute</span><span class="tok-p">.</span><span class="tok-nx">queryParams</span><span class="tok-p">.</span><span class="tok-nx">subscribe</span><span class="tok-p">(</span><span class="tok-nx">params</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+            <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">processCriteria</span><span class="tok-p">(</span><span class="tok-nx">params</span><span class="tok-p">.</span><span class="tok-nx">criteria</span><span class="tok-p">);</span>
+        <span class="tok-p">});</span>
+    <span class="tok-p">}</span>
+    <span class="tok-nx">processCriteria</span><span class="tok-p">(</span><span class="tok-nx">criteria</span>: <span class="tok-kt">any</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">criteria</span> <span class="tok-o">=</span> <span class="tok-nx">criteria</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_reactive_forms">Reactive forms</h4>
+<div class="listingblock">
+<div class="title">FormControl</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kd">class</span> <span class="tok-nx">FormControl</span> <span class="tok-k">extends</span> <span class="tok-nx">AbstractControl</span> <span class="tok-p">{</span>
+    <span class="tok-c1">//other properties here</span>
+    <span class="tok-nx">valueChanges</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">any</span><span class="tok-o">&gt;</span>
+    <span class="tok-nx">statusChanges</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">any</span><span class="tok-o">&gt;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">MyComponent</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">OnInit</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">FormGroup</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/forms&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Component</span><span class="tok-p">({</span>
+    <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-recipes&#39;</span><span class="tok-p">,</span>
+    <span class="tok-nx">templateUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./recipes.component.html&#39;</span>
+<span class="tok-p">})</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">MyComponent</span> <span class="tok-k">implements</span> <span class="tok-nx">OnInit</span> <span class="tok-p">{</span>
+    <span class="tok-nx">form</span><span class="tok-o">!:</span> <span class="tok-nx">FormGroup</span><span class="tok-p">;</span>
+    <span class="tok-nx">ngOnInit</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+        <span class="tok-kd">const</span> <span class="tok-nx">ratingControl</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">form</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-p">(</span><span class="tok-s1">&#39;rating&#39;</span><span class="tok-p">);</span>
+        <span class="tok-nx">ratingControl</span><span class="tok-o">?</span><span class="tok-p">.</span><span class="tok-nx">valueChanges</span><span class="tok-p">.</span><span class="tok-nx">subscribe</span><span class="tok-p">(</span>
+            <span class="tok-p">(</span><span class="tok-nx">value</span><span class="tok-p">)</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+                <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">value</span><span class="tok-p">);</span>
+            <span class="tok-p">}</span>
+        <span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the_event_emitter">The event emitter</h4>
+<div class="listingblock">
+<div class="title">EventEmitter</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kd">class</span> <span class="tok-nx">EventEmitter</span><span class="tok-o">&lt;</span><span class="tok-nx">T</span><span class="tok-o">&gt;</span> <span class="tok-k">extends</span> <span class="tok-nx">Subject</span> <span class="tok-p">{</span>
+    <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-nx">isAsync?</span>: <span class="tok-kt">boolean</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-nx">EventEmitter</span><span class="tok-o">&lt;</span><span class="tok-nx">T</span><span class="tok-o">&gt;</span>
+    <span class="tok-nx">emit</span><span class="tok-p">(</span><span class="tok-nx">value?</span>: <span class="tok-kt">T</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-ow">void</span>
+    <span class="tok-nx">subscribe</span><span class="tok-p">(</span>
+        <span class="tok-nx">next</span><span class="tok-o">?:</span> <span class="tok-p">(</span><span class="tok-nx">value</span>: <span class="tok-kt">T</span><span class="tok-p">)</span> <span class="tok-p">=&gt;</span> <span class="tok-ow">void</span><span class="tok-p">,</span> 
+        <span class="tok-nx">error</span><span class="tok-o">?:</span> <span class="tok-p">(</span><span class="tok-nx">error</span>: <span class="tok-kt">any</span><span class="tok-p">)</span> <span class="tok-p">=&gt;</span> <span class="tok-ow">void</span><span class="tok-p">,</span> 
+        <span class="tok-nx">complete</span><span class="tok-o">?:</span> <span class="tok-p">()</span> <span class="tok-p">=&gt;</span> <span class="tok-ow">void</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-nx">Subscription</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">RecipesComponent</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">Output</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">EventEmitter</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;events&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Component</span><span class="tok-p">({</span>
+    <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-recipes&#39;</span><span class="tok-p">,</span>
+    <span class="tok-nx">templateUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./recipes.component.html&#39;</span>
+<span class="tok-p">})</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">RecipesComponent</span> <span class="tok-p">{</span>
+    <span class="tok-kr">constructor</span><span class="tok-p">()</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
+    <span class="tok-kd">@Output</span><span class="tok-p">()</span> <span class="tok-nx">updateRating</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">EventEmitter</span><span class="tok-p">();</span>
+    <span class="tok-nx">updateRecipe</span><span class="tok-p">(</span><span class="tok-nx">value</span>: <span class="tok-kt">string</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">updateRating</span><span class="tok-p">.</span><span class="tok-nx">emit</span><span class="tok-p">(</span><span class="tok-nx">value</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the_async_pipe">The async pipe</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="html+ng2"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">div</span> <span class="tok-p">*</span><span class="tok-na">ngIf</span><span class="tok-o">=</span><span class="tok-s">&quot;data$ | async&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">div</span><span class="tok-p">&gt;</span></code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -570,13 +757,138 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <div class="sect1">
 <h2 id="_chapter_2_rxjs_7_the_major_features">Chapter 2. RxJS 7 – The Major Features</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_understanding_the_topromise_deprecation">Understanding the toPromise() deprecation</h3>
+<div class="listingblock">
+<div class="title">Last value</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kd">const</span> <span class="tok-nx">source$</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-kt">string</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-nx">observer</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">next</span><span class="tok-p">(</span><span class="tok-s1">&#39;Hello&#39;</span><span class="tok-p">);</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">next</span><span class="tok-p">(</span><span class="tok-s1">&#39;World&#39;</span><span class="tok-p">);</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">complete</span><span class="tok-p">();</span>
+<span class="tok-p">});</span>
 
+<span class="tok-nx">hello</span><span class="tok-p">();</span>
+
+<span class="tok-k">async</span> <span class="tok-kd">function</span> <span class="tok-nx">hello</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-kd">const</span> <span class="tok-nx">value</span> <span class="tok-o">=</span> <span class="tok-k">await</span> <span class="tok-nx">source$</span><span class="tok-p">.</span><span class="tok-nx">toPromise</span><span class="tok-p">();</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">value</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
+<span class="tok-c1">//console output</span>
+<span class="tok-c1">//World</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Undefined value</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kd">const</span> <span class="tok-nx">source$</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-kt">string</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-nx">observer</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">complete</span><span class="tok-p">();</span>
+<span class="tok-p">});</span>
+
+<span class="tok-nx">hello</span><span class="tok-p">();</span>
+
+<span class="tok-k">async</span> <span class="tok-kd">function</span> <span class="tok-nx">hello</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-kd">const</span> <span class="tok-nx">value</span> <span class="tok-o">=</span> <span class="tok-k">await</span> <span class="tok-nx">source$</span><span class="tok-p">.</span><span class="tok-nx">toPromise</span><span class="tok-p">();</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">value</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
+<span class="tok-c1">//console output</span>
+<span class="tok-c1">//undefined</span></code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the_firstvaluefrom_method">The firstValueFrom() method</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">firstValueFrom</span><span class="tok-p">,</span> <span class="tok-nx">lastValueFrom</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;rxjs&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">const</span> <span class="tok-nx">source$</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-kt">string</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-nx">observer</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">next</span><span class="tok-p">(</span><span class="tok-s1">&#39;Hello&#39;</span><span class="tok-p">);</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">next</span><span class="tok-p">(</span><span class="tok-s1">&#39;World&#39;</span><span class="tok-p">);</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">complete</span><span class="tok-p">();</span>
+<span class="tok-p">});</span>
+
+<span class="tok-nx">hello</span><span class="tok-p">();</span>
+
+<span class="tok-k">async</span> <span class="tok-kd">function</span> <span class="tok-nx">hello</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-kd">const</span> <span class="tok-nx">value</span> <span class="tok-o">=</span> <span class="tok-k">await</span> <span class="tok-nx">firstValueFrom</span><span class="tok-p">(</span><span class="tok-nx">source$</span><span class="tok-p">);</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">value</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
+<span class="tok-c1">//console output</span>
+<span class="tok-c1">//Hello</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the_lastvaluefrom_method">The lastValueFrom() method</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">firstValueFrom</span><span class="tok-p">,</span> <span class="tok-nx">lastValueFrom</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;rxjs&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">const</span> <span class="tok-nx">source$</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-kt">string</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-nx">observer</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">next</span><span class="tok-p">(</span><span class="tok-s1">&#39;Hello&#39;</span><span class="tok-p">);</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">next</span><span class="tok-p">(</span><span class="tok-s1">&#39;World&#39;</span><span class="tok-p">);</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">complete</span><span class="tok-p">();</span>
+<span class="tok-p">});</span>
+
+<span class="tok-nx">hello</span><span class="tok-p">();</span>
+
+<span class="tok-k">async</span> <span class="tok-kd">function</span> <span class="tok-nx">hello</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-kd">const</span> <span class="tok-nx">value</span> <span class="tok-o">=</span> <span class="tok-k">await</span> <span class="tok-nx">lastValueFrom</span><span class="tok-p">(</span><span class="tok-nx">source$</span><span class="tok-p">);</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">value</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
+<span class="tok-c1">//console output</span>
+<span class="tok-c1">//World</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_empty_errors">Empty errors</h4>
+<div class="listingblock">
+<div class="title">No elements in sequence</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">lastValueFrom</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;rxjs&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">const</span> <span class="tok-nx">source$</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-kt">string</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-nx">observer</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">complete</span><span class="tok-p">();</span>
+<span class="tok-p">});</span>
+
+<span class="tok-nx">hello</span><span class="tok-p">();</span>
+
+<span class="tok-k">async</span> <span class="tok-kd">function</span> <span class="tok-nx">hello</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-kd">const</span> <span class="tok-nx">value</span> <span class="tok-o">=</span> <span class="tok-k">await</span> <span class="tok-nx">lastValueFrom</span><span class="tok-p">(</span><span class="tok-nx">source$</span><span class="tok-p">);</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">value</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
+<span class="tok-c1">//console output</span>
+<span class="tok-c1">//Error: no elements in sequence</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">defaultValue</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kd">const</span> <span class="tok-nx">source$</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-kt">string</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-nx">observer</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+    <span class="tok-nx">observer</span><span class="tok-p">.</span><span class="tok-nx">complete</span><span class="tok-p">();</span>
+<span class="tok-p">});</span>
+
+<span class="tok-nx">hello</span><span class="tok-p">();</span>
+
+<span class="tok-k">async</span> <span class="tok-kd">function</span> <span class="tok-nx">hello</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-kd">const</span> <span class="tok-nx">value</span> <span class="tok-o">=</span> <span class="tok-k">await</span> <span class="tok-nx">lastValueFrom</span><span class="tok-p">(</span><span class="tok-nx">source$</span><span class="tok-p">,</span> <span class="tok-p">{</span>
+        <span class="tok-nx">defaultValue</span><span class="tok-o">:</span> <span class="tok-s1">&#39;DEFAULT&#39;</span>
+    <span class="tok-p">});</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">value</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
+<span class="tok-c1">//console output</span>
+<span class="tok-c1">//DEFAULT</span></code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-05-31 13:51:59 +0300
+Last updated 2022-08-22 23:54:33 +0300
 </div>
 </div>
 </body>
