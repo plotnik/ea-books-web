@@ -7,20 +7,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="manifest" href="app.webmanifest">
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+
+  <script>
+    // does the browser support service workers?
+    if ('serviceWorker' in navigator) {
+      // fires when the service worker is ready
+      navigator.serviceWorker.ready.then(reg => {
+        // we have an active service worker working for us
+        console.log(`Service Worker ready (Scope: ${reg.scope})`);
+        // do something interesting, if you want...
+
+      });
+      // then register our service worker
+      navigator.serviceWorker.register('./sw.js')
+        .then(function (reg) {
+          // display a success message
+          console.log(`Service Worker Registration (Scope: ${reg.scope})`);
+        })
+        .catch(function (error) {
+          // display an error message
+          console.log(`Service Worker Error (${error})`);
+        });
+    } else {
+      // happens when the app isn't served over a TLS connection (HTTPS)
+      console.warn('Service Worker not available');
+    }
+  </script>
 </head>
 
 <body>
 
-    <div class="container">
-      <img src="icons/app_icon_192x192.png" class="rounded mx-auto d-block">
+  <div class="container">
+    <img src="icons/app_icon_192x192.png" class="rounded mx-auto d-block">
 
-      <div class="d-grid gap-2 col-6 mx-auto">
+    <div class="d-grid gap-2 col-6 mx-auto">
 
-        <a href="https://aerostat-music.netlify.app/aerostat.html" class="btn btn-outline-dark m-3">Aerostat</a>
-        <a href="https://aerostat-music.netlify.app/lyrics.html" class="btn btn-outline-dark m-3">Lyrics</a>
-        <a href="https://aerostatbg.ru/" class="btn btn-outline-dark m-3">Aerostat BG</a>
-      </div>
+      <a href="https://aerostat-music.netlify.app/aerostat.html" class="btn btn-outline-dark m-3">Aerostat</a>
+      <a href="https://aerostat-music.netlify.app/lyrics.html" class="btn btn-outline-dark m-3">Lyrics</a>
+      <a href="https://aerostatbg.ru/" class="btn btn-outline-dark m-3">Aerostat BG</a>
     </div>
+  </div>
 
 
   <script src="js/bootstrap.min.js"></script>
