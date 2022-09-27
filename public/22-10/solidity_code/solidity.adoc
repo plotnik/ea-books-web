@@ -1,0 +1,81 @@
+= Solidity Programming Essentials
+:icons: font
+:source-highlighter: pygments
+:toc: right
+:toclevels: 4
+
+== Blockchain Practical Course from Exadel
+
+=== Session 1 (September 14)
+
+https://youtu.be/j-aT86BNy3c
+
+=== Session 2 (September 21)
+
+|===
+
+| *Youtube:* | https://youtu.be/KHTF2d54TEA
+| *Timecode:* | `1:08:55`
+| *Remix:* | https://remix.ethereum.org
+| *Solidity by Example:* | https://docs.soliditylang.org/en/v0.8.17/solidity-by-example.html
+|===
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.4;
+
+contract Test {
+
+    uint256 public n1;
+    uint256 public n2;
+
+    struct C {
+        uint256 el;
+        address ad;
+    }
+
+    event EventName(uint256 p1, address indexed p2);
+
+    mapping(address => uint256) public balances;
+
+    constructor (uint256 t1, uint256 t2) {
+        n1 = t1;
+        n2 = t2;
+    }
+
+    function test(uint256 newN1) public returns(uint256) {
+        n1 = newN1;
+        emit EventName(n1, msg.sender);
+        return balances[msg.sender];
+    }
+
+    function updateBalance(uint256 newBalance) public {
+        balances[msg.sender] += newBalance;
+    }
+
+    function testView() public view returns(uint256) {
+        return n1;
+    }
+
+    function testPure() public pure returns(uint256) {
+        return 5+5;
+    }
+
+}
+```
+
+=== Session 3 (September 28)
+
+https://youtu.be/dHWErV4Ya2Q
+
+=== Session 4 (October 5)
+
+https://youtu.be/KttryvAmlMs
+
+=== Session 5 (October 12)
+
+https://youtu.be/wyHatIGNaVY
+
+=== Session 6 (October 19)
+
+https://youtu.be/3TViwOPGHiU
