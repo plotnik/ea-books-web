@@ -26,7 +26,7 @@ NOTE: http-server in Android Studio emulator: http://10.0.2.2:8080
 === Understanding App Manifest Properties
 
 ```json
-include::section02/manifest.json[]
+include::02 - App Manifest/manifest.json[]
 ```
 
 == Section 3. The Service Workers
@@ -38,3 +38,149 @@ include::section02/manifest.json[]
 |===
 
 NOTE: Make sure you enabled "Developer Mode" on your Device! You do that by tapping your Android Build Number (in the Settings) 7 times. 
+
+== Section 4. Promise and Fetch
+
+
+=== Useful Resources
+
+==== Promises
+
+[cols="1,3"]
+|===
+| *Introduction to Promises (MDN):* | https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+| *Introduction to Promises (Google):* | https://developers.google.com/web/fundamentals/getting-started/primers/promises
+|===
+
+==== Fetch API
+
+[cols="1,3"]
+|===
+| *An Overview on MDN:* | https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+| *Detailed Usage Guide (MDN):* | https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+| *Detailed Usage Guide (and comparison with XMLHttpRequest):* | https://davidwalsh.name/fetch
+| *Introduction to Fetch (Google):* | https://developers.google.com/web/updates/2015/03/introduction-to-fetch
+|===
+
+=== Assignment
+
+==== Task 1
+
+```js
+  // Create a new Promise here and use setTimeout inside the function you pass to the constructor
+  let promise = new Promise(
+    function (resolve) {
+
+      setTimeout(function () { // <- Store this INSIDE the Promise you created!
+        // Resolve the following URL: https://swapi.co/api/people/1
+        resolve('https://swapi.dev/api/people/1');
+      }, 3000);
+
+    }
+  );
+
+  promise.then(function (url) {
+    // Handle the Promise "response" (=> the value you resolved) and returß a fetch()
+    // call to the value (= URL) you resolved (use a GET request)
+    return fetch(url, { mode: "no-cors" });
+  }).then(function (response) {
+    // Handle the response of the fetch() call and extract the JSON data, return that
+    // and handle it in yet another then() block
+    return response.json();
+  }).then(function (data) {
+    // Finally, output the "name" property of the data you got back (e.g. data.name) inside
+    // the "output" element (see variables at top of the file)
+    console.log('data:', data);
+    output.innerHTML = data.name;
+  });
+```  
+[WARNING]
+====
+sw.js:12 Cross-Origin Read Blocking (CORB) blocked cross-origin response https://swapi.dev/api/people/1 with MIME type application/json. See https://www.chromestatus.com/feature/5629709824032768 for more details.
+====
+
+==== Task 2
+
+```js
+  // Repeat the exercise with a PUT request you send to https://httpbin.org/put
+  let promise = new Promise(
+    function (resolve) {
+      setTimeout(function () { // <- Store this INSIDE the Promise you created!        
+        resolve('https://httpbin.org/put');
+      }, 1000);
+    }
+  );
+
+  // Make sure to set the appropriate headers (as shown in the lecture)
+  // Send any data of your choice, make sure to access it correctly when outputting it
+  // Example: If you send {person: {name: 'Max', age: 28}}, you access data.json.person.name
+  // to output the name (assuming your parsed JSON is stored in "data")
+  promise.then(function (url) {
+    return fetch(url, {
+      method: "PUT", 
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        name: "John"
+      })
+    });
+  }).then(function (response) {
+    return response.json();
+  }).then(function (data) {
+    console.log('data:', data);
+    output.innerHTML = JSON.parse(data.data).name;
+  });
+```
+
+==== Task 3
+
+```js
+  // Handle the error in catch()
+
+  let promise = new Promise(
+    function (resolve) {
+      setTimeout(function () { 
+        resolve('https://swapi.dev/api/people/1');
+      }, 500);
+    }
+  );
+
+  promise.then(function (url) {
+    return fetch(url, { mode: "no-cors" });
+  }).then(function (response) {
+    return response.json();
+  }).then(function (data) {
+    console.log('-- data:', data);
+    output.innerHTML = data.name;
+  }).catch(function (err) {
+    console.log('-- err:', err);
+  });
+```
+==== Task 4
+
+```js
+  // Handle the error as a second argument to then()
+  let promise = new Promise(
+    function (resolve) {
+      setTimeout(function () { 
+        resolve('https://swapi.dev/api/people/1');
+      }, 500);
+    }
+  );
+
+  promise.then(function (url) {
+    return fetch(url);
+  },
+  function (err) {
+    console.log('-- err:', err);
+  }).then(function (response) {
+    return response.json();
+  }).then(function (data) {
+    console.log('-- data:', data);
+    output.innerHTML = data.name;
+  });
+```
+
+== Section 5. Service Workers - Caching

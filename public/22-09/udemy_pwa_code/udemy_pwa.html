@@ -521,6 +521,25 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </ul>
 </li>
 <li><a href="#_section_3_the_service_workers">Section 3. The Service Workers</a></li>
+<li><a href="#_section_4_promise_and_fetch">Section 4. Promise and Fetch</a>
+<ul class="sectlevel2">
+<li><a href="#_useful_resources">Useful Resources</a>
+<ul class="sectlevel3">
+<li><a href="#_promises">Promises</a></li>
+<li><a href="#_fetch_api">Fetch API</a></li>
+</ul>
+</li>
+<li><a href="#_assignment">Assignment</a>
+<ul class="sectlevel3">
+<li><a href="#_task_1">Task 1</a></li>
+<li><a href="#_task_2">Task 2</a></li>
+<li><a href="#_task_3">Task 3</a></li>
+<li><a href="#_task_4">Task 4</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_section_5_service_workers_caching">Section 5. Service Workers - Caching</a></li>
 </ul>
 </div>
 </div>
@@ -646,10 +665,211 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_section_4_promise_and_fetch">Section 4. Promise and Fetch</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_useful_resources">Useful Resources</h3>
+<div class="sect3">
+<h4 id="_promises">Promises</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Introduction to Promises (MDN):</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Introduction to Promises (Google):</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://developers.google.com/web/fundamentals/getting-started/primers/promises" class="bare">https://developers.google.com/web/fundamentals/getting-started/primers/promises</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_fetch_api">Fetch API</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>An Overview on MDN:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" class="bare">https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Detailed Usage Guide (MDN):</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" class="bare">https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Detailed Usage Guide (and comparison with XMLHttpRequest):</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://davidwalsh.name/fetch" class="bare">https://davidwalsh.name/fetch</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Introduction to Fetch (Google):</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://developers.google.com/web/updates/2015/03/introduction-to-fetch" class="bare">https://developers.google.com/web/updates/2015/03/introduction-to-fetch</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_assignment">Assignment</h3>
+<div class="sect3">
+<h4 id="_task_1">Task 1</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span>  <span class="tok-c1">// Create a new Promise here and use setTimeout inside the function you pass to the constructor</span>
+  <span class="tok-kd">let</span> <span class="tok-nx">promise</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nb">Promise</span><span class="tok-p">(</span>
+    <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">resolve</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+
+      <span class="tok-nx">setTimeout</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span> <span class="tok-c1">// &lt;- Store this INSIDE the Promise you created!</span>
+        <span class="tok-c1">// Resolve the following URL: https://swapi.co/api/people/1</span>
+        <span class="tok-nx">resolve</span><span class="tok-p">(</span><span class="tok-s1">&#39;https://swapi.dev/api/people/1&#39;</span><span class="tok-p">);</span>
+      <span class="tok-p">},</span> <span class="tok-mf">3000</span><span class="tok-p">);</span>
+
+    <span class="tok-p">}</span>
+  <span class="tok-p">);</span>
+
+  <span class="tok-nx">promise</span><span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-c1">// Handle the Promise &quot;response&quot; (=&gt; the value you resolved) and returß a fetch()</span>
+    <span class="tok-c1">// call to the value (= URL) you resolved (use a GET request)</span>
+    <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">,</span> <span class="tok-p">{</span> <span class="tok-nx">mode</span><span class="tok-o">:</span> <span class="tok-s2">&quot;no-cors&quot;</span> <span class="tok-p">});</span>
+  <span class="tok-p">}).</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-c1">// Handle the response of the fetch() call and extract the JSON data, return that</span>
+    <span class="tok-c1">// and handle it in yet another then() block</span>
+    <span class="tok-k">return</span> <span class="tok-nx">response</span><span class="tok-p">.</span><span class="tok-nx">json</span><span class="tok-p">();</span>
+  <span class="tok-p">}).</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-c1">// Finally, output the &quot;name&quot; property of the data you got back (e.g. data.name) inside</span>
+    <span class="tok-c1">// the &quot;output&quot; element (see variables at top of the file)</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;data:&#39;</span><span class="tok-p">,</span> <span class="tok-nx">data</span><span class="tok-p">);</span>
+    <span class="tok-nx">output</span><span class="tok-p">.</span><span class="tok-nx">innerHTML</span> <span class="tok-o">=</span> <span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">name</span><span class="tok-p">;</span>
+  <span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>sw.js:12 Cross-Origin Read Blocking (CORB) blocked cross-origin response <a href="https://swapi.dev/api/people/1" class="bare">https://swapi.dev/api/people/1</a> with MIME type application/json. See <a href="https://www.chromestatus.com/feature/5629709824032768" class="bare">https://www.chromestatus.com/feature/5629709824032768</a> for more details.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_task_2">Task 2</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span>  <span class="tok-c1">// Repeat the exercise with a PUT request you send to https://httpbin.org/put</span>
+  <span class="tok-kd">let</span> <span class="tok-nx">promise</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nb">Promise</span><span class="tok-p">(</span>
+    <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">resolve</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">setTimeout</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span> <span class="tok-c1">// &lt;- Store this INSIDE the Promise you created!</span>
+        <span class="tok-nx">resolve</span><span class="tok-p">(</span><span class="tok-s1">&#39;https://httpbin.org/put&#39;</span><span class="tok-p">);</span>
+      <span class="tok-p">},</span> <span class="tok-mf">1000</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+  <span class="tok-p">);</span>
+
+  <span class="tok-c1">// Make sure to set the appropriate headers (as shown in the lecture)</span>
+  <span class="tok-c1">// Send any data of your choice, make sure to access it correctly when outputting it</span>
+  <span class="tok-c1">// Example: If you send {person: {name: &#39;Max&#39;, age: 28}}, you access data.json.person.name</span>
+  <span class="tok-c1">// to output the name (assuming your parsed JSON is stored in &quot;data&quot;)</span>
+  <span class="tok-nx">promise</span><span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">,</span> <span class="tok-p">{</span>
+      <span class="tok-nx">method</span><span class="tok-o">:</span> <span class="tok-s2">&quot;PUT&quot;</span><span class="tok-p">,</span>
+      <span class="tok-nx">headers</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+        <span class="tok-s2">&quot;Content-Type&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;application/json&quot;</span><span class="tok-p">,</span>
+        <span class="tok-s2">&quot;Accept&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;application/json&quot;</span>
+      <span class="tok-p">},</span>
+      <span class="tok-nx">body</span><span class="tok-o">:</span> <span class="tok-nb">JSON</span><span class="tok-p">.</span><span class="tok-nx">stringify</span><span class="tok-p">({</span>
+        <span class="tok-nx">name</span><span class="tok-o">:</span> <span class="tok-s2">&quot;John&quot;</span>
+      <span class="tok-p">})</span>
+    <span class="tok-p">});</span>
+  <span class="tok-p">}).</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">response</span><span class="tok-p">.</span><span class="tok-nx">json</span><span class="tok-p">();</span>
+  <span class="tok-p">}).</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;data:&#39;</span><span class="tok-p">,</span> <span class="tok-nx">data</span><span class="tok-p">);</span>
+    <span class="tok-nx">output</span><span class="tok-p">.</span><span class="tok-nx">innerHTML</span> <span class="tok-o">=</span> <span class="tok-nb">JSON</span><span class="tok-p">.</span><span class="tok-nx">parse</span><span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">data</span><span class="tok-p">).</span><span class="tok-nx">name</span><span class="tok-p">;</span>
+  <span class="tok-p">});</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_task_3">Task 3</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span>  <span class="tok-c1">// Handle the error in catch()</span>
+
+  <span class="tok-kd">let</span> <span class="tok-nx">promise</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nb">Promise</span><span class="tok-p">(</span>
+    <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">resolve</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">setTimeout</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span>
+        <span class="tok-nx">resolve</span><span class="tok-p">(</span><span class="tok-s1">&#39;https://swapi.dev/api/people/1&#39;</span><span class="tok-p">);</span>
+      <span class="tok-p">},</span> <span class="tok-mf">500</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+  <span class="tok-p">);</span>
+
+  <span class="tok-nx">promise</span><span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">,</span> <span class="tok-p">{</span> <span class="tok-nx">mode</span><span class="tok-o">:</span> <span class="tok-s2">&quot;no-cors&quot;</span> <span class="tok-p">});</span>
+  <span class="tok-p">}).</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">response</span><span class="tok-p">.</span><span class="tok-nx">json</span><span class="tok-p">();</span>
+  <span class="tok-p">}).</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;-- data:&#39;</span><span class="tok-p">,</span> <span class="tok-nx">data</span><span class="tok-p">);</span>
+    <span class="tok-nx">output</span><span class="tok-p">.</span><span class="tok-nx">innerHTML</span> <span class="tok-o">=</span> <span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">name</span><span class="tok-p">;</span>
+  <span class="tok-p">}).</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;-- err:&#39;</span><span class="tok-p">,</span> <span class="tok-nx">err</span><span class="tok-p">);</span>
+  <span class="tok-p">});</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_task_4">Task 4</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span>  <span class="tok-c1">// Handle the error as a second argument to then()</span>
+  <span class="tok-kd">let</span> <span class="tok-nx">promise</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nb">Promise</span><span class="tok-p">(</span>
+    <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">resolve</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">setTimeout</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span>
+        <span class="tok-nx">resolve</span><span class="tok-p">(</span><span class="tok-s1">&#39;https://swapi.dev/api/people/1&#39;</span><span class="tok-p">);</span>
+      <span class="tok-p">},</span> <span class="tok-mf">500</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+  <span class="tok-p">);</span>
+
+  <span class="tok-nx">promise</span><span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">);</span>
+  <span class="tok-p">},</span>
+  <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;-- err:&#39;</span><span class="tok-p">,</span> <span class="tok-nx">err</span><span class="tok-p">);</span>
+  <span class="tok-p">}).</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">response</span><span class="tok-p">.</span><span class="tok-nx">json</span><span class="tok-p">();</span>
+  <span class="tok-p">}).</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;-- data:&#39;</span><span class="tok-p">,</span> <span class="tok-nx">data</span><span class="tok-p">);</span>
+    <span class="tok-nx">output</span><span class="tok-p">.</span><span class="tok-nx">innerHTML</span> <span class="tok-o">=</span> <span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">name</span><span class="tok-p">;</span>
+  <span class="tok-p">});</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_section_5_service_workers_caching">Section 5. Service Workers - Caching</h2>
+<div class="sectionbody">
+
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-24 19:27:25 +0300
+Last updated 2022-10-14 11:55:42 +0300
 </div>
 </div>
 </body>
