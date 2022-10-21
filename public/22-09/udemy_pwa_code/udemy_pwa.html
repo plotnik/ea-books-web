@@ -545,6 +545,17 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_static_and_dynamic_caching">Static and Dynamic Caching</a></li>
 </ul>
 </li>
+<li><a href="#_section_6_service_workers_advanced_caching">Section 6. Service Workers - Advanced Caching</a>
+<ul class="sectlevel2">
+<li><a href="#_offering_cache_on_demand">Offering "Cache on Demand"</a></li>
+<li><a href="#_providing_an_offline_fallback_page">Providing an Offline Fallback Page</a></li>
+<li><a href="#_strategy_cache_with_network_fallback">Strategy: Cache with Network Fallback</a></li>
+<li><a href="#_strategy_network_with_cache_fallback">Strategy: Network with Cache Fallback</a></li>
+<li><a href="#_strategy_cache_then_network">Strategy: Cache then Network</a></li>
+<li><a href="#_cache_then_network_dynamic_caching">Cache then Network &amp; Dynamic Caching</a></li>
+<li><a href="#_cache_then_network_with_offline_support">Cache then Network with Offline Support</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -961,10 +972,206 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_section_6_service_workers_advanced_caching">Section 6. Service Workers - Advanced Caching</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_offering_cache_on_demand">Offering "Cache on Demand"</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">function</span> <span class="tok-nx">onSaveButtonClicked</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;clicked&#39;</span><span class="tok-p">);</span>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-s1">&#39;caches&#39;</span> <span class="tok-ow">in</span> <span class="tok-nb">window</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-s1">&#39;user-requested&#39;</span><span class="tok-p">)</span>
+    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">cache</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">cache</span><span class="tok-p">.</span><span class="tok-nx">add</span><span class="tok-p">(</span><span class="tok-s1">&#39;https://httpbin.org/get&#39;</span><span class="tok-p">);</span>
+      <span class="tok-nx">cache</span><span class="tok-p">.</span><span class="tok-nx">add</span><span class="tok-p">(</span><span class="tok-s1">&#39;/src/images/sf-boat.jpg&#39;</span><span class="tok-p">);</span>
+    <span class="tok-p">});</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_providing_an_offline_fallback_page">Providing an Offline Fallback Page</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;fetch&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">respondWith</span><span class="tok-p">(</span>
+    <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">match</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">)</span>
+      <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+          <span class="tok-k">return</span> <span class="tok-nx">response</span><span class="tok-p">;</span>
+        <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+          <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">)</span>
+            <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+              <span class="tok-k">return</span> <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-nx">CACHE_DYNAMIC_NAME</span><span class="tok-p">)</span>
+                <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">cache</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                  <span class="tok-nx">cache</span><span class="tok-p">.</span><span class="tok-nx">put</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">.</span><span class="tok-nx">url</span><span class="tok-p">,</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">clone</span><span class="tok-p">());</span>
+                  <span class="tok-k">return</span> <span class="tok-nx">res</span><span class="tok-p">;</span>
+                <span class="tok-p">})</span>
+            <span class="tok-p">})</span>
+            <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+              <span class="tok-k">return</span> <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-nx">CACHE_STATIC_NAME</span><span class="tok-p">)</span>
+                <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">cache</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                  <span class="tok-k">return</span> <span class="tok-nx">cache</span><span class="tok-p">.</span><span class="tok-nx">match</span><span class="tok-p">(</span><span class="tok-s1">&#39;/offline.html&#39;</span><span class="tok-p">);</span>  <i class="conum" data-value="1"></i><b>(1)</b>
+                <span class="tok-p">});</span>
+            <span class="tok-p">});</span>
+        <span class="tok-p">}</span>
+      <span class="tok-p">})</span>
+  <span class="tok-p">);</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Return offline page stored in a static cache</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_strategy_cache_with_network_fallback">Strategy: Cache with Network Fallback</h3>
+<div class="paragraph">
+<p>This is what we implemented above.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_strategy_network_with_cache_fallback">Strategy: Network with Cache Fallback</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;fetch&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">respondWith</span><span class="tok-p">(</span>
+    <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">)</span>
+      <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">return</span> <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-nx">CACHE_DYNAMIC_NAME</span><span class="tok-p">)</span>
+          <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">cache</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-nx">cache</span><span class="tok-p">.</span><span class="tok-nx">put</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">.</span><span class="tok-nx">url</span><span class="tok-p">,</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">clone</span><span class="tok-p">());</span>
+            <span class="tok-k">return</span> <span class="tok-nx">res</span><span class="tok-p">;</span>
+          <span class="tok-p">})</span>
+      <span class="tok-p">})</span>
+      <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">return</span> <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">match</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">);</span>
+      <span class="tok-p">})</span>
+  <span class="tok-p">);</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_strategy_cache_then_network">Strategy: Cache then Network</h3>
+<div class="listingblock">
+<div class="title">feed.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">var</span> <span class="tok-nx">url</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;https://httpbin.org/get&#39;</span><span class="tok-p">;</span>
+<span class="tok-kd">var</span> <span class="tok-nx">networkDataReceived</span> <span class="tok-o">=</span> <span class="tok-kc">false</span><span class="tok-p">;</span>
+
+<span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">)</span>
+  <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">json</span><span class="tok-p">();</span>
+  <span class="tok-p">})</span>
+  <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">networkDataReceived</span> <span class="tok-o">=</span> <span class="tok-kc">true</span><span class="tok-p">;</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;From web&#39;</span><span class="tok-p">,</span> <span class="tok-nx">data</span><span class="tok-p">);</span>
+    <span class="tok-nx">clearCards</span><span class="tok-p">();</span>
+    <span class="tok-nx">createCard</span><span class="tok-p">();</span>
+  <span class="tok-p">});</span>
+
+<span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-s1">&#39;caches&#39;</span> <span class="tok-ow">in</span> <span class="tok-nb">window</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">match</span><span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">)</span>
+    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">return</span> <span class="tok-nx">response</span><span class="tok-p">.</span><span class="tok-nx">json</span><span class="tok-p">();</span>
+      <span class="tok-p">}</span>
+    <span class="tok-p">})</span>
+    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;From cache&#39;</span><span class="tok-p">,</span> <span class="tok-nx">data</span><span class="tok-p">);</span>
+      <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-nx">networkDataReceived</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-nx">clearCards</span><span class="tok-p">();</span>
+        <span class="tok-nx">createCard</span><span class="tok-p">();</span>
+      <span class="tok-p">}</span>
+    <span class="tok-p">})</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_cache_then_network_dynamic_caching">Cache then Network &amp; Dynamic Caching</h3>
+<div class="listingblock">
+<div class="title">sw.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;fetch&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">respondWith</span><span class="tok-p">(</span>
+    <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-nx">CACHE_DYNAMIC_NAME</span><span class="tok-p">)</span>
+      <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">cache</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">)</span>
+          <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-nx">cache</span><span class="tok-p">.</span><span class="tok-nx">put</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">,</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">clone</span><span class="tok-p">());</span>
+            <span class="tok-k">return</span> <span class="tok-nx">res</span><span class="tok-p">;</span>
+          <span class="tok-p">})</span>
+      <span class="tok-p">})</span>
+  <span class="tok-p">);</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_cache_then_network_with_offline_support">Cache then Network with Offline Support</h3>
+<div class="listingblock">
+<div class="title">sw.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;fetch&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">url</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;https://httpbin.org/get&#39;</span><span class="tok-p">;</span>
+
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">.</span><span class="tok-nx">url</span><span class="tok-p">.</span><span class="tok-nx">indexOf</span><span class="tok-p">(</span><span class="tok-nx">url</span><span class="tok-p">)</span> <span class="tok-o">&gt;</span> <span class="tok-o">-</span><span class="tok-mf">1</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">respondWith</span><span class="tok-p">(</span>
+      <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-nx">CACHE_DYNAMIC_NAME</span><span class="tok-p">)</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">cache</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+          <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">)</span>
+            <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+              <span class="tok-nx">cache</span><span class="tok-p">.</span><span class="tok-nx">put</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">,</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">clone</span><span class="tok-p">());</span>
+              <span class="tok-k">return</span> <span class="tok-nx">res</span><span class="tok-p">;</span>
+            <span class="tok-p">})</span>
+        <span class="tok-p">})</span>
+    <span class="tok-p">);</span>
+  <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+    <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">respondWith</span><span class="tok-p">(</span>
+      <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">match</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">)</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+          <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-k">return</span> <span class="tok-nx">response</span><span class="tok-p">;</span>
+          <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+            <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">)</span>
+              <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-k">return</span> <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-nx">CACHE_DYNAMIC_NAME</span><span class="tok-p">)</span>
+                  <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">cache</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                    <span class="tok-nx">cache</span><span class="tok-p">.</span><span class="tok-nx">put</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">.</span><span class="tok-nx">url</span><span class="tok-p">,</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">clone</span><span class="tok-p">());</span>
+                    <span class="tok-k">return</span> <span class="tok-nx">res</span><span class="tok-p">;</span>
+                  <span class="tok-p">})</span>
+              <span class="tok-p">})</span>
+              <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-k">return</span> <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-nx">CACHE_STATIC_NAME</span><span class="tok-p">)</span>
+                  <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">cache</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                    <span class="tok-k">return</span> <span class="tok-nx">cache</span><span class="tok-p">.</span><span class="tok-nx">match</span><span class="tok-p">(</span><span class="tok-s1">&#39;/offline.html&#39;</span><span class="tok-p">);</span>
+                  <span class="tok-p">});</span>
+              <span class="tok-p">});</span>
+          <span class="tok-p">}</span>
+        <span class="tok-p">})</span>
+      <span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-19 21:23:54 +0300
+Last updated 2022-10-21 19:39:21 +0300
 </div>
 </div>
 </body>

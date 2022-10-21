@@ -198,3 +198,175 @@ sw.js:12 Cross-Origin Read Blocking (CORB) blocked cross-origin response https:/
 ```js
 include::05 - Caching/sw-caching-01--updated-project/sw-caching-01--updated-project/public/sw.js[]
 ```
+
+== Section 6. Service Workers - Advanced Caching
+
+=== Offering "Cache on Demand"
+
+```js
+function onSaveButtonClicked(event) {
+  console.log('clicked');
+  if ('caches' in window) {
+    caches.open('user-requested')
+    .then(function (cache) {
+      cache.add('https://httpbin.org/get');
+      cache.add('/src/images/sf-boat.jpg');
+    });
+  }
+}
+```
+
+=== Providing an Offline Fallback Page
+
+```js
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request)
+      .then(function(response) {
+        if (response) {
+          return response;
+        } else {
+          return fetch(event.request)
+            .then(function(res) {
+              return caches.open(CACHE_DYNAMIC_NAME)
+                .then(function(cache) {
+                  cache.put(event.request.url, res.clone());
+                  return res;
+                })
+            })
+            .catch(function(err) {
+              return caches.open(CACHE_STATIC_NAME)
+                .then(function (cache) {
+                  return cache.match('/offline.html');  <1>
+                });
+            });
+        }
+      })
+  );
+});
+```
+<1> Return offline page stored in a static cache
+
+=== Strategy: Cache with Network Fallback
+
+This is what we implemented above.
+
+=== Strategy: Network with Cache Fallback
+
+```js
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    fetch(event.request)
+      .then(function (res) {
+        return caches.open(CACHE_DYNAMIC_NAME)
+          .then(function(cache) {
+            cache.put(event.request.url, res.clone());
+            return res;
+          })
+      })
+      .catch(function (err) {
+        return caches.match(event.request);
+      })
+  );
+});
+```
+
+=== Strategy: Cache then Network
+
+.feed.js
+```js
+var url = 'https://httpbin.org/get';
+var networkDataReceived = false;
+
+fetch(url)
+  .then(function(res) {
+    return res.json();
+  })
+  .then(function(data) {
+    networkDataReceived = true;
+    console.log('From web', data);
+    clearCards();
+    createCard();
+  });
+
+if ('caches' in window) {
+  caches.match(url)
+    .then(function (response) {
+      if (response) {
+        return response.json();
+      }
+    })
+    .then(function (data) {
+      console.log('From cache', data);
+      if (!networkDataReceived) {
+        clearCards();
+        createCard();
+      }
+    })
+}
+```
+
+=== Cache then Network & Dynamic Caching
+
+.sw.js
+```js
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.open(CACHE_DYNAMIC_NAME)
+      .then(function (cache) {
+        return fetch(event.request)
+          .then(function (res) {
+            cache.put(event.request, res.clone());
+            return res;
+          })
+      })
+  );
+});
+```
+
+=== Cache then Network with Offline Support
+
+.sw.js
+```js
+self.addEventListener('fetch', function(event) {
+  var url = 'https://httpbin.org/get';
+
+  if (event.request.url.indexOf(url) > -1) {
+    event.respondWith(
+      caches.open(CACHE_DYNAMIC_NAME)
+        .then(function (cache) {
+          return fetch(event.request)
+            .then(function (res) {
+              cache.put(event.request, res.clone());
+              return res;
+            })
+        })
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request)
+        .then(function(response) {
+          if (response) {
+            return response;
+          } else {
+            return fetch(event.request)
+              .then(function(res) {
+                return caches.open(CACHE_DYNAMIC_NAME)
+                  .then(function(cache) {
+                    cache.put(event.request.url, res.clone());
+                    return res;
+                  })
+              })
+              .catch(function(err) {
+                return caches.open(CACHE_STATIC_NAME)
+                  .then(function (cache) {
+                    return cache.match('/offline.html');
+                  });
+              });
+          }
+        })
+      );
+  }
+
+});
+```
