@@ -547,6 +547,7 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </li>
 <li><a href="#_section_6_service_workers_advanced_caching">Section 6. Service Workers - Advanced Caching</a>
 <ul class="sectlevel2">
+<li><a href="#_useful_resources_3">Useful Resources</a></li>
 <li><a href="#_offering_cache_on_demand">Offering "Cache on Demand"</a></li>
 <li><a href="#_providing_an_offline_fallback_page">Providing an Offline Fallback Page</a></li>
 <li><a href="#_strategy_cache_with_network_fallback">Strategy: Cache with Network Fallback</a></li>
@@ -556,6 +557,17 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_cache_then_network_with_offline_support">Cache then Network with Offline Support</a></li>
 </ul>
 </li>
+<li><a href="#_indexeddb_and_dynamic_data">IndexedDB and Dynamic Data</a>
+<ul class="sectlevel2">
+<li><a href="#_useful_resources_4">Useful Resources</a></li>
+</ul>
+</li>
+<li><a href="#_creating_a_responsive_user_interface">Creating a Responsive User Interface</a>
+<ul class="sectlevel2">
+<li><a href="#_useful_resources_5">Useful Resources</a></li>
+</ul>
+</li>
+<li><a href="#_background_sync">Background Sync</a></li>
 </ul>
 </div>
 </div>
@@ -976,6 +988,29 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 <h2 id="_section_6_service_workers_advanced_caching">Section 6. Service Workers - Advanced Caching</h2>
 <div class="sectionbody">
 <div class="sect2">
+<h3 id="_useful_resources_3">Useful Resources</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Offline Cookbook:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://jakearchibald.com/2014/offline-cookbook/" class="bare">https://jakearchibald.com/2014/offline-cookbook/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Advanced Caching Guide:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.afasterweb.com/2017/01/31/upgrading-your-service-worker-cache/" class="bare">https://www.afasterweb.com/2017/01/31/upgrading-your-service-worker-cache/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Mozilla Strategy Cookbook:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://serviceworke.rs/strategy-cache-and-update_service-worker_doc.html" class="bare">https://serviceworke.rs/strategy-cache-and-update_service-worker_doc.html</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
 <h3 id="_offering_cache_on_demand">Offering "Cache on Demand"</h3>
 <div class="listingblock">
 <div class="content">
@@ -1168,10 +1203,140 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_indexeddb_and_dynamic_data">IndexedDB and Dynamic Data</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">utility.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">var</span> <span class="tok-nx">dbPromise</span> <span class="tok-o">=</span> <span class="tok-nx">idb</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-s1">&#39;posts-store&#39;</span><span class="tok-p">,</span> <span class="tok-mf">1</span><span class="tok-p">,</span> <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">db</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-nx">db</span><span class="tok-p">.</span><span class="tok-nx">objectStoreNames</span><span class="tok-p">.</span><span class="tok-nx">contains</span><span class="tok-p">(</span><span class="tok-s1">&#39;posts&#39;</span><span class="tok-p">))</span> <span class="tok-p">{</span>
+        <span class="tok-nx">db</span><span class="tok-p">.</span><span class="tok-nx">createObjectStore</span><span class="tok-p">(</span><span class="tok-s1">&#39;posts&#39;</span><span class="tok-p">,</span> <span class="tok-p">{</span> <span class="tok-nx">keyPath</span><span class="tok-o">:</span> <span class="tok-s1">&#39;id&#39;</span> <span class="tok-p">});</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">});</span>
+
+<span class="tok-kd">function</span> <span class="tok-nx">writeData</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">,</span> <span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">dbPromise</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">db</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-kd">var</span> <span class="tok-nx">tx</span> <span class="tok-o">=</span> <span class="tok-nx">db</span><span class="tok-p">.</span><span class="tok-nx">transaction</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">,</span> <span class="tok-s1">&#39;readwrite&#39;</span><span class="tok-p">);</span>
+            <span class="tok-kd">var</span> <span class="tok-nx">store</span> <span class="tok-o">=</span> <span class="tok-nx">tx</span><span class="tok-p">.</span><span class="tok-nx">objectStore</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">);</span>
+            <span class="tok-nx">store</span><span class="tok-p">.</span><span class="tok-nx">put</span><span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">);</span>
+            <span class="tok-k">return</span> <span class="tok-nx">tx</span><span class="tok-p">.</span><span class="tok-nx">complete</span><span class="tok-p">;</span>
+        <span class="tok-p">});</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kd">function</span> <span class="tok-nx">readAllData</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">dbPromise</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">db</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-kd">var</span> <span class="tok-nx">tx</span> <span class="tok-o">=</span> <span class="tok-nx">db</span><span class="tok-p">.</span><span class="tok-nx">transaction</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">,</span> <span class="tok-s1">&#39;readonly&#39;</span><span class="tok-p">);</span>
+            <span class="tok-kd">var</span> <span class="tok-nx">store</span> <span class="tok-o">=</span> <span class="tok-nx">tx</span><span class="tok-p">.</span><span class="tok-nx">objectStore</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">);</span>
+            <span class="tok-k">return</span> <span class="tok-nx">store</span><span class="tok-p">.</span><span class="tok-nx">getAll</span><span class="tok-p">();</span>
+        <span class="tok-p">});</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kd">function</span> <span class="tok-nx">clearAllData</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">dbPromise</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">db</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-kd">var</span> <span class="tok-nx">tx</span> <span class="tok-o">=</span> <span class="tok-nx">db</span><span class="tok-p">.</span><span class="tok-nx">transaction</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">,</span> <span class="tok-s1">&#39;readwrite&#39;</span><span class="tok-p">);</span>
+            <span class="tok-kd">var</span> <span class="tok-nx">store</span> <span class="tok-o">=</span> <span class="tok-nx">tx</span><span class="tok-p">.</span><span class="tok-nx">objectStore</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">);</span>
+            <span class="tok-nx">store</span><span class="tok-p">.</span><span class="tok-nx">clear</span><span class="tok-p">();</span>
+            <span class="tok-k">return</span> <span class="tok-nx">tx</span><span class="tok-p">.</span><span class="tok-nx">complete</span><span class="tok-p">;</span>
+        <span class="tok-p">});</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kd">function</span> <span class="tok-nx">deleteItemFromData</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">,</span> <span class="tok-nx">id</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">dbPromise</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">db</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-kd">var</span> <span class="tok-nx">tx</span> <span class="tok-o">=</span> <span class="tok-nx">db</span><span class="tok-p">.</span><span class="tok-nx">transaction</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">,</span> <span class="tok-s1">&#39;readwrite&#39;</span><span class="tok-p">);</span>
+            <span class="tok-kd">var</span> <span class="tok-nx">store</span> <span class="tok-o">=</span> <span class="tok-nx">tx</span><span class="tok-p">.</span><span class="tok-nx">objectStore</span><span class="tok-p">(</span><span class="tok-nx">st</span><span class="tok-p">);</span>
+            <span class="tok-nx">store</span><span class="tok-p">.</span><span class="tok-ow">delete</span><span class="tok-p">(</span><span class="tok-nx">id</span><span class="tok-p">);</span>
+            <span class="tok-k">return</span> <span class="tok-nx">tx</span><span class="tok-p">.</span><span class="tok-nx">complete</span><span class="tok-p">;</span>
+        <span class="tok-p">})</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span> 
+            <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Item deleted&#39;</span><span class="tok-p">);</span>
+        <span class="tok-p">});</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_useful_resources_4">Useful Resources</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>IDB on Github:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/jakearchibald/idb" class="bare">https://github.com/jakearchibald/idb</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>IndexedDB explained on MDN:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API" class="bare">https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Alternative to IDB:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://dexie.org/" class="bare">http://dexie.org/</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_a_responsive_user_interface">Creating a Responsive User Interface</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_useful_resources_5">Useful Resources</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Responsive Design Basics by Google:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://web.dev/learn/design/" class="bare">https://web.dev/learn/design/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Responsive Design Patterns (Google):</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://web.dev/learn/design/ui-patterns/" class="bare">https://web.dev/learn/design/ui-patterns/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Responsive Images (Google):</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://web.dev/learn/design/responsive-images/" class="bare">https://web.dev/learn/design/responsive-images/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Using CSS Media Queries:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries" class="bare">https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Responsive Images (MDN):</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images" class="bare">https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Responsive Images in CSS:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://css-tricks.com/responsive-images-css/" class="bare">https://css-tricks.com/responsive-images-css/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Using CSS Animations:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://learn.shayhowe.com/advanced-html-css/transitions-animations/" class="bare">http://learn.shayhowe.com/advanced-html-css/transitions-animations/</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_background_sync">Background Sync</h2>
+<div class="sectionbody">
+
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-21 19:39:21 +0300
+Last updated 2022-10-30 23:25:03 +0300
 </div>
 </div>
 </body>
