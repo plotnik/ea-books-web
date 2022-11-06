@@ -567,7 +567,14 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_useful_resources_5">Useful Resources</a></li>
 </ul>
 </li>
-<li><a href="#_background_sync">Background Sync</a></li>
+<li><a href="#_background_sync">Background Sync</a>
+<ul class="sectlevel2">
+<li><a href="#_useful_resources_6">Useful Resources</a></li>
+<li><a href="#_feed_js">feed.js</a></li>
+<li><a href="#_sw_js">sw.js</a></li>
+<li><a href="#_functions">functions</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1330,13 +1337,288 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 <div class="sect1">
 <h2 id="_background_sync">Background Sync</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_useful_resources_6">Useful Resources</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Firebase Functions</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Firebase Pricing:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://firebase.google.com/pricing" class="bare">https://firebase.google.com/pricing</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Firebase Console:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://console.firebase.google.com" class="bare">https://console.firebase.google.com</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Firebase Hosting:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://firebase.google.com/docs/hosting" class="bare">https://firebase.google.com/docs/hosting</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Introducing Background Sync:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://developer.chrome.com/blog/background-sync/" class="bare">https://developer.chrome.com/blog/background-sync/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>A Basic Guide to Background Sync:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://ponyfoo.com/articles/backgroundsync" class="bare">https://ponyfoo.com/articles/backgroundsync</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Cloud Functions for Firebase:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://firebase.google.com/docs/functions/" class="bare">https://firebase.google.com/docs/functions/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Create and Deploy Your First Cloud Functions:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://firebase.google.com/docs/functions/write-firebase-functions" class="bare">https://firebase.google.com/docs/functions/write-firebase-functions</a></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Realtime Database</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Saving Data in Realtime Database:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://firebase.google.com/docs/database/admin/save-data" class="bare">https://firebase.google.com/docs/database/admin/save-data</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>push():</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://firebase.google.com/docs/reference/js/database#push" class="bare">https://firebase.google.com/docs/reference/js/database#push</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_feed_js">feed.js</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">var</span> <span class="tok-nx">MY_FIREBASE_ID</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;...&#39;</span><span class="tok-p">;</span> <i class="conum" data-value="7"></i><b>(7)</b>
+<span class="tok-kd">var</span> <span class="tok-nx">MY_TEST_IMAGE_URL</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;...&#39;</span><span class="tok-p">;</span> <i class="conum" data-value="8"></i><b>(8)</b>
 
+<span class="tok-kd">function</span> <span class="tok-nx">sendData</span><span class="tok-p">()</span> <span class="tok-p">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">MY_FIREBASE_ID</span> <span class="tok-o">+</span> <span class="tok-s1">&#39;.firebasedatabase.app/posts.json&#39;</span><span class="tok-p">,</span> <span class="tok-p">{</span>
+    <span class="tok-nx">method</span><span class="tok-o">:</span> <span class="tok-s1">&#39;POST&#39;</span><span class="tok-p">,</span>
+    <span class="tok-nx">headers</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+      <span class="tok-s1">&#39;Content-Type&#39;</span><span class="tok-o">:</span> <span class="tok-s1">&#39;application/json&#39;</span><span class="tok-p">,</span>
+      <span class="tok-s1">&#39;Accept&#39;</span><span class="tok-o">:</span> <span class="tok-s1">&#39;application/json&#39;</span>
+    <span class="tok-p">},</span>
+    <span class="tok-nx">body</span><span class="tok-o">:</span> <span class="tok-nb">JSON</span><span class="tok-p">.</span><span class="tok-nx">stringify</span><span class="tok-p">({</span>
+      <span class="tok-nx">id</span><span class="tok-o">:</span> <span class="tok-ow">new</span> <span class="tok-nb">Date</span><span class="tok-p">().</span><span class="tok-nx">toISOString</span><span class="tok-p">(),</span>
+      <span class="tok-nx">title</span><span class="tok-o">:</span> <span class="tok-nx">titleInput</span><span class="tok-p">.</span><span class="tok-nx">value</span><span class="tok-p">,</span>
+      <span class="tok-nx">location</span><span class="tok-o">:</span> <span class="tok-nx">locationInput</span><span class="tok-p">.</span><span class="tok-nx">value</span><span class="tok-p">,</span>
+      <span class="tok-nx">image</span><span class="tok-o">:</span> <span class="tok-nx">MY_TEST_IMAGE_URL</span>
+    <span class="tok-p">})</span>
+  <span class="tok-p">})</span>
+    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Sent data&#39;</span><span class="tok-p">,</span> <span class="tok-nx">res</span><span class="tok-p">);</span>
+      <span class="tok-nx">updateUI</span><span class="tok-p">();</span>
+    <span class="tok-p">});</span>
+<span class="tok-p">}</span>
+
+<span class="tok-nx">form</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;submit&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="6"></i><b>(6)</b>
+  <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">preventDefault</span><span class="tok-p">();</span>
+
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">titleInput</span><span class="tok-p">.</span><span class="tok-nx">value</span><span class="tok-p">.</span><span class="tok-nx">trim</span><span class="tok-p">()</span> <span class="tok-o">===</span> <span class="tok-s1">&#39;&#39;</span> <span class="tok-o">||</span> <span class="tok-nx">locationInput</span><span class="tok-p">.</span><span class="tok-nx">value</span><span class="tok-p">.</span><span class="tok-nx">trim</span><span class="tok-p">()</span> <span class="tok-o">===</span> <span class="tok-s1">&#39;&#39;</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">alert</span><span class="tok-p">(</span><span class="tok-s1">&#39;Please enter valid data!&#39;</span><span class="tok-p">);</span>
+    <span class="tok-k">return</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">closeCreatePostModal</span><span class="tok-p">();</span>
+
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-s1">&#39;serviceWorker&#39;</span> <span class="tok-ow">in</span> <span class="tok-nx">navigator</span> <span class="tok-o">&amp;&amp;</span> <span class="tok-s1">&#39;SyncManager&#39;</span> <span class="tok-ow">in</span> <span class="tok-nb">window</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">navigator</span><span class="tok-p">.</span><span class="tok-nx">serviceWorker</span><span class="tok-p">.</span><span class="tok-nx">ready</span> <i class="conum" data-value="3"></i><b>(3)</b>
+      <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">sw</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-kd">var</span> <span class="tok-nx">post</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+          <span class="tok-nx">id</span><span class="tok-o">:</span> <span class="tok-ow">new</span> <span class="tok-nb">Date</span><span class="tok-p">().</span><span class="tok-nx">toISOString</span><span class="tok-p">(),</span>
+          <span class="tok-nx">title</span><span class="tok-o">:</span> <span class="tok-nx">titleInput</span><span class="tok-p">.</span><span class="tok-nx">value</span><span class="tok-p">,</span>
+          <span class="tok-nx">location</span><span class="tok-o">:</span> <span class="tok-nx">locationInput</span><span class="tok-p">.</span><span class="tok-nx">value</span>
+        <span class="tok-p">};</span>
+        <span class="tok-nx">writeData</span><span class="tok-p">(</span><span class="tok-s1">&#39;sync-posts&#39;</span><span class="tok-p">,</span> <span class="tok-nx">post</span><span class="tok-p">)</span>
+          <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span>
+            <span class="tok-k">return</span> <span class="tok-nx">sw</span><span class="tok-p">.</span><span class="tok-nx">sync</span><span class="tok-p">.</span><span class="tok-nx">register</span><span class="tok-p">(</span><span class="tok-s1">&#39;sync-new-posts&#39;</span><span class="tok-p">)</span>  <i class="conum" data-value="4"></i><b>(4)</b>
+          <span class="tok-p">})</span>
+          <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span>
+            <span class="tok-kd">var</span> <span class="tok-nx">snackbarContainer</span> <span class="tok-o">=</span> <span class="tok-nb">document</span><span class="tok-p">.</span><span class="tok-nx">querySelector</span><span class="tok-p">(</span><span class="tok-s2">&quot;#confirmation-toast&quot;</span><span class="tok-p">);</span> <i class="conum" data-value="5"></i><b>(5)</b>
+            <span class="tok-kd">var</span> <span class="tok-nx">data</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-nx">message</span><span class="tok-o">:</span> <span class="tok-s2">&quot;Your Post was saved for syncing!&quot;</span><span class="tok-p">};</span>
+            <span class="tok-nx">snackbarContainer</span><span class="tok-p">.</span><span class="tok-nx">MaterialSnackbar</span><span class="tok-p">.</span><span class="tok-nx">showSnackbar</span><span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">);</span>
+          <span class="tok-p">}).</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">);</span>
+          <span class="tok-p">});</span>
+      <span class="tok-p">});</span>
+  <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+    <span class="tok-nx">sendData</span><span class="tok-p">();</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="tok-p">}</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>отправляем данные если браузер не поддерживает background sync</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>отправка данных</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>background sync</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>регистрируем background sync event tag</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>показать toast что в оффлайне мы сохранили сообщение в idb</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>background sync происходит по сабмиту формы</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>id of my firebase</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>url of my test image</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sw_js">sw.js</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">var</span> <span class="tok-nx">MY_FIREBASE_ID</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;...&#39;</span><span class="tok-p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="tok-kd">var</span> <span class="tok-nx">MY_TEST_IMAGE_URL</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;...&#39;</span><span class="tok-p">;</span> <i class="conum" data-value="3"></i><b>(3)</b>
+
+<span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;sync&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;[Service Worker] Background syncing&#39;</span><span class="tok-p">,</span> <span class="tok-nx">event</span><span class="tok-p">);</span>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">tag</span> <span class="tok-o">===</span> <span class="tok-s1">&#39;sync-new-posts&#39;</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;[Service Worker] Syncing new Post&#39;</span><span class="tok-p">);</span>
+    <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">waitUntil</span><span class="tok-p">(</span>
+      <span class="tok-nx">readAllData</span><span class="tok-p">(</span><span class="tok-s1">&#39;sync-posts&#39;</span><span class="tok-p">)</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+          <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kd">var</span> <span class="tok-nx">dt</span> <span class="tok-k">of</span> <span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">MY_FIREBASE_ID</span> <span class="tok-o">+</span> <span class="tok-s1">&#39;.firebasedatabase.app/posts.json&#39;</span><span class="tok-p">,</span> <span class="tok-p">{</span> <i class="conum" data-value="4"></i><b>(4)</b>
+              <span class="tok-nx">method</span><span class="tok-o">:</span> <span class="tok-s1">&#39;POST&#39;</span><span class="tok-p">,</span>
+              <span class="tok-nx">headers</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+                <span class="tok-s1">&#39;Content-Type&#39;</span><span class="tok-o">:</span> <span class="tok-s1">&#39;application/json&#39;</span><span class="tok-p">,</span>
+                <span class="tok-s1">&#39;Accept&#39;</span><span class="tok-o">:</span> <span class="tok-s1">&#39;application/json&#39;</span>
+              <span class="tok-p">},</span>
+              <span class="tok-nx">body</span><span class="tok-o">:</span> <span class="tok-nb">JSON</span><span class="tok-p">.</span><span class="tok-nx">stringify</span><span class="tok-p">({</span>
+                <span class="tok-nx">id</span><span class="tok-o">:</span> <span class="tok-nx">dt</span><span class="tok-p">.</span><span class="tok-nx">id</span><span class="tok-p">,</span>
+                <span class="tok-nx">title</span><span class="tok-o">:</span> <span class="tok-nx">dt</span><span class="tok-p">.</span><span class="tok-nx">title</span><span class="tok-p">,</span>
+                <span class="tok-nx">location</span><span class="tok-o">:</span> <span class="tok-nx">dt</span><span class="tok-p">.</span><span class="tok-nx">location</span><span class="tok-p">,</span>
+                <span class="tok-nx">image</span><span class="tok-o">:</span> <span class="tok-nx">MY_TEST_IMAGE_URL</span>
+              <span class="tok-p">})</span>
+            <span class="tok-p">})</span>
+              <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Sent data&#39;</span><span class="tok-p">,</span> <span class="tok-nx">res</span><span class="tok-p">);</span>
+                <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">ok</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                  <span class="tok-nx">deleteItemFromData</span><span class="tok-p">(</span><span class="tok-s1">&#39;sync-posts&#39;</span><span class="tok-p">,</span> <span class="tok-nx">dt</span><span class="tok-p">.</span><span class="tok-nx">id</span><span class="tok-p">);</span> <i class="conum" data-value="2"></i><b>(2)</b>
+                <span class="tok-p">}</span>
+              <span class="tok-p">})</span>
+              <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Error while sending data&#39;</span><span class="tok-p">,</span> <span class="tok-nx">err</span><span class="tok-p">);</span>
+              <span class="tok-p">});</span>
+          <span class="tok-p">}</span>
+        <span class="tok-p">})</span>
+    <span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>id of my firebase</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>bug here - async call cannot work with loop variable</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>url of my test image</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>когда мы заменили этот url на функцию firebase <code>storePostData</code> возникла проблема CORS</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_functions">functions</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">const</span> <span class="tok-nx">functions</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;firebase-functions&quot;</span><span class="tok-p">);</span>
+<span class="tok-kd">var</span> <span class="tok-nx">admin</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s1">&#39;firebase-admin&#39;</span><span class="tok-p">);</span>
+<span class="tok-kd">var</span> <span class="tok-nx">cors</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s1">&#39;cors&#39;</span><span class="tok-p">)({</span> <span class="tok-nx">origin</span><span class="tok-o">:</span> <span class="tok-kc">true</span> <span class="tok-p">});</span>
+
+<span class="tok-kd">var</span> <span class="tok-nx">serviceAccount</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;./pwagram-fb-key.json&quot;</span><span class="tok-p">);</span>
+<span class="tok-kd">var</span> <span class="tok-nx">MY_DB_URL</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;...&#39;</span><span class="tok-p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+<span class="tok-nx">admin</span><span class="tok-p">.</span><span class="tok-nx">initializeApp</span><span class="tok-p">({</span>
+  <span class="tok-nx">credential</span><span class="tok-o">:</span> <span class="tok-nx">admin</span><span class="tok-p">.</span><span class="tok-nx">credential</span><span class="tok-p">.</span><span class="tok-nx">cert</span><span class="tok-p">(</span><span class="tok-nx">serviceAccount</span><span class="tok-p">),</span>
+  <span class="tok-nx">databaseURL</span><span class="tok-o">:</span> <span class="tok-nx">MY_DB_URL</span>
+<span class="tok-p">});</span>
+
+<span class="tok-nx">exports</span><span class="tok-p">.</span><span class="tok-nx">storePostData</span> <span class="tok-o">=</span> <span class="tok-nx">functions</span><span class="tok-p">.</span><span class="tok-nx">https</span><span class="tok-p">.</span><span class="tok-nx">onRequest</span><span class="tok-p">((</span><span class="tok-nx">request</span><span class="tok-p">,</span> <span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+    <span class="tok-nx">cors</span><span class="tok-p">(</span><span class="tok-nx">request</span><span class="tok-p">,</span> <span class="tok-nx">response</span><span class="tok-p">,</span> <span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span>
+        <span class="tok-kd">var</span> <span class="tok-nx">reqBody</span> <span class="tok-o">=</span> <span class="tok-nx">request</span><span class="tok-p">.</span><span class="tok-nx">body</span><span class="tok-p">;</span>
+        <span class="tok-nx">functions</span><span class="tok-p">.</span><span class="tok-nx">logger</span><span class="tok-p">.</span><span class="tok-nx">info</span><span class="tok-p">(</span><span class="tok-s1">&#39;-- reqBody:&#39;</span><span class="tok-p">,</span> <span class="tok-nx">reqBody</span><span class="tok-p">,</span> <span class="tok-s1">&#39;.&#39;</span><span class="tok-p">);</span> <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="tok-kd">var</span> <span class="tok-nx">newPost</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+            <span class="tok-nx">id</span><span class="tok-o">:</span> <span class="tok-nx">reqBody</span><span class="tok-p">.</span><span class="tok-nx">id</span><span class="tok-p">,</span>
+            <span class="tok-nx">title</span><span class="tok-o">:</span> <span class="tok-nx">reqBody</span><span class="tok-p">.</span><span class="tok-nx">title</span><span class="tok-p">,</span>
+            <span class="tok-nx">location</span><span class="tok-o">:</span> <span class="tok-nx">reqBody</span><span class="tok-p">.</span><span class="tok-nx">location</span><span class="tok-p">,</span>
+            <span class="tok-nx">image</span><span class="tok-o">:</span> <span class="tok-nx">reqBody</span><span class="tok-p">.</span><span class="tok-nx">image</span>
+        <span class="tok-p">};</span>
+        <span class="tok-nx">functions</span><span class="tok-p">.</span><span class="tok-nx">logger</span><span class="tok-p">.</span><span class="tok-nx">info</span><span class="tok-p">(</span><span class="tok-s1">&#39;-- newPost:&#39;</span><span class="tok-p">,</span> <span class="tok-nx">newPost</span><span class="tok-p">,</span> <span class="tok-s1">&#39;.&#39;</span><span class="tok-p">);</span>
+
+        <span class="tok-nx">admin</span><span class="tok-p">.</span><span class="tok-nx">database</span><span class="tok-p">().</span><span class="tok-nx">ref</span><span class="tok-p">(</span><span class="tok-s1">&#39;posts&#39;</span><span class="tok-p">).</span><span class="tok-nx">push</span><span class="tok-p">(</span><span class="tok-nx">newPost</span><span class="tok-p">)</span>
+            <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span>
+                <span class="tok-nx">response</span><span class="tok-p">.</span><span class="tok-nx">status</span><span class="tok-p">(</span><span class="tok-mf">201</span><span class="tok-p">).</span><span class="tok-nx">json</span><span class="tok-p">({</span> <span class="tok-nx">message</span><span class="tok-o">:</span> <span class="tok-s1">&#39;Data stored&#39;</span><span class="tok-p">,</span> <span class="tok-nx">id</span><span class="tok-o">:</span> <span class="tok-nx">request</span><span class="tok-p">.</span><span class="tok-nx">body</span><span class="tok-p">.</span><span class="tok-nx">id</span> <span class="tok-p">});</span>
+            <span class="tok-p">})</span>
+            <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-nx">response</span><span class="tok-p">.</span><span class="tok-nx">status</span><span class="tok-p">(</span><span class="tok-mf">500</span><span class="tok-p">).</span><span class="tok-nx">json</span><span class="tok-p">({</span> <span class="tok-nx">error</span><span class="tok-o">:</span> <span class="tok-nx">err</span> <span class="tok-p">});</span>
+            <span class="tok-p">});</span>
+    <span class="tok-p">});</span>
+    <span class="tok-c1">//   response.send(&quot;Hello from Firebase!&quot;);</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>url of my realtime database</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>последний элемент лога пусть будет просто строкой, иначе он может пропасть из лога :-(</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-30 23:25:03 +0300
+Last updated 2022-11-06 20:43:05 +0300
 </div>
 </div>
 </body>

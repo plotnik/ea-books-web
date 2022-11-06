@@ -412,3 +412,196 @@ include::07-idb/idb-02--added-idb-package/public/src/js/utility.js[]
 |===
 
 == Background Sync
+
+=== Useful Resources
+
+.Firebase Functions
+[cols="1,3"]
+|===
+| *Firebase Pricing:* | https://firebase.google.com/pricing
+| *Firebase Console:* | https://console.firebase.google.com
+| *Firebase Hosting:* | https://firebase.google.com/docs/hosting
+| *Introducing Background Sync:* | https://developer.chrome.com/blog/background-sync/
+| *A Basic Guide to Background Sync:* | https://ponyfoo.com/articles/backgroundsync
+| *Cloud Functions for Firebase:* | https://firebase.google.com/docs/functions/
+| *Create and Deploy Your First Cloud Functions:* | https://firebase.google.com/docs/functions/write-firebase-functions
+|===
+
+.Realtime Database
+[cols="1,3"]
+|===
+| *Saving Data in Realtime Database:* | https://firebase.google.com/docs/database/admin/save-data
+| `push():` | https://firebase.google.com/docs/reference/js/database#push
+|===
+
+=== feed.js
+
+```js
+var MY_FIREBASE_ID = '...'; <7>
+var MY_TEST_IMAGE_URL = '...'; <8>
+
+function sendData() { <2>
+  fetch(MY_FIREBASE_ID + '.firebasedatabase.app/posts.json', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+      id: new Date().toISOString(),
+      title: titleInput.value,
+      location: locationInput.value,
+      image: MY_TEST_IMAGE_URL
+    })
+  })
+    .then(function(res) {
+      console.log('Sent data', res);
+      updateUI();
+    });
+}
+
+form.addEventListener('submit', function(event) { <6>
+  event.preventDefault();
+
+  if (titleInput.value.trim() === '' || locationInput.value.trim() === '') {
+    alert('Please enter valid data!');
+    return;
+  }
+
+  closeCreatePostModal();
+
+  if ('serviceWorker' in navigator && 'SyncManager' in window) {
+    navigator.serviceWorker.ready <3>
+      .then(function(sw) {
+        var post = {
+          id: new Date().toISOString(),
+          title: titleInput.value,
+          location: locationInput.value
+        };
+        writeData('sync-posts', post)
+          .then(function () {
+            return sw.sync.register('sync-new-posts')  <4>
+          })
+          .then(function () {
+            var snackbarContainer = document.querySelector("#confirmation-toast"); <5>
+            var data = {message: "Your Post was saved for syncing!"};
+            snackbarContainer.MaterialSnackbar.showSnackbar(data);
+          }).catch(function (err) {
+            console.log(err);
+          });
+      });
+  } else {
+    sendData(); <1>
+  }
+});
+```
+
+<1> отправляем данные если браузер не поддерживает background sync
+<2> отправка данных
+<3> background sync
+<4> регистрируем background sync event tag
+<5> показать toast что в оффлайне мы сохранили сообщение в idb
+<6> background sync происходит по сабмиту формы
+<7> id of my firebase
+<8> url of my test image
+
+=== sw.js
+
+```js
+var MY_FIREBASE_ID = '...'; <1>
+var MY_TEST_IMAGE_URL = '...'; <3>
+
+self.addEventListener('sync', function(event) {
+  console.log('[Service Worker] Background syncing', event);
+  if (event.tag === 'sync-new-posts') {
+    console.log('[Service Worker] Syncing new Post');
+    event.waitUntil(
+      readAllData('sync-posts')
+        .then(function(data) {
+          for (var dt of data) {
+            fetch(MY_FIREBASE_ID + '.firebasedatabase.app/posts.json', { <4>
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({
+                id: dt.id,
+                title: dt.title,
+                location: dt.location,
+                image: MY_TEST_IMAGE_URL
+              })
+            })
+              .then(function(res) {
+                console.log('Sent data', res);
+                if (res.ok) {
+                  deleteItemFromData('sync-posts', dt.id); <2>
+                }
+              })
+              .catch(function (err) {
+                console.log('Error while sending data', err);
+              });
+          }
+        })
+    );
+  }
+
+});
+```
+
+<1> id of my firebase
+<2> bug here - async call cannot work with loop variable
+<3> url of my test image
+<4> когда мы заменили этот url на функцию firebase `storePostData` возникла проблема CORS
+
+=== functions
+
+```js
+const functions = require("firebase-functions");
+var admin = require('firebase-admin');
+var cors = require('cors')({ origin: true });
+
+var serviceAccount = require("./pwagram-fb-key.json");
+var MY_DB_URL = '...'; <1>
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: MY_DB_URL
+});
+
+exports.storePostData = functions.https.onRequest((request, response) => {
+    cors(request, response, function () {
+        var reqBody = request.body;
+        functions.logger.info('-- reqBody:', reqBody, '.'); <2>
+        var newPost = {
+            id: reqBody.id,
+            title: reqBody.title,
+            location: reqBody.location,
+            image: reqBody.image
+        };
+        functions.logger.info('-- newPost:', newPost, '.');
+
+        admin.database().ref('posts').push(newPost)
+            .then(function () {
+                response.status(201).json({ message: 'Data stored', id: request.body.id });
+            })
+            .catch(function (err) {
+                response.status(500).json({ error: err });
+            });
+    });    
+    //   response.send("Hello from Firebase!");
+});
+```
+
+<1> url of my realtime database
+<2> последний элемент лога пусть будет просто строкой, иначе он может пропасть из лога :-(
+
+////
+<1> интересно, почему эта библиотека не добавляет заголовок `Access-Control-Allow-Origin` ?
+
+[WARNING]
+.Error in Chrome
+====
+Access to fetch at `https://<MY_FIREBASE_APP>.web.app/storePostData` from origin `http://127.0.0.1:8080` has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No `Access-Control-Allow-Origin` header is present on the requested resource. If an opaque response serves your needs, set the request's mode to `no-cors` to fetch the resource with CORS disabled.
+====
+////
