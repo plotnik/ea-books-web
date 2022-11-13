@@ -558,6 +558,16 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <div class="sect1">
 <h2 id="_chapter_1_the_power_of_the_reactive_paradigm">Chapter 1. The Power of the Reactive Paradigm</h2>
 <div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Observables:</strong> These are a representation of the data streams that notify the observers of any change.</p>
+</li>
+<li>
+<p><strong>Observers:</strong> These are the consumers of the data streams emitted by observables.</p>
+</li>
+</ul>
+</div>
 <div class="sect2">
 <h3 id="_using_rxjs_in_angular_and_its_advantages">Using RxJS in Angular and its advantages</h3>
 <div class="sect3">
@@ -576,14 +586,49 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">RecipesService</span> <span class="tok-p">{</span>
 	<span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-k">private</span> <span class="tok-nx">http</span>: <span class="tok-kt">HttpClient</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
 	<span class="tok-nx">getRecipes</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">Recipe</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span> <span class="tok-p">{</span>
-		<span class="tok-k">return</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">http</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-o">&lt;</span><span class="tok-nx">Recipe</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-sb">`</span><span class="tok-si">${</span><span class="tok-nx">BASE_PATH</span><span class="tok-si">}</span><span class="tok-sb">/recipes/search/all`</span><span class="tok-p">);</span>
+		<span class="tok-k">return</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">http</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-o">&lt;</span><span class="tok-nx">Recipe</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-sb">`</span><span class="tok-si">${</span><span class="tok-nx">BASE_PATH</span><span class="tok-si">}</span><span class="tok-sb">/recipes/search/all`</span><span class="tok-p">);</span> <i class="conum" data-value="1"></i><b>(1)</b>
 	<span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>возвращаем <code>Observable</code> для которого впоследствии можно выполнить <code>subscribe</code></td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Observables are cancellable, so you can cancel the HTTP request whenever you want by calling the unsubscribe method.</p>
+</li>
+<li>
+<p>Also, you can retry HTTP requests when an error occurs or an exception is thrown.</p>
+</li>
+<li>
+<p>The server&#8217;s response cannot be mutated by observables, although this can be the case when chaining <code>then()</code> to promises.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_the_router_module">The router module</h4>
+<div class="paragraph">
+<p><a href="https://angular.io/api/router/Event" class="bare">https://angular.io/api/router/Event</a></p>
+</div>
 <div class="listingblock">
 <div class="title">RouterEvent</div>
 <div class="content">
@@ -919,7 +964,7 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-08-23 10:07:18 +0300
+Last updated 2022-11-13 16:34:27 +0300
 </div>
 </div>
 </body>

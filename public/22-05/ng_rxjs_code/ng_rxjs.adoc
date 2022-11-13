@@ -6,7 +6,11 @@
 :example-caption!: 
 Lamis Chebbi
 
+
 == Chapter 1. The Power of the Reactive Paradigm
+
+- *Observables:* These are a representation of the data streams that notify the observers of any change.
+- *Observers:* These are the consumers of the data streams emitted by observables.
 
 === Using RxJS in Angular and its advantages
 
@@ -14,10 +18,34 @@ Lamis Chebbi
 
 .HttpClient.get() method
 ```ts
-include::snip01/RecipesService.ts[]
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '@env/environment';
+
+const BASE_PATH = environment.basePath;
+
+@Injectable()
+export class RecipesService {
+	constructor(private http: HttpClient) { }
+	getRecipes(): Observable<Recipe[]> {
+		return this.http.get<Recipe[]>(`${BASE_PATH}/recipes/search/all`); <1>
+	}
+}
 ```
 
+<1> возвращаем `Observable` для которого впоследствии можно выполнить `subscribe`
+
+[NOTE]
+====
+- Observables are cancellable, so you can cancel the HTTP request whenever you want by calling the unsubscribe method.
+- Also, you can retry HTTP requests when an error occurs or an exception is thrown.
+- The server's response cannot be mutated by observables, although this can be the case when chaining `then()` to promises.
+====
+
 ==== The router module
+
+https://angular.io/api/router/Event
 
 .RouterEvent
 ```ts
