@@ -575,7 +575,20 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_functions">functions</a></li>
 </ul>
 </li>
-<li><a href="#_web_push_notifications">Web Push Notifications</a></li>
+<li><a href="#_web_push_notifications">Web Push Notifications</a>
+<ul class="sectlevel2">
+<li><a href="#_useful_resources_7">Useful Resources</a></li>
+<li><a href="#_app_js_askfornotificationpermission">app.js : askForNotificationPermission</a></li>
+<li><a href="#_app_js_displayconfirmnotification">app.js : displayConfirmNotification</a></li>
+<li><a href="#_sw_js_notificationclick">sw.js : notificationclick</a></li>
+<li><a href="#_sw_js_notificationclose">sw.js : notificationclose</a></li>
+<li><a href="#_app_js_configurepushsub">app.js : configurePushSub</a></li>
+<li><a href="#_utility_js_urlbase64touint8array">utility.js : urlBase64ToUint8Array</a></li>
+<li><a href="#_sw_js_push">sw.js : push</a></li>
+<li><a href="#_sw_js_notificationclick_2">sw.js : notificationclick</a></li>
+<li><a href="#_sw_js_push_2">sw.js : push</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1564,6 +1577,7 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 <div class="sect2">
 <h3 id="_functions">functions</h3>
 <div class="listingblock">
+<div class="title">functions/index.js</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">const</span> <span class="tok-nx">functions</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;firebase-functions&quot;</span><span class="tok-p">);</span>
 <span class="tok-kd">var</span> <span class="tok-nx">admin</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s1">&#39;firebase-admin&#39;</span><span class="tok-p">);</span>
@@ -1619,13 +1633,509 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 <div class="sect1">
 <h2 id="_web_push_notifications">Web Push Notifications</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_useful_resources_7">Useful Resources</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>More about Web Push by Google:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://web.dev/notifications/" class="bare">https://web.dev/notifications/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>More about VAPID:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://blog.mozilla.org/services/2016/04/04/using-vapid-with-webpush/" class="bare">https://blog.mozilla.org/services/2016/04/04/using-vapid-with-webpush/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>More about VAPID by Google:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://developer.chrome.com/blog/web-push-interop-wins/" class="bare">https://developer.chrome.com/blog/web-push-interop-wins/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>The web-push npm Package:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://github.com/web-push-libs/web-push" class="bare">https://github.com/web-push-libs/web-push</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>More about showNotification (display Notifications from Service Workers):</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/showNotification" class="bare">https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/showNotification</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>The Notification API:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://developer.mozilla.org/en/docs/Web/API/notification" class="bare">https://developer.mozilla.org/en/docs/Web/API/notification</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>The Push API:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://developer.mozilla.org/en/docs/Web/API/Push_API" class="bare">https://developer.mozilla.org/en/docs/Web/API/Push_API</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_app_js_askfornotificationpermission">app.js : askForNotificationPermission</h3>
+<div class="listingblock">
+<div class="title">public/src/js/app.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">function</span> <span class="tok-nx">displayConfirmNotification</span><span class="tok-p">()</span> <span class="tok-p">{</span> <i class="conum" data-value="5"></i><b>(5)</b>
+  <span class="tok-kd">var</span> <span class="tok-nx">options</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+    <span class="tok-nx">body</span><span class="tok-o">:</span> <span class="tok-s2">&quot;You successfully subscribed to our Notification service!&quot;</span>
+  <span class="tok-p">};</span>
+  <span class="tok-ow">new</span> <span class="tok-nx">Notification</span><span class="tok-p">(</span><span class="tok-s1">&#39;Successfully subscribed!&#39;</span><span class="tok-p">,</span> <span class="tok-nx">options</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
 
+<span class="tok-kd">function</span> <span class="tok-nx">askForNotificationPermission</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+  <span class="tok-nx">Notification</span><span class="tok-p">.</span><span class="tok-nx">requestPermission</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">result</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;User Choice&#39;</span><span class="tok-p">,</span> <span class="tok-nx">result</span><span class="tok-p">);</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">result</span> <span class="tok-o">!==</span> <span class="tok-s1">&#39;granted&#39;</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;No notification permission granted!&#39;</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+      <span class="tok-c1">//displayConfirmNotification(); </span><i class="conum" data-value="6"></i><b>(6)</b>
+      <span class="tok-nx">configurePushSub</span><span class="tok-p">()</span> <i class="conum" data-value="7"></i><b>(7)</b>
+    <span class="tok-p">}</span>
+  <span class="tok-p">});</span>
+<span class="tok-p">}</span>
+
+<span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-s1">&#39;Notification&#39;</span> <span class="tok-ow">in</span> <span class="tok-nb">window</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kd">var</span> <span class="tok-nx">i</span> <span class="tok-o">=</span> <span class="tok-mf">0</span><span class="tok-p">;</span> <span class="tok-nx">i</span> <span class="tok-o">&lt;</span> <span class="tok-nx">enableNotificationsButtons</span><span class="tok-p">.</span><span class="tok-nx">length</span><span class="tok-p">;</span> <span class="tok-nx">i</span><span class="tok-o">++</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">enableNotificationsButtons</span><span class="tok-p">[</span><span class="tok-nx">i</span><span class="tok-p">].</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;inline-block&#39;</span><span class="tok-p">;</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="tok-nx">enableNotificationsButtons</span><span class="tok-p">[</span><span class="tok-nx">i</span><span class="tok-p">].</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;click&#39;</span><span class="tok-p">,</span> <span class="tok-nx">askForNotificationPermission</span><span class="tok-p">);</span> <i class="conum" data-value="3"></i><b>(3)</b>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Can I use Web Push Notifications?</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Сделать видимой кнопку <code>Enable Notifications</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Повесить обработчик на кнопку</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Запросить разрешение на отправку пуш-нотификаций</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Показать нотификацию, первая версия, без параметров</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Изначально мы просто показывали нотификацию</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>А теперь подписываемся на нотификацию от сервера</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_app_js_displayconfirmnotification">app.js : displayConfirmNotification</h3>
+<div class="listingblock">
+<div class="title">public/src/js/app.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">function</span> <span class="tok-nx">displayConfirmNotification</span><span class="tok-p">()</span> <span class="tok-p">{</span> <i class="conum" data-value="4"></i><b>(4)</b>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-s1">&#39;serviceWorker&#39;</span> <span class="tok-ow">in</span> <span class="tok-nx">navigator</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">navigator</span><span class="tok-p">.</span><span class="tok-nx">serviceWorker</span><span class="tok-p">.</span><span class="tok-nx">ready</span>
+      <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">swreg</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-kd">var</span> <span class="tok-nx">options</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+          <span class="tok-nx">body</span><span class="tok-o">:</span> <span class="tok-s2">&quot;You successfully subscribed to our Notification service!&quot;</span><span class="tok-p">,</span>
+          <span class="tok-nx">icon</span><span class="tok-o">:</span> <span class="tok-s2">&quot;/src/images/icons/app-icon-96x96.png&quot;</span><span class="tok-p">,</span>
+          <span class="tok-nx">image</span><span class="tok-o">:</span> <span class="tok-s2">&quot;/src/images/sf-boat.jpg&quot;</span><span class="tok-p">,</span>
+          <span class="tok-nx">dir</span><span class="tok-o">:</span> <span class="tok-s2">&quot;ltr&quot;</span><span class="tok-p">,</span>
+          <span class="tok-nx">lang</span><span class="tok-o">:</span> <span class="tok-s2">&quot;en-US&quot;</span><span class="tok-p">,</span> <span class="tok-c1">// BCP 47</span>
+          <span class="tok-nx">vibrate</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-mf">100</span><span class="tok-p">,</span> <span class="tok-mf">50</span><span class="tok-p">,</span> <span class="tok-mf">200</span><span class="tok-p">],</span>
+          <span class="tok-nx">badge</span><span class="tok-o">:</span> <span class="tok-s2">&quot;/src/images/icons/app-icon-96x96.png&quot;</span><span class="tok-p">,</span>
+          <span class="tok-nx">tag</span><span class="tok-o">:</span> <span class="tok-s2">&quot;confirm-notification&quot;</span><span class="tok-p">,</span> <i class="conum" data-value="2"></i><b>(2)</b>
+          <span class="tok-nx">renotify</span><span class="tok-o">:</span> <span class="tok-kc">true</span><span class="tok-p">,</span> <i class="conum" data-value="3"></i><b>(3)</b>
+          <span class="tok-nx">actions</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+            <span class="tok-p">{</span> <span class="tok-nx">action</span><span class="tok-o">:</span> <span class="tok-s2">&quot;confirm&quot;</span><span class="tok-p">,</span> <span class="tok-nx">title</span><span class="tok-o">:</span> <span class="tok-s2">&quot;Okay&quot;</span><span class="tok-p">,</span> <span class="tok-nx">icon</span><span class="tok-o">:</span> <span class="tok-s2">&quot;/src/images/icons/app-icon-96x96.png&quot;</span> <span class="tok-p">},</span>
+            <span class="tok-p">{</span> <span class="tok-nx">action</span><span class="tok-o">:</span> <span class="tok-s2">&quot;cancel&quot;</span><span class="tok-p">,</span> <span class="tok-nx">title</span><span class="tok-o">:</span> <span class="tok-s2">&quot;Cancel&quot;</span><span class="tok-p">,</span> <span class="tok-nx">icon</span><span class="tok-o">:</span> <span class="tok-s2">&quot;/src/images/icons/app-icon-96x96.png&quot;</span> <span class="tok-p">}</span>
+          <span class="tok-p">]</span>
+        <span class="tok-p">};</span>
+        <span class="tok-nx">swreg</span><span class="tok-p">.</span><span class="tok-nx">showNotification</span><span class="tok-p">(</span><span class="tok-s1">&#39;Successfully subscribed (from SW)!&#39;</span><span class="tok-p">,</span> <span class="tok-nx">options</span><span class="tok-p">);</span> <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="tok-p">});</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Display notification from service worker</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Notifications can be stacked on some OSes</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Additional notifications should also produce a sound</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Показать нотификацию, вторая версия, с параметрами</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sw_js_notificationclick">sw.js : notificationclick</h3>
+<div class="listingblock">
+<div class="title">public/sw.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;notificationclick&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="tok-kd">var</span> <span class="tok-nx">notification</span> <span class="tok-o">=</span> <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">notification</span><span class="tok-p">;</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">action</span> <span class="tok-o">=</span> <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">action</span><span class="tok-p">;</span>
+
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">notification</span><span class="tok-p">);</span>
+
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">action</span> <span class="tok-o">===</span> <span class="tok-s1">&#39;confirm&#39;</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Confirm was chosen&#39;</span><span class="tok-p">);</span>
+  <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">action</span><span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+  <span class="tok-nx">notification</span><span class="tok-p">.</span><span class="tok-nx">close</span><span class="tok-p">();</span> <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Обработчик кнопки на нотификации. В этом случае возникает событие <code>notificationclick</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Закрываем нотификацию</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sw_js_notificationclose">sw.js : notificationclose</h3>
+<div class="listingblock">
+<div class="title">public/sw.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;notificationclose&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Notification was closed&#39;</span><span class="tok-p">,</span> <span class="tok-nx">event</span><span class="tok-p">);</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>событие <code>notificationclose</code> возникает при закрытии нотификации</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_app_js_configurepushsub">app.js : configurePushSub</h3>
+<div class="listingblock">
+<div class="title">public/src/js/app.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">function</span> <span class="tok-nx">configurePushSub</span><span class="tok-p">()</span> <span class="tok-p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-p">(</span><span class="tok-s1">&#39;serviceWorker&#39;</span> <span class="tok-ow">in</span> <span class="tok-nx">navigator</span><span class="tok-p">))</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-kd">var</span> <span class="tok-nx">reg</span><span class="tok-p">;</span>
+  <span class="tok-nx">navigator</span><span class="tok-p">.</span><span class="tok-nx">serviceWorker</span><span class="tok-p">.</span><span class="tok-nx">ready</span>
+    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">swreg</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">reg</span> <span class="tok-o">=</span> <span class="tok-nx">swreg</span><span class="tok-p">;</span>
+      <span class="tok-k">return</span> <span class="tok-nx">swreg</span><span class="tok-p">.</span><span class="tok-nx">pushManager</span><span class="tok-p">.</span><span class="tok-nx">getSubscription</span><span class="tok-p">();</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="tok-p">})</span>
+    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">sub</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">sub</span> <span class="tok-o">===</span> <span class="tok-kc">null</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-c1">// Create a new subscription</span>
+        <span class="tok-kd">var</span> <span class="tok-nx">vapidPublicKey</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;...&quot;</span><span class="tok-p">;</span> <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="tok-kd">var</span> <span class="tok-nx">convertedVapidPublicKey</span> <span class="tok-o">=</span> <span class="tok-nx">urlBase64ToUint8Array</span><span class="tok-p">(</span><span class="tok-nx">vapidPublicKey</span><span class="tok-p">);</span> <i class="conum" data-value="4"></i><b>(4)</b>
+        <span class="tok-k">return</span> <span class="tok-nx">reg</span><span class="tok-p">.</span><span class="tok-nx">pushManager</span><span class="tok-p">.</span><span class="tok-nx">subscribe</span><span class="tok-p">({</span> <i class="conum" data-value="5"></i><b>(5)</b>
+          <span class="tok-nx">userVisibleOnly</span><span class="tok-o">:</span> <span class="tok-kc">true</span><span class="tok-p">,</span>
+          <span class="tok-nx">applicationServerKey</span><span class="tok-o">:</span> <span class="tok-nx">convertedVapidPublicKey</span>
+        <span class="tok-p">});</span>
+      <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+        <span class="tok-c1">// We have a subscription</span>
+      <span class="tok-p">}</span>
+
+    <span class="tok-p">})</span>
+    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">newSub</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="6"></i><b>(6)</b>
+      <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">MY_FIREBASE_ID</span> <span class="tok-o">+</span> <span class="tok-s2">&quot;.firebasedatabase.app/subscriptions.json&quot;</span><span class="tok-p">,</span> <span class="tok-p">{</span> <i class="conum" data-value="8"></i><b>(8)</b>
+        <span class="tok-nx">method</span><span class="tok-o">:</span> <span class="tok-s1">&#39;POST&#39;</span><span class="tok-p">,</span>
+        <span class="tok-nx">headers</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+          <span class="tok-s2">&quot;Content-Type&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;application/json&quot;</span><span class="tok-p">,</span>
+          <span class="tok-s2">&quot;Accept&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;application/json&quot;</span>
+        <span class="tok-p">},</span>
+        <span class="tok-nx">body</span><span class="tok-o">:</span> <span class="tok-nb">JSON</span><span class="tok-p">.</span><span class="tok-nx">stringify</span><span class="tok-p">(</span><span class="tok-nx">newSub</span><span class="tok-p">)</span>
+      <span class="tok-p">});</span>
+    <span class="tok-p">})</span>
+    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="7"></i><b>(7)</b>
+      <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">ok</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-nx">displayConfirmNotification</span><span class="tok-p">();</span>
+      <span class="tok-p">}</span>
+    <span class="tok-p">})</span>
+    <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">);</span>
+    <span class="tok-p">});</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Подписываемся на нотификацию от сервера</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Получаем подписку из <code>pushManager</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>В папке <code>functions</code> мы выполнили <code>npm install web-push</code><br>
+а затем <code>npm run web-push generate-vapid-keys</code><br>
+В итоге получили <code>Public Key</code> и <code>Private Key</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Конвертировать ключ в <code>Uint8Array</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Получить подписку у браузера</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Сохранить подписку в базе</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Показать нотификацию, если подписка успешно сохранена</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>id of my firebase</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_utility_js_urlbase64touint8array">utility.js : urlBase64ToUint8Array</h3>
+<div class="listingblock">
+<div class="title">public/src/js/utility.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">function</span> <span class="tok-nx">urlBase64ToUint8Array</span><span class="tok-p">(</span><span class="tok-nx">base64String</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="tok-kd">var</span> <span class="tok-nx">padding</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;=&#39;</span><span class="tok-p">.</span><span class="tok-nx">repeat</span><span class="tok-p">((</span><span class="tok-mf">4</span> <span class="tok-o">-</span> <span class="tok-nx">base64String</span><span class="tok-p">.</span><span class="tok-nx">length</span> <span class="tok-o">%</span> <span class="tok-mf">4</span><span class="tok-p">)</span> <span class="tok-o">%</span> <span class="tok-mf">4</span><span class="tok-p">);</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">base64</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-nx">base64String</span> <span class="tok-o">+</span> <span class="tok-nx">padding</span><span class="tok-p">)</span>
+    <span class="tok-p">.</span><span class="tok-nx">replace</span><span class="tok-p">(</span><span class="tok-sr">/\-/g</span><span class="tok-p">,</span> <span class="tok-s1">&#39;+&#39;</span><span class="tok-p">)</span>
+    <span class="tok-p">.</span><span class="tok-nx">replace</span><span class="tok-p">(</span><span class="tok-sr">/_/g</span><span class="tok-p">,</span> <span class="tok-s1">&#39;/&#39;</span><span class="tok-p">);</span>
+
+  <span class="tok-kd">var</span> <span class="tok-nx">rawData</span> <span class="tok-o">=</span> <span class="tok-nb">window</span><span class="tok-p">.</span><span class="tok-nx">atob</span><span class="tok-p">(</span><span class="tok-nx">base64</span><span class="tok-p">);</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">outputArray</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nb">Uint8Array</span><span class="tok-p">(</span><span class="tok-nx">rawData</span><span class="tok-p">.</span><span class="tok-nx">length</span><span class="tok-p">);</span>
+
+  <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kd">var</span> <span class="tok-nx">i</span> <span class="tok-o">=</span> <span class="tok-mf">0</span><span class="tok-p">;</span> <span class="tok-nx">i</span> <span class="tok-o">&lt;</span> <span class="tok-nx">rawData</span><span class="tok-p">.</span><span class="tok-nx">length</span><span class="tok-p">;</span> <span class="tok-o">++</span><span class="tok-nx">i</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">outputArray</span><span class="tok-p">[</span><span class="tok-nx">i</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-nx">rawData</span><span class="tok-p">.</span><span class="tok-nx">charCodeAt</span><span class="tok-p">(</span><span class="tok-nx">i</span><span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+  <span class="tok-k">return</span> <span class="tok-nx">outputArray</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Конвертация строки <code>Base64</code> в <code>Uint8Array</code></td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sw_js_push">sw.js : push</h3>
+<div class="listingblock">
+<div class="title">public/sw.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;push&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Push Notification received&#39;</span><span class="tok-p">,</span> <span class="tok-nx">event</span><span class="tok-p">);</span>
+
+  <span class="tok-kd">var</span> <span class="tok-nx">data</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-nx">title</span><span class="tok-o">:</span> <span class="tok-s2">&quot;New!&quot;</span><span class="tok-p">,</span> <span class="tok-nx">content</span><span class="tok-o">:</span><span class="tok-s2">&quot;Something new happened!&quot;</span><span class="tok-p">};</span> <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">data</span> <span class="tok-o">=</span> <span class="tok-nb">JSON</span><span class="tok-p">.</span><span class="tok-nx">parse</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">text</span><span class="tok-p">());</span> <i class="conum" data-value="3"></i><b>(3)</b>
+  <span class="tok-p">}</span>
+
+  <span class="tok-kd">var</span> <span class="tok-nx">options</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+    <span class="tok-nx">body</span><span class="tok-o">:</span> <span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">content</span><span class="tok-p">,</span>
+    <span class="tok-nx">icon</span><span class="tok-o">:</span> <span class="tok-s1">&#39;/src/images/icons/app-icon-96x96.png&#39;</span><span class="tok-p">,</span>
+    <span class="tok-nx">badge</span><span class="tok-o">:</span> <span class="tok-s1">&#39;/src/images/icons/app-icon-96x96.png&#39;</span>
+  <span class="tok-p">};</span>
+
+  <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">waitUntil</span><span class="tok-p">(</span>
+    <span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">registration</span><span class="tok-p">.</span><span class="tok-nx">showNotification</span><span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">title</span><span class="tok-p">,</span> <span class="tok-nx">options</span><span class="tok-p">)</span> <i class="conum" data-value="4"></i><b>(4)</b>
+  <span class="tok-p">);</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Получаем пуш-нотификацию</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Дефолтное сообщение</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Сообщение с сервера</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Показать нотификацию на устройстве</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sw_js_notificationclick_2">sw.js : notificationclick</h3>
+<div class="listingblock">
+<div class="title">public/sw.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;notificationclick&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">notification</span> <span class="tok-o">=</span> <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">notification</span><span class="tok-p">;</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">action</span> <span class="tok-o">=</span> <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">action</span><span class="tok-p">;</span>
+
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">notification</span><span class="tok-p">);</span>
+
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">action</span> <span class="tok-o">===</span> <span class="tok-s1">&#39;confirm&#39;</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Confirm was chosen&#39;</span><span class="tok-p">);</span>
+    <span class="tok-nx">notification</span><span class="tok-p">.</span><span class="tok-nx">close</span><span class="tok-p">();</span>
+  <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">action</span><span class="tok-p">);</span>
+    <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">waitUntil</span><span class="tok-p">(</span>
+      <span class="tok-nx">clients</span><span class="tok-p">.</span><span class="tok-nx">matchAll</span><span class="tok-p">()</span> <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">clis</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+          <span class="tok-kd">var</span> <span class="tok-nx">client</span> <span class="tok-o">=</span> <span class="tok-nx">clis</span><span class="tok-p">.</span><span class="tok-nx">find</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">c</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-k">return</span> <span class="tok-nx">c</span><span class="tok-p">.</span><span class="tok-nx">visibilityState</span> <span class="tok-o">===</span> <span class="tok-s1">&#39;visible&#39;</span>
+          <span class="tok-p">});</span>
+
+          <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">client</span> <span class="tok-o">!==</span> <span class="tok-kc">undefined</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-nx">client</span><span class="tok-p">.</span><span class="tok-nx">navigate</span><span class="tok-p">(</span><span class="tok-s1">&#39;http://localhost:8080&#39;</span><span class="tok-p">);</span> <i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="tok-nx">client</span><span class="tok-p">.</span><span class="tok-nx">focus</span><span class="tok-p">();</span>
+          <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+            <span class="tok-nx">clients</span><span class="tok-p">.</span><span class="tok-nx">openWindow</span><span class="tok-p">(</span><span class="tok-s1">&#39;http://localhost:8080&#39;</span><span class="tok-p">);</span> <i class="conum" data-value="2"></i><b>(2)</b>
+          <span class="tok-p">}</span>
+          <span class="tok-nx">notification</span><span class="tok-p">.</span><span class="tok-nx">close</span><span class="tok-p">();</span>
+        <span class="tok-p">})</span>
+    <span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Клик по пуш-нотификации может перейти на указанную страницу&#8230;&#8203;</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>&#8230;&#8203;либо открыть новое окно браузера</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Сервис-воркеру доступен список связанных с ним табов в браузере, и мы можем выбрать текущий активный</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sw_js_push_2">sw.js : push</h3>
+<div class="listingblock">
+<div class="title">public/sw.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;notificationclick&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">notification</span> <span class="tok-o">=</span> <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">notification</span><span class="tok-p">;</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">action</span> <span class="tok-o">=</span> <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">action</span><span class="tok-p">;</span>
+
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">notification</span><span class="tok-p">);</span>
+
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">action</span> <span class="tok-o">===</span> <span class="tok-s1">&#39;confirm&#39;</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Confirm was chosen&#39;</span><span class="tok-p">);</span>
+    <span class="tok-nx">notification</span><span class="tok-p">.</span><span class="tok-nx">close</span><span class="tok-p">();</span>
+  <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">action</span><span class="tok-p">);</span>
+    <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">waitUntil</span><span class="tok-p">(</span>
+      <span class="tok-nx">clients</span><span class="tok-p">.</span><span class="tok-nx">matchAll</span><span class="tok-p">()</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">clis</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+          <span class="tok-kd">var</span> <span class="tok-nx">client</span> <span class="tok-o">=</span> <span class="tok-nx">clis</span><span class="tok-p">.</span><span class="tok-nx">find</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">c</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-k">return</span> <span class="tok-nx">c</span><span class="tok-p">.</span><span class="tok-nx">visibilityState</span> <span class="tok-o">===</span> <span class="tok-s1">&#39;visible&#39;</span>
+          <span class="tok-p">});</span>
+
+          <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">client</span> <span class="tok-o">!==</span> <span class="tok-kc">undefined</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-nx">client</span><span class="tok-p">.</span><span class="tok-nx">navigate</span><span class="tok-p">(</span><span class="tok-nx">notification</span><span class="tok-p">.</span><span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">url</span><span class="tok-p">);</span> <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="tok-nx">client</span><span class="tok-p">.</span><span class="tok-nx">focus</span><span class="tok-p">();</span>
+          <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+            <span class="tok-nx">clients</span><span class="tok-p">.</span><span class="tok-nx">openWindow</span><span class="tok-p">(</span><span class="tok-nx">notification</span><span class="tok-p">.</span><span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">url</span><span class="tok-p">);</span>
+          <span class="tok-p">}</span>
+          <span class="tok-nx">notification</span><span class="tok-p">.</span><span class="tok-nx">close</span><span class="tok-p">();</span>
+        <span class="tok-p">})</span>
+    <span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">});</span>
+
+<span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;push&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Push Notification received&#39;</span><span class="tok-p">,</span> <span class="tok-nx">event</span><span class="tok-p">);</span>
+
+  <span class="tok-kd">var</span> <span class="tok-nx">data</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-nx">title</span><span class="tok-o">:</span> <span class="tok-s2">&quot;New!&quot;</span><span class="tok-p">,</span> <span class="tok-nx">content</span><span class="tok-o">:</span><span class="tok-s2">&quot;Something new happened!&quot;</span><span class="tok-p">,</span> <span class="tok-nx">openUrl</span><span class="tok-o">:</span> <span class="tok-s2">&quot;/&quot;</span><span class="tok-p">};</span>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">data</span> <span class="tok-o">=</span> <span class="tok-nb">JSON</span><span class="tok-p">.</span><span class="tok-nx">parse</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">text</span><span class="tok-p">());</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-kd">var</span> <span class="tok-nx">options</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+    <span class="tok-nx">body</span><span class="tok-o">:</span> <span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">content</span><span class="tok-p">,</span>
+    <span class="tok-nx">icon</span><span class="tok-o">:</span> <span class="tok-s1">&#39;/src/images/icons/app-icon-96x96.png&#39;</span><span class="tok-p">,</span>
+    <span class="tok-nx">badge</span><span class="tok-o">:</span> <span class="tok-s1">&#39;/src/images/icons/app-icon-96x96.png&#39;</span><span class="tok-p">,</span>
+    <span class="tok-nx">data</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+      <span class="tok-nx">url</span><span class="tok-o">:</span> <span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">openUrl</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="tok-p">}</span>
+  <span class="tok-p">};</span>
+
+  <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">waitUntil</span><span class="tok-p">(</span>
+    <span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">registration</span><span class="tok-p">.</span><span class="tok-nx">showNotification</span><span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">.</span><span class="tok-nx">title</span><span class="tok-p">,</span> <span class="tok-nx">options</span><span class="tok-p">)</span>
+  <span class="tok-p">);</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Как вариант, мы можем передать имя страницы, на которую нужно перейти по пуш-нотификации&#8230;&#8203;</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>&#8230;&#8203;и перейти на указанную страницу по клику на нотификации</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-11-10 17:21:50 +0300
+Last updated 2022-11-21 13:29:50 +0300
 </div>
 </div>
 </body>
