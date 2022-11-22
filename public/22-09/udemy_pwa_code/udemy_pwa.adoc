@@ -434,6 +434,15 @@ include::07-idb/idb-02--added-idb-package/public/src/js/utility.js[]
 | `push():` | https://firebase.google.com/docs/reference/js/database#push
 |===
 
+|===
+a|
+- link:background-sync-flow.html[]
+a|
+++++
+<iframe src="background-sync-flow.html" width="800" height="150"></iframe>
+++++
+|===
+
 === feed.js
 
 ```js
@@ -938,3 +947,128 @@ self.addEventListener('push', function(event) {
 
 <1> Как вариант, мы можем передать имя страницы, на которую нужно перейти по пуш-нотификации...
 <2> ...и перейти на указанную страницу по клику на нотификации
+
+== Native Device Features
+
+=== feed.js : initializeMedia
+
+.public/src/js/feed.js
+```js
+function initializeMedia() {
+  if (!('mediaDevices' in navigator)) {
+    navigator.mediaDevices = {};
+  }  
+  
+  if (!('getUserMedia' in navigator.mediaDevices)) {
+    navigator.mediaDevices.getUserMedia = function (constraints) {
+      var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia; <1>
+
+      if (!getUserMedia) {
+        return Promise.reject(new Error('getUserMedia is not implemented!'));
+      }
+
+      return new Promise(function (resolve, reject) {
+        getUserMedia.call(navigator, constraints, resolve, reject); <2>
+      });
+    };
+  }
+  
+  navigator.mediaDevices.getUserMedia({video: true})
+    .then(function(stream) {
+      videoPlayer.srcObject = stream; <3>
+      videoPlayer.style.display = 'block';
+    })
+    .catch(function (err) {
+      imagePickerArea.style.display = 'block';
+    });  
+}
+```
+
+<1> Смотрим кастомную имплементацию из Safari или Firefox
+<2> Возвращаем `Promise`, который резолвит нашу функцию в контексте `navigator`
+<3> If we can use video, then send the stream to `videoPlayer`
+
+=== feed.js : captureButton
+
+.public/src/js/feed.js
+```js
+captureButton.addEventListener('click', function(event) { <1>
+  canvasElement.style.display = 'block'; <2>
+  videoPlayer.style.display = 'none'; 
+  captureButton.style.display = 'none';
+  var context = canvasElement.getContext('2d');
+  context.drawImage(videoPlayer, 0, 0, canvas.width, videoPlayer.videoHeight / (videoPlayer.videoWidth / canvas.width)); <3>
+  videoPlayer.srcObject.getVideoTracks().forEach(function(track) {
+    track.stop(); <4>
+  });
+  picture = dataURItoBlob(canvasElement.toDataURL()); <5>
+});
+```
+
+<1> Нажатие на кнопку `Capture`
+<2> Canvas становится видимым, а `videoPlayer` и `captureButton` прячутся
+<3> Выводим на canvas изображение видеоплейера.
+<4> Останавливаем все треки видеоплейера.
+<5> Копируем изображение из видеоплейера в blob.
+
+=== utility.js : dataURItoBlob
+
+.public/src/js/utility.js
+```js
+function dataURItoBlob(dataURI) {
+  var byteString = atob(dataURI.split(',')[1]);
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+  var ab = new ArrayBuffer(byteString.length);
+  var ia = new Uint8Array(ab);
+  for (var i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  var blob = new Blob([ab], {type: mimeString}); <1>
+  return blob;
+}
+```
+<1> Преобразование строки данных sв blob.
+
+=== sw.js : sync
+
+.public/sw.js
+```js
+self.addEventListener('sync', function(event) {
+  console.log('[Service Worker] Background syncing', event);
+  if (event.tag === 'sync-new-posts') {
+    console.log('[Service Worker] Syncing new Posts');
+    event.waitUntil(
+      readAllData('sync-posts')
+        .then(function(data) {
+          for (var dt of data) {
+            var postData = new FormData(); <1>
+            postData.append("id", dt.id);
+            postData.append("title", dt.title);
+            postData.append("location", dt.location);
+            postData.append("file", dt.picture, dt.id + ".png");
+
+            fetch(MY_CLOUD_FUNC + '.cloudfunctions.net/storePostData', { <2>
+              method: 'POST',
+              body: postData
+            })
+              .then(function(res) {
+                console.log('Sent data', res);
+                if (res.ok) {
+                  res.json()
+                    .then(function(resData) {
+                      deleteItemFromData('sync-posts', resData.id);
+                    });
+                }
+              })
+              .catch(function(err) {
+                console.log('Error while sending data', err);
+              });
+          }
+
+        })
+    );
+  }
+});
+```
+<1> JSON мы заменяем на `FormData` чтобы иметь возможность передавать файл изображения
+<2> `MY_CLOUD_FUNC`: server id for my Firebase cloud functions

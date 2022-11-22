@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Diagram: Background Sync</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+</head>
+<body>
+
+<center>
+
+<h2>Background Sync</h2>
+
+<hr>
+
+<div class="mermaid">
+sequenceDiagram
+
+form ->> feed.js: submit
+feed.js ->> sw.js: register background sync
+feed.js ->> sync-posts.store : writeData
+sync-posts.store ->> sw.js: readAllData
+sw.js ->> storePostData.function: POST
+sw.js ->> sync-posts.store: deleteItemFromData
+
+</div>
+
+<hr>
+
+</center>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+
+<style> h2,a { font-variant: small-caps } </style>
+</body>
+</html>

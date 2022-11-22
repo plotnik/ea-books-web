@@ -589,6 +589,14 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_sw_js_push_2">sw.js : push</a></li>
 </ul>
 </li>
+<li><a href="#_native_device_features">Native Device Features</a>
+<ul class="sectlevel2">
+<li><a href="#_feed_js_initializemedia">feed.js : initializeMedia</a></li>
+<li><a href="#_feed_js_capturebutton">feed.js : captureButton</a></li>
+<li><a href="#_utility_js_datauritoblob">utility.js : dataURItoBlob</a></li>
+<li><a href="#_sw_js_sync">sw.js : sync</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1407,6 +1415,25 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 </tr>
 </tbody>
 </table>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><a href="background-sync-flow.html" class="bare">background-sync-flow.html</a></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><iframe src="background-sync-flow.html" width="800" height="150"></iframe></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect2">
 <h3 id="_feed_js">feed.js</h3>
@@ -2132,10 +2159,193 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_native_device_features">Native Device Features</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_feed_js_initializemedia">feed.js : initializeMedia</h3>
+<div class="listingblock">
+<div class="title">public/src/js/feed.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">function</span> <span class="tok-nx">initializeMedia</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-p">(</span><span class="tok-s1">&#39;mediaDevices&#39;</span> <span class="tok-ow">in</span> <span class="tok-nx">navigator</span><span class="tok-p">))</span> <span class="tok-p">{</span>
+    <span class="tok-nx">navigator</span><span class="tok-p">.</span><span class="tok-nx">mediaDevices</span> <span class="tok-o">=</span> <span class="tok-p">{};</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-p">(</span><span class="tok-s1">&#39;getUserMedia&#39;</span> <span class="tok-ow">in</span> <span class="tok-nx">navigator</span><span class="tok-p">.</span><span class="tok-nx">mediaDevices</span><span class="tok-p">))</span> <span class="tok-p">{</span>
+    <span class="tok-nx">navigator</span><span class="tok-p">.</span><span class="tok-nx">mediaDevices</span><span class="tok-p">.</span><span class="tok-nx">getUserMedia</span> <span class="tok-o">=</span> <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">constraints</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-kd">var</span> <span class="tok-nx">getUserMedia</span> <span class="tok-o">=</span> <span class="tok-nx">navigator</span><span class="tok-p">.</span><span class="tok-nx">webkitGetUserMedia</span> <span class="tok-o">||</span> <span class="tok-nx">navigator</span><span class="tok-p">.</span><span class="tok-nx">mozGetUserMedia</span><span class="tok-p">;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+      <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-nx">getUserMedia</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">return</span> <span class="tok-nb">Promise</span><span class="tok-p">.</span><span class="tok-nx">reject</span><span class="tok-p">(</span><span class="tok-ow">new</span> <span class="tok-ne">Error</span><span class="tok-p">(</span><span class="tok-s1">&#39;getUserMedia is not implemented!&#39;</span><span class="tok-p">));</span>
+      <span class="tok-p">}</span>
+
+      <span class="tok-k">return</span> <span class="tok-ow">new</span> <span class="tok-nb">Promise</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">resolve</span><span class="tok-p">,</span> <span class="tok-nx">reject</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-nx">getUserMedia</span><span class="tok-p">.</span><span class="tok-nx">call</span><span class="tok-p">(</span><span class="tok-nx">navigator</span><span class="tok-p">,</span> <span class="tok-nx">constraints</span><span class="tok-p">,</span> <span class="tok-nx">resolve</span><span class="tok-p">,</span> <span class="tok-nx">reject</span><span class="tok-p">);</span> <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="tok-p">});</span>
+    <span class="tok-p">};</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">navigator</span><span class="tok-p">.</span><span class="tok-nx">mediaDevices</span><span class="tok-p">.</span><span class="tok-nx">getUserMedia</span><span class="tok-p">({</span><span class="tok-nx">video</span><span class="tok-o">:</span> <span class="tok-kc">true</span><span class="tok-p">})</span>
+    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">stream</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">videoPlayer</span><span class="tok-p">.</span><span class="tok-nx">srcObject</span> <span class="tok-o">=</span> <span class="tok-nx">stream</span><span class="tok-p">;</span> <i class="conum" data-value="3"></i><b>(3)</b>
+      <span class="tok-nx">videoPlayer</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;block&#39;</span><span class="tok-p">;</span>
+    <span class="tok-p">})</span>
+    <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">imagePickerArea</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;block&#39;</span><span class="tok-p">;</span>
+    <span class="tok-p">});</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Смотрим кастомную имплементацию из Safari или Firefox</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Возвращаем <code>Promise</code>, который резолвит нашу функцию в контексте <code>navigator</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>If we can use video, then send the stream to <code>videoPlayer</code></td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_feed_js_capturebutton">feed.js : captureButton</h3>
+<div class="listingblock">
+<div class="title">public/src/js/feed.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">captureButton</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;click&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="tok-nx">canvasElement</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;block&#39;</span><span class="tok-p">;</span> <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="tok-nx">videoPlayer</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;none&#39;</span><span class="tok-p">;</span>
+  <span class="tok-nx">captureButton</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;none&#39;</span><span class="tok-p">;</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">context</span> <span class="tok-o">=</span> <span class="tok-nx">canvasElement</span><span class="tok-p">.</span><span class="tok-nx">getContext</span><span class="tok-p">(</span><span class="tok-s1">&#39;2d&#39;</span><span class="tok-p">);</span>
+  <span class="tok-nx">context</span><span class="tok-p">.</span><span class="tok-nx">drawImage</span><span class="tok-p">(</span><span class="tok-nx">videoPlayer</span><span class="tok-p">,</span> <span class="tok-mf">0</span><span class="tok-p">,</span> <span class="tok-mf">0</span><span class="tok-p">,</span> <span class="tok-nx">canvas</span><span class="tok-p">.</span><span class="tok-nx">width</span><span class="tok-p">,</span> <span class="tok-nx">videoPlayer</span><span class="tok-p">.</span><span class="tok-nx">videoHeight</span> <span class="tok-o">/</span> <span class="tok-p">(</span><span class="tok-nx">videoPlayer</span><span class="tok-p">.</span><span class="tok-nx">videoWidth</span> <span class="tok-o">/</span> <span class="tok-nx">canvas</span><span class="tok-p">.</span><span class="tok-nx">width</span><span class="tok-p">));</span> <i class="conum" data-value="3"></i><b>(3)</b>
+  <span class="tok-nx">videoPlayer</span><span class="tok-p">.</span><span class="tok-nx">srcObject</span><span class="tok-p">.</span><span class="tok-nx">getVideoTracks</span><span class="tok-p">().</span><span class="tok-nx">forEach</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">track</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">track</span><span class="tok-p">.</span><span class="tok-nx">stop</span><span class="tok-p">();</span> <i class="conum" data-value="4"></i><b>(4)</b>
+  <span class="tok-p">});</span>
+  <span class="tok-nx">picture</span> <span class="tok-o">=</span> <span class="tok-nx">dataURItoBlob</span><span class="tok-p">(</span><span class="tok-nx">canvasElement</span><span class="tok-p">.</span><span class="tok-nx">toDataURL</span><span class="tok-p">());</span> <i class="conum" data-value="5"></i><b>(5)</b>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Нажатие на кнопку <code>Capture</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Canvas становится видимым, а <code>videoPlayer</code> и <code>captureButton</code> прячутся</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Выводим на canvas изображение видеоплейера.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Останавливаем все треки видеоплейера.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Копируем изображение из видеоплейера в blob.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_utility_js_datauritoblob">utility.js : dataURItoBlob</h3>
+<div class="listingblock">
+<div class="title">public/src/js/utility.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">function</span> <span class="tok-nx">dataURItoBlob</span><span class="tok-p">(</span><span class="tok-nx">dataURI</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">byteString</span> <span class="tok-o">=</span> <span class="tok-nx">atob</span><span class="tok-p">(</span><span class="tok-nx">dataURI</span><span class="tok-p">.</span><span class="tok-nx">split</span><span class="tok-p">(</span><span class="tok-s1">&#39;,&#39;</span><span class="tok-p">)[</span><span class="tok-mf">1</span><span class="tok-p">]);</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">mimeString</span> <span class="tok-o">=</span> <span class="tok-nx">dataURI</span><span class="tok-p">.</span><span class="tok-nx">split</span><span class="tok-p">(</span><span class="tok-s1">&#39;,&#39;</span><span class="tok-p">)[</span><span class="tok-mf">0</span><span class="tok-p">].</span><span class="tok-nx">split</span><span class="tok-p">(</span><span class="tok-s1">&#39;:&#39;</span><span class="tok-p">)[</span><span class="tok-mf">1</span><span class="tok-p">].</span><span class="tok-nx">split</span><span class="tok-p">(</span><span class="tok-s1">&#39;;&#39;</span><span class="tok-p">)[</span><span class="tok-mf">0</span><span class="tok-p">]</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">ab</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nb">ArrayBuffer</span><span class="tok-p">(</span><span class="tok-nx">byteString</span><span class="tok-p">.</span><span class="tok-nx">length</span><span class="tok-p">);</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">ia</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nb">Uint8Array</span><span class="tok-p">(</span><span class="tok-nx">ab</span><span class="tok-p">);</span>
+  <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kd">var</span> <span class="tok-nx">i</span> <span class="tok-o">=</span> <span class="tok-mf">0</span><span class="tok-p">;</span> <span class="tok-nx">i</span> <span class="tok-o">&lt;</span> <span class="tok-nx">byteString</span><span class="tok-p">.</span><span class="tok-nx">length</span><span class="tok-p">;</span> <span class="tok-nx">i</span><span class="tok-o">++</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">ia</span><span class="tok-p">[</span><span class="tok-nx">i</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-nx">byteString</span><span class="tok-p">.</span><span class="tok-nx">charCodeAt</span><span class="tok-p">(</span><span class="tok-nx">i</span><span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">blob</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">Blob</span><span class="tok-p">([</span><span class="tok-nx">ab</span><span class="tok-p">],</span> <span class="tok-p">{</span><span class="tok-nx">type</span><span class="tok-o">:</span> <span class="tok-nx">mimeString</span><span class="tok-p">});</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="tok-k">return</span> <span class="tok-nx">blob</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Преобразование строки данных sв blob.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sw_js_sync">sw.js : sync</h3>
+<div class="listingblock">
+<div class="title">public/sw.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;sync&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;[Service Worker] Background syncing&#39;</span><span class="tok-p">,</span> <span class="tok-nx">event</span><span class="tok-p">);</span>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">tag</span> <span class="tok-o">===</span> <span class="tok-s1">&#39;sync-new-posts&#39;</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;[Service Worker] Syncing new Posts&#39;</span><span class="tok-p">);</span>
+    <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">waitUntil</span><span class="tok-p">(</span>
+      <span class="tok-nx">readAllData</span><span class="tok-p">(</span><span class="tok-s1">&#39;sync-posts&#39;</span><span class="tok-p">)</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+          <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kd">var</span> <span class="tok-nx">dt</span> <span class="tok-k">of</span> <span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-kd">var</span> <span class="tok-nx">postData</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">FormData</span><span class="tok-p">();</span> <i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="tok-nx">postData</span><span class="tok-p">.</span><span class="tok-nx">append</span><span class="tok-p">(</span><span class="tok-s2">&quot;id&quot;</span><span class="tok-p">,</span> <span class="tok-nx">dt</span><span class="tok-p">.</span><span class="tok-nx">id</span><span class="tok-p">);</span>
+            <span class="tok-nx">postData</span><span class="tok-p">.</span><span class="tok-nx">append</span><span class="tok-p">(</span><span class="tok-s2">&quot;title&quot;</span><span class="tok-p">,</span> <span class="tok-nx">dt</span><span class="tok-p">.</span><span class="tok-nx">title</span><span class="tok-p">);</span>
+            <span class="tok-nx">postData</span><span class="tok-p">.</span><span class="tok-nx">append</span><span class="tok-p">(</span><span class="tok-s2">&quot;location&quot;</span><span class="tok-p">,</span> <span class="tok-nx">dt</span><span class="tok-p">.</span><span class="tok-nx">location</span><span class="tok-p">);</span>
+            <span class="tok-nx">postData</span><span class="tok-p">.</span><span class="tok-nx">append</span><span class="tok-p">(</span><span class="tok-s2">&quot;file&quot;</span><span class="tok-p">,</span> <span class="tok-nx">dt</span><span class="tok-p">.</span><span class="tok-nx">picture</span><span class="tok-p">,</span> <span class="tok-nx">dt</span><span class="tok-p">.</span><span class="tok-nx">id</span> <span class="tok-o">+</span> <span class="tok-s2">&quot;.png&quot;</span><span class="tok-p">);</span>
+
+            <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">MY_CLOUD_FUNC</span> <span class="tok-o">+</span> <span class="tok-s1">&#39;.cloudfunctions.net/storePostData&#39;</span><span class="tok-p">,</span> <span class="tok-p">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
+              <span class="tok-nx">method</span><span class="tok-o">:</span> <span class="tok-s1">&#39;POST&#39;</span><span class="tok-p">,</span>
+              <span class="tok-nx">body</span><span class="tok-o">:</span> <span class="tok-nx">postData</span>
+            <span class="tok-p">})</span>
+              <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Sent data&#39;</span><span class="tok-p">,</span> <span class="tok-nx">res</span><span class="tok-p">);</span>
+                <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">ok</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                  <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">json</span><span class="tok-p">()</span>
+                    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">resData</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                      <span class="tok-nx">deleteItemFromData</span><span class="tok-p">(</span><span class="tok-s1">&#39;sync-posts&#39;</span><span class="tok-p">,</span> <span class="tok-nx">resData</span><span class="tok-p">.</span><span class="tok-nx">id</span><span class="tok-p">);</span>
+                    <span class="tok-p">});</span>
+                <span class="tok-p">}</span>
+              <span class="tok-p">})</span>
+              <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Error while sending data&#39;</span><span class="tok-p">,</span> <span class="tok-nx">err</span><span class="tok-p">);</span>
+              <span class="tok-p">});</span>
+          <span class="tok-p">}</span>
+
+        <span class="tok-p">})</span>
+    <span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>JSON мы заменяем на <code>FormData</code> чтобы иметь возможность передавать файл изображения</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>MY_CLOUD_FUNC</code>: server id for my Firebase cloud functions</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-11-21 13:29:50 +0300
+Last updated 2022-11-22 22:33:29 +0300
 </div>
 </div>
 </body>
