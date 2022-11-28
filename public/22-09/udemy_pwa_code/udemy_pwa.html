@@ -591,10 +591,21 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </li>
 <li><a href="#_native_device_features">Native Device Features</a>
 <ul class="sectlevel2">
+<li><a href="#_useful_resources_8">Useful Resources</a></li>
 <li><a href="#_feed_js_initializemedia">feed.js : initializeMedia</a></li>
 <li><a href="#_feed_js_capturebutton">feed.js : captureButton</a></li>
 <li><a href="#_utility_js_datauritoblob">utility.js : dataURItoBlob</a></li>
 <li><a href="#_sw_js_sync">sw.js : sync</a></li>
+<li><a href="#_functions_2">functions</a></li>
+<li><a href="#_feed_js_imagepicker">feed.js : imagePicker</a></li>
+<li><a href="#_feed_js_locationbtn">feed.js : locationBtn</a></li>
+</ul>
+</li>
+<li><a href="#_service_worker_management_with_workbox">Service Worker Management with Workbox</a>
+<ul class="sectlevel2">
+<li><a href="#_useful_resources_9">Useful Resources</a></li>
+<li><a href="#_workbox_cli_config_js">workbox-cli-config.js</a></li>
+<li><a href="#_sw_base_js">sw-base.js</a></li>
 </ul>
 </li>
 </ul>
@@ -603,6 +614,9 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://www.udemy.com/course/progressive-web-app-pwa-the-complete-guide/" class="bare">https://www.udemy.com/course/progressive-web-app-pwa-the-complete-guide/</a></p>
+</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -2163,6 +2177,29 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 <h2 id="_native_device_features">Native Device Features</h2>
 <div class="sectionbody">
 <div class="sect2">
+<h3 id="_useful_resources_8">Useful Resources</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>More about the Media Stream API on MDN:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Media_Capture_and_Streams_API/Constraints" class="bare">https://developer.mozilla.org/en-US/docs/Web/API/Media_Capture_and_Streams_API/Constraints</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>More about <code>getUserMedia</code>:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia" class="bare">https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>How to use geolocation:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API" class="bare">https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
 <h3 id="_feed_js_initializemedia">feed.js : initializeMedia</h3>
 <div class="listingblock">
 <div class="title">public/src/js/feed.js</div>
@@ -2340,12 +2377,456 @@ Make sure you enabled "Developer Mode" on your Device! You do that by tapping yo
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_functions_2">functions</h3>
+<div class="listingblock">
+<div class="title">functions/index.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-kd">var</span> <span class="tok-nx">functions</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;firebase-functions&quot;</span><span class="tok-p">);</span>
+<span class="tok-kd">var</span> <span class="tok-nx">admin</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;firebase-admin&quot;</span><span class="tok-p">);</span>
+<span class="tok-kd">var</span> <span class="tok-nx">cors</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;cors&quot;</span><span class="tok-p">)({</span> <span class="tok-nx">origin</span><span class="tok-o">:</span> <span class="tok-kc">true</span> <span class="tok-p">});</span>
+<span class="tok-kd">var</span> <span class="tok-nx">webpush</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;web-push&quot;</span><span class="tok-p">);</span>
+<span class="tok-kd">var</span> <span class="tok-nx">fs</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;fs&quot;</span><span class="tok-p">);</span>
+<span class="tok-kd">var</span> <span class="tok-nx">UUID</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;uuid-v4&quot;</span><span class="tok-p">);</span>  <i class="conum" data-value="3"></i><b>(3)</b>
+<span class="tok-kd">var</span> <span class="tok-nx">os</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;os&quot;</span><span class="tok-p">);</span>
+<span class="tok-kd">var</span> <span class="tok-nx">Busboy</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;busboy&quot;</span><span class="tok-p">);</span>  <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="tok-kd">var</span> <span class="tok-nx">path</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s1">&#39;path&#39;</span><span class="tok-p">);</span>
+
+<span class="tok-c1">// // Create and Deploy Your First Cloud Functions</span>
+<span class="tok-c1">// // https://firebase.google.com/docs/functions/write-firebase-functions</span>
+<span class="tok-c1">//</span>
+
+<span class="tok-kd">var</span> <span class="tok-nx">serviceAccount</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;./pwagram-fb-key.json&quot;</span><span class="tok-p">);</span>
+
+<span class="tok-kd">var</span> <span class="tok-nx">gcconfig</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+  <span class="tok-nx">projectId</span><span class="tok-o">:</span> <span class="tok-s2">&quot;YOUR_PROJECT_ID&quot;</span><span class="tok-p">,</span>  <i class="conum" data-value="5"></i><b>(5)</b>
+  <span class="tok-nx">keyFilename</span><span class="tok-o">:</span> <span class="tok-s2">&quot;pwagram-fb-key.json&quot;</span>
+<span class="tok-p">};</span>
+
+<span class="tok-kd">var</span> <span class="tok-nx">gcs</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;@google-cloud/storage&quot;</span><span class="tok-p">)(</span><span class="tok-nx">gcconfig</span><span class="tok-p">);</span>  <i class="conum" data-value="1"></i><b>(1)</b>
+
+<span class="tok-nx">admin</span><span class="tok-p">.</span><span class="tok-nx">initializeApp</span><span class="tok-p">({</span>
+  <span class="tok-nx">credential</span><span class="tok-o">:</span> <span class="tok-nx">admin</span><span class="tok-p">.</span><span class="tok-nx">credential</span><span class="tok-p">.</span><span class="tok-nx">cert</span><span class="tok-p">(</span><span class="tok-nx">serviceAccount</span><span class="tok-p">),</span>
+  <span class="tok-nx">databaseURL</span><span class="tok-o">:</span> <span class="tok-s2">&quot;https://YOUR_PROJECT_ID.firebaseio.com/&quot;</span>  <i class="conum" data-value="8"></i><b>(8)</b>
+<span class="tok-p">});</span>
+
+<span class="tok-nx">exports</span><span class="tok-p">.</span><span class="tok-nx">storePostData</span> <span class="tok-o">=</span> <span class="tok-nx">functions</span><span class="tok-p">.</span><span class="tok-nx">https</span><span class="tok-p">.</span><span class="tok-nx">onRequest</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">request</span><span class="tok-p">,</span> <span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">cors</span><span class="tok-p">(</span><span class="tok-nx">request</span><span class="tok-p">,</span> <span class="tok-nx">response</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-kd">var</span> <span class="tok-nx">uuid</span> <span class="tok-o">=</span> <span class="tok-nx">UUID</span><span class="tok-p">();</span>
+
+    <span class="tok-kd">const</span> <span class="tok-nx">busboy</span> <span class="tok-o">=</span> <span class="tok-nx">Busboy</span><span class="tok-p">({</span> <span class="tok-nx">headers</span><span class="tok-o">:</span> <span class="tok-nx">request</span><span class="tok-p">.</span><span class="tok-nx">headers</span> <span class="tok-p">});</span>
+    <span class="tok-c1">// These objects will store the values (file + fields) extracted from busboy</span>
+    <span class="tok-kd">let</span> <span class="tok-nx">upload</span><span class="tok-p">;</span>
+    <span class="tok-kd">const</span> <span class="tok-nx">fields</span> <span class="tok-o">=</span> <span class="tok-p">{};</span>
+
+    <span class="tok-c1">// This callback will be invoked for each file uploaded</span>
+    <span class="tok-nx">busboy</span><span class="tok-p">.</span><span class="tok-nx">on</span><span class="tok-p">(</span><span class="tok-s2">&quot;file&quot;</span><span class="tok-p">,</span> <span class="tok-p">(</span><span class="tok-nx">fieldname</span><span class="tok-p">,</span> <span class="tok-nx">file</span><span class="tok-p">,</span> <span class="tok-nx">info</span><span class="tok-p">)</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+      <span class="tok-kd">const</span> <span class="tok-p">{</span> <span class="tok-nx">filename</span><span class="tok-p">,</span> <span class="tok-nx">encoding</span><span class="tok-p">,</span> <span class="tok-nx">mimetype</span> <span class="tok-p">}</span> <span class="tok-o">=</span> <span class="tok-nx">info</span><span class="tok-p">;</span>
+      <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span>
+        <span class="tok-sb">`File [</span><span class="tok-si">${</span><span class="tok-nx">fieldname</span><span class="tok-si">}</span><span class="tok-sb">] filename: </span><span class="tok-si">${</span><span class="tok-nx">filename</span><span class="tok-si">}</span><span class="tok-sb">, encoding: </span><span class="tok-si">${</span><span class="tok-nx">encoding</span><span class="tok-si">}</span><span class="tok-sb">, mimetype: </span><span class="tok-si">${</span><span class="tok-nx">mimetype</span><span class="tok-si">}</span><span class="tok-sb">`</span>
+      <span class="tok-p">);</span>
+      <span class="tok-kd">const</span> <span class="tok-nx">filepath</span> <span class="tok-o">=</span> <span class="tok-nx">path</span><span class="tok-p">.</span><span class="tok-nx">join</span><span class="tok-p">(</span><span class="tok-nx">os</span><span class="tok-p">.</span><span class="tok-nx">tmpdir</span><span class="tok-p">(),</span> <span class="tok-nx">filename</span><span class="tok-p">);</span>
+      <span class="tok-nx">upload</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-nx">file</span><span class="tok-o">:</span> <span class="tok-nx">filepath</span><span class="tok-p">,</span> <span class="tok-nx">type</span><span class="tok-o">:</span> <span class="tok-nx">mimetype</span> <span class="tok-p">};</span>
+      <span class="tok-nx">file</span><span class="tok-p">.</span><span class="tok-nx">pipe</span><span class="tok-p">(</span><span class="tok-nx">fs</span><span class="tok-p">.</span><span class="tok-nx">createWriteStream</span><span class="tok-p">(</span><span class="tok-nx">filepath</span><span class="tok-p">));</span>
+    <span class="tok-p">});</span>
+
+    <span class="tok-c1">// This will invoked on every field detected</span>
+    <span class="tok-nx">busboy</span><span class="tok-p">.</span><span class="tok-nx">on</span><span class="tok-p">(</span><span class="tok-s1">&#39;field&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">fieldname</span><span class="tok-p">,</span> <span class="tok-nx">val</span><span class="tok-p">,</span> <span class="tok-nx">fieldnameTruncated</span><span class="tok-p">,</span> <span class="tok-nx">valTruncated</span><span class="tok-p">,</span> <span class="tok-nx">encoding</span><span class="tok-p">,</span> <span class="tok-nx">mimetype</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">fields</span><span class="tok-p">[</span><span class="tok-nx">fieldname</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-nx">val</span><span class="tok-p">;</span>
+    <span class="tok-p">});</span>
+
+    <span class="tok-c1">// This callback will be invoked after all uploaded files are saved.</span>
+    <span class="tok-nx">busboy</span><span class="tok-p">.</span><span class="tok-nx">on</span><span class="tok-p">(</span><span class="tok-s2">&quot;close&quot;</span><span class="tok-p">,</span> <span class="tok-p">()</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+      <span class="tok-kd">var</span> <span class="tok-nx">bucket</span> <span class="tok-o">=</span> <span class="tok-nx">gcs</span><span class="tok-p">.</span><span class="tok-nx">bucket</span><span class="tok-p">(</span><span class="tok-s2">&quot;YOUR_PROJECT_ID.appspot.com&quot;</span><span class="tok-p">);</span>  <i class="conum" data-value="5"></i><b>(5)</b>
+      <span class="tok-nx">bucket</span><span class="tok-p">.</span><span class="tok-nx">upload</span><span class="tok-p">(</span>  <i class="conum" data-value="7"></i><b>(7)</b>
+        <span class="tok-nx">upload</span><span class="tok-p">.</span><span class="tok-nx">file</span><span class="tok-p">,</span>
+        <span class="tok-p">{</span>
+          <span class="tok-nx">uploadType</span><span class="tok-o">:</span> <span class="tok-s2">&quot;media&quot;</span><span class="tok-p">,</span>
+          <span class="tok-nx">metadata</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+            <span class="tok-nx">metadata</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+              <span class="tok-nx">contentType</span><span class="tok-o">:</span> <span class="tok-nx">upload</span><span class="tok-p">.</span><span class="tok-nx">type</span><span class="tok-p">,</span>
+              <span class="tok-nx">firebaseStorageDownloadTokens</span><span class="tok-o">:</span> <span class="tok-nx">uuid</span>
+            <span class="tok-p">}</span>
+          <span class="tok-p">}</span>
+        <span class="tok-p">},</span>
+        <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">,</span> <span class="tok-nx">uploadedFile</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+          <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-nx">admin</span>
+              <span class="tok-p">.</span><span class="tok-nx">database</span><span class="tok-p">()</span>
+              <span class="tok-p">.</span><span class="tok-nx">ref</span><span class="tok-p">(</span><span class="tok-s2">&quot;posts&quot;</span><span class="tok-p">)</span>
+              <span class="tok-p">.</span><span class="tok-nx">push</span><span class="tok-p">({</span>
+                <span class="tok-nx">id</span><span class="tok-o">:</span> <span class="tok-nx">fields</span><span class="tok-p">.</span><span class="tok-nx">id</span><span class="tok-p">,</span>
+                <span class="tok-nx">title</span><span class="tok-o">:</span> <span class="tok-nx">fields</span><span class="tok-p">.</span><span class="tok-nx">title</span><span class="tok-p">,</span>
+                <span class="tok-nx">location</span><span class="tok-o">:</span> <span class="tok-nx">fields</span><span class="tok-p">.</span><span class="tok-nx">location</span><span class="tok-p">,</span>
+                <span class="tok-nx">image</span><span class="tok-o">:</span>  <i class="conum" data-value="6"></i><b>(6)</b>
+                  <span class="tok-s2">&quot;https://firebasestorage.googleapis.com/v0/b/&quot;</span> <span class="tok-o">+</span>
+                  <span class="tok-nx">bucket</span><span class="tok-p">.</span><span class="tok-nx">name</span> <span class="tok-o">+</span>
+                  <span class="tok-s2">&quot;/o/&quot;</span> <span class="tok-o">+</span>
+                  <span class="tok-nb">encodeURIComponent</span><span class="tok-p">(</span><span class="tok-nx">uploadedFile</span><span class="tok-p">.</span><span class="tok-nx">name</span><span class="tok-p">)</span> <span class="tok-o">+</span>
+                  <span class="tok-s2">&quot;?alt=media&amp;token=&quot;</span> <span class="tok-o">+</span>
+                  <span class="tok-nx">uuid</span>
+              <span class="tok-p">})</span>
+              <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+                <span class="tok-nx">webpush</span><span class="tok-p">.</span><span class="tok-nx">setVapidDetails</span><span class="tok-p">(</span>
+                  <span class="tok-s2">&quot;mailto:&quot;</span> <span class="tok-o">+</span> <span class="tok-nx">MY_EMAIL</span><span class="tok-p">,</span>  <i class="conum" data-value="4"></i><b>(4)</b>
+                  <span class="tok-nx">MY_VAPID_PUBLIC_KEY</span><span class="tok-p">,</span>
+                  <span class="tok-nx">MY_VAPID_PRIVATE_KEY</span>
+                <span class="tok-p">);</span>
+                <span class="tok-k">return</span> <span class="tok-nx">admin</span>
+                  <span class="tok-p">.</span><span class="tok-nx">database</span><span class="tok-p">()</span>
+                  <span class="tok-p">.</span><span class="tok-nx">ref</span><span class="tok-p">(</span><span class="tok-s2">&quot;subscriptions&quot;</span><span class="tok-p">)</span>
+                  <span class="tok-p">.</span><span class="tok-nx">once</span><span class="tok-p">(</span><span class="tok-s2">&quot;value&quot;</span><span class="tok-p">);</span>
+              <span class="tok-p">})</span>
+              <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">subscriptions</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-nx">subscriptions</span><span class="tok-p">.</span><span class="tok-nx">forEach</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">sub</span><span class="tok-p">)</span> <span class="tok-p">{</span>  <i class="conum" data-value="9"></i><b>(9)</b>
+                  <span class="tok-kd">var</span> <span class="tok-nx">pushConfig</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+                    <span class="tok-nx">endpoint</span><span class="tok-o">:</span> <span class="tok-nx">sub</span><span class="tok-p">.</span><span class="tok-nx">val</span><span class="tok-p">().</span><span class="tok-nx">endpoint</span><span class="tok-p">,</span>
+                    <span class="tok-nx">keys</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+                      <span class="tok-nx">auth</span><span class="tok-o">:</span> <span class="tok-nx">sub</span><span class="tok-p">.</span><span class="tok-nx">val</span><span class="tok-p">().</span><span class="tok-nx">keys</span><span class="tok-p">.</span><span class="tok-nx">auth</span><span class="tok-p">,</span>
+                      <span class="tok-nx">p256dh</span><span class="tok-o">:</span> <span class="tok-nx">sub</span><span class="tok-p">.</span><span class="tok-nx">val</span><span class="tok-p">().</span><span class="tok-nx">keys</span><span class="tok-p">.</span><span class="tok-nx">p256dh</span>
+                    <span class="tok-p">}</span>
+                  <span class="tok-p">};</span>
+
+                  <span class="tok-nx">webpush</span>
+                    <span class="tok-p">.</span><span class="tok-nx">sendNotification</span><span class="tok-p">(</span>
+                      <span class="tok-nx">pushConfig</span><span class="tok-p">,</span>
+                      <span class="tok-nb">JSON</span><span class="tok-p">.</span><span class="tok-nx">stringify</span><span class="tok-p">({</span>
+                        <span class="tok-nx">title</span><span class="tok-o">:</span> <span class="tok-s2">&quot;New Post&quot;</span><span class="tok-p">,</span>
+                        <span class="tok-nx">content</span><span class="tok-o">:</span> <span class="tok-s2">&quot;New Post added!&quot;</span><span class="tok-p">,</span>
+                        <span class="tok-nx">openUrl</span><span class="tok-o">:</span> <span class="tok-s2">&quot;/help&quot;</span>
+                      <span class="tok-p">})</span>
+                    <span class="tok-p">)</span>
+                    <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                      <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">);</span>
+                    <span class="tok-p">});</span>
+                <span class="tok-p">});</span>
+                <span class="tok-nx">response</span>
+                  <span class="tok-p">.</span><span class="tok-nx">status</span><span class="tok-p">(</span><span class="tok-mf">201</span><span class="tok-p">)</span>
+                  <span class="tok-p">.</span><span class="tok-nx">json</span><span class="tok-p">({</span> <span class="tok-nx">message</span><span class="tok-o">:</span> <span class="tok-s2">&quot;Data stored&quot;</span><span class="tok-p">,</span> <span class="tok-nx">id</span><span class="tok-o">:</span> <span class="tok-nx">fields</span><span class="tok-p">.</span><span class="tok-nx">id</span> <span class="tok-p">});</span>
+              <span class="tok-p">})</span>
+              <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-nx">response</span><span class="tok-p">.</span><span class="tok-nx">status</span><span class="tok-p">(</span><span class="tok-mf">500</span><span class="tok-p">).</span><span class="tok-nx">json</span><span class="tok-p">({</span> <span class="tok-nx">error</span><span class="tok-o">:</span> <span class="tok-nx">err</span> <span class="tok-p">});</span>
+              <span class="tok-p">});</span>
+          <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+            <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">);</span>
+          <span class="tok-p">}</span>
+        <span class="tok-p">}</span>
+      <span class="tok-p">);</span>
+    <span class="tok-p">});</span>
+
+    <span class="tok-c1">// The raw bytes of the upload will be in request.rawBody.  Send it to busboy, and get</span>
+    <span class="tok-c1">// a callback when it&#39;s finished.</span>
+    <span class="tok-nx">busboy</span><span class="tok-p">.</span><span class="tok-nx">end</span><span class="tok-p">(</span><span class="tok-nx">request</span><span class="tok-p">.</span><span class="tok-nx">rawBody</span><span class="tok-p">);</span>
+  <span class="tok-p">});</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>npm install --save @google-cloud/storage@1.7</code> <a href="https://www.npmjs.com/package/@google-cloud/storage" class="bare">https://www.npmjs.com/package/@google-cloud/storage</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>npm install --save busboy</code> <a href="https://www.npmjs.com/package/busboy" class="bare">https://www.npmjs.com/package/busboy</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><code>npm install --save uuid-v4</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Provide <code>MY_EMAIL</code>, <code>MY_VAPID_PUBLIC_KEY</code>, <code>MY_VAPID_PRIVATE_KEY</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>My Firebase project id here</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Firebase Storage URL</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Upload file to Firebase Storage</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>For me <code>databaseURL</code> is <code>MY_PROJECT_ID + ".firebasedatabase.app"</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>Отправить нотификацию в каждую из найденных подписок</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_feed_js_imagepicker">feed.js : imagePicker</h3>
+<div class="listingblock">
+<div class="title">public/src/js/feed.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">imagePicker</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;change&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">picture</span> <span class="tok-o">=</span> <span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">target</span><span class="tok-p">.</span><span class="tok-nx">files</span><span class="tok-p">[</span><span class="tok-mf">0</span><span class="tok-p">];</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Загруженный файл</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_feed_js_locationbtn">feed.js : locationBtn</h3>
+<div class="listingblock">
+<div class="title">public/src/js/feed.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">locationBtn</span><span class="tok-p">.</span><span class="tok-nx">addEventListener</span><span class="tok-p">(</span><span class="tok-s1">&#39;click&#39;</span><span class="tok-p">,</span> <span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">event</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-p">(</span><span class="tok-s1">&#39;geolocation&#39;</span> <span class="tok-ow">in</span> <span class="tok-nx">navigator</span><span class="tok-p">))</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">locationBtn</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;none&#39;</span><span class="tok-p">;</span>
+  <span class="tok-nx">locationLoader</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;block&#39;</span><span class="tok-p">;</span>
+
+  <span class="tok-nx">navigator</span><span class="tok-p">.</span><span class="tok-nx">geolocation</span><span class="tok-p">.</span><span class="tok-nx">getCurrentPosition</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">position</span><span class="tok-p">)</span> <span class="tok-p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="tok-nx">locationBtn</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;inline&#39;</span><span class="tok-p">;</span>
+    <span class="tok-nx">locationLoader</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;none&#39;</span><span class="tok-p">;</span>
+    <span class="tok-nx">fetchedLocation</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-nx">lat</span><span class="tok-o">:</span> <span class="tok-nx">position</span><span class="tok-p">.</span><span class="tok-nx">coords</span><span class="tok-p">.</span><span class="tok-nx">latitude</span><span class="tok-p">,</span> <span class="tok-nx">lng</span><span class="tok-o">:</span> <span class="tok-mf">0</span> <span class="tok-p">};</span>
+    <span class="tok-nx">locationInput</span><span class="tok-p">.</span><span class="tok-nx">value</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;In Munich&#39;</span><span class="tok-p">;</span>
+    <span class="tok-nb">document</span><span class="tok-p">.</span><span class="tok-nx">querySelector</span><span class="tok-p">(</span><span class="tok-s2">&quot;#manual-location&quot;</span><span class="tok-p">).</span><span class="tok-nx">classList</span><span class="tok-p">.</span><span class="tok-nx">add</span><span class="tok-p">(</span><span class="tok-s1">&#39;is-focused&#39;</span><span class="tok-p">);</span>
+
+  <span class="tok-p">},</span> <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">);</span>
+    <span class="tok-nx">locationBtn</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;inline&#39;</span><span class="tok-p">;</span>
+    <span class="tok-nx">locationLoader</span><span class="tok-p">.</span><span class="tok-nx">style</span><span class="tok-p">.</span><span class="tok-nx">display</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;none&#39;</span><span class="tok-p">;</span>
+    <span class="tok-nx">alert</span><span class="tok-p">(</span><span class="tok-s2">&quot;Couldn&#39;t get location, please enter manually!&quot;</span><span class="tok-p">);</span>
+    <span class="tok-nx">fetchedLocation</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-nx">lat</span><span class="tok-o">:</span> <span class="tok-kc">null</span><span class="tok-p">,</span> <span class="tok-nx">lng</span><span class="tok-o">:</span> <span class="tok-kc">null</span> <span class="tok-p">};</span>
+  <span class="tok-p">},</span> <span class="tok-p">{</span> <span class="tok-nx">timeout</span><span class="tok-o">:</span> <span class="tok-mf">7000</span> <span class="tok-p">})</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Получаем координаты</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_service_worker_management_with_workbox">Service Worker Management with Workbox</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_useful_resources_9">Useful Resources</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Official webpage/ docs:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://developer.chrome.com/docs/workbox/" class="bare">https://developer.chrome.com/docs/workbox/</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Workbox Github page:</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <a href="https://github.com/GoogleChrome/workbox" class="bare">https://github.com/GoogleChrome/workbox</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_workbox_cli_config_js">workbox-cli-config.js</h3>
+<div class="listingblock">
+<div class="title">workbox-cli-config.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">module</span><span class="tok-p">.</span><span class="tok-nx">exports</span> <span class="tok-o">=</span> <span class="tok-p">{</span>  <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="tok-s2">&quot;globDirectory&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;public/&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;globPatterns&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+    <span class="tok-s2">&quot;**/*.{html,ico,json,css,js}&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;src/images/*.{png,jpg}&quot;</span>  <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="tok-p">],</span>
+  <span class="tok-s2">&quot;swSrc&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;public/sw-base.js&quot;</span><span class="tok-p">,</span>  <i class="conum" data-value="3"></i><b>(3)</b>
+  <span class="tok-s2">&quot;swDest&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;public/service-worker.js&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;globIgnores&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+    <span class="tok-s2">&quot;../workbox-cli-config.js&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;help/**&quot;</span>
+  <span class="tok-p">]</span>
+<span class="tok-p">};</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Сгенерировано командой <code>workbox generate:sw</code> в секции <code>scripts</code> для workbox ver.2<br>
+<code>npm install --save-dev workbox-cli@^2</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Кэшировать только изображения в папке <code>images</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Использовать шаблон сервис-воркера с командой <code>workbox inject:manifest</code> в секции <code>scripts</code></td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sw_base_js">sw-base.js</h3>
+<div class="listingblock">
+<div class="title">public/sw-base.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">importScripts</span><span class="tok-p">(</span><span class="tok-s1">&#39;workbox-sw.prod.v2.1.3.js&#39;</span><span class="tok-p">);</span>
+<span class="tok-nx">importScripts</span><span class="tok-p">(</span><span class="tok-s1">&#39;/src/js/idb.js&#39;</span><span class="tok-p">);</span>
+<span class="tok-nx">importScripts</span><span class="tok-p">(</span><span class="tok-s1">&#39;/src/js/utility.js&#39;</span><span class="tok-p">);</span>  <i class="conum" data-value="4"></i><b>(4)</b>
+
+<span class="tok-kd">const</span> <span class="tok-nx">workboxSW</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">self</span><span class="tok-p">.</span><span class="tok-nx">WorkboxSW</span><span class="tok-p">();</span>
+
+<span class="tok-nx">workboxSW</span><span class="tok-p">.</span><span class="tok-nx">router</span><span class="tok-p">.</span><span class="tok-nx">registerRoute</span><span class="tok-p">(</span><span class="tok-sr">/.*(?:googleapis|gstatic)\.com.*$/</span><span class="tok-p">,</span>  <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="tok-nx">workboxSW</span><span class="tok-p">.</span><span class="tok-nx">strategies</span><span class="tok-p">.</span><span class="tok-nx">staleWhileRevalidate</span><span class="tok-p">({</span>  <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="tok-nx">cacheName</span><span class="tok-o">:</span> <span class="tok-s2">&quot;google-fonts&quot;</span><span class="tok-p">,</span>
+    <span class="tok-nx">cacheExpiration</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+        <span class="tok-nx">maxEntries</span><span class="tok-o">:</span> <span class="tok-mf">3</span><span class="tok-p">,</span>
+        <span class="tok-nx">maxAgeSeconds</span><span class="tok-o">:</span> <span class="tok-mf">60</span> <span class="tok-o">*</span> <span class="tok-mf">60</span> <span class="tok-o">*</span> <span class="tok-mf">24</span> <span class="tok-o">*</span> <span class="tok-mf">30</span>  <i class="conum" data-value="5"></i><b>(5)</b>
+    <span class="tok-p">}</span>
+<span class="tok-p">}));</span>
+
+<span class="tok-nx">workboxSW</span><span class="tok-p">.</span><span class="tok-nx">router</span><span class="tok-p">.</span><span class="tok-nx">registerRoute</span><span class="tok-p">(</span><span class="tok-s2">&quot;https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css&quot;</span><span class="tok-p">,</span>  <i class="conum" data-value="6"></i><b>(6)</b>
+<span class="tok-nx">workboxSW</span><span class="tok-p">.</span><span class="tok-nx">strategies</span><span class="tok-p">.</span><span class="tok-nx">staleWhileRevalidate</span><span class="tok-p">({</span>
+    <span class="tok-nx">cacheName</span><span class="tok-o">:</span> <span class="tok-s2">&quot;material-css&quot;</span>
+<span class="tok-p">}));</span>
+
+<span class="tok-nx">workboxSW</span><span class="tok-p">.</span><span class="tok-nx">router</span><span class="tok-p">.</span><span class="tok-nx">registerRoute</span><span class="tok-p">(</span><span class="tok-sr">/.*(?:firebasestorage\.googleapis)\.com.*$/</span><span class="tok-p">,</span>  <i class="conum" data-value="8"></i><b>(8)</b>
+<span class="tok-nx">workboxSW</span><span class="tok-p">.</span><span class="tok-nx">strategies</span><span class="tok-p">.</span><span class="tok-nx">staleWhileRevalidate</span><span class="tok-p">({</span>
+    <span class="tok-nx">cacheName</span><span class="tok-o">:</span> <span class="tok-s2">&quot;post-images&quot;</span>
+<span class="tok-p">}));</span>
+
+<span class="tok-nx">workboxSW</span><span class="tok-p">.</span><span class="tok-nx">router</span><span class="tok-p">.</span><span class="tok-nx">registerRoute</span><span class="tok-p">(</span><span class="tok-nx">MY_FIREBASE_ID</span> <span class="tok-o">+</span> <span class="tok-s1">&#39;.firebasedatabase.app/posts.json&#39;</span><span class="tok-p">,</span>  <i class="conum" data-value="7"></i><b>(7)</b>
+<span class="tok-kd">function</span><span class="tok-p">(</span><span class="tok-nx">args</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">args</span><span class="tok-p">.</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">)</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-kd">var</span> <span class="tok-nx">clonedRes</span> <span class="tok-o">=</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">clone</span><span class="tok-p">();</span>
+        <span class="tok-nx">clearAllData</span><span class="tok-p">(</span><span class="tok-s1">&#39;posts&#39;</span><span class="tok-p">)</span>
+            <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span>
+            <span class="tok-k">return</span> <span class="tok-nx">clonedRes</span><span class="tok-p">.</span><span class="tok-nx">json</span><span class="tok-p">();</span>
+            <span class="tok-p">})</span>
+            <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kd">var</span> <span class="tok-nx">key</span> <span class="tok-ow">in</span> <span class="tok-nx">data</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-nx">writeData</span><span class="tok-p">(</span><span class="tok-s1">&#39;posts&#39;</span><span class="tok-p">,</span> <span class="tok-nx">data</span><span class="tok-p">[</span><span class="tok-nx">key</span><span class="tok-p">])</span>
+            <span class="tok-p">}</span>
+            <span class="tok-p">});</span>
+        <span class="tok-k">return</span> <span class="tok-nx">res</span><span class="tok-p">;</span>
+        <span class="tok-p">})</span>
+<span class="tok-p">});</span>
+
+<span class="tok-nx">workboxSW</span><span class="tok-p">.</span><span class="tok-nx">precache</span><span class="tok-p">([]);</span>  <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Для того, чтобы закэшировать шрифты и иконки от Google, нужно выбрать урлы, содержащие <code>googleapi</code> или <code>gstatic</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Применить к ним стратегию <strong>сначала из кэша, потом из сети</strong></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Шаблон для подстановки списка ресурсов</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Import our scripts as well</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Cache expiration</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Помещаем material css в отдельный кэш</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Обработка background sync</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Сюда идут наши фотки</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">public/sw-base.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-nx">workboxSW</span><span class="tok-p">.</span><span class="tok-nx">router</span><span class="tok-p">.</span><span class="tok-nx">registerRoute</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">routeData</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-p">(</span><span class="tok-nx">routeData</span><span class="tok-p">.</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">.</span><span class="tok-nx">headers</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-p">(</span><span class="tok-s1">&#39;accept&#39;</span><span class="tok-p">).</span><span class="tok-nx">includes</span><span class="tok-p">(</span><span class="tok-s1">&#39;text/html&#39;</span><span class="tok-p">));</span>  <i class="conum" data-value="1"></i><b>(1)</b>
+
+<span class="tok-p">},</span> <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">args</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">match</span><span class="tok-p">(</span><span class="tok-nx">args</span><span class="tok-p">.</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">)</span>
+        <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+            <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">response</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                <span class="tok-k">return</span> <span class="tok-nx">response</span><span class="tok-p">;</span>  <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
+                <span class="tok-k">return</span> <span class="tok-nx">fetch</span><span class="tok-p">(</span><span class="tok-nx">args</span><span class="tok-p">.</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">)</span>  <i class="conum" data-value="3"></i><b>(3)</b>
+                    <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                        <span class="tok-k">return</span> <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-s1">&#39;dynamic&#39;</span><span class="tok-p">)</span>
+                            <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">cache</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                                <span class="tok-nx">cache</span><span class="tok-p">.</span><span class="tok-nx">put</span><span class="tok-p">(</span><span class="tok-nx">args</span><span class="tok-p">.</span><span class="tok-nx">event</span><span class="tok-p">.</span><span class="tok-nx">request</span><span class="tok-p">.</span><span class="tok-nx">url</span><span class="tok-p">,</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">clone</span><span class="tok-p">());</span>
+                                <span class="tok-k">return</span> <span class="tok-nx">res</span><span class="tok-p">;</span>
+                            <span class="tok-p">})</span>
+                    <span class="tok-p">})</span>
+                    <span class="tok-p">.</span><span class="tok-k">catch</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">err</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                        <span class="tok-k">return</span> <span class="tok-nx">caches</span><span class="tok-p">.</span><span class="tok-nx">match</span><span class="tok-p">(</span><span class="tok-s1">&#39;/offline.html&#39;</span><span class="tok-p">)</span>  <i class="conum" data-value="4"></i><b>(4)</b>
+                            <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">res</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+                                <span class="tok-k">return</span> <span class="tok-nx">res</span><span class="tok-p">;</span>
+                            <span class="tok-p">});</span>
+                    <span class="tok-p">});</span>
+            <span class="tok-p">}</span>
+        <span class="tok-p">})</span>
+<span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>В качестве критерия используем функцию. Проверяем, что кэшируются все запросы, кторые должны возвращать HTML</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Если что-то найдено в кэше, возвращаем</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Иначе пробуем получить страницу по сети</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>А если нет доступа к сети и страницы нет в кэше, выбрасываем сообщение об ошибке</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-11-22 22:33:29 +0300
+Last updated 2022-11-28 18:35:52 +0300
 </div>
 </div>
 </body>

@@ -4,6 +4,8 @@
 :toc: right
 :toclevels: 4
 
+https://www.udemy.com/course/progressive-web-app-pwa-the-complete-guide/
+
 NOTE: http-server in Android Studio emulator: http://10.0.2.2:8080
 
 
@@ -950,6 +952,15 @@ self.addEventListener('push', function(event) {
 
 == Native Device Features
 
+=== Useful Resources
+
+[cols="1,3"]
+|===
+| *More about the Media Stream API on MDN:* | https://developer.mozilla.org/en-US/docs/Web/API/Media_Capture_and_Streams_API/Constraints
+| *More about `getUserMedia`:* | https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+| *How to use geolocation:* | https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API
+|===
+    
 === feed.js : initializeMedia
 
 .public/src/js/feed.js
@@ -1072,3 +1083,324 @@ self.addEventListener('sync', function(event) {
 ```
 <1> JSON мы заменяем на `FormData` чтобы иметь возможность передавать файл изображения
 <2> `MY_CLOUD_FUNC`: server id for my Firebase cloud functions
+
+=== functions
+
+.functions/index.js
+```js
+var functions = require("firebase-functions");
+var admin = require("firebase-admin");
+var cors = require("cors")({ origin: true });
+var webpush = require("web-push");
+var fs = require("fs");
+var UUID = require("uuid-v4");  <3>
+var os = require("os");
+var Busboy = require("busboy");  <2>
+var path = require('path');
+
+// // Create and Deploy Your First Cloud Functions
+// // https://firebase.google.com/docs/functions/write-firebase-functions
+//
+
+var serviceAccount = require("./pwagram-fb-key.json");
+
+var gcconfig = {
+  projectId: "YOUR_PROJECT_ID",  <5>
+  keyFilename: "pwagram-fb-key.json"
+};
+
+var gcs = require("@google-cloud/storage")(gcconfig);  <1>
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com/"  <8>
+});
+
+exports.storePostData = functions.https.onRequest(function(request, response) {
+  cors(request, response, function() {
+    var uuid = UUID();
+
+    const busboy = Busboy({ headers: request.headers });
+    // These objects will store the values (file + fields) extracted from busboy
+    let upload;
+    const fields = {};
+
+    // This callback will be invoked for each file uploaded
+    busboy.on("file", (fieldname, file, info) => {
+      const { filename, encoding, mimetype } = info;
+      console.log(
+        `File [${fieldname}] filename: ${filename}, encoding: ${encoding}, mimetype: ${mimetype}`
+      );
+      const filepath = path.join(os.tmpdir(), filename);
+      upload = { file: filepath, type: mimetype };
+      file.pipe(fs.createWriteStream(filepath));
+    });
+
+    // This will invoked on every field detected
+    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
+      fields[fieldname] = val;
+    });
+
+    // This callback will be invoked after all uploaded files are saved.
+    busboy.on("close", () => {
+      var bucket = gcs.bucket("YOUR_PROJECT_ID.appspot.com");  <5>
+      bucket.upload(  <7>
+        upload.file,
+        {
+          uploadType: "media",
+          metadata: {
+            metadata: {
+              contentType: upload.type,
+              firebaseStorageDownloadTokens: uuid
+            }
+          }
+        },
+        function(err, uploadedFile) {
+          if (!err) {
+            admin
+              .database()
+              .ref("posts")
+              .push({
+                id: fields.id,
+                title: fields.title,
+                location: fields.location,
+                image:  <6>
+                  "https://firebasestorage.googleapis.com/v0/b/" +
+                  bucket.name +
+                  "/o/" +
+                  encodeURIComponent(uploadedFile.name) +
+                  "?alt=media&token=" +
+                  uuid
+              })
+              .then(function() {
+                webpush.setVapidDetails(
+                  "mailto:" + MY_EMAIL,  <4> 
+                  MY_VAPID_PUBLIC_KEY,
+                  MY_VAPID_PRIVATE_KEY
+                );
+                return admin
+                  .database()
+                  .ref("subscriptions")
+                  .once("value");
+              })
+              .then(function(subscriptions) {
+                subscriptions.forEach(function(sub) {  <9>
+                  var pushConfig = {
+                    endpoint: sub.val().endpoint,
+                    keys: {
+                      auth: sub.val().keys.auth,
+                      p256dh: sub.val().keys.p256dh
+                    }
+                  };
+
+                  webpush
+                    .sendNotification(
+                      pushConfig,
+                      JSON.stringify({
+                        title: "New Post",
+                        content: "New Post added!",
+                        openUrl: "/help"
+                      })
+                    )
+                    .catch(function(err) {
+                      console.log(err);
+                    });
+                });
+                response
+                  .status(201)
+                  .json({ message: "Data stored", id: fields.id });
+              })
+              .catch(function(err) {
+                response.status(500).json({ error: err });
+              });
+          } else {
+            console.log(err);
+          }
+        }
+      );
+    });
+
+    // The raw bytes of the upload will be in request.rawBody.  Send it to busboy, and get
+    // a callback when it's finished.
+    busboy.end(request.rawBody);
+  });
+});
+```
+
+<1> `npm install --save @google-cloud/storage@1.7` https://www.npmjs.com/package/@google-cloud/storage
+<2> `npm install --save busboy` https://www.npmjs.com/package/busboy
+<3> `npm install --save uuid-v4`
+<4> Provide `MY_EMAIL`, `MY_VAPID_PUBLIC_KEY`, `MY_VAPID_PRIVATE_KEY`
+<5> My Firebase project id here
+<6> Firebase Storage URL
+<7> Upload file to Firebase Storage
+<8> For me `databaseURL` is `MY_PROJECT_ID + ".firebasedatabase.app"`
+<9> Отправить нотификацию в каждую из найденных подписок
+
+=== feed.js : imagePicker
+
+.public/src/js/feed.js
+```js
+imagePicker.addEventListener('change', function(event) {
+  picture = event.target.files[0]; <1>
+});
+```
+
+<1> Загруженный файл
+
+=== feed.js : locationBtn
+
+.public/src/js/feed.js
+```js
+locationBtn.addEventListener('click', function(event) {
+  if (!('geolocation' in navigator)) {
+    return;
+  }
+
+  locationBtn.style.display = 'none';
+  locationLoader.style.display = 'block';
+
+  navigator.geolocation.getCurrentPosition(function (position) { <1>
+    locationBtn.style.display = 'inline';
+    locationLoader.style.display = 'none';
+    fetchedLocation = { lat: position.coords.latitude, lng: 0 };
+    locationInput.value = 'In Munich';
+    document.querySelector("#manual-location").classList.add('is-focused');
+
+  }, function (err) {
+    console.log(err);
+    locationBtn.style.display = 'inline';
+    locationLoader.style.display = 'none';
+    alert("Couldn't get location, please enter manually!");
+    fetchedLocation = { lat: null, lng: null };
+  }, { timeout: 7000 })
+});
+```
+
+<1> Получаем координаты
+
+== Service Worker Management with Workbox
+
+=== Useful Resources
+
+[cols="1,3"]
+|===
+| *Official webpage/ docs:* | https://developer.chrome.com/docs/workbox/
+| *Workbox Github page:* | https://github.com/GoogleChrome/workbox
+|===
+
+=== workbox-cli-config.js
+
+.workbox-cli-config.js
+```js
+module.exports = {  <1>
+  "globDirectory": "public/",
+  "globPatterns": [
+    "**/*.{html,ico,json,css,js}",
+    "src/images/*.{png,jpg}"  <2>
+  ],
+  "swSrc": "public/sw-base.js",  <3>
+  "swDest": "public/service-worker.js",
+  "globIgnores": [
+    "../workbox-cli-config.js",
+    "help/**"
+  ]
+};
+```
+<1> Сгенерировано командой `workbox generate:sw` в секции `scripts` для workbox ver.2 +
+    `npm install --save-dev workbox-cli@^2`
+<2> Кэшировать только изображения в папке `images`
+<3> Использовать шаблон сервис-воркера с командой `workbox inject:manifest` в секции `scripts`
+
+=== sw-base.js
+
+.public/sw-base.js
+```js
+importScripts('workbox-sw.prod.v2.1.3.js');
+importScripts('/src/js/idb.js');
+importScripts('/src/js/utility.js');  <4>
+
+const workboxSW = new self.WorkboxSW();
+
+workboxSW.router.registerRoute(/.*(?:googleapis|gstatic)\.com.*$/,  <1> 
+workboxSW.strategies.staleWhileRevalidate({  <2>
+    cacheName: "google-fonts",
+    cacheExpiration: {
+        maxEntries: 3,
+        maxAgeSeconds: 60 * 60 * 24 * 30  <5>
+    }
+}));
+
+workboxSW.router.registerRoute("https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css",  <6> 
+workboxSW.strategies.staleWhileRevalidate({
+    cacheName: "material-css"
+}));
+
+workboxSW.router.registerRoute(/.*(?:firebasestorage\.googleapis)\.com.*$/,  <8>
+workboxSW.strategies.staleWhileRevalidate({
+    cacheName: "post-images"
+}));
+
+workboxSW.router.registerRoute(MY_FIREBASE_ID + '.firebasedatabase.app/posts.json',  <7>
+function(args) {
+    return fetch(args.event.request)
+        .then(function (res) {
+        var clonedRes = res.clone();
+        clearAllData('posts')
+            .then(function () {
+            return clonedRes.json();
+            })
+            .then(function (data) {
+            for (var key in data) {
+                writeData('posts', data[key])
+            }
+            });
+        return res;
+        })
+});
+
+workboxSW.precache([]);  <3>
+```
+
+<1> Для того, чтобы закэшировать шрифты и иконки от Google, нужно выбрать урлы, содержащие `googleapi` или `gstatic`
+<2> Применить к ним стратегию *сначала из кэша, потом из сети*
+<3> Шаблон для подстановки списка ресурсов
+<4> Import our scripts as well
+<5> Cache expiration
+<6> Помещаем material css в отдельный кэш
+<7> Обработка background sync
+<8> Сюда идут наши фотки
+
+.public/sw-base.js
+```js
+workboxSW.router.registerRoute(function (routeData) {
+    return (routeData.event.request.headers.get('accept').includes('text/html'));  <1>
+
+}, function (args) {
+    return caches.match(args.event.request)
+        .then(function (response) {  
+            if (response) {
+                return response;  <2>
+            } else {
+                return fetch(args.event.request)  <3>
+                    .then(function (res) {
+                        return caches.open('dynamic')
+                            .then(function (cache) {
+                                cache.put(args.event.request.url, res.clone());
+                                return res;
+                            })
+                    })
+                    .catch(function (err) {
+                        return caches.match('/offline.html')  <4>
+                            .then(function (res) {
+                                return res;
+                            });
+                    });
+            }
+        })
+});
+```
+<1> В качестве критерия используем функцию. Проверяем, что кэшируются все запросы, кторые должны возвращать HTML
+<2> Если что-то найдено в кэше, возвращаем
+<3> Иначе пробуем получить страницу по сети
+<4> А если нет доступа к сети и страницы нет в кэше, выбрасываем сообщение об ошибке
