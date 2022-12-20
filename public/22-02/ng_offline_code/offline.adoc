@@ -10,3 +10,92 @@ Source:: https://github.com/kvkirthy/web-arcade
 
 AngularFire notes:: link:https://ea-books.netlify.app/19-05/ng_pwa_code/angularfire.html[]
 ====
+
+== Chapter 2: Getting Started
+
+.Create an Angular Application
+----
+% ng new web-arcade
+? Would you like to add Angular routing? Yes
+? Which stylesheet format would you like to use? Sass
+----
+
+.Add Service Worker
+----
+ng add @angular/pwa
+----
+
+.Run the Angular Application
+----
+npm run build
+npm install -g http-server  <1>
+http-server dist/web-arcade
+----
+
+<1> Instead of `ng serve`
+
+== Chapter 3: Installing an Angular Application
+
+.Create a Component
+----
+ng g c components/dice
+----
+
+== Chapter 5: Cache Data with Service Workers
+
+.Adding a Component to List Board Games
+----
+ng generate component components/board-games
+----
+
+.Define a Data Structure for Board Games
+----
+ng generate interface common/board-games-entity
+----
+
+.common/board-games-entity
+```ts
+export interface BoardGamesEntity {
+   title: string;
+   description: string;
+   age: string;
+   players: string;
+   origin: string;
+   link: string;
+   alternateNames: string;
+}
+
+/* Multiple games data returned, hence creating an Array */
+export interface GamesEntity {
+   boardGames: Array<BoardGamesEntity>;
+}
+```
+
+.Mock Data Service
+----
+npm install --save-dev express-generator
+
+md mock-services
+cd mock-services
+npx express-generator
+----
+
+NOTE: `fileReplacements` in Angular 15: https://angular.io/guide/build
+
+.Create an Angular Service
+----
+ng generate service common/games
+----
+
+NOTE: Introduction to Redux Pattern: https://dev.to/thisdotmedia/introduction-to-redux-pattern-59f3
+
+.Run app in browser redirecting unknown requests to NodeJS
+----
+npm run build && http-server dist/web-arcade --proxy http://localhost:3000
+----
+
+== Chapter 6: Upgrading Applications
+
+----
+ng g s common/sw-communication
+----

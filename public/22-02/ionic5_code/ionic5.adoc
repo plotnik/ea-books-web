@@ -3,7 +3,7 @@
 :source-highlighter: pygments
 :toc: right
 :toclevels: 4
-:example-caption: Note
+:example-caption!: 
 Andreas Dormann
 
 Ionic CLI::
@@ -22,6 +22,66 @@ a| 5.2.2. Create a service
 a| `ionic g service services/bob-tours`
 
 |===
+
+== 3. The first app
+
+Dark Mode::
+https://ionicframework.com/docs/theming/dark-mode
+
+.Page 71 (67) - src/theme/variables.scss
+```scss
+@media (prefers-color-scheme: dark) {}
+
+@media (prefers-color-scheme: light) {}
+```
+
+.Page 76 (72)
+----
+ionic start bob-tours sidemenu --type=angular
+----
+
+== icon:bookmark[] 4. Navigation
+
+Angular Navigation::
+https://ionicframework.com/docs/angular/navigation
+
+=== Clean-up
+
+.Page 82 (78)
+====
+The following cleanups have to be done:
+
+1. Deleting the unnecessary `folder` directory 
+2. Deleting the unnecessary `folder` path
+3. Changing the root path
+4. Defining the menu pages
+5. Modifying the menu UI
+====
+
+----
+ionic generate page pages/Favorites
+ionic g page pages/Regions
+ionic g page pages/Tour-Types
+ionic g page pages/List
+ionic g page pages/Details
+ionic g page pages/Request
+----
+
+.Page 88 (84)
+```html+ng
+<ion-buttons slot="start">
+  <ion-menu-button></ion-menu-button>
+</ion-buttons>
+```
+=== 4.3 Routing
+
+==== app-routing.module.ts
+
+==== routerLink / routerDirection
+
+==== Adding back buttons
+
+=== 4.4 Extract Data from Routes with ActivatedRoute
 
 == 5. Services & Storage
 
