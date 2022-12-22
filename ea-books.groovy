@@ -8,7 +8,7 @@
 import static picocli.CommandLine.*
 import groovy.transform.Field
 
-@Command(name = 'ea-books', mixinStandardHelpOptions = true, version = '1.0',
+@Command(name = 'ea-books', mixinStandardHelpOptions = true, version = '2022-12-22',
   description = 'Generate book index for Netlify.')
 @picocli.groovy.PicocliScript
 
@@ -84,8 +84,10 @@ for (dir in dirs) {
     	 */
     	noteList = []
     	afiles = subdir.listFiles()
+    	quotes = false
     	for (afile in afiles) {
-    		if (!afile.isFile()) continue;    	
+    		if (!afile.isFile()) continue; 
+    		if (afile.name.equals('quotes.html')) quotes = true;
     	    if (!afile.name.endsWith('.adoc')) continue;
     	    noteList << afile
     	}
@@ -127,7 +129,7 @@ for (dir in dirs) {
             if (showDebugInfo) {
                 println "-------------------^ tstamp result: " + tstr(tstamp)
             }
-    		bookList << [ tstamp: tstamp, notes: noteList, mdir: dir.name ]
+    		bookList << [ tstamp: tstamp, notes: noteList, mdir: dir.name, quotes: quotes ]
     	}
     }
 }
@@ -147,6 +149,7 @@ bookList.each {
 
 void writeToFile(f) {
 	f.println "= Чтение по программированию"
+	f.println ":icons: font"
 	f.println ":toc: right"
 	f.println ""
 	for (book in bookList) {
@@ -156,7 +159,11 @@ void writeToFile(f) {
 		code = note.parentFile.name
 		assert code.endsWith('_code')
 		code = code.substring(0, code.length()-5)
-		f.println "\n== ${code}\n"
+		quotes = ""
+		if (book.quotes) {
+		    quotes = "icon:bookmark[]"
+		}
+		f.println "\n== ${quotes} ${code}\n"
 		f.println "${mstamp}, изменение: ${tstamp}\n"  
 		for (note in book.notes) {
 			assert note.name.endsWith('.adoc')
