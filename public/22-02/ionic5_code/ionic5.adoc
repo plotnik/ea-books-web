@@ -6,8 +6,12 @@
 :example-caption!: 
 Andreas Dormann
 
+Ionic Book::
+https://ionic.andreas-dormann.de/
+
 Ionic CLI::
 https://ionicframework.com/docs/cli
+
 
 [cols="1,1"]
 |===
@@ -40,7 +44,7 @@ https://ionicframework.com/docs/theming/dark-mode
 ionic start bob-tours sidemenu --type=angular
 ----
 
-== icon:bookmark[] 4. Navigation
+== 4. Navigation
 
 Angular Navigation::
 https://ionicframework.com/docs/angular/navigation
@@ -83,8 +87,83 @@ ionic g page pages/Request
 
 === 4.4 Extract Data from Routes with ActivatedRoute
 
+_p.93 (89)_
+
+[cols="1,1,1"]
+|===
+| Path | Component | Function 
+
+| */favorites* | `./pages/favorites/favorites` | Список туров
+| */details* | `./pages/details/details` | Детали тура
+|===
+
+.Ошибка компиляции в Ionic 6
+```
+[ng] Error: src/app/pages/details/details.page.html:6:24 - error TS2531: Object is possibly 'null'.
+[ng]
+[ng] 6     <ion-title>{{ tour.Title }}</ion-title>
+[ng]                          ~~~~~
+[ng]
+[ng]   src/app/pages/details/details.page.ts:6:16
+[ng]     6   templateUrl: './details.page.html',
+[ng]                      ~~~~~~~~~~~~~~~~~~~~~
+[ng]     Error occurs in the template of component DetailsPage.
+[ng]
+[ng]
+[ng] Error: src/app/pages/details/details.page.ts:17:5 - error TS2322: Type 'Params' is not assignable to type 'null'.
+[ng]
+[ng] 17     this.tour = this.activatedRoute.snapshot.params;
+[ng]        ~~~~~~~~~
+```
+
+.Fix in my/bob-tours
+====
+.src/app/model/tour.model.ts
+```ts
+export class Tour {
+    constructor(
+        public ID?: number,   
+        public Title?: string) { }  
+}
+```
+
+.src/app/pages/details/details.page.html
+```html+ng
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ tour?.Title }}</ion-title>  <1>
+  </ion-toolbar>
+```  
+
+<1> Нужно добавить `?` к `tour`
+
+.src/app/pages/details/details.page.ts
+```ts
+  tour?: Tour;  <1>
+```
+
+<1> Нужно добавить `?` к `tour`
+
+====
+
+.Fixing error: "Could not find a declaration file for module 'lodash'"
+====
+----
+npm i lodash --save
+npm i --save-dev @types/lodash
+----
+
+```ts
+import * as _ from 'lodash';
+```
+====
+
 == 5. Services & Storage
 
+Ionic Storage:: https://github.com/ionic-team/ionic-storage
+ 
 === 5.1. Database Backend with Google Firebase
 
 === 5.2. An HTTPClient Service
@@ -98,6 +177,8 @@ https://angular.io/guide/http
 ```ts
 include::05/5.6/src/app/services/bob-tours.service.ts[]
 ```
+
+== icon:bookmark[] 6. UI Components
 
 == 7. Form validation
 

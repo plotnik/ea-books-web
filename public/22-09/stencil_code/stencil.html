@@ -5,8 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.17">
-<meta name="author" content="Andreas Dormann">
-<title>Ionic 5</title>
+<meta name="author" content="Maximilian Schwarzmüller">
+<title>Web Components &amp; Stencil.js</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,555 +437,351 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-pre.pygments .hll { background-color: #ffffcc }
-pre.pygments { background: #f8f8f8; }
-pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
-pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
-pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
-pre.pygments .tok-o { color: #666666 } /* Operator */
-pre.pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
-pre.pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
-pre.pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
-pre.pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
-pre.pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
-pre.pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
-pre.pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
-pre.pygments .tok-ge { font-style: italic } /* Generic.Emph */
-pre.pygments .tok-gr { color: #FF0000 } /* Generic.Error */
-pre.pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
-pre.pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
-pre.pygments .tok-go { color: #888888 } /* Generic.Output */
-pre.pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
-pre.pygments .tok-gs { font-weight: bold } /* Generic.Strong */
-pre.pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
-pre.pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
-pre.pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
-pre.pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
-pre.pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
-pre.pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
-pre.pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
-pre.pygments .tok-kt { color: #B00040 } /* Keyword.Type */
-pre.pygments .tok-m { color: #666666 } /* Literal.Number */
-pre.pygments .tok-s { color: #BA2121 } /* Literal.String */
-pre.pygments .tok-na { color: #7D9029 } /* Name.Attribute */
-pre.pygments .tok-nb { color: #008000 } /* Name.Builtin */
-pre.pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
-pre.pygments .tok-no { color: #880000 } /* Name.Constant */
-pre.pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
-pre.pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
-pre.pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
-pre.pygments .tok-nf { color: #0000FF } /* Name.Function */
-pre.pygments .tok-nl { color: #A0A000 } /* Name.Label */
-pre.pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
-pre.pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
-pre.pygments .tok-nv { color: #19177C } /* Name.Variable */
-pre.pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
-pre.pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
-pre.pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
-pre.pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
-pre.pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
-pre.pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
-pre.pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
-pre.pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
-pre.pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
-pre.pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
-pre.pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
-pre.pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
-pre.pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
-pre.pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
-pre.pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
-pre.pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
-pre.pygments .tok-sx { color: #008000 } /* Literal.String.Other */
-pre.pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
-pre.pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
-pre.pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
-pre.pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
-pre.pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
-pre.pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
-pre.pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
-pre.pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
-pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
-pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
-</style>
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>Ionic 5</h1>
+<h1>Web Components &amp; Stencil.js</h1>
 <div class="details">
-<span id="author" class="author">Andreas Dormann</span><br>
+<span id="author" class="author">Maximilian Schwarzmüller</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_3_the_first_app">3. The first app</a></li>
-<li><a href="#_4_navigation">4. Navigation</a>
+<li><a href="#_2_refreshing_next_generation_javascript">2. Refreshing Next Generation JavaScript</a>
 <ul class="sectlevel2">
-<li><a href="#_clean_up">Clean-up</a></li>
-<li><a href="#_4_3_routing">4.3 Routing</a>
-<ul class="sectlevel3">
-<li><a href="#_app_routing_module_ts">app-routing.module.ts</a></li>
-<li><a href="#_routerlink_routerdirection">routerLink / routerDirection</a></li>
-<li><a href="#_adding_back_buttons">Adding back buttons</a></li>
+<li><a href="#_js_array_functions">JS Array Functions</a></li>
 </ul>
 </li>
-<li><a href="#_4_4_extract_data_from_routes_with_activatedroute">4.4 Extract Data from Routes with ActivatedRoute</a></li>
-</ul>
-</li>
-<li><a href="#_5_services_storage">5. Services &amp; Storage</a>
+<li><a href="#_3_understanding_the_basics">3. Understanding the Basics</a></li>
+<li><a href="#_4_diving_deeper_into_web_components">4. Diving Deeper Into Web Components</a>
 <ul class="sectlevel2">
-<li><a href="#_5_1_database_backend_with_google_firebase">5.1. Database Backend with Google Firebase</a></li>
-<li><a href="#_5_2_an_httpclient_service">5.2. An HTTPClient Service</a>
-<ul class="sectlevel3">
-<li><a href="#_programming_the_data_access">Programming the data access</a></li>
+<li><a href="#_useful_resources_links">Useful Resources &amp; Links</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a href="#_6_ui_components"><span class="icon"><i class="fa fa-bookmark"></i></span> 6. UI Components</a></li>
-<li><a href="#_7_form_validation">7. Form validation</a>
-<ul class="sectlevel2">
-<li><a href="#_7_3_implementation">7.3. Implementation</a></li>
-<li><a href="#_7_3_1_setting_up_the_reactiveformsmodule">7.3.1. Setting up the ReactiveFormsModule</a></li>
-<li><a href="#_7_3_2_preparing_the_form_validation_and_messages">7.3.2. Preparing the form validation and messages</a></li>
-</ul>
-</li>
-<li><a href="#_11_debugging_testing">11. Debugging &amp; Testing</a>
-<ul class="sectlevel2">
-<li><a href="#_11_1_health_check_with_ionic_doctor">11.1. Health Check with Ionic Doctor</a></li>
-<li><a href="#_11_2_strictly_typing">11.2. Strictly Typing!</a>
-<ul class="sectlevel3">
-<li><a href="#_typescript_and_its_advantages">TypeScript and its advantages</a></li>
-<li><a href="#_create_classes">Create classes</a></li>
-<li><a href="#_use_classes">Use classes</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a href="#_5_building_more_complex_components">5. Building More Complex Components</a></li>
+<li><a href="#_6_stencil_an_introduction">6. Stencil - An Introduction</a></li>
+<li><a href="#_7_stencil_diving_into_the_basics">7. Stencil - Diving Into the Basics</a></li>
+<li><a href="#_8_advanced_stencil">8. Advanced Stencil</a></li>
+<li><a href="#_9_deployment_publishing">9. Deployment &amp; Publishing</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Ionic Book</dt>
-<dd>
-<p><a href="https://ionic.andreas-dormann.de/" class="bare">https://ionic.andreas-dormann.de/</a></p>
-</dd>
-<dt class="hdlist1">Ionic CLI</dt>
-<dd>
-<p><a href="https://ionicframework.com/docs/cli" class="bare">https://ionicframework.com/docs/cli</a></p>
-</dd>
-</dl>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>3.5 The side menu app for our book project</p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><code>ionic start bob-tours sidemenu --type=angular</code></p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>4.2 Generate pages</p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><code>ionic generate page pages/Favorites</code></p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>5.2.2. Create a service</p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><code>ionic g service services/bob-tours</code></p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_3_the_first_app">3. The first app</h2>
-<div class="sectionbody">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Dark Mode</dt>
-<dd>
-<p><a href="https://ionicframework.com/docs/theming/dark-mode" class="bare">https://ionicframework.com/docs/theming/dark-mode</a></p>
-</dd>
-</dl>
-</div>
-<div class="listingblock">
-<div class="title">Page 71 (67) - src/theme/variables.scss</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="scss"><span></span><span class="tok-k">@media</span> <span class="tok-p">(</span><span class="tok-n">prefers-color-scheme</span><span class="tok-o">:</span> <span class="tok-n">dark</span><span class="tok-p">)</span> <span class="tok-p">{}</span>
-
-<span class="tok-k">@media</span> <span class="tok-p">(</span><span class="tok-n">prefers-color-scheme</span><span class="tok-o">:</span> <span class="tok-n">light</span><span class="tok-p">)</span> <span class="tok-p">{}</span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Page 76 (72)</div>
-<div class="content">
-<pre>ionic start bob-tours sidemenu --type=angular</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_4_navigation">4. Navigation</h2>
-<div class="sectionbody">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Angular Navigation</dt>
-<dd>
-<p><a href="https://ionicframework.com/docs/angular/navigation" class="bare">https://ionicframework.com/docs/angular/navigation</a></p>
-</dd>
-</dl>
-</div>
-<div class="sect2">
-<h3 id="_clean_up">Clean-up</h3>
-<div class="exampleblock">
-<div class="title">Page 82 (78)</div>
-<div class="content">
 <div class="paragraph">
-<p>The following cleanups have to be done:</p>
+<p><strong>Udemy:</strong>
+<a href="https://www.udemy.com/course/web-components-stenciljs-build-custom-html-elements/" class="bare">https://www.udemy.com/course/web-components-stenciljs-build-custom-html-elements/</a></p>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Deleting the unnecessary <code>folder</code> directory</p>
-</li>
-<li>
-<p>Deleting the unnecessary <code>folder</code> path</p>
-</li>
-<li>
-<p>Changing the root path</p>
-</li>
-<li>
-<p>Defining the menu pages</p>
-</li>
-<li>
-<p>Modifying the menu UI</p>
-</li>
-</ol>
-</div>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>ionic generate page pages/Favorites
-ionic g page pages/Regions
-ionic g page pages/Tour-Types
-ionic g page pages/List
-ionic g page pages/Details
-ionic g page pages/Request</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Page 88 (84)</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="html+ng"><span></span>&lt;ion-buttons slot=&quot;start&quot;&gt;
-  &lt;ion-menu-button&gt;&lt;/ion-menu-button&gt;
-&lt;/ion-buttons&gt;</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_4_3_routing">4.3 Routing</h3>
-<div class="sect3">
-<h4 id="_app_routing_module_ts">app-routing.module.ts</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_routerlink_routerdirection">routerLink / routerDirection</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_adding_back_buttons">Adding back buttons</h4>
-
-</div>
-</div>
-<div class="sect2">
-<h3 id="_4_4_extract_data_from_routes_with_activatedroute">4.4 Extract Data from Routes with ActivatedRoute</h3>
 <div class="paragraph">
-<p><em>p.93 (89)</em></p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Path</th>
-<th class="tableblock halign-left valign-top">Component</th>
-<th class="tableblock halign-left valign-top">Function</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>/favorites</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>./pages/favorites/favorites</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Список туров</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>/details</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>./pages/details/details</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Детали тура</p></td>
-</tr>
-</tbody>
-</table>
-<div class="listingblock">
-<div class="title">Ошибка компиляции в Ionic 6</div>
-<div class="content">
-<pre class="pygments highlight"><code><span></span>[ng] Error: src/app/pages/details/details.page.html:6:24 - error TS2531: Object is possibly &#39;null&#39;.
-[ng]
-[ng] 6     &lt;ion-title&gt;{{ tour.Title }}&lt;/ion-title&gt;
-[ng]                          ~~~~~
-[ng]
-[ng]   src/app/pages/details/details.page.ts:6:16
-[ng]     6   templateUrl: &#39;./details.page.html&#39;,
-[ng]                      ~~~~~~~~~~~~~~~~~~~~~
-[ng]     Error occurs in the template of component DetailsPage.
-[ng]
-[ng]
-[ng] Error: src/app/pages/details/details.page.ts:17:5 - error TS2322: Type &#39;Params&#39; is not assignable to type &#39;null&#39;.
-[ng]
-[ng] 17     this.tour = this.activatedRoute.snapshot.params;
-[ng]        ~~~~~~~~~</code></pre>
-</div>
-</div>
-<div class="exampleblock">
-<div class="title">Fix in my/bob-tours</div>
-<div class="content">
-<div class="listingblock">
-<div class="title">src/app/model/tour.model.ts</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">Tour</span> <span class="tok-p">{</span>
-    <span class="tok-kr">constructor</span><span class="tok-p">(</span>
-        <span class="tok-k">public</span> <span class="tok-nx">ID?</span>: <span class="tok-kt">number</span><span class="tok-p">,</span>
-        <span class="tok-k">public</span> <span class="tok-nx">Title?</span>: <span class="tok-kt">string</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
-<span class="tok-p">}</span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">src/app/pages/details/details.page.html</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="html+ng"><span></span>  &lt;ion-toolbar&gt;
-    &lt;ion-buttons slot=&quot;start&quot;&gt;
-      &lt;ion-back-button&gt;&lt;/ion-back-button&gt;
-    &lt;/ion-buttons&gt;
-    &lt;ion-title&gt;{{ tour?.Title }}&lt;/ion-title&gt;  <i class="conum" data-value="1"></i><b>(1)</b>
-  &lt;/ion-toolbar&gt;</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Нужно добавить <code>?</code> к <code>tour</code></td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="title">src/app/pages/details/details.page.ts</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ts"><span></span>  <span class="tok-nx">tour?</span>: <span class="tok-kt">Tour</span><span class="tok-p">;</span>  <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Нужно добавить <code>?</code> к <code>tour</code></td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="exampleblock">
-<div class="title">Fixing error: "Could not find a declaration file for module 'lodash'"</div>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre>npm i lodash --save
-npm i --save-dev @types/lodash</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-o">*</span> <span class="tok-kr">as</span> <span class="tok-nx">_</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;lodash&#39;</span><span class="tok-p">;</span></code></pre>
-</div>
-</div>
-</div>
-</div>
+<p><span class="icon"><i class="fa fa-wrench fa-2x"></i></span> &nbsp;
+<strong>Stencil:</strong>
+<a href="https://stenciljs.com/docs/getting-started" class="bare">https://stenciljs.com/docs/getting-started</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_5_services_storage">5. Services &amp; Storage</h2>
+<h2 id="_2_refreshing_next_generation_javascript">2. Refreshing Next Generation JavaScript</h2>
 <div class="sectionbody">
 <div class="dlist">
 <dl>
-<dt class="hdlist1">Ionic Storage</dt>
+<dt class="hdlist1">Callbacks vs Promises vs RxJS vs async/await</dt>
 <dd>
-<p><a href="https://github.com/ionic-team/ionic-storage" class="bare">https://github.com/ionic-team/ionic-storage</a></p>
+<p><a href="https://academind.com/tutorials/callbacks-vs-promises-vs-rxjs-vs-async-awaits" class="bare">https://academind.com/tutorials/callbacks-vs-promises-vs-rxjs-vs-async-awaits</a></p>
 </dd>
 </dl>
 </div>
 <div class="sect2">
-<h3 id="_5_1_database_backend_with_google_firebase">5.1. Database Backend with Google Firebase</h3>
-
-</div>
-<div class="sect2">
-<h3 id="_5_2_an_httpclient_service">5.2. An HTTPClient Service</h3>
-<div class="sect3">
-<h4 id="_programming_the_data_access">Programming the data access</h4>
+<h3 id="_js_array_functions">JS Array Functions</h3>
+<div class="exampleblock">
+<div class="content">
 <div class="dlist">
 <dl>
-<dt class="hdlist1">Communicating with backend services using HTTP</dt>
+<dt class="hdlist1">Array Methods</dt>
 <dd>
-<p><a href="https://angular.io/guide/http" class="bare">https://angular.io/guide/http</a></p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>map() &#8658; <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map</a></p>
+</li>
+<li>
+<p>find() &#8658; <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find</a></p>
+</li>
+<li>
+<p>findIndex() &#8658; <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex</a></p>
+</li>
+<li>
+<p>filter() &#8658; <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter</a></p>
+</li>
+<li>
+<p>reduce() &#8658; <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce?v=b" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce?v=b</a></p>
+</li>
+<li>
+<p>concat() &#8658; <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat?v=b" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat?v=b</a></p>
+</li>
+<li>
+<p>slice() &#8658; <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice</a></p>
+</li>
+<li>
+<p>splice() &#8658; <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice" class="bare">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice</a></p>
+</li>
+</ul>
+</div>
 </dd>
 </dl>
 </div>
-<div class="listingblock">
-<div class="title">bob-tours.service.ts</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Injectable</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
-<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">HttpClient</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/common/http&#39;</span><span class="tok-p">;</span>
-<span class="tok-k">import</span> <span class="tok-nx">_</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;lodash&#39;</span><span class="tok-p">;</span>
-
-<span class="tok-kd">@Injectable</span><span class="tok-p">({</span>
-  <span class="tok-nx">providedIn</span><span class="tok-o">:</span> <span class="tok-s1">&#39;root&#39;</span>
-<span class="tok-p">})</span>
-<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">BobToursService</span> <span class="tok-p">{</span>
-
-  <span class="tok-k">public</span> <span class="tok-nx">regions</span>: <span class="tok-kt">any</span><span class="tok-p">;</span>
-  <span class="tok-k">public</span> <span class="tok-nx">tourtypes</span>: <span class="tok-kt">any</span><span class="tok-p">;</span>
-  <span class="tok-k">public</span> <span class="tok-nx">tours</span>: <span class="tok-kt">any</span><span class="tok-p">;</span>
-
-  <span class="tok-nx">baseUrl</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;https://bob-tours-app.firebaseio.com/&#39;</span><span class="tok-p">;</span>
-
-  <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-k">private</span> <span class="tok-nx">http</span>: <span class="tok-kt">HttpClient</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
-
-  <span class="tok-nx">initialize</span><span class="tok-p">()</span> <span class="tok-p">{</span>
-    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">getRegions</span><span class="tok-p">()</span>
-      <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-nx">data</span> <span class="tok-p">=&gt;</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">regions</span> <span class="tok-o">=</span> <span class="tok-nx">data</span><span class="tok-p">);</span>
-    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">getTourtypes</span><span class="tok-p">()</span>
-      <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-nx">data</span> <span class="tok-p">=&gt;</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">tourtypes</span> <span class="tok-o">=</span> <span class="tok-nx">_</span><span class="tok-p">.</span><span class="tok-nx">sortBy</span><span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">,</span> <span class="tok-s1">&#39;Name&#39;</span><span class="tok-p">));</span>
-    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">getTours</span><span class="tok-p">()</span>
-      <span class="tok-p">.</span><span class="tok-nx">then</span><span class="tok-p">(</span><span class="tok-nx">data</span> <span class="tok-p">=&gt;</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">tours</span> <span class="tok-o">=</span> <span class="tok-nx">_</span><span class="tok-p">.</span><span class="tok-nx">sortBy</span><span class="tok-p">(</span><span class="tok-nx">data</span><span class="tok-p">,</span> <span class="tok-s1">&#39;Title&#39;</span><span class="tok-p">));</span>
-  <span class="tok-p">}</span>
-
-  <span class="tok-nx">getRegions</span><span class="tok-p">()</span> <span class="tok-p">{</span>
-    <span class="tok-kd">let</span> <span class="tok-nx">requestUrl</span> <span class="tok-o">=</span> <span class="tok-sb">`</span><span class="tok-si">${</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">baseUrl</span><span class="tok-si">}</span><span class="tok-sb">/Regions.json`</span><span class="tok-p">;</span>
-    <span class="tok-k">return</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">http</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-p">(</span><span class="tok-nx">requestUrl</span><span class="tok-p">).</span><span class="tok-nx">toPromise</span><span class="tok-p">();</span>
-  <span class="tok-p">}</span>
-
-  <span class="tok-nx">getTourtypes</span><span class="tok-p">()</span> <span class="tok-p">{</span>
-    <span class="tok-kd">let</span> <span class="tok-nx">requestUrl</span> <span class="tok-o">=</span> <span class="tok-sb">`</span><span class="tok-si">${</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">baseUrl</span><span class="tok-si">}</span><span class="tok-sb">/Tourtypes.json`</span><span class="tok-p">;</span>
-    <span class="tok-k">return</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">http</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-p">(</span><span class="tok-nx">requestUrl</span><span class="tok-p">).</span><span class="tok-nx">toPromise</span><span class="tok-p">();</span>
-  <span class="tok-p">}</span>
-
-  <span class="tok-nx">getTours</span><span class="tok-p">()</span> <span class="tok-p">{</span>
-    <span class="tok-kd">let</span> <span class="tok-nx">requestUrl</span> <span class="tok-o">=</span> <span class="tok-sb">`</span><span class="tok-si">${</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">baseUrl</span><span class="tok-si">}</span><span class="tok-sb">/Tours.json`</span><span class="tok-p">;</span>
-    <span class="tok-k">return</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">http</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-p">(</span><span class="tok-nx">requestUrl</span><span class="tok-p">).</span><span class="tok-nx">toPromise</span><span class="tok-p">();</span>
-  <span class="tok-p">}</span>
-
-<span class="tok-p">}</span></code></pre>
-</div>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_6_ui_components"><span class="icon"><i class="fa fa-bookmark"></i></span> 6. UI Components</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_7_form_validation">7. Form validation</h2>
+<h2 id="_3_understanding_the_basics">3. Understanding the Basics</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>See <a href="InputValidationSample.html">Input Validation Sample</a></p>
+<p>[[Web Components - Creating elements with JS]]</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_4_diving_deeper_into_web_components">4. Diving Deeper Into Web Components</h2>
+<div class="sectionbody">
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Code 4.48: <code>stencil_code/my</code></p>
+</div>
+</blockquote>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Code 4.50: <code>stencil_code/advanced-03-observing-attribute-changes</code></p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.41. Understanding Shadow DOM Projection</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.42. Styling "slot" Content Outside of the Shadow DOM</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.43. Styling "slot" Content Inside the Shadow DOM</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.44. Styling the Host Component</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.45. Styling Components from Outside</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.46. Conditional Host Styling</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.47. Styling with the Host Content in Mind</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.48. Smart Dynamic Styling with CSS Variables</strong></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Code 4.48: <code>stencil_code/my</code></p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.49. Cleaning Up Our Overall Styling</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.50. Observing Attribute Changes</strong></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Code 4.50: <code>stencil_code/advanced-03-observing-attribute-changes</code></p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.51. Adjusting the Component Behaviour Upon Attribute Changes</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.52. Using "disconnectedcallback"</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>4.53. Adding a Render Method</strong></p>
 </div>
 <div class="sect2">
-<h3 id="_7_3_implementation">7.3. Implementation</h3>
-
+<h3 id="_useful_resources_links">Useful Resources &amp; Links</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>More about Templates &amp; Slots:</strong> 
+<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots" class="bare">https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots</a></p>
+</li>
+<li>
+<p><strong>Google Article on Custom Elements:</strong>
+<a href="https://web.dev/custom-elements-v1/" class="bare">https://web.dev/custom-elements-v1/</a></p>
+</li>
+<li>
+<p><strong>Google Article on Shadow DOM:</strong>
+<a href="https://web.dev/shadowdom-v1/" class="bare">https://web.dev/shadowdom-v1/</a></p>
+</li>
+</ul>
 </div>
-<div class="sect2">
-<h3 id="_7_3_1_setting_up_the_reactiveformsmodule">7.3.1. Setting up the ReactiveFormsModule</h3>
-
 </div>
-<div class="sect2">
-<h3 id="_7_3_2_preparing_the_form_validation_and_messages">7.3.2. Preparing the form validation and messages</h3>
-
+</div>
+<hr>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_11_debugging_testing">11. Debugging &amp; Testing</h2>
+<h2 id="_5_building_more_complex_components">5. Building More Complex Components</h2>
 <div class="sectionbody">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Ionic Testing</dt>
-<dd>
-<p><a href="https://ionicframework.com/docs/angular/testing" class="bare">https://ionicframework.com/docs/angular/testing</a></p>
-</dd>
-<dt class="hdlist1">Enappd Tutorial on Ionic Testing</dt>
-<dd>
-<p><a href="https://enappd.com/blog/beginners-guide-to-ionic-angular-unit-testing-part-1/151/" class="bare">https://enappd.com/blog/beginners-guide-to-ionic-angular-unit-testing-part-1/151/</a></p>
-</dd>
-</dl>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Code: <code>stencil_code/complex-cmp-01</code></p>
 </div>
-<div class="sect2">
-<h3 id="_11_1_health_check_with_ionic_doctor">11.1. Health Check with Ionic Doctor</h3>
-<div class="listingblock">
-<div class="content">
-<pre>ionic doctor check</pre>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>[[Web Components - More Complex]]</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_11_2_strictly_typing">11.2. Strictly Typing!</h3>
-<div class="sect3">
-<h4 id="_typescript_and_its_advantages">TypeScript and its advantages</h4>
+<div class="sect1">
+<h2 id="_6_stencil_an_introduction">6. Stencil - An Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-wrench fa-2x"></i></span> &nbsp;
+<strong>Stencil:</strong>
+<a href="https://stenciljs.com/docs/getting-started" class="bare">https://stenciljs.com/docs/getting-started</a></p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_7_stencil_diving_into_the_basics">7. Stencil - Diving Into the Basics</h2>
+<div class="sectionbody">
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Code: <code>stencil_code/web-components-stencil</code></p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.81. Using the Development Server</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.82. MUST READ: Ensuring Correct Imports</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.83. Creating a New Stencil Web Component</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.84. Styling a Stencil Component</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.85. Using Props</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.86. Important: Reflect Props to Attributes</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.87. Configuring Props</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.88. Using Slots &amp; Styling</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.89. Rendering Conditional Content</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.90. Using Attributes for Styling only</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.91. Using Props in Combination with Attributes</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.92. Understanding Mutable Props</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.93. Preparing Tabs</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.94. Adding More Event Listeners</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.95. Using State</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.96. Adding Methods to Components</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-check-square fa-2x"></i></span> &nbsp;
+<strong>7.97. Adding a Backdrop</strong></p>
+</div>
+<div class="paragraph">
+<p><span class="icon"><i class="fa fa-wrench fa-2x"></i></span> &nbsp;
+<strong>Working with host elements:</strong>
+<a href="https://stenciljs.com/docs/host-element" class="bare">https://stenciljs.com/docs/host-element</a></p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_8_advanced_stencil">8. Advanced Stencil</h2>
+<div class="sectionbody">
 
 </div>
-<div class="sect3">
-<h4 id="_create_classes">Create classes</h4>
-<div class="listingblock">
-<div class="content">
-<pre>$ ionic g class models/category/category
-$ ionic g class models/tour/tour</pre>
 </div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_use_classes">Use classes</h4>
+<div class="sect1">
+<h2 id="_9_deployment_publishing">9. Deployment &amp; Publishing</h2>
+<div class="sectionbody">
 
-</div>
-</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-12-28 19:45:03 +0300
+Last updated 2023-01-24 17:04:35 +0300
 </div>
 </div>
 </body>

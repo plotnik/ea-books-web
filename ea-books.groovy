@@ -62,7 +62,11 @@ void debugList(noteList, delim) {
 }
 
 /* В списке `bookList` будем сохранять последний timestamp для папки каждого месяца
- * и список заметок для этой папки.
+   и список заметок для этой папки.
+   
+   Можно потом переписать на java
+   Listing a Directory's Contents
+   https://docs.oracle.com/javase/tutorial/essential/io/dirs.html#listdir
  */
 bookList = []
 dirs = new File(dropboxFolder).listFiles()
