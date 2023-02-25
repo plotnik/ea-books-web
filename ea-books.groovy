@@ -4,11 +4,11 @@
  * и скопировать на netlify
  */
 
-@Grab('info.picocli:picocli-groovy:4.6.0')
+@Grab('info.picocli:picocli-groovy:4.7.1')
 import static picocli.CommandLine.*
 import groovy.transform.Field
 
-@Command(name = 'ea-books', mixinStandardHelpOptions = true, version = '2022-12-22',
+@Command(name = 'ea-books', mixinStandardHelpOptions = true, version = '2023-02-25',
   description = 'Generate book index for Netlify.')
 @picocli.groovy.PicocliScript
 
@@ -156,6 +156,9 @@ void writeToFile(f) {
 	f.println ":icons: font"
 	f.println ":toc: right"
 	f.println ""
+	f.println "https://ea-books.netlify.app/"
+	f.println ""
+
 	for (book in bookList) {
 		note = book.notes[0]
 		tstamp = new Date(note.lastModified()).format("dd-MMM-yy")
