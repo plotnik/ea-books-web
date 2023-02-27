@@ -1,31 +1,32 @@
 = Настройка Raspberry Pi
 :toc: right
 
-- Установка *Raspberry Pi OS*
+=== Установка Raspberry Pi OS
 
-====
 - Загружаем дистрибутив с https://www.raspberrypi.org/downloads/
 
 - Записываем его на карточку с помощью Etcher
-====
 
-- Удаленный доступ по *ssh*
+=== Удаленный доступ по ssh
 
-====
 https://www.raspberrypi.org/documentation/remote-access/ssh/
-====
 
-- Установка *nginx*
+=== Установка nginx
 
-====
-https://www.raspberrypi.org/documentation/remote-access/web-server/nginx.md
+https://pimylifeup.com/raspberry-pi-nginx/
 
-public folder:: /var/www/html
-====
+*public folder:* `/var/www/html`
 
-- Установка *tomcat*
+- Добавляем флэшку в `/var/www/html`
 
-====
+https://gist.github.com/etes/aa76a6e9c80579872e5f
+
+```
+/dev/sda1 /var/www/html/books vfat defaults 0 0
+```
+
+=== Установка tomcat
+
 - Устанавливаем Java
 
 https://linuxize.com/post/install-java-on-raspberry-pi/
@@ -34,31 +35,26 @@ https://linuxize.com/post/install-java-on-raspberry-pi/
 
 sudo apt-get install tomcat9
 
-webapps folder::
-`/var/lib/tomcat9/webapps`
-====
+*webapps folder:* `/var/lib/tomcat9/webapps`
 
-====
 - Разрешаем юзеру `pi` писать в папку `webapps`
 
 `sudo chown -R pi /var/lib/tomcat9/webapps`
-====
 
-- Настройка *ЖКИ-дисплея*
+=== Настройка ЖКИ-дисплея
 
-====
 http://www.lcdwiki.com
 
 3.5inch RPi Display::
 http://www.lcdwiki.com/3.5inch_RPi_Display
-====
 
-- Настройка *экрана с часами*
+=== Настройка экрана с часами
 
-====
 Часы на Распе::
 https://github.com/plotnik/ts-clock
 
-Raspberry Pi Kiosk using Chromium::
-https://pimylifeup.com/raspberry-pi-kiosk/
-====
+How to Run a Raspberry Pi Program on Startup::
+https://learn.sparkfun.com/tutorials/how-to-run-a-raspberry-pi-program-on-startup/method-2-autostart
+
+_Вариант: Настройка киоска с минимального дистрибутива OS_::
+https://desertbot.io/blog/raspberry-pi-touchscreen-kiosk-setup

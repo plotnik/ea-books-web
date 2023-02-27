@@ -436,20 +436,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-right">
 <div id="header">
 <h1>Настройка Raspberry Pi</h1>
-</div>
-<div id="content">
-<div class="ulist">
-<ul>
-<li>
-<p>Установка <strong>Raspberry Pi OS</strong></p>
-</li>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel2">
+<li><a href="#_установка_raspberry_pi_os">Установка Raspberry Pi OS</a></li>
+<li><a href="#_удаленный_доступ_по_ssh">Удаленный доступ по ssh</a></li>
+<li><a href="#_установка_nginx">Установка nginx</a></li>
+<li><a href="#_установка_tomcat">Установка tomcat</a></li>
+<li><a href="#_настройка_жки_дисплея">Настройка ЖКИ-дисплея</a></li>
+<li><a href="#_настройка_экрана_с_часами">Настройка экрана с часами</a></li>
 </ul>
 </div>
-<div class="exampleblock">
-<div class="content">
+</div>
+<div id="content">
+<div class="sect2">
+<h3 id="_установка_raspberry_pi_os">Установка Raspberry Pi OS</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -461,52 +465,38 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </div>
 </div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Удаленный доступ по <strong>ssh</strong></p>
-</li>
-</ul>
-</div>
-<div class="exampleblock">
-<div class="content">
+<div class="sect2">
+<h3 id="_удаленный_доступ_по_ssh">Удаленный доступ по ssh</h3>
 <div class="paragraph">
 <p><a href="https://www.raspberrypi.org/documentation/remote-access/ssh/" class="bare">https://www.raspberrypi.org/documentation/remote-access/ssh/</a></p>
 </div>
 </div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Установка <strong>nginx</strong></p>
-</li>
-</ul>
-</div>
-<div class="exampleblock">
-<div class="content">
+<div class="sect2">
+<h3 id="_установка_nginx">Установка nginx</h3>
 <div class="paragraph">
-<p><a href="https://www.raspberrypi.org/documentation/remote-access/web-server/nginx.md" class="bare">https://www.raspberrypi.org/documentation/remote-access/web-server/nginx.md</a></p>
+<p><a href="https://pimylifeup.com/raspberry-pi-nginx/" class="bare">https://pimylifeup.com/raspberry-pi-nginx/</a></p>
 </div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">public folder</dt>
-<dd>
-<p>/var/www/html</p>
-</dd>
-</dl>
-</div>
-</div>
+<div class="paragraph">
+<p><strong>public folder:</strong> <code>/var/www/html</code></p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Установка <strong>tomcat</strong></p>
+<p>Добавляем флэшку в <code>/var/www/html</code></p>
 </li>
 </ul>
 </div>
-<div class="exampleblock">
+<div class="paragraph">
+<p><a href="https://gist.github.com/etes/aa76a6e9c80579872e5f" class="bare">https://gist.github.com/etes/aa76a6e9c80579872e5f</a></p>
+</div>
+<div class="listingblock">
 <div class="content">
+<pre class="highlight"><code>/dev/sda1 /var/www/html/books vfat defaults 0 0</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_установка_tomcat">Установка tomcat</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -527,18 +517,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>sudo apt-get install tomcat9</p>
 </div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">webapps folder</dt>
-<dd>
-<p><code>/var/lib/tomcat9/webapps</code></p>
-</dd>
-</dl>
+<div class="paragraph">
+<p><strong>webapps folder:</strong> <code>/var/lib/tomcat9/webapps</code></p>
 </div>
-</div>
-</div>
-<div class="exampleblock">
-<div class="content">
 <div class="ulist">
 <ul>
 <li>
@@ -550,16 +531,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><code>sudo chown -R pi /var/lib/tomcat9/webapps</code></p>
 </div>
 </div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Настройка <strong>ЖКИ-дисплея</strong></p>
-</li>
-</ul>
-</div>
-<div class="exampleblock">
-<div class="content">
+<div class="sect2">
+<h3 id="_настройка_жки_дисплея">Настройка ЖКИ-дисплея</h3>
 <div class="paragraph">
 <p><a href="http://www.lcdwiki.com" class="bare">http://www.lcdwiki.com</a></p>
 </div>
@@ -572,34 +545,29 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </dl>
 </div>
 </div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Настройка <strong>экрана с часами</strong></p>
-</li>
-</ul>
-</div>
-<div class="exampleblock">
-<div class="content">
+<div class="sect2">
+<h3 id="_настройка_экрана_с_часами">Настройка экрана с часами</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Часы на Распе</dt>
 <dd>
 <p><a href="https://github.com/plotnik/ts-clock" class="bare">https://github.com/plotnik/ts-clock</a></p>
 </dd>
-<dt class="hdlist1">Raspberry Pi Kiosk using Chromium</dt>
+<dt class="hdlist1">How to Run a Raspberry Pi Program on Startup</dt>
 <dd>
-<p><a href="https://pimylifeup.com/raspberry-pi-kiosk/" class="bare">https://pimylifeup.com/raspberry-pi-kiosk/</a></p>
+<p><a href="https://learn.sparkfun.com/tutorials/how-to-run-a-raspberry-pi-program-on-startup/method-2-autostart" class="bare">https://learn.sparkfun.com/tutorials/how-to-run-a-raspberry-pi-program-on-startup/method-2-autostart</a></p>
+</dd>
+<dt class="hdlist1"><em>Вариант: Настройка киоска с минимального дистрибутива OS</em></dt>
+<dd>
+<p><a href="https://desertbot.io/blog/raspberry-pi-touchscreen-kiosk-setup" class="bare">https://desertbot.io/blog/raspberry-pi-touchscreen-kiosk-setup</a></p>
 </dd>
 </dl>
 </div>
 </div>
 </div>
-</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-08-23 21:36:55 +0300
+Last updated 2023-02-27 10:28:07 +0300
 </div>
 </div>
 </body>
