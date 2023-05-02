@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.16">
-<title>Чтение по программированию</title>
+<meta name="generator" content="Asciidoctor 2.0.18">
+<title>Kubernetes Native Microservices with Quarkus and MicroProfile</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -84,10 +84,10 @@ code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;
 ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
 ul,ol{margin-left:1.5em}
 ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
-ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
-ul.square{list-style-type:square}
 ul.circle{list-style-type:circle}
 ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
 ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
 dl dt{margin-bottom:.3125em;font-weight:bold}
 dl dd{margin-bottom:1.25em}
@@ -193,7 +193,8 @@ body.toc2.toc-right{padding-left:0;padding-right:20em}}
 #content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
 details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
 details{margin-left:1.25rem}
-details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;-webkit-tap-highlight-color:transparent}
+details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;outline:none;-webkit-tap-highlight-color:transparent}
+details>summary::-webkit-details-marker{display:none}
 details>summary::before{content:"";border:solid transparent;border-left:solid;border-width:.3em 0 .3em .5em;position:absolute;top:.5em;left:-1.25rem;transform:translateX(15%)}
 details[open]>summary::before{border:solid transparent;border-top:solid;border-width:.5em .3em 0;transform:translateY(15%)}
 details>summary::after{content:"";width:1.25rem;height:1em;position:absolute;top:.3em;left:-1.25rem}
@@ -235,9 +236,8 @@ pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
 table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
 table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
 table.linenotable td.code{padding-left:.75em}
-table.linenotable td.linenos{border-right:1px solid;opacity:.35;padding-right:.5em}
-pre.pygments .lineno{border-right:1px solid;opacity:.35;display:inline-block;margin-right:.75em}
-pre.pygments .lineno::before{content:"";margin-right:-.125em}
+table.linenotable td.linenos,pre.pygments .linenos{border-right:1px solid;opacity:.35;padding-right:.5em;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+pre.pygments span.linenos{display:inline-block;margin-right:.75em}
 .quoteblock{margin:0 1em 1.25em 1.5em;display:table}
 .quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
 .quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
@@ -274,7 +274,7 @@ table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-c
 table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
 table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
 table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
-table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd),table.stripes-even tr:nth-of-type(even),table.stripes-hover tr:hover{background:#f8f8f7}
+table.stripes-all>*>tr,table.stripes-odd>*>tr:nth-of-type(odd),table.stripes-even>*>tr:nth-of-type(even),table.stripes-hover>*>tr:hover{background:#f8f8f7}
 th.halign-left,td.halign-left{text-align:left}
 th.halign-right,td.halign-right{text-align:right}
 th.halign-center,td.halign-center{text-align:center}
@@ -290,10 +290,11 @@ ol{margin-left:1.75em}
 ul li ol{margin-left:1.5em}
 dl dd{margin-left:1.125em}
 dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
-ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
 ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
 ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
 ul.unstyled,ol.unstyled{margin-left:0}
+li>p:empty:only-child::before{content:"";display:inline-block}
 ul.checklist>li>p:first-child{margin-left:-1em}
 ul.checklist>li>p:first-child>.fa-square-o:first-child,ul.checklist>li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
 ul.checklist>li>p:first-child>input[type=checkbox]:first-child{margin-right:.25em}
@@ -336,8 +337,6 @@ sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
 #footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
 #footnotes .footnote:last-of-type{margin-bottom:0}
 #content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
-.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
-.gist .file-data>table td.line-data{width:99%}
 div.unbreakable{page-break-inside:avoid}
 .big{font-size:larger}
 .small{font-size:smaller}
@@ -436,977 +435,218 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-right">
+<body class="article">
 <div id="header">
-<h1>Чтение по программированию</h1>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_ng_fb">ng_fb</a></li>
-<li><a href="#_ng_action">ng_action</a></li>
-<li><a href="#_mockito">mockito</a></li>
-<li><a href="#_quarkus">quarkus</a></li>
-<li><a href="#_udemy_cv">udemy_cv</a></li>
-<li><a href="#_raspberry">raspberry</a></li>
-<li><a href="#_cordova">cordova</a></li>
-<li><a href="#_stencil">stencil</a></li>
-<li><a href="#_ionic5">ionic5</a></li>
-<li><a href="#_ng_pro_e5"><span class="icon"><i class="fa fa-bookmark"></i></span> ng_pro_e5</a></li>
-<li><a href="#_ng_ninja">ng_ninja</a></li>
-<li><a href="#_tsc">tsc</a></li>
-<li><a href="#_ng_rxjs"><span class="icon"><i class="fa fa-bookmark"></i></span> ng_rxjs</a></li>
-<li><a href="#_ng_offline"><span class="icon"><i class="fa fa-bookmark"></i></span> ng_offline</a></li>
-<li><a href="#_udemy_pwa">udemy_pwa</a></li>
-<li><a href="#_react_fbase">react_fbase</a></li>
-<li><a href="#_bs5">bs5</a></li>
-<li><a href="#_pwa">pwa</a></li>
-<li><a href="#_solidity">solidity</a></li>
-<li><a href="#_hugo">hugo</a></li>
-<li><a href="#_inkscape">inkscape</a></li>
-<li><a href="#_wcts">wcts</a></li>
-<li><a href="#_jamstack">jamstack</a></li>
-<li><a href="#_3de">3de</a></li>
-<li><a href="#_nextjs">nextjs</a></li>
-<li><a href="#_nodejs">nodejs</a></li>
-<li><a href="#_express">express</a></li>
-<li><a href="#_angular6">angular6</a></li>
-<li><a href="#_roguelike">roguelike</a></li>
-<li><a href="#_spring">spring</a></li>
-<li><a href="#_bstrap4">bstrap4</a></li>
-<li><a href="#_arsak">arsak</a></li>
-<li><a href="#_spring_security">spring_security</a></li>
-<li><a href="#_android11">android11</a></li>
-<li><a href="#_mongo">mongo</a></li>
-<li><a href="#_jee_tut">jee_tut</a></li>
-<li><a href="#_spring_boot_2">spring_boot_2</a></li>
-<li><a href="#_spring_recipes">spring_recipes</a></li>
-<li><a href="#_bootstrap_4">bootstrap_4</a></li>
-<li><a href="#_rxjs">rxjs</a></li>
-<li><a href="#_sb_persist">sb_persist</a></li>
-<li><a href="#_gatsby">gatsby</a></li>
-<li><a href="#_ng_pwa">ng_pwa</a></li>
-<li><a href="#_ionic4">ionic4</a></li>
-<li><a href="#_js_games">js_games</a></li>
-<li><a href="#_html5_games">html5_games</a></li>
-<li><a href="#_html5_game">html5_game</a></li>
-<li><a href="#_image_proc">image_proc</a></li>
-<li><a href="#_pwa_2">pwa</a></li>
-<li><a href="#_pygame">pygame</a></li>
-<li><a href="#_opencv">opencv</a></li>
-<li><a href="#_sass">sass</a></li>
-<li><a href="#_android_web_games">android_web_games</a></li>
-<li><a href="#_js_concur">js_concur</a></li>
-<li><a href="#_groovy">groovy</a></li>
-<li><a href="#_js_cre">js_cre</a></li>
-<li><a href="#_ionic2">ionic2</a></li>
-</ul>
-</div>
+<h1>Kubernetes Native Microservices with Quarkus and MicroProfile</h1>
 </div>
 <div id="content">
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p><a href="https://ea-books.netlify.app/" class="bare">https://ea-books.netlify.app/</a></p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ng_fb">ng_fb</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>21-03, изменение: 02-May-23</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2021/21-03/ng_fb_code/nb_fb.html">nb_fb</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ng_action">ng_action</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>16-02, изменение: 02-May-23</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2016/16-02/ng_action_code/angularjs.html">angularjs</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_mockito">mockito</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>23-02, изменение: 02-May-23</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2023/23-02/mockito_code/mockito.html">mockito</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_quarkus">quarkus</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>23-04, изменение: 02-May-23</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2023/23-04/quarkus_code/quarkus.html">quarkus</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_udemy_cv">udemy_cv</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>23-04, изменение: 21-Apr-23</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2023/23-04/udemy_cv_code/udemy_cv.html">udemy_cv</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_raspberry">raspberry</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>16-12, изменение: 27-Feb-23</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2016/16-12/raspberry_code/pi_setup.html">pi_setup</a></p>
-</li>
-<li>
-<p><a href="2016/16-12/raspberry_code/mqtt.html">mqtt</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_cordova">cordova</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>16-09, изменение: 10-Feb-23</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2016/16-09/cordova_code/cordova.html">cordova</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_stencil">stencil</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-09, изменение: 24-Jan-23</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-09/stencil_code/stencil.html">stencil</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ionic5">ionic5</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-02, изменение: 28-Dec-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-02/ionic5_code/ionic5.html">ionic5</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ng_pro_e5"><span class="icon"><i class="fa fa-bookmark"></i></span> ng_pro_e5</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-08, изменение: 22-Dec-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-08/ng_pro_e5_code/angular.html">angular</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ng_ninja">ng_ninja</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-03, изменение: 22-Dec-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-03/ng_ninja_code/ng_ninja.html">ng_ninja</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_tsc">tsc</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>19-09, изменение: 20-Dec-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2019/19-09/tsc_code/tsc.html">tsc</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ng_rxjs"><span class="icon"><i class="fa fa-bookmark"></i></span> ng_rxjs</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-05, изменение: 09-Dec-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-05/ng_rxjs_code/ng_rxjs.html">ng_rxjs</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ng_offline"><span class="icon"><i class="fa fa-bookmark"></i></span> ng_offline</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-02, изменение: 06-Dec-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-02/ng_offline_code/offline.html">offline</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_udemy_pwa">udemy_pwa</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-09, изменение: 29-Nov-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-09/udemy_pwa_code/udemy_pwa.html">udemy_pwa</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_react_fbase">react_fbase</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-11, изменение: 08-Nov-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-11/react_fbase_code/react_fbase.html">react_fbase</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_bs5">bs5</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-10, изменение: 29-Oct-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-10/bs5_code/bs5.html">bs5</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_pwa">pwa</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-05, изменение: 21-Oct-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-05/pwa_code/learning_pwa.html">learning_pwa</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_solidity">solidity</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-10, изменение: 28-Sep-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-10/solidity_code/solidity.html">solidity</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_hugo">hugo</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-02, изменение: 26-Sep-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-02/hugo_code/hugo.html">hugo</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_inkscape">inkscape</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-10, изменение: 12-Sep-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-10/inkscape_code/inkscape.html">inkscape</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_wcts">wcts</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-09, изменение: 01-Sep-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-09/wcts_code/wcts.html">wcts</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_jamstack">jamstack</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-06, изменение: 23-Jun-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-06/jamstack_code/jamstack.html">jamstack</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_3de">3de</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-04, изменение: 14-Jun-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-04/3de_code/3de.html">3de</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_nextjs">nextjs</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-06, изменение: 14-Jun-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-06/nextjs_code/nextjs.html">nextjs</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_nodejs">nodejs</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>18-11, изменение: 27-Apr-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2018/18-11/nodejs_code/nodejs.html">nodejs</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_express">express</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-02, изменение: 12-Apr-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-02/express_code/express.html">express</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_angular6">angular6</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>18-10, изменение: 05-Apr-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2018/18-10/angular6_code/angular-directives.html">angular-directives</a></p>
-</li>
-<li>
-<p><a href="2018/18-10/angular6_code/angular6.html">angular6</a></p>
-</li>
-<li>
-<p><a href="2018/18-10/angular6_code/ng_heroes.html">ng_heroes</a></p>
-</li>
-<li>
-<p><a href="2018/18-10/angular6_code/ng_tut.html">ng_tut</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_roguelike">roguelike</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-01, изменение: 13-Feb-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-01/roguelike_code/phaser.html">phaser</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_spring">spring</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>22-02, изменение: 11-Feb-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2022/22-02/spring_code/spring.html">spring</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_bstrap4">bstrap4</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>21-11, изменение: 30-Jan-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2021/21-11/bstrap4_code/bstrap4.html">bstrap4</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_arsak">arsak</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>21-10, изменение: 26-Jan-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2021/21-10/arsak_code/arsak.html">arsak</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_spring_security">spring_security</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>20-11, изменение: 20-Jan-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2020/20-11/spring_security_code/jwt.html">jwt</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_android11">android11</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>21-09, изменение: 08-Jan-22</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2021/21-09/android11_code/android11.html">android11</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_mongo">mongo</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>15-11, изменение: 13-Jul-21</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2015/15-11/mongo_code/mongo.html">mongo</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_jee_tut">jee_tut</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>21-05, изменение: 27-May-21</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2021/21-05/jee_tut_code/persist.html">persist</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_spring_boot_2">spring_boot_2</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>18-12, изменение: 19-May-21</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2018/18-12/spring_boot_2_code/springboot2.html">springboot2</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_spring_recipes">spring_recipes</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>15-12, изменение: 02-May-21</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2015/15-12/spring_recipes_code/soap.html">soap</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_bootstrap_4">bootstrap_4</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>17-03, изменение: 20-Feb-21</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2017/17-03/bootstrap_4_code/bs4.html">bs4</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_rxjs">rxjs</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>17-09, изменение: 09-Feb-21</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2017/17-09/rxjs_code/rxjs.html">rxjs</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_sb_persist">sb_persist</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>20-04, изменение: 21-Dec-20</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2020/20-04/sb_persist_code/sb_persist.html">sb_persist</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_gatsby">gatsby</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>20-08, изменение: 06-Dec-20</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2020/20-08/gatsby_code/gatsby.html">gatsby</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ng_pwa">ng_pwa</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>19-05, изменение: 21-Jul-20</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2019/19-05/ng_pwa_code/ng_pwa.html">ng_pwa</a></p>
-</li>
-<li>
-<p><a href="2019/19-05/ng_pwa_code/angularfire.html">angularfire</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ionic4">ionic4</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>19-02, изменение: 05-May-20</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2019/19-02/ionic4_code/hackernews.html">hackernews</a></p>
-</li>
-<li>
-<p><a href="2019/19-02/ionic4_code/router.html">router</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_js_games">js_games</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>15-10, изменение: 30-Dec-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2015/15-10/js_games_code/js_games.html">js_games</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_html5_games">html5_games</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>15-07, изменение: 27-Dec-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2015/15-07/html5_games_code/html5_games.html">html5_games</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_html5_game">html5_game</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>18-01, изменение: 24-Dec-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2018/18-01/html5_game_code/html5_game.html">html5_game</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_image_proc">image_proc</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>19-08, изменение: 14-Sep-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2019/19-08/image_proc_code/image_proc.html">image_proc</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_pwa_2">pwa</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>18-05, изменение: 11-Sep-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2018/18-05/pwa_code/pwa.html">pwa</a></p>
-</li>
-<li>
-<p><a href="2018/18-05/pwa_code/background-sync.html">background-sync</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_pygame">pygame</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>19-09, изменение: 08-Sep-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2019/19-09/pygame_code/pygame.html">pygame</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_opencv">opencv</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>19-08, изменение: 26-Aug-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2019/19-08/opencv_code/opencv.html">opencv</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_sass">sass</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>17-05, изменение: 13-May-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2017/17-05/sass_code/sass.html">sass</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_android_web_games">android_web_games</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>13-01, изменение: 11-May-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2013/13-01/android_web_games_code/game.html">game</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_js_concur">js_concur</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>16-11, изменение: 10-May-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2016/16-11/js_concur_code/eventloop.html">eventloop</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_groovy">groovy</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>18-05, изменение: 09-May-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2018/18-05/groovy_code/xml-docs.html">xml-docs</a></p>
-</li>
-<li>
-<p><a href="2018/18-05/groovy_code/venkat.html">venkat</a></p>
-</li>
-<li>
-<p><a href="2018/18-05/groovy_code/gdk.html">gdk</a></p>
-</li>
-<li>
-<p><a href="2018/18-05/groovy_code/gdk-docs.html">gdk-docs</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_js_cre">js_cre</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>17-01, изменение: 26-Apr-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2017/17-01/js_cre_code/audiovideo.html">audiovideo</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ionic2">ionic2</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>17-05, изменение: 12-Apr-19</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="2017/17-05/ionic2_code/typescript.html">typescript</a></p>
-</li>
-<li>
-<p><a href="2017/17-05/ionic2_code/socialsharing.html">socialsharing</a></p>
-</li>
-<li>
-<p><a href="2017/17-05/ionic2_code/ionicforms.html">ionicforms</a></p>
-</li>
-</ul>
-</div>
+<div class="listingblock">
+<div class="content">
+<pre>Part 1—Introduction
+	1 Introduction to Quarkus, MicroProfile, and Kubernetes
+		1.1 What is a microservice?
+			1.1.1 The rise of microservices
+			1.1.2 Microservices architecture
+			1.1.3 The need for microservices specifications
+		1.2 MicroProfile
+			1.2.1 History of MicroProfile
+			1.2.2 MicroProfile community core principles
+		1.3 Quarkus
+			1.3.1 Developer joy
+			1.3.2 MicroProfile support
+			1.3.3 Runtime efficiency
+		1.4 Kubernetes
+			1.4.1 Introduction to Kubernetes
+		1.5 Kubernetes-native microservices
+		Summary
+	2 Your first Quarkus application
+		2.1 Creating a project
+		2.2 Developing with live coding
+		2.3 Writing a test
+		2.4 Creating a native executable
+		2.5 Running in Kubernetes
+			2.5.1 Generating Kubernetes YAML
+			2.5.2 Packaging an application
+			2.5.3 Deploying and running an application
+		Summary
+Part 2—Developing microservices
+	3 Configuring microservices
+		3.1 MicroProfile Config architecture overview
+		3.2 Accessing a configuration
+		3.3 The Bank service
+			3.3.1 Creating the Bank service
+			3.3.2 Configuring the Bank service name field
+		3.4 Configuration sources
+		3.5 Configuring the mobileBanking field
+		3.6 Grouping properties with @ConfigProperties
+		3.7 Quarkus-specific configuration features
+			3.7.1 Quarkus configuration profiles
+			3.7.2 Property expressions
+			3.7.3 Quarkus ConfigMapping
+			3.7.4 Run-time vs. build-time properties
+		3.8 Configuration on Kubernetes
+			3.8.1 Common Kubernetes configuration sources
+			3.8.2 Using a ConfigMap for Quarkus applications
+			3.8.3 Editing a ConfigMap
+			3.8.4 Kubernetes Secrets
+		Summary
+	4 Database access with Panache
+		4.1 Data sources
+		4.2 JPA
+		4.3 Simplifying database development
+			4.3.1 Active record approach
+			4.3.2 Data repository approach
+			4.3.3 Which approach to use?
+		4.4 Deployment to Kubernetes
+			4.4.1 Deploying PostgreSQL
+			4.4.2 Package and deploy
+		Summary
+	5 Clients for consuming other microservices
+		5.1 What is MicroProfile REST Client?
+		5.2 Service interface definition
+			5.2.1 CDI REST client
+			5.2.2 Programmatic REST client
+			5.2.3 Choosing between CDI and a programmatic API
+			5.2.4 Asynchronous response types
+		5.3 Customizing REST clients
+			5.3.1 Client request headers
+			5.3.2 Declaring providers
+		Summary
+	6 Application health
+		6.1 The growing role of developers in application health
+		6.2 MicroProfile Health
+			6.2.1 Liveness vs. readiness
+			6.2.2 Determining liveness and readiness status
+		6.3 Getting started with MicroProfile Health
+			6.3.1 Account service MicroProfile Health liveness
+			6.3.2 Creating an Account service liveness health check
+			6.3.3 Account service MicroProfile Health readiness
+			6.3.4 Disabling vendor readiness health checks
+			6.3.5 Creating a readiness health check
+			6.3.6 Quarkus health groups
+			6.3.7 Displaying the Quarkus Health UI
+		6.4 Kubernetes liveness and readiness probes
+			6.4.1 Customizing health check properties
+			6.4.2 Deploying to Kubernetes
+			6.4.3 Testing the readiness health check in Kubernetes
+		Summary
+	7 Resilience strategies
+		7.1 Resilience strategies overview
+		7.2 Executing a method under a separate thread with @Asynchronous
+		7.3 Constraining concurrency with bulkheads
+		7.4 Updating a TransactionService with a bulkhead
+		7.5 Exception handling with fallbacks
+		7.6 Defining execution timeouts
+		7.7 Recovering from temporary failure with @Retry
+		7.8 Avoiding repeated failure with circuit breakers
+			7.8.1 MicroProfile Fault Tolerance: @CircuitBreaker
+			7.8.2 How a circuit breaker works
+			7.8.3 Updating the TransactionService to use @CircuitBreaker
+			7.8.4 Testing the circuit breaker
+		7.9 Overriding annotation parameter values using properties
+		7.10 Deploying to Kubernetes
+		Summary
+	8 Reactive in an imperative world
+		8.1 Reactive example
+		8.2 What is Reactive Streams?
+			8.2.1 Publisher, Subscriber, and Processor
+			8.2.2 The importance of back pressure
+		8.3 Reactive Messaging in Quarkus
+			8.3.1 Bridging from imperative to reactive with emitters
+			8.3.2 What about blocking?
+			8.3.3 Testing “in memory”
+		8.4 How does it work?
+			8.4.1 MicroProfile Reactive Messaging specification
+			8.4.2 Message content and metadata
+			8.4.3 Messages in the stream
+		8.5 Deploying to Kubernetes
+			8.5.1 Apache Kafka in Minikube
+			8.5.2 Putting it all together
+		Summary
+	9 Developing Spring microservices with Quarkus
+		9.1 Quarkus/Spring API compatibility overview
+		9.2 Spring dependency injection and configuration compatibility
+			9.2.1 Setting up the Spring Cloud Config Server
+			9.2.2 Using the Spring Config Server as a configuration source
+			9.2.3 Converting the Bank service to use Spring Configuration APIs
+		9.3 Quarkus/Spring Web API compatibility
+		9.4 Quarkus/Spring Data JPA compatibility
+		9.5 Deploying to Kubernetes
+		9.6 How Quarkus implements Spring API compatibility
+		9.7 Common Quarkus/Spring compatibility questions
+		9.8 Comparing the Spring Boot and Quarkus startup processes
+		Summary
+Part 3—Observability, API definition, and security of microservices
+	10 Capturing metrics
+		10.1 The role of metrics in a microservices architecture
+		10.2 Getting started with MicroProfile Metrics
+			10.2.1 Graphing metrics with Prometheus and Grafana
+			10.2.2 MicroProfile Metrics
+			10.2.3 Instrumenting the Account service
+			10.2.4 Instrumenting the TransactionService
+			10.2.5 Creating business metrics
+			10.2.6 MicroProfile Fault Tolerance and JAX-RS integration with MicroProfile Metrics
+			10.2.7 Micrometer metrics
+			10.2.8 Simulating a busy production system
+		Summary
+	11 Tracing microservices
+		11.1 How does tracing work?
+		11.2 Jaeger
+			11.2.1 Trace sampling
+			11.2.2 Setting up the Minikube environment
+			11.2.3 Installing Jaeger
+			11.2.4 Microservice tracing with Jaeger
+		11.3 Tracing specifications
+			11.3.1 OpenTracing
+			11.3.2 What is MicroProfile OpenTracing?
+			11.3.3 OpenTelemetry
+		11.4 Customizing application tracing
+			11.4.1 Using @Traced
+			11.4.2 Injecting a tracer
+			11.4.3 Tracing database calls
+			11.4.4 Tracing Kafka messages
+		Summary
+	12 API visualization
+		12.1 Viewing OpenAPI documents with Swagger UI
+			12.1.1 Enabling OpenAPI
+			12.1.2 Swagger UI
+		12.2 MicroProfile OpenAPI
+			12.2.1 Application information
+			12.2.2 Customizing the schema output
+			12.2.3 Defining operations
+			12.2.4 Operation responses
+			12.2.5 Tagging operations
+			12.2.6 Filtering OpenAPI content
+		12.3 Design-first development
+			12.3.1 OpenAPI file base
+			12.3.2 Mixing the file and annotations
+		12.4 Code first or OpenAPI first?
+		Summary
+	13 Securing a microservice
+		13.1 Authorization and authentication overview
+		13.2 Using file-based authentication and authorization
+		13.3 Authentication and authorization with OpenID Connect
+			13.3.1 Introduction to OpenID Connect (OIDC)
+			13.3.2 OIDC and Keycloak
+			13.3.3 Accessing a protected resource with OpenID Connect
+			13.3.4 Testing the Code Authorization Flow
+		13.4 Json Web Tokens (JWT) and MicroProfile JWT
+			13.4.1 JWT header
+			13.4.2 JWT payload
+			13.4.3 JWT signature
+		13.5 Securing the Transaction service using MicroProfile JWT
+		13.6 Propagating the JWT
+			13.6.1 Secure an Account service endpoint
+			13.6.2 Propagating JWT from the Transaction service to the Account service
+		13.7 Running the services in Kubernetes
+		Summary</pre>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-05-02 20:09:38 +0300
+Last updated 2023-05-02 17:48:31 +0300
 </div>
 </div>
 </body>

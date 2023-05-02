@@ -1,0 +1,202 @@
+= Kubernetes Native Microservices with Quarkus and MicroProfile
+
+----
+Part 1—Introduction
+	1 Introduction to Quarkus, MicroProfile, and Kubernetes
+		1.1 What is a microservice?
+			1.1.1 The rise of microservices
+			1.1.2 Microservices architecture
+			1.1.3 The need for microservices specifications
+		1.2 MicroProfile
+			1.2.1 History of MicroProfile
+			1.2.2 MicroProfile community core principles
+		1.3 Quarkus
+			1.3.1 Developer joy
+			1.3.2 MicroProfile support
+			1.3.3 Runtime efficiency
+		1.4 Kubernetes
+			1.4.1 Introduction to Kubernetes
+		1.5 Kubernetes-native microservices
+		Summary
+	2 Your first Quarkus application
+		2.1 Creating a project
+		2.2 Developing with live coding
+		2.3 Writing a test
+		2.4 Creating a native executable
+		2.5 Running in Kubernetes
+			2.5.1 Generating Kubernetes YAML
+			2.5.2 Packaging an application
+			2.5.3 Deploying and running an application
+		Summary
+Part 2—Developing microservices
+	3 Configuring microservices
+		3.1 MicroProfile Config architecture overview
+		3.2 Accessing a configuration
+		3.3 The Bank service
+			3.3.1 Creating the Bank service
+			3.3.2 Configuring the Bank service name field
+		3.4 Configuration sources
+		3.5 Configuring the mobileBanking field
+		3.6 Grouping properties with @ConfigProperties
+		3.7 Quarkus-specific configuration features
+			3.7.1 Quarkus configuration profiles
+			3.7.2 Property expressions
+			3.7.3 Quarkus ConfigMapping
+			3.7.4 Run-time vs. build-time properties
+		3.8 Configuration on Kubernetes
+			3.8.1 Common Kubernetes configuration sources
+			3.8.2 Using a ConfigMap for Quarkus applications
+			3.8.3 Editing a ConfigMap
+			3.8.4 Kubernetes Secrets
+		Summary
+	4 Database access with Panache
+		4.1 Data sources
+		4.2 JPA
+		4.3 Simplifying database development
+			4.3.1 Active record approach
+			4.3.2 Data repository approach
+			4.3.3 Which approach to use?
+		4.4 Deployment to Kubernetes
+			4.4.1 Deploying PostgreSQL
+			4.4.2 Package and deploy
+		Summary
+	5 Clients for consuming other microservices
+		5.1 What is MicroProfile REST Client?
+		5.2 Service interface definition
+			5.2.1 CDI REST client
+			5.2.2 Programmatic REST client
+			5.2.3 Choosing between CDI and a programmatic API
+			5.2.4 Asynchronous response types
+		5.3 Customizing REST clients
+			5.3.1 Client request headers
+			5.3.2 Declaring providers
+		Summary
+	6 Application health
+		6.1 The growing role of developers in application health
+		6.2 MicroProfile Health
+			6.2.1 Liveness vs. readiness
+			6.2.2 Determining liveness and readiness status
+		6.3 Getting started with MicroProfile Health
+			6.3.1 Account service MicroProfile Health liveness
+			6.3.2 Creating an Account service liveness health check
+			6.3.3 Account service MicroProfile Health readiness
+			6.3.4 Disabling vendor readiness health checks
+			6.3.5 Creating a readiness health check
+			6.3.6 Quarkus health groups
+			6.3.7 Displaying the Quarkus Health UI
+		6.4 Kubernetes liveness and readiness probes
+			6.4.1 Customizing health check properties
+			6.4.2 Deploying to Kubernetes
+			6.4.3 Testing the readiness health check in Kubernetes
+		Summary
+	7 Resilience strategies
+		7.1 Resilience strategies overview
+		7.2 Executing a method under a separate thread with @Asynchronous
+		7.3 Constraining concurrency with bulkheads
+		7.4 Updating a TransactionService with a bulkhead
+		7.5 Exception handling with fallbacks
+		7.6 Defining execution timeouts
+		7.7 Recovering from temporary failure with @Retry
+		7.8 Avoiding repeated failure with circuit breakers
+			7.8.1 MicroProfile Fault Tolerance: @CircuitBreaker
+			7.8.2 How a circuit breaker works
+			7.8.3 Updating the TransactionService to use @CircuitBreaker
+			7.8.4 Testing the circuit breaker
+		7.9 Overriding annotation parameter values using properties
+		7.10 Deploying to Kubernetes
+		Summary
+	8 Reactive in an imperative world
+		8.1 Reactive example
+		8.2 What is Reactive Streams?
+			8.2.1 Publisher, Subscriber, and Processor
+			8.2.2 The importance of back pressure
+		8.3 Reactive Messaging in Quarkus
+			8.3.1 Bridging from imperative to reactive with emitters
+			8.3.2 What about blocking?
+			8.3.3 Testing “in memory”
+		8.4 How does it work?
+			8.4.1 MicroProfile Reactive Messaging specification
+			8.4.2 Message content and metadata
+			8.4.3 Messages in the stream
+		8.5 Deploying to Kubernetes
+			8.5.1 Apache Kafka in Minikube
+			8.5.2 Putting it all together
+		Summary
+	9 Developing Spring microservices with Quarkus
+		9.1 Quarkus/Spring API compatibility overview
+		9.2 Spring dependency injection and configuration compatibility
+			9.2.1 Setting up the Spring Cloud Config Server
+			9.2.2 Using the Spring Config Server as a configuration source
+			9.2.3 Converting the Bank service to use Spring Configuration APIs
+		9.3 Quarkus/Spring Web API compatibility
+		9.4 Quarkus/Spring Data JPA compatibility
+		9.5 Deploying to Kubernetes
+		9.6 How Quarkus implements Spring API compatibility
+		9.7 Common Quarkus/Spring compatibility questions
+		9.8 Comparing the Spring Boot and Quarkus startup processes
+		Summary
+Part 3—Observability, API definition, and security of microservices
+	10 Capturing metrics
+		10.1 The role of metrics in a microservices architecture
+		10.2 Getting started with MicroProfile Metrics
+			10.2.1 Graphing metrics with Prometheus and Grafana
+			10.2.2 MicroProfile Metrics
+			10.2.3 Instrumenting the Account service
+			10.2.4 Instrumenting the TransactionService
+			10.2.5 Creating business metrics
+			10.2.6 MicroProfile Fault Tolerance and JAX-RS integration with MicroProfile Metrics
+			10.2.7 Micrometer metrics
+			10.2.8 Simulating a busy production system
+		Summary
+	11 Tracing microservices
+		11.1 How does tracing work?
+		11.2 Jaeger
+			11.2.1 Trace sampling
+			11.2.2 Setting up the Minikube environment
+			11.2.3 Installing Jaeger
+			11.2.4 Microservice tracing with Jaeger
+		11.3 Tracing specifications
+			11.3.1 OpenTracing
+			11.3.2 What is MicroProfile OpenTracing?
+			11.3.3 OpenTelemetry
+		11.4 Customizing application tracing
+			11.4.1 Using @Traced
+			11.4.2 Injecting a tracer
+			11.4.3 Tracing database calls
+			11.4.4 Tracing Kafka messages
+		Summary
+	12 API visualization
+		12.1 Viewing OpenAPI documents with Swagger UI
+			12.1.1 Enabling OpenAPI
+			12.1.2 Swagger UI
+		12.2 MicroProfile OpenAPI
+			12.2.1 Application information
+			12.2.2 Customizing the schema output
+			12.2.3 Defining operations
+			12.2.4 Operation responses
+			12.2.5 Tagging operations
+			12.2.6 Filtering OpenAPI content
+		12.3 Design-first development
+			12.3.1 OpenAPI file base
+			12.3.2 Mixing the file and annotations
+		12.4 Code first or OpenAPI first?
+		Summary
+	13 Securing a microservice
+		13.1 Authorization and authentication overview
+		13.2 Using file-based authentication and authorization
+		13.3 Authentication and authorization with OpenID Connect
+			13.3.1 Introduction to OpenID Connect (OIDC)
+			13.3.2 OIDC and Keycloak
+			13.3.3 Accessing a protected resource with OpenID Connect
+			13.3.4 Testing the Code Authorization Flow
+		13.4 Json Web Tokens (JWT) and MicroProfile JWT
+			13.4.1 JWT header
+			13.4.2 JWT payload
+			13.4.3 JWT signature
+		13.5 Securing the Transaction service using MicroProfile JWT
+		13.6 Propagating the JWT
+			13.6.1 Secure an Account service endpoint
+			13.6.2 Propagating JWT from the Transaction service to the Account service
+		13.7 Running the services in Kubernetes
+		Summary
+----
