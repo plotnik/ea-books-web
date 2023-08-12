@@ -436,12 +436,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body class="article">
 <div id="header">
 <h1>DevOps Java Book</h1>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_23_08_docker_practical_guide_for_developers_and_devops_teams">23-08 Docker - Practical Guide for Developers and Devops Teams</a>
+<ul class="sectlevel2">
+<li><a href="#_commands_running_mariadb">Commands - Running MariaDB</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Docker Docs</dt>
@@ -451,9 +464,124 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </dl>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_23_08_docker_practical_guide_for_developers_and_devops_teams">23-08 Docker - Practical Guide for Developers and Devops Teams</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><em>Bernd Öggl</em> (<a href="https://webman.at" class="bare">https://webman.at</a>)</p>
+</li>
+<li>
+<p><em>Michael Kofler</em> (<a href="https://kofler.info" class="bare">https://kofler.info</a>)</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_commands_running_mariadb">Commands - Running MariaDB</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>docker run -d --name mariadb-test -e MYSQL_ROOT_PASSWORD=secret mariadb
+
+docker ps
+
+docker stop mariadb-test
+
+docker logs mariadb-test</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>3.5   Data Storage in Volumes</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>docker inspect mariadb-test
+
+docker inspect -f '{{ .Mounts }}' mariadb-test
+
+docker volume inspect d19f5b86...
+
+docker system df -v</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>3.5.2   Analyzing Volumes</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>docker exec -it mariadb-test mysql -u root -p</code></pre>
+</div>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>OCI runtime exec failed: exec failed: unable to start container process: exec: "mysql": executable file not found in $PATH: unknown</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>For newer MariaDB container versions, the <code>mysql</code> executable does not exist any more. Replace <code>mysql</code> with <code>mariadb</code> to fix the issue</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; <a href="https://techoverflow.net/2023/07/13/how-to-fix-docker-mariadb-mysql-executable-file-not-found-in-path-unknown/">TechOverflow</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>docker exec -it mariadb-test mariadb -u root -p</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>3.5.3  Calling the MariaDB Client</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>docker exec -it mariadb-test /bin/bash
+
+mariadb --version</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>3.5.4   A Look Inside the Container</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>docker volume rm a8b45f94a0a09284383edf6731ce0f10b51b574acbb1e93e5cfc3e6255dfb8ba
+
+docker volume rm ec3cf94e00fad8222e0b631ea8395b78fe2a2f4198aedbdfa8a3ec4ecc49fcbf
+
+docker volume rm c39651db8b613c5f4c0a5292f649f7991dee5b90c2d5f78030444d8495aab4b1</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-08-09 10:06:08 +0300
+Last updated 2023-08-12 14:28:16 +0300
 </div>
 </div>
 </body>
