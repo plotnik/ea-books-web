@@ -1,16 +1,19 @@
 = DevOps Java Book
 :toc:
+:toclevels: 4
 :icons: font
 
-Docker Docs::
+icon:book[2x] &nbsp; *Docker Docs:*
 https://docs.docker.com/
 
-== 23-08 Docker - Practical Guide for Developers and Devops Teams
+== `23-08` Docker - Practical Guide for Developers and Devops Teams
 
 - _Bernd Öggl_ (https://webman.at)
 - _Michael Kofler_ (https://kofler.info)
 
 === Commands - Running MariaDB
+
+==== 3.5 Data Storage in Volumes
 
 ```
 docker run -d --name mariadb-test -e MYSQL_ROOT_PASSWORD=secret mariadb
@@ -21,7 +24,8 @@ docker stop mariadb-test
 
 docker logs mariadb-test
 ```
-*3.5   Data Storage in Volumes*
+
+=== 3.5.2 Analyzing Volumes
 
 ```
 docker inspect mariadb-test
@@ -32,7 +36,8 @@ docker volume inspect d19f5b86...
 
 docker system df -v
 ```
-*3.5.2   Analyzing Volumes*
+
+==== 3.5.3  Calling the MariaDB Client
 
 ```
 docker exec -it mariadb-test mysql -u root -p
@@ -52,19 +57,13 @@ OCI runtime exec failed: exec failed: unable to start container process: exec: "
 ```
 docker exec -it mariadb-test mariadb -u root -p
 ```
-*3.5.3  Calling the MariaDB Client*
+
+==== 3.5.4 A Look Inside the Container
 
 ```
 docker exec -it mariadb-test /bin/bash
 
 mariadb --version
 ```
-*3.5.4   A Look Inside the Container*
 
-```
-docker volume rm a8b45f94a0a09284383edf6731ce0f10b51b574acbb1e93e5cfc3e6255dfb8ba
 
-docker volume rm ec3cf94e00fad8222e0b631ea8395b78fe2a2f4198aedbdfa8a3ec4ecc49fcbf
-
-docker volume rm c39651db8b613c5f4c0a5292f649f7991dee5b90c2d5f78030444d8495aab4b1
-```
