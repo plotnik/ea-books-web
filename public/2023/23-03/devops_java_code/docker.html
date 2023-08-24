@@ -437,12 +437,23 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article">
+<body class="article toc2 toc-right">
 <div id="header">
 <h1>DevOps Java Book</h1>
-<div id="toc" class="toc">
+<div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
+<li><a href="#_docker_commands">Docker Commands</a>
+<ul class="sectlevel2">
+<li><a href="#_basic_docker_commands">Basic Docker Commands</a></li>
+<li><a href="#_managing_containers">Managing Containers</a></li>
+<li><a href="#_networking">Networking</a></li>
+<li><a href="#_volume_management">Volume Management</a></li>
+<li><a href="#_image_and_container_cleanup">Image and Container Cleanup</a></li>
+<li><a href="#_building_custom_images">Building Custom Images</a></li>
+<li><a href="#_docker_compose">Docker Compose</a></li>
+</ul>
+</li>
 <li><a href="#_23_08_docker_practical_guide_for_developers_and_devops_teams"><code>23-08</code> Docker - Practical Guide for Developers and Devops Teams</a>
 <ul class="sectlevel2">
 <li><a href="#_commands_running_mariadb">Commands - Running MariaDB</a>
@@ -471,6 +482,159 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p><span class="icon"><i class="fa fa-book fa-2x"></i></span> &nbsp; <strong>Terraform AWS Tutorials:</strong>
 <a href="https://developer.hashicorp.com/terraform/tutorials/aws-get-started" class="bare">https://developer.hashicorp.com/terraform/tutorials/aws-get-started</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_docker_commands">Docker Commands</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_basic_docker_commands">Basic Docker Commands</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>docker pull IMAGE_NAME:TAG</code>: Pull an image from a registry.</p>
+</li>
+<li>
+<p><code>docker run [OPTIONS] IMAGE [COMMAND] [ARG&#8230;&#8203;]</code>: Run a container from an image.</p>
+</li>
+<li>
+<p><code>docker ps [OPTIONS]</code>: List running containers.</p>
+</li>
+<li>
+<p><code>docker ps -a</code>: List all containers (including stopped ones).</p>
+</li>
+<li>
+<p><code>docker stop CONTAINER_ID</code>: Stop a running container.</p>
+</li>
+<li>
+<p><code>docker start CONTAINER_ID</code>: Start a stopped container.</p>
+</li>
+<li>
+<p><code>docker restart CONTAINER_ID</code>: Restart a container.</p>
+</li>
+<li>
+<p><code>docker rm CONTAINER_ID</code>: Remove a stopped container.</p>
+</li>
+<li>
+<p><code>docker exec -it CONTAINER_ID COMMAND</code>: Run a command inside a running container.</p>
+</li>
+<li>
+<p><code>docker logs CONTAINER_ID</code>: Display the logs of a container.</p>
+</li>
+<li>
+<p><code>docker images [OPTIONS]</code>: List available images.</p>
+</li>
+<li>
+<p><code>docker rmi IMAGE_ID</code>: Remove an image.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_managing_containers">Managing Containers</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>docker-compose up</code>: Start services defined in a Compose file.</p>
+</li>
+<li>
+<p><code>docker-compose down</code>: Stop and remove containers, networks, and volumes defined in a Compose file.</p>
+</li>
+<li>
+<p><code>docker-compose ps</code>: List containers in the current Compose project.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_networking">Networking</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>docker network ls</code>: List networks.</p>
+</li>
+<li>
+<p><code>docker network create NETWORK_NAME</code>: Create a new network.</p>
+</li>
+<li>
+<p><code>docker network connect NETWORK_NAME CONTAINER_NAME</code>: Connect a container to a network.</p>
+</li>
+<li>
+<p><code>docker network disconnect NETWORK_NAME CONTAINER_NAME</code>: Disconnect a container from a network.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_volume_management">Volume Management</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>docker volume ls</code>: List volumes.</p>
+</li>
+<li>
+<p><code>docker volume create VOLUME_NAME</code>: Create a new volume.</p>
+</li>
+<li>
+<p><code>docker volume inspect VOLUME_NAME</code>: Display detailed information about a volume.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_image_and_container_cleanup">Image and Container Cleanup</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>docker system df</code>: Show disk usage by Docker.</p>
+</li>
+<li>
+<p><code>docker system prune</code>: Remove unused data (containers, networks, images, volumes).</p>
+</li>
+<li>
+<p><code>docker image prune</code>: Remove unused images.</p>
+</li>
+<li>
+<p><code>docker container prune</code>: Remove stopped containers.</p>
+</li>
+<li>
+<p><code>docker volume prune</code>: Remove unused volumes.</p>
+</li>
+<li>
+<p><code>docker network prune</code>: Remove unused networks.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_building_custom_images">Building Custom Images</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>docker build [OPTIONS] PATH</code>: Build an image from a Dockerfile.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_docker_compose">Docker Compose</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>docker-compose up</code>: Start services defined in a Compose file.</p>
+</li>
+<li>
+<p><code>docker-compose down</code>: Stop and remove containers, networks, and volumes defined in a Compose file.</p>
+</li>
+<li>
+<p><code>docker-compose ps</code>: List containers in the current Compose project.</p>
+</li>
+<li>
+<p><code>docker-compose exec SERVICE_NAME COMMAND</code>: Run a command in a specific service container.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
@@ -581,7 +745,7 @@ mariadb --version</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-08-17 16:24:38 +0300
+Last updated 2023-08-24 14:40:15 +0300
 </div>
 </div>
 </body>
