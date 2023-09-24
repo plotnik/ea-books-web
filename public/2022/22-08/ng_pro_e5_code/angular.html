@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.17">
+<meta name="generator" content="Asciidoctor 2.0.18">
 <meta name="author" content="Adam Freeman">
 <title>Pro Angular</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -85,10 +85,10 @@ code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;
 ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
 ul,ol{margin-left:1.5em}
 ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
-ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
-ul.square{list-style-type:square}
 ul.circle{list-style-type:circle}
 ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
 ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
 dl dt{margin-bottom:.3125em;font-weight:bold}
 dl dd{margin-bottom:1.25em}
@@ -437,15 +437,131 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+pre.pygments .hll { background-color: #ffffcc }
+pre.pygments { background: #f8f8f8; }
+pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+pre.pygments .tok-o { color: #666666 } /* Operator */
+pre.pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+pre.pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+pre.pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+pre.pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+pre.pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+pre.pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+pre.pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+pre.pygments .tok-ge { font-style: italic } /* Generic.Emph */
+pre.pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+pre.pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+pre.pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+pre.pygments .tok-go { color: #888888 } /* Generic.Output */
+pre.pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+pre.pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+pre.pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+pre.pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+pre.pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+pre.pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+pre.pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+pre.pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+pre.pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+pre.pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+pre.pygments .tok-m { color: #666666 } /* Literal.Number */
+pre.pygments .tok-s { color: #BA2121 } /* Literal.String */
+pre.pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+pre.pygments .tok-nb { color: #008000 } /* Name.Builtin */
+pre.pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+pre.pygments .tok-no { color: #880000 } /* Name.Constant */
+pre.pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+pre.pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+pre.pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+pre.pygments .tok-nf { color: #0000FF } /* Name.Function */
+pre.pygments .tok-nl { color: #A0A000 } /* Name.Label */
+pre.pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+pre.pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+pre.pygments .tok-nv { color: #19177C } /* Name.Variable */
+pre.pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+pre.pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+pre.pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+pre.pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+pre.pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+pre.pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+pre.pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+pre.pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+pre.pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+pre.pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+pre.pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+pre.pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+pre.pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+pre.pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+pre.pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+pre.pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+pre.pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+pre.pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+pre.pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+pre.pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+pre.pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+pre.pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+pre.pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+pre.pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+pre.pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
 </head>
-<body class="article">
+<body class="article toc2 toc-right">
 <div id="header">
 <h1>Pro Angular</h1>
 <div class="details">
 <span id="author" class="author">Adam Freeman</span><br>
 </div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_chapter_6_sportsstore_orders_and_checkout">Chapter 6: SportsStore: Orders and Checkout</a></li>
+<li><a href="#_angular_basics">Angular Basics</a>
+<ul class="sectlevel2">
+<li><a href="#_angular_modules">Angular Modules</a></li>
+<li><a href="#_angular_services">Angular Services</a></li>
+<li><a href="#_routing">Routing</a></li>
+<li><a href="#_forms">Forms</a></li>
+<li><a href="#_observables">Observables</a></li>
+<li><a href="#_http">HTTP</a></li>
+<li><a href="#_lifecycle_hooks">Lifecycle Hooks</a></li>
+<li><a href="#_testing">Testing</a></li>
+</ul>
+</li>
+<li><a href="#_typescript_basics">TypeScript Basics</a>
+<ul class="sectlevel2">
+<li><a href="#_variables_and_types">Variables and Types</a></li>
+<li><a href="#_functions">Functions</a></li>
+<li><a href="#_interfaces">Interfaces</a></li>
+<li><a href="#_classes">Classes</a></li>
+<li><a href="#_modules">Modules</a></li>
+<li><a href="#_generics">Generics</a></li>
+<li><a href="#_type_assertion">Type Assertion</a></li>
+<li><a href="#_declaration_files">Declaration Files</a></li>
+<li><a href="#_typescript_configuration">TypeScript Configuration</a></li>
+</ul>
+</li>
+<li><a href="#_rxjs_basics">RxJS Basics</a>
+<ul class="sectlevel2">
+<li><a href="#_operators">Operators</a></li>
+<li><a href="#_subjects">Subjects</a></li>
+<li><a href="#_operators_for_combining_observables">Operators for Combining Observables</a></li>
+<li><a href="#_error_handling">Error Handling</a></li>
+<li><a href="#_hot_vs_cold_observables">Hot vs. Cold Observables</a></li>
+<li><a href="#_schedulers">Schedulers</a></li>
+<li><a href="#_subjects_vs_observables">Subjects vs. Observables</a></li>
+<li><a href="#_real_world_use_cases">Real-World Use Cases</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Prev Edition</dt>
@@ -455,9 +571,1198 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </dl>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_chapter_6_sportsstore_orders_and_checkout">Chapter 6: SportsStore: Orders and Checkout</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Связь между <strong>/store</strong> и <strong>/cart</strong> через <code>src/app/model/cart.model.ts</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Component</th>
+<th class="tableblock halign-left valign-top">Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>/store</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>store.component.html</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Add to Cart</strong> button</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>/cart</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cartDetail.component.html</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Товары в корзине</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>/checkout</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>checkout.component.html</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Форма с адресом доставки</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>/admin/main/products</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>productTable.component.html</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Таблица товаров</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>/admin/main/products/edit/1</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>productEditor.component.html</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Редактирование товара</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Certainly! Here&#8217;s a concise Angular cheat sheet to help you get started with Angular development. Angular is a popular JavaScript framework for building web applications. This cheat sheet covers some of the most essential concepts and commands in Angular.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_angular_basics">Angular Basics</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Angular CLI Commands</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a new Angular app: <code>ng new my-app</code></p>
+</li>
+<li>
+<p>Generate components, services, modules, etc.: <code>ng generate component my-component</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Angular Components</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Building blocks of Angular applications.</p>
+</li>
+<li>
+<p>Create a component: <code>ng generate component my-component</code></p>
+</li>
+<li>
+<p>Components consist of a TypeScript class, an HTML template, and a CSS style file.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Templates</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>HTML files defining the component&#8217;s UI.</p>
+</li>
+<li>
+<p>Use double curly braces <code>{{ }}</code> for data binding.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Directives</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>*ngIf</code>: Conditional rendering.</p>
+</li>
+<li>
+<p><code>*ngFor</code>: Looping through arrays.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Interpolation</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>{{ variableName }}: Display dynamic data in templates.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Event Binding</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>(event)="function()"</code>: React to user events (e.g., clicks).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Property Binding</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[property]="value"</code>: Bind a property to a component property.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Two-way Data Binding</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[(ngModel)]="property"</code>: Bind input field and component property (requires FormsModule).</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="_angular_modules">Angular Modules</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>NgModule</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Decorator for creating Angular modules.</p>
+</li>
+<li>
+<p>Every app has at least one module (the root module).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Declarations</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>List of components, directives, and pipes used within the module.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Imports</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Other modules that this module depends on.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Providers</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Services and dependencies.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_angular_services">Angular Services</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Services</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Singleton objects used to share data and logic.</p>
+</li>
+<li>
+<p>Generate a service: <code>ng generate service my-service</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Dependency Injection</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Inject services into components and other services.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_routing">Routing</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>RouterModule</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Provides routing and navigation functionality.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Routes</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Define application routes with associated components.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Router Outlet</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Placeholder where routed component views are displayed.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_forms">Forms</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>FormsModule</strong> and <strong>ReactiveFormsModule</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>For handling forms in Angular.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Template-driven Forms</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use Angular directives in the template.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Reactive Forms</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create forms programmatically with FormControl and FormGroup.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_observables">Observables</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>RxJS</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Angular extensively uses RxJS for handling asynchronous operations.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Observable</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Represents a stream of data over time.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Subscriptions</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Subscribe to observables to receive data.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_http">HTTP</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>HttpClient</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Angular&#8217;s module for making HTTP requests.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>GET, POST, PUT, DELETE</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>HTTP methods for interacting with a server.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lifecycle_hooks">Lifecycle Hooks</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>ngOnInit, ngOnDestroy, etc.</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Methods to react to component lifecycle events.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>ngOnChanges</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>React to input property changes.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>ngDoCheck</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Detect and act upon changes in a component.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_testing">Testing</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Karma</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Test runner for Angular applications.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Jasmine</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Testing framework for writing unit tests.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_typescript_basics">TypeScript Basics</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Installing TypeScript</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Install TypeScript globally: <code>npm install -g typescript</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Creating a TypeScript File</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a <code>.ts</code> file, e.g., <code>app.ts</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Compiling TypeScript</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Compile TypeScript to JavaScript: <code>tsc app.ts</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Running TypeScript</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use Node.js or a browser to run the generated JavaScript.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="_variables_and_types">Variables and Types</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Variable Declarations</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Declare variables with <code>let</code>, <code>const</code>, or <code>var</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Type Annotations</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>:</code> to specify variable types, e.g., <code>let name: string</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Basic Types</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>string</code>, <code>number</code>, <code>boolean</code>, <code>null</code>, <code>undefined</code>, <code>symbol</code>, <code>object</code>, <code>any</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Arrays and Tuples</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>let list: number[] = [1, 2, 3];</code></p>
+</li>
+<li>
+<p>Tuple: <code>let tuple: [string, number] = ['hello', 42];</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Enums</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create enum types: <code>enum Color { Red, Green, Blue };</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_functions">Functions</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Function Declarations</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Define functions with type annotations:</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span>  <span class="tok-kd">function</span> <span class="tok-nx">greet</span><span class="tok-p">(</span><span class="tok-nx">name</span>: <span class="tok-kt">string</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-sb">`Hello, </span><span class="tok-si">${</span><span class="tok-nx">name</span><span class="tok-si">}</span><span class="tok-sb">!`</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Optional and Default Parameters</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Make parameters optional with <code>?</code> and provide defaults.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Rest Parameters</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Collect multiple parameters into an array using <code>&#8230;&#8203;</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_interfaces">Interfaces</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Defining Interfaces</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Declare object shapes with interfaces:</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span>  <span class="tok-kd">interface</span> <span class="tok-nx">Person</span> <span class="tok-p">{</span>
+    <span class="tok-nx">name</span>: <span class="tok-kt">string</span><span class="tok-p">;</span>
+    <span class="tok-nx">age?</span>: <span class="tok-kt">number</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Implementing Interfaces</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Implement interfaces in classes.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Extending Interfaces</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Extend interfaces to create new ones.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_classes">Classes</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Class Declarations</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Define classes with properties and methods:</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span>  <span class="tok-kd">class</span> <span class="tok-nx">Car</span> <span class="tok-p">{</span>
+    <span class="tok-nx">make</span>: <span class="tok-kt">string</span><span class="tok-p">;</span>
+    <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-nx">make</span>: <span class="tok-kt">string</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">make</span> <span class="tok-o">=</span> <span class="tok-nx">make</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+  <span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Inheritance</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>extends</code> to create subclasses.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Access Modifiers</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Control access to class members with <code>public</code>, <code>private</code>, and <code>protected</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modules">Modules</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Exporting and Importing</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Export modules with <code>export</code> and import them with <code>import</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Default Exports</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>export default</code> for the default export of a module.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_generics">Generics</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Generic Functions</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create reusable functions and classes with generics.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kd">function</span> <span class="tok-nx">identity</span><span class="tok-o">&lt;</span><span class="tok-nx">T</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-nx">arg</span>: <span class="tok-kt">T</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-nx">T</span> <span class="tok-p">{</span>
+  <span class="tok-k">return</span> <span class="tok-nx">arg</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Generic Constraints</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Restrict the types that can be used with generics.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kd">function</span> <span class="tok-nx">getLength</span><span class="tok-o">&lt;</span><span class="tok-nx">T</span> <span class="tok-k">extends</span> <span class="tok-p">{</span> <span class="tok-nx">length</span>: <span class="tok-kt">number</span> <span class="tok-p">}</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-nx">arg</span>: <span class="tok-kt">T</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-kt">number</span> <span class="tok-p">{</span>
+  <span class="tok-k">return</span> <span class="tok-nx">arg</span><span class="tok-p">.</span><span class="tok-nx">length</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_type_assertion">Type Assertion</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Type Assertion</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>&lt;Type&gt;</code> or <code>value as Type</code> to assert a type when necessary.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kd">let</span> <span class="tok-nx">value</span>: <span class="tok-kt">any</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;Hello, TypeScript!&#39;</span><span class="tok-p">;</span>
+<span class="tok-kd">let</span> <span class="tok-nx">length</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-nx">value</span> <span class="tok-kr">as</span> <span class="tok-kt">string</span><span class="tok-p">).</span><span class="tok-nx">length</span><span class="tok-p">;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_declaration_files">Declaration Files</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Declaration Files (.d.ts)</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use declaration files to define types for third-party libraries.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_typescript_configuration">TypeScript Configuration</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>tsconfig.json</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Configure TypeScript settings in a <code>tsconfig.json</code> file.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Compiler Options</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Set compiler options like target, module, and outDir.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_rxjs_basics">RxJS Basics</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Installing RxJS</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Install RxJS using npm: <code>npm install rxjs</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Importing RxJS</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Import RxJS features using <code>import { Observable, of, from, Subject } from 'rxjs';</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Creating Observables</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create observables with <code>Observable.create()</code>, <code>of()</code>, or <code>from()</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Subscribing to Observables</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Subscribe to an observable using the <code>subscribe()</code> method.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Unsubscribing</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Unsubscribe from an observable to prevent memory leaks: <code>subscription.unsubscribe();</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="_operators">Operators</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Pipeable Operators</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use operators like <code>map()</code>, <code>filter()</code>, <code>mergeMap()</code>, and <code>switchMap()</code> to transform and manipulate data streams.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Chaining Operators</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Chain multiple operators together using the <code>pipe()</code> method.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Creating Operators</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create custom operators by defining functions that return functions.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_subjects">Subjects</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Subjects</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Subjects are both observables and observers.</p>
+</li>
+<li>
+<p>Use <code>Subject</code>, <code>BehaviorSubject</code>, or <code>ReplaySubject</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Publishing Values</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Publish values to multiple subscribers using a subject.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Complete and Error</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Subjects can complete or emit errors using <code>complete()</code> and <code>error()</code> methods.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_operators_for_combining_observables">Operators for Combining Observables</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>merge()</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Merge multiple observables into one.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>concat()</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Concatenate observables sequentially.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>forkJoin()</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Wait for all observables to complete and emit their last values.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>zip()</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Combine values from multiple observables sequentially.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_error_handling">Error Handling</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>catchError()</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Handle errors gracefully within an observable pipeline.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>retry()</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Retry an observable sequence on error.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_hot_vs_cold_observables">Hot vs. Cold Observables</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Cold Observables</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Produce data only when subscribed.</p>
+</li>
+<li>
+<p>Each subscriber gets its own independent sequence.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Hot Observables</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Produce data continuously, even when there are no subscribers.</p>
+</li>
+<li>
+<p>Subscribers share the same sequence.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_schedulers">Schedulers</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Schedulers</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Control the execution context and timing of observables.</p>
+</li>
+<li>
+<p>Use schedulers like <code>asyncScheduler</code>, <code>queueScheduler</code>, and <code>animationFrameScheduler</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>observeOn()</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Specify the scheduler on which to observe values.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_subjects_vs_observables">Subjects vs. Observables</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Subjects</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Both observable and observer.</p>
+</li>
+<li>
+<p>Use when you need to multicast values to multiple subscribers.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Observables</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Only observable.</p>
+</li>
+<li>
+<p>Use for one-to-one data streaming.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_real_world_use_cases">Real-World Use Cases</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>HTTP Requests</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use RxJS for handling HTTP requests using Angular&#8217;s HttpClient.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>User Input Handling</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Manage user interactions and debouncing.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>WebSocket Communication</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Handle real-time data streams with WebSockets.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>State Management</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Implement state management solutions like NgRx with RxJS in Angular.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-12-22 18:02:15 +0300
+Last updated 2023-09-24 20:03:02 +0300
 </div>
 </div>
 </body>

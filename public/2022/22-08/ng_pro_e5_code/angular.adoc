@@ -7,3 +7,382 @@ Adam Freeman
 
 Prev Edition::
 https://ea-books.netlify.app/18-10/angular6_code/angular6.html
+
+== Chapter 6: SportsStore: Orders and Checkout
+
+Связь между */store* и */cart* через `src/app/model/cart.model.ts`
+
+[cols="1,1,1"]
+|===
+| Path | Component | Function 
+
+| */store* | `store.component.html` | **Add to Cart** button 
+| */cart* | `cartDetail.component.html` | Товары в корзине 
+| */checkout* | `checkout.component.html` | Форма с адресом доставки 
+| */admin/main/products* | `productTable.component.html` | Таблица товаров
+| */admin/main/products/edit/1* | `productEditor.component.html` | Редактирование товара
+|===
+
+Certainly! Here's a concise Angular cheat sheet to help you get started with Angular development. Angular is a popular JavaScript framework for building web applications. This cheat sheet covers some of the most essential concepts and commands in Angular.
+
+== Angular Basics
+
+1. **Angular CLI Commands**:
+   - Create a new Angular app: `ng new my-app`
+   - Generate components, services, modules, etc.: `ng generate component my-component`
+
+2. **Angular Components**:
+   - Building blocks of Angular applications.
+   - Create a component: `ng generate component my-component`
+   - Components consist of a TypeScript class, an HTML template, and a CSS style file.
+
+3. **Templates**:
+   - HTML files defining the component's UI.
+   - Use double curly braces `{{ }}` for data binding.
+
+4. **Directives**:
+   - `*ngIf`: Conditional rendering.
+   - `*ngFor`: Looping through arrays.
+
+5. **Interpolation**:
+   - {{ variableName }}: Display dynamic data in templates.
+
+6. **Event Binding**:
+   - `(event)="function()"`: React to user events (e.g., clicks).
+
+7. **Property Binding**:
+   - `[property]="value"`: Bind a property to a component property.
+
+8. **Two-way Data Binding**:
+   - `[(ngModel)]="property"`: Bind input field and component property (requires FormsModule).
+
+=== Angular Modules
+
+1. **NgModule**:
+   - Decorator for creating Angular modules.
+   - Every app has at least one module (the root module).
+
+2. **Declarations**:
+   - List of components, directives, and pipes used within the module.
+
+3. **Imports**:
+   - Other modules that this module depends on.
+
+4. **Providers**:
+   - Services and dependencies.
+
+=== Angular Services
+
+1. **Services**:
+   - Singleton objects used to share data and logic.
+   - Generate a service: `ng generate service my-service`
+
+2. **Dependency Injection**:
+   - Inject services into components and other services.
+
+=== Routing
+
+1. **RouterModule**:
+   - Provides routing and navigation functionality.
+
+2. **Routes**:
+   - Define application routes with associated components.
+
+3. **Router Outlet**:
+   - Placeholder where routed component views are displayed.
+
+=== Forms
+
+1. **FormsModule** and **ReactiveFormsModule**:
+   - For handling forms in Angular.
+
+2. **Template-driven Forms**:
+   - Use Angular directives in the template.
+
+3. **Reactive Forms**:
+   - Create forms programmatically with FormControl and FormGroup.
+
+=== Observables
+
+1. **RxJS**:
+   - Angular extensively uses RxJS for handling asynchronous operations.
+
+2. **Observable**:
+   - Represents a stream of data over time.
+
+3. **Subscriptions**:
+   - Subscribe to observables to receive data.
+
+=== HTTP
+
+1. **HttpClient**:
+   - Angular's module for making HTTP requests.
+
+2. **GET, POST, PUT, DELETE**:
+   - HTTP methods for interacting with a server.
+
+=== Lifecycle Hooks
+
+1. **ngOnInit, ngOnDestroy, etc.**:
+   - Methods to react to component lifecycle events.
+
+2. **ngOnChanges**:
+   - React to input property changes.
+
+3. **ngDoCheck**:
+   - Detect and act upon changes in a component.
+
+=== Testing
+
+1. **Karma**:
+   - Test runner for Angular applications.
+
+2. **Jasmine**:
+   - Testing framework for writing unit tests.
+
+
+
+== TypeScript Basics
+
+1. **Installing TypeScript**:
+   - Install TypeScript globally: `npm install -g typescript`
+
+2. **Creating a TypeScript File**:
+   - Create a `.ts` file, e.g., `app.ts`.
+
+3. **Compiling TypeScript**:
+   - Compile TypeScript to JavaScript: `tsc app.ts`
+
+4. **Running TypeScript**:
+   - Use Node.js or a browser to run the generated JavaScript.
+
+=== Variables and Types
+
+1. **Variable Declarations**:
+   - Declare variables with `let`, `const`, or `var`.
+
+2. **Type Annotations**:
+   - Use `:` to specify variable types, e.g., `let name: string`.
+
+3. **Basic Types**:
+   - `string`, `number`, `boolean`, `null`, `undefined`, `symbol`, `object`, `any`.
+
+4. **Arrays and Tuples**:
+   - `let list: number[] = [1, 2, 3];`
+   - Tuple: `let tuple: [string, number] = ['hello', 42];`
+
+5. **Enums**:
+   - Create enum types: `enum Color { Red, Green, Blue };`
+
+=== Functions
+
+1. **Function Declarations**:
+   - Define functions with type annotations:
+
+```ts
+  function greet(name: string): string {
+    return `Hello, ${name}!`;
+  }
+```
+
+2. **Optional and Default Parameters**:
+   - Make parameters optional with `?` and provide defaults.
+
+3. **Rest Parameters**:
+   - Collect multiple parameters into an array using `...`.
+
+=== Interfaces
+
+1. **Defining Interfaces**:
+   - Declare object shapes with interfaces:
+
+```ts
+  interface Person {
+    name: string;
+    age?: number;
+  }
+```
+
+2. **Implementing Interfaces**:
+   - Implement interfaces in classes.
+
+3. **Extending Interfaces**:
+   - Extend interfaces to create new ones.
+
+=== Classes
+
+1. **Class Declarations**:
+   - Define classes with properties and methods:
+
+```ts
+  class Car {
+    make: string;
+    constructor(make: string) {
+      this.make = make;
+    }
+  }
+```
+
+2. **Inheritance**:
+   - Use `extends` to create subclasses.
+
+3. **Access Modifiers**:
+   - Control access to class members with `public`, `private`, and `protected`.
+
+=== Modules
+
+1. **Exporting and Importing**:
+   - Export modules with `export` and import them with `import`.
+
+2. **Default Exports**:
+   - Use `export default` for the default export of a module.
+
+=== Generics
+
+1. **Generic Functions**:
+   - Create reusable functions and classes with generics.
+
+```ts
+function identity<T>(arg: T): T {
+  return arg;
+}
+```
+
+2. **Generic Constraints**:
+   - Restrict the types that can be used with generics.
+
+```ts
+function getLength<T extends { length: number }>(arg: T): number {
+  return arg.length;
+}
+```
+
+=== Type Assertion
+
+1. **Type Assertion**:
+   - Use `<Type>` or `value as Type` to assert a type when necessary.
+
+```ts
+let value: any = 'Hello, TypeScript!';
+let length = (value as string).length;
+```
+
+=== Declaration Files
+
+1. **Declaration Files (.d.ts)**:
+   - Use declaration files to define types for third-party libraries.
+
+=== TypeScript Configuration
+
+1. **tsconfig.json**:
+   - Configure TypeScript settings in a `tsconfig.json` file.
+
+2. **Compiler Options**:
+   - Set compiler options like target, module, and outDir.
+
+
+== RxJS Basics
+
+1. **Installing RxJS**:
+   - Install RxJS using npm: `npm install rxjs`
+
+2. **Importing RxJS**:
+   - Import RxJS features using `import { Observable, of, from, Subject } from 'rxjs';`
+
+3. **Creating Observables**:
+   - Create observables with `Observable.create()`, `of()`, or `from()`.
+
+4. **Subscribing to Observables**:
+   - Subscribe to an observable using the `subscribe()` method.
+
+5. **Unsubscribing**:
+   - Unsubscribe from an observable to prevent memory leaks: `subscription.unsubscribe();`
+
+=== Operators
+
+1. **Pipeable Operators**:
+   - Use operators like `map()`, `filter()`, `mergeMap()`, and `switchMap()` to transform and manipulate data streams.
+
+2. **Chaining Operators**:
+   - Chain multiple operators together using the `pipe()` method.
+
+3. **Creating Operators**:
+   - Create custom operators by defining functions that return functions.
+
+=== Subjects
+
+1. **Subjects**:
+   - Subjects are both observables and observers.
+   - Use `Subject`, `BehaviorSubject`, or `ReplaySubject`.
+
+2. **Publishing Values**:
+   - Publish values to multiple subscribers using a subject.
+
+3. **Complete and Error**:
+   - Subjects can complete or emit errors using `complete()` and `error()` methods.
+
+=== Operators for Combining Observables
+
+1. **merge()**:
+   - Merge multiple observables into one.
+
+2. **concat()**:
+   - Concatenate observables sequentially.
+
+3. **forkJoin()**:
+   - Wait for all observables to complete and emit their last values.
+
+4. **zip()**:
+   - Combine values from multiple observables sequentially.
+
+=== Error Handling
+
+1. **catchError()**:
+   - Handle errors gracefully within an observable pipeline.
+
+2. **retry()**:
+   - Retry an observable sequence on error.
+
+=== Hot vs. Cold Observables
+
+1. **Cold Observables**:
+   - Produce data only when subscribed.
+   - Each subscriber gets its own independent sequence.
+
+2. **Hot Observables**:
+   - Produce data continuously, even when there are no subscribers.
+   - Subscribers share the same sequence.
+
+=== Schedulers
+
+1. **Schedulers**:
+   - Control the execution context and timing of observables.
+   - Use schedulers like `asyncScheduler`, `queueScheduler`, and `animationFrameScheduler`.
+
+2. **observeOn()**:
+   - Specify the scheduler on which to observe values.
+
+=== Subjects vs. Observables
+
+1. **Subjects**:
+   - Both observable and observer.
+   - Use when you need to multicast values to multiple subscribers.
+
+2. **Observables**:
+   - Only observable.
+   - Use for one-to-one data streaming.
+
+=== Real-World Use Cases
+
+1. **HTTP Requests**:
+   - Use RxJS for handling HTTP requests using Angular's HttpClient.
+
+2. **User Input Handling**:
+   - Manage user interactions and debouncing.
+
+3. **WebSocket Communication**:
+   - Handle real-time data streams with WebSockets.
+
+4. **State Management**:
+   - Implement state management solutions like NgRx with RxJS in Angular.
+
