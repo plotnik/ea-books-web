@@ -1,0 +1,253 @@
+= Python for Data Analysis: Data Wrangling with pandas, NumPy, and Jupyter, 3rd Edition
+:icons: font
+:source-highlighter: coderay
+:toc: right
+:toclevels: 4
+Wes McKinney
+
+
+
+== Python Basics
+
+```python
+# Comments start with a '#' symbol
+
+# Printing to the console
+print("Hello, World!")
+
+# Variables and Data Types
+x = 10          # Integer
+y = 3.14        # Float
+name = "Alice"  # String
+is_valid = True # Boolean
+
+# Basic Arithmetic
+a = 5 + 3
+b = 7 - 2
+c = 4 * 6
+d = 8 / 2
+e = 10 % 3  # Modulus (remainder)
+
+# Strings
+string1 = "Hello"
+string2 = "World"
+concatenated_string = string1 + " " + string2
+string_length = len(concatenated_string)
+
+# Lists (Ordered, Mutable)
+my_list = [1, 2, 3, 4, 5]
+list_length = len(my_list)
+first_element = my_list[0]
+my_list.append(6)
+my_list.remove(3)
+
+# Tuples (Ordered, Immutable)
+my_tuple = (1, 2, 3)
+element_2 = my_tuple[1]
+
+# Dictionaries (Key-Value Pairs)
+my_dict = {"name": "Alice", "age": 30}
+name_value = my_dict["name"]
+my_dict["city"] = "New York"
+del my_dict["age"]
+
+# Conditional Statements
+if x > y:
+    print("x is greater than y")
+elif x < y:
+    print("x is less than y")
+else:
+    print("x is equal to y")
+
+# Loops
+for i in range(5):
+    print(i)
+
+while condition:
+    # code
+
+# Functions
+def greet(name):
+    return "Hello, " + name
+
+result = greet("Bob")
+
+# Importing Modules
+import math
+sqrt = math.sqrt(16)
+
+# File I/O
+with open("file.txt", "r") as file:
+    data = file.read()
+
+# Exception Handling
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("Division by zero is not allowed.")
+
+# List Comprehensions
+squares = [x**2 for x in range(5)]
+
+# Classes and Objects
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def say_hello(self):
+        return f"My name is {self.name} and I am {self.age} years old."
+
+alice = Person("Alice", 30)
+greeting = alice.say_hello()
+
+# Lambda Functions
+add = lambda x, y: x + y
+result = add(3, 4)
+```
+
+Certainly! Here's a cheat sheet for Pandas, a popular Python library for data manipulation and analysis:
+
+== Pandas Cheat Sheet
+
+#### Importing Pandas
+
+```python
+import pandas as pd
+```
+
+#### Data Structures
+1. **Series**: 1D labeled array.
+
+```python
+s = pd.Series([1, 3, 5, np.nan, 6, 8])
+```
+
+2. **DataFrame**: 2D labeled data structure with columns.
+
+```python
+df = pd.DataFrame({
+   'A': [1, 2, 3],
+   'B': ['a', 'b', 'c']
+})
+```
+
+#### Reading Data
+1. **CSV**: Read from a CSV file.
+
+```python
+df = pd.read_csv('data.csv')
+```
+
+2. **Excel**: Read from an Excel file.
+
+```python
+df = pd.read_excel('data.xlsx', sheet_name='Sheet1')
+```
+
+#### Data Exploration
+1. **Basic Info**: Get an overview of the DataFrame.
+
+```python
+df.info()
+```
+
+2. **Summary Statistics**: Calculate statistics for numerical columns.
+
+```python
+df.describe()
+```
+
+3. **Column Names**: Get column names.
+
+```python
+df.columns
+```
+
+#### Data Selection
+1. **Select Columns**: Access columns by name.
+
+```python
+df['Column_Name']
+```
+
+2. **Select Rows**: Access rows by index.
+
+```python
+df.iloc[index]
+```
+
+3. **Filtering**: Filter rows based on conditions.
+
+```python
+df[df['Column'] > 5]
+```
+
+#### Data Manipulation
+1. **Adding Columns**: Create a new column.
+
+```python
+df['New_Column'] = df['A'] + df['B']
+```
+
+2. **Renaming Columns**: Rename one or more columns.
+
+```python
+df.rename(columns={'Old_Name': 'New_Name'}, inplace=True)
+```
+
+3. **Dropping Columns/Rows**: Remove columns or rows.
+
+```python
+df.drop('Column_Name', axis=1, inplace=True) # Drop column
+df.drop(0, axis=0, inplace=True)             # Drop row by index
+```
+
+4. **Sorting**: Sort by one or more columns.
+
+```python
+df.sort_values(by='Column_Name', ascending=False)
+```
+
+5. **Grouping and Aggregation**: Group data and apply functions.
+
+```python
+df.groupby('Column_Name').agg({'A': 'mean', 'B': 'count'})
+```
+
+6. **Missing Data**: Handle missing data.
+
+```python
+df.dropna()          # Drop rows with missing values
+df.fillna(value)     # Fill missing values with a specific value
+```
+
+7. **Merging and Joining**: Combine DataFrames.
+
+```python
+merged_df = pd.concat([df1, df2], axis=0) # Concatenate vertically
+merged_df = pd.merge(df1, df2, on='Key_Column', how='inner') # Merge
+```
+
+#### Data Visualization
+1. **Plotting**: Create basic plots.
+
+```python
+df.plot(x='Column1', y='Column2', kind='scatter')
+```
+
+2. **Matplotlib Integration**: Customize plots using Matplotlib.
+
+```python
+import matplotlib.pyplot as plt
+df['Column'].plot.hist(bins=10)
+plt.show()
+```
+
+3. **Seaborn Integration**: Use Seaborn for more advanced plots.
+
+```python
+import seaborn as sns
+sns.boxplot(x='Column1', y='Column2', data=df)
+```
+
