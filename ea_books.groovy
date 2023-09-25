@@ -137,7 +137,7 @@ class EABooks implements Callable<Integer> {
 					boolean quotes = false
 					for (afile in afiles) {
 						if (!afile.isFile()) continue; 
-						if (afile.name.equals('quotes.html')) quotes = true;
+						//if (afile.name.equals('quotes.html')) quotes = true;
 						if (!afile.name.endsWith('.adoc')) continue;
 						noteList << afile
 					}

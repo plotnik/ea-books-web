@@ -1,0 +1,163 @@
+= Section 8: Using NgRx for State Management
+:icons: font
+:source-highlighter: pygments
+:toc: right
+:toclevels: 4
+
+
+== NgRx Cheat Sheet
+
+#### NgRx Core Concepts:
+
+1. **Store**:
+   - The central repository for the application's state.
+   - Maintains a single immutable state tree.
+
+2. **Actions**:
+   - Plain objects that describe state changes.
+   - Dispatched by components or services to trigger state updates.
+
+3. **Reducers**:
+   - Pure functions that specify how the application's state changes in response to actions.
+   - Take the current state and an action and return a new state.
+
+4. **Selectors**:
+   - Functions used to derive and select specific pieces of state from the store.
+   - Help to prevent unnecessary re-rendering of components.
+
+#### NgRx Store Setup:
+
+```typescript
+import { StoreModule } from '@ngrx/store';
+
+@NgModule({
+  imports: [
+    StoreModule.forRoot({ appStateKey: rootReducer }),
+  ],
+})
+export class AppModule { }
+```
+
+#### Actions:
+
+```typescript
+import { createAction, props } from '@ngrx/store';
+
+// Define an action
+export const increment = createAction('[Counter] Increment');
+
+// Define an action with payload
+export const addTodo = createAction('[Todo] Add', props<{ text: string }>());
+```
+
+#### Reducers:
+
+```typescript
+import { createReducer, on } from '@ngrx/store';
+import { increment } from './actions';
+
+export const initialState = 0;
+
+const _counterReducer = createReducer(
+  initialState,
+  on(increment, (state) => state + 1)
+);
+
+export function counterReducer(state, action) {
+  return _counterReducer(state, action);
+}
+```
+
+#### Selectors:
+
+```typescript
+import { createSelector } from '@ngrx/store';
+
+const selectFeature = (state) => state.feature;
+
+export const selectFeatureCount = createSelector(
+  selectFeature,
+  (state) => state.count
+);
+```
+
+#### Effects:
+
+```typescript
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { of } from 'rxjs';
+import { catchError, map, mergeMap } from 'rxjs/operators';
+
+import * as fromActions from './actions';
+import { SomeService } from './some.service';
+
+@Injectable()
+export class SomeEffects {
+  loadSomething$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(fromActions.loadSomething),
+      mergeMap(() =>
+        this.someService.loadSomething().pipe(
+          map((data) => fromActions.loadSomethingSuccess({ data })),
+          catchError((error) => of(fromActions.loadSomethingFailure({ error })))
+        )
+      )
+    )
+  );
+
+  constructor(
+    private actions$: Actions,
+    private someService: SomeService
+  ) {}
+}
+```
+
+#### Dispatching Actions:
+
+```typescript
+import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { increment, addTodo } from './actions';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <button (click)="increment()">Increment</button>
+    <button (click)="addTodo()">Add Todo</button>
+  `,
+})
+export class AppComponent {
+  constructor(private store: Store) {}
+
+  increment() {
+    this.store.dispatch(increment());
+  }
+
+  addTodo() {
+    this.store.dispatch(addTodo({ text: 'New Todo' }));
+  }
+}
+```
+
+#### State Access in Components:
+
+```typescript
+import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { selectFeatureCount } from './selectors';
+
+@Component({
+  selector: 'app-counter',
+  template: `
+    <p>Count: {{ count$ | async }}</p>
+  `,
+})
+export class CounterComponent {
+  count$ = this.store.select(selectFeatureCount);
+
+  constructor(private store: Store) {}
+}
+```
+
+
