@@ -40,8 +40,14 @@ Argparse API:
   parser.add_argument('-exclude', 
                       help='Exclude file')
 
+  parser.add_argument('-patch', 
+                      help='Patch file')
+
   parser.add_argument("-verbose", action="store_true",
                       help="Verbose mode")
+
+  parser.add_argument('-V', '--version', action='version', 
+                      version='2023-11-09')
 
 Перевести имена файлов в `Path`
 
@@ -62,7 +68,7 @@ Argparse API:
   if not os.path.exists(folder1):
       print(f"[ERROR] Folder 1 not found: {folder1}")
       exit()
-  
+
   if not os.path.exists(folder2):
       print(f"[ERROR] Folder 2 not found: {folder1}")
       exit()
@@ -77,6 +83,17 @@ Argparse API:
       with open(args.exclude, 'r') as file:
           exclude = [line.strip() for line in file]
       print(f"Exclude: {exclude}")
+
+Загрузить из файла список `patch` с именами файлов,
+для которых есть патчи
+
+::
+
+  patches = None    
+  if args.patch is not None:
+      with open(args.patch, 'r') as file:
+          patches = [line.strip() for line in file]
+      print(f"Patches: {patches}")
 
 Начало программы
 
@@ -141,13 +158,19 @@ Get all text files from both directories including subdirectories
   for file1 in files_in_folder1:
       relative_path = file1.relative_to(folder1)
       file2 = folder2 / relative_path
-  
-      if exclude is not None and ends_with_any(file1.name, exclude) :
+      file1_str = str(file1.absolute())
+
+      if exclude is not None and ends_with_any(file1_str, exclude) :
           excluded_files.append(relative_path)
           continue
 
+      file1_patch = file1
+      if patches is not None and ends_with_any(file1_str, patches) :
+          file1_patch = Path('patch') / relative_path
+          print(f'Patch: {file1_patch}')
+
       if file2 in files_in_folder2:
-          if compare_files(file1, file2): 
+          if compare_files(file1_patch, file2): 
               equal_files.append(relative_path)
           else:
               not_equal_files.append(relative_path)
@@ -155,7 +178,7 @@ Get all text files from both directories including subdirectories
       else:
           only_in_folder1.append(relative_path)
 
-Any remaining files in files_in_folder2 are only in folder2
+Any remaining files in `files_in_folder2` are only in `folder2`
 
 ::
 
