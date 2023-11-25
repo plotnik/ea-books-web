@@ -46,34 +46,25 @@
 </dd>
 </dl>
 <p><strong>Аргументы командной строки</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Compare folders.&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Compare folders.&quot;</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;alias1&#39;</span><span class="p">,</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;1st path to compare. Relalive to home&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2023-11-25&quot;</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;alias2&#39;</span><span class="p">,</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;2nd path to compare. Relalive to home&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;alias1&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;1st path to compare. Relalive to home&quot;</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-home&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Home path&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;alias2&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;2nd path to compare. Relalive to home&quot;</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-rel&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Constant path, relative from aliases&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-home&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Home path&quot;</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-ext&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Extension of files to compare&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-rel&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Constant path, relative from aliases&quot;</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-exclude&#39;</span><span class="p">,</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Exclude file&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-ext&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Extension of files to compare&quot;</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-patch&#39;</span><span class="p">,</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Patch file&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-exclude&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Exclude file&quot;</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-verbose&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Verbose mode&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-patch&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Folder with patches&quot;</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-V&#39;</span><span class="p">,</span> <span class="s1">&#39;--version&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;version&#39;</span><span class="p">,</span>
-                    <span class="n">version</span><span class="o">=</span><span class="s1">&#39;2023-11-09&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-verbose&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Verbose mode&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Перевести имена файлов в <cite>Path</cite></p>
@@ -100,18 +91,49 @@
 которые мы исключим из сравнения</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exclude</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">exclude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">]</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exclude: </span><span class="si">{</span><span class="n">exclude</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Загрузить из файла список <cite>patch</cite> с именами файлов,
-для которых есть патчи</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">patches</span> <span class="o">=</span> <span class="kc">None</span>
+<p>Загрузить список патчей из папки <cite>patch</cite>.
+Для того, чтобы файл попал в список, в одной из
+подпапок должна существовать пара
+<cite>filename.ext</cite> / <cite>filename.ext.patch</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">find_patch_files</span><span class="p">(</span><span class="n">base_folder</span><span class="p">):</span>
+    <span class="n">matched_files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">base_folder</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.patch&quot;</span><span class="p">):</span>
+                <span class="n">original_file</span> <span class="o">=</span> <span class="n">file</span><span class="p">[:</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span>  <span class="c1"># Remove &#39;.patch&#39; extension</span>
+                <span class="k">if</span> <span class="n">original_file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                    <span class="c1"># Construct the relative path</span>
+                    <span class="n">relative_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">root</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">base_folder</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:],</span> <span class="n">original_file</span>
+                    <span class="p">)</span>
+                    <span class="c1"># os.path.relpath(root, base_folder), original_file)</span>
+                    <span class="c1"># print(f&#39;{relative_path} : {original_file}&#39;)</span>
+                    <span class="n">matched_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">relative_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">matched_files</span>
+
+<span class="n">patches</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">patch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">patch</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-        <span class="n">patches</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">]</span>
+    <span class="n">patches</span> <span class="o">=</span> <span class="n">find_patch_files</span><span class="p">(</span><span class="s1">&#39;patch&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patches: </span><span class="si">{</span><span class="n">patches</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><cite>file</cite> is <cite>pathlib.PosixPath</cite>.
+Convert it to string with the relative path to current folder.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">has_patch</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">rel_path</span> <span class="ow">in</span> <span class="n">patches</span>
+    <span class="c1"># print(f&quot;{result} : {rel_path}&quot;)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">printf</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="n">ch</span> <span class="o">=</span> <span class="s2">&quot;+&quot;</span> <span class="k">if</span> <span class="n">has_patch</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Начало программы</p>
@@ -126,11 +148,11 @@
 <p>Сравнить 2 файла по строчкам, убрать пробелы в начале и в конце строки.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compare_files</span><span class="p">(</span><span class="n">file1_path</span><span class="p">,</span> <span class="n">file2_path</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;compare_files:&#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  file1: </span><span class="si">{</span><span class="n">file1_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  file2: </span><span class="si">{</span><span class="n">file2_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;compare_files:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  file1: </span><span class="si">{</span><span class="n">file1_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  file2: </span><span class="si">{</span><span class="n">file2_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file1_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file1</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">file2_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file2</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file1_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file1</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">file2_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file2</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">line1</span><span class="p">,</span> <span class="n">line2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">file1</span><span class="p">,</span> <span class="n">file2</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">line1</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="n">line2</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -142,8 +164,10 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">red</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">Fore</span><span class="o">.</span><span class="n">RED</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">BRIGHT</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span>
 
+
 <span class="k">def</span> <span class="nf">green</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span>
+
 
 <span class="k">def</span> <span class="nf">blue</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">Fore</span><span class="o">.</span><span class="n">BLUE</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">BRIGHT</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span>
@@ -158,22 +182,22 @@
 </pre></div>
 </div>
 <p>Get all text files from both directories including subdirectories</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">files_in_folder1</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folder1</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">&#39;*.&#39;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">ext</span><span class="p">)}</span>
-<span class="n">files_in_folder2</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folder2</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">&#39;*.&#39;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">ext</span><span class="p">)}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">files_in_folder1</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folder1</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">ext</span><span class="p">)}</span>
+<span class="n">files_in_folder2</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folder2</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">ext</span><span class="p">)}</span>
 
 <span class="k">for</span> <span class="n">file1</span> <span class="ow">in</span> <span class="n">files_in_folder1</span><span class="p">:</span>
     <span class="n">relative_path</span> <span class="o">=</span> <span class="n">file1</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">folder1</span><span class="p">)</span>
     <span class="n">file2</span> <span class="o">=</span> <span class="n">folder2</span> <span class="o">/</span> <span class="n">relative_path</span>
     <span class="n">file1_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file1</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span>
 
-    <span class="k">if</span> <span class="n">exclude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ends_with_any</span><span class="p">(</span><span class="n">file1_str</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)</span> <span class="p">:</span>
+    <span class="k">if</span> <span class="n">exclude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ends_with_any</span><span class="p">(</span><span class="n">file1_str</span><span class="p">,</span> <span class="n">exclude</span><span class="p">):</span>
         <span class="n">excluded_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">relative_path</span><span class="p">)</span>
         <span class="k">continue</span>
 
     <span class="n">file1_patch</span> <span class="o">=</span> <span class="n">file1</span>
-    <span class="k">if</span> <span class="n">patches</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ends_with_any</span><span class="p">(</span><span class="n">file1_str</span><span class="p">,</span> <span class="n">patches</span><span class="p">)</span> <span class="p">:</span>
-        <span class="n">file1_patch</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;patch&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">relative_path</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Patch: </span><span class="si">{</span><span class="n">file1_patch</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">has_patch</span><span class="p">(</span><span class="n">file1</span><span class="p">):</span>
+        <span class="n">file1_patch</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">patch</span><span class="p">)</span> <span class="o">/</span> <span class="n">relative_path</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patch: </span><span class="si">{</span><span class="n">file1_patch</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">file2</span> <span class="ow">in</span> <span class="n">files_in_folder2</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">compare_files</span><span class="p">(</span><span class="n">file1_patch</span><span class="p">,</span> <span class="n">file2</span><span class="p">):</span>
@@ -188,20 +212,19 @@
 <p>Any remaining files in <cite>files_in_folder2</cite> are only in <cite>folder2</cite></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">only_in_folder2</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">folder2</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files_in_folder2</span><span class="p">])</span>
 
+
 <span class="k">def</span> <span class="nf">filter_excluded</span><span class="p">(</span><span class="n">only_in_folder2</span><span class="p">):</span>
     <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">file2</span> <span class="ow">in</span> <span class="n">only_in_folder2</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">exclude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ends_with_any</span><span class="p">(</span><span class="n">file2</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">exclude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ends_with_any</span><span class="p">(</span><span class="n">file2</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exclude</span><span class="p">):</span>
             <span class="n">excluded_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file2</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span>
 
-<span class="n">only_in_folder2</span> <span class="o">=</span> <span class="n">filter_excluded</span><span class="p">(</span><span class="n">only_in_folder2</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">printf</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">only_in_folder2</span> <span class="o">=</span> <span class="n">filter_excluded</span><span class="p">(</span><span class="n">only_in_folder2</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Print the report</p>

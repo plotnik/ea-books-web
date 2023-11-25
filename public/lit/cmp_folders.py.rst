@@ -10,44 +10,36 @@
   from pathlib import Path
   from colorama import Fore, Style
 
-Argparse Tutorial: 
+Argparse Tutorial:
   https://docs.python.org/3/howto/argparse.html
 
-Argparse API: 
+Argparse API:
   https://docs.python.org/3/library/argparse.html
 
 **Аргументы командной строки**
 
 ::
 
-  parser = argparse.ArgumentParser(description='Compare folders.')
+  parser = argparse.ArgumentParser(description="Compare folders.")
 
-  parser.add_argument('alias1',
-                      help='1st path to compare. Relalive to home')
+  parser.add_argument("-V", "--version", action="version", version="2023-11-25")
 
-  parser.add_argument('alias2',
-                      help='2nd path to compare. Relalive to home')
+  parser.add_argument("alias1", help="1st path to compare. Relalive to home")
 
-  parser.add_argument('-home', default='.', 
-                      help='Home path')
+  parser.add_argument("alias2", help="2nd path to compare. Relalive to home")
 
-  parser.add_argument('-rel', default='', 
-                      help='Constant path, relative from aliases')
+  parser.add_argument("-home", default=".", help="Home path")
 
-  parser.add_argument('-ext', default='*', 
-                      help='Extension of files to compare')
+  parser.add_argument("-rel", default="", help="Constant path, relative from aliases")
 
-  parser.add_argument('-exclude', 
-                      help='Exclude file')
+  parser.add_argument("-ext", default="*", help="Extension of files to compare")
 
-  parser.add_argument('-patch', 
-                      help='Patch file')
+  parser.add_argument("-exclude", help="Exclude file")
 
-  parser.add_argument("-verbose", action="store_true",
-                      help="Verbose mode")
+  parser.add_argument("-patch", help="Folder with patches")
 
-  parser.add_argument('-V', '--version', action='version', 
-                      version='2023-11-09')
+  parser.add_argument("-verbose", action="store_true", help="Verbose mode")
+
 
 Перевести имена файлов в `Path`
 
@@ -78,22 +70,56 @@ Argparse API:
 
 ::
 
-  exclude = None    
+  exclude = None
   if args.exclude is not None:
-      with open(args.exclude, 'r') as file:
+      with open(args.exclude, "r") as file:
           exclude = [line.strip() for line in file]
       print(f"Exclude: {exclude}")
 
-Загрузить из файла список `patch` с именами файлов,
-для которых есть патчи
+Загрузить список патчей из папки `patch`.
+Для того, чтобы файл попал в список, в одной из
+подпапок должна существовать пара
+`filename.ext` / `filename.ext.patch`.
 
 ::
 
-  patches = None    
+  def find_patch_files(base_folder):
+      matched_files = []
+      for root, dirs, files in os.walk(base_folder):
+          for file in files:
+              if file.endswith(".patch"):
+                  original_file = file[:-6]  # Remove '.patch' extension
+                  if original_file in files:
+                      # Construct the relative path
+                      relative_path = os.path.join(
+                          root[len(base_folder) + 1 :], original_file
+                      )
+                      # os.path.relpath(root, base_folder), original_file)
+                      # print(f'{relative_path} : {original_file}')
+                      matched_files.append(relative_path)
+      return matched_files
+
+  patches = None
   if args.patch is not None:
-      with open(args.patch, 'r') as file:
-          patches = [line.strip() for line in file]
+      patches = find_patch_files('patch')
       print(f"Patches: {patches}")
+
+`file` is `pathlib.PosixPath`.
+Convert it to string with the relative path to current folder.
+
+::
+
+  def has_patch(file):
+      rel_path = os.path.relpath(str(file))
+      result = rel_path in patches
+      # print(f"{result} : {rel_path}")
+      return result
+
+
+  def printf(file):
+      ch = "+" if has_patch(file) else "-"
+      print(f"  {ch} {file}")
+
 
 Начало программы
 
@@ -105,38 +131,46 @@ Argparse API:
 
 ::
 
+
   def ends_with_any(s, suffix_list):
       return any(s.endswith(suffix) for suffix in suffix_list)
+
 
 Сравнить 2 файла по строчкам, убрать пробелы в начале и в конце строки.
 
 ::
 
+
   def compare_files(file1_path, file2_path):
       if args.verbose:
-          print('compare_files:')
-          print(f'  file1: {file1_path}')
-          print(f'  file2: {file2_path}')
+          print("compare_files:")
+          print(f"  file1: {file1_path}")
+          print(f"  file2: {file2_path}")
 
-      with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2:
+      with open(file1_path, "r") as file1, open(file2_path, "r") as file2:
           for line1, line2 in zip(file1, file2):
               if line1.strip() != line2.strip():
                   return False
           # Check if one file still has more lines left
-          return not (next(file1, None) or next(file2, None))  
+          return not (next(file1, None) or next(file2, None))
+
 
 ANSI-цвета для вывода в консоль
 
 ::
 
+
   def red(s):
       return Fore.RED + Style.BRIGHT + s + Style.RESET_ALL
+
 
   def green(s):
       return Fore.GREEN + s + Style.RESET_ALL
 
+
   def blue(s):
       return Fore.BLUE + Style.BRIGHT + s + Style.RESET_ALL
+
 
 Инициализация массивов для результатов
 
@@ -152,25 +186,25 @@ Get all text files from both directories including subdirectories
 
 ::
 
-  files_in_folder1 = {f for f in folder1.rglob('*.' + args.ext)}
-  files_in_folder2 = {f for f in folder2.rglob('*.' + args.ext)}
+  files_in_folder1 = {f for f in folder1.rglob("*." + args.ext)}
+  files_in_folder2 = {f for f in folder2.rglob("*." + args.ext)}
 
   for file1 in files_in_folder1:
       relative_path = file1.relative_to(folder1)
       file2 = folder2 / relative_path
       file1_str = str(file1.absolute())
 
-      if exclude is not None and ends_with_any(file1_str, exclude) :
+      if exclude is not None and ends_with_any(file1_str, exclude):
           excluded_files.append(relative_path)
           continue
 
       file1_patch = file1
-      if patches is not None and ends_with_any(file1_str, patches) :
-          file1_patch = Path('patch') / relative_path
-          print(f'Patch: {file1_patch}')
+      if has_patch(file1):
+          file1_patch = Path(args.patch) / relative_path
+          print(f"Patch: {file1_patch}")
 
       if file2 in files_in_folder2:
-          if compare_files(file1_patch, file2): 
+          if compare_files(file1_patch, file2):
               equal_files.append(relative_path)
           else:
               not_equal_files.append(relative_path)
@@ -184,20 +218,19 @@ Any remaining files in `files_in_folder2` are only in `folder2`
 
   only_in_folder2.extend([f.relative_to(folder2) for f in files_in_folder2])
 
+
   def filter_excluded(only_in_folder2):
       result = []
       for file2 in only_in_folder2:
-          if exclude is not None and ends_with_any(file2.name, exclude) :
+          if exclude is not None and ends_with_any(file2.name, exclude):
               excluded_files.append(file2)
               continue
           else:
               result.append(file2)
       return result
 
-  only_in_folder2 = filter_excluded(only_in_folder2)
 
-  def printf(file):
-      print(f"  - {file}")
+  only_in_folder2 = filter_excluded(only_in_folder2)
 
 Print the report
 
