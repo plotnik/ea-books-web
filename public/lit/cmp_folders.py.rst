@@ -199,8 +199,8 @@ Get all text files from both directories including subdirectories
           continue
 
       file1_patch = file1
-      if has_patch(file1):
-          file1_patch = Path(args.patch) / relative_path
+      if has_patch(relative_path):
+          file1_patch = Path('patch') / relative_path
           print(f"Patch: {file1_patch}")
 
       if file2 in files_in_folder2:
