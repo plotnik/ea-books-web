@@ -1,0 +1,116 @@
+= MongooseJS Cheat Sheet
+:source-highlighter: coderay
+:toc: right
+
+Creating a comprehensive MongooseJS cheat sheet involves compiling
+various commands and methods commonly used in Mongoose, a MongoDB object
+modeling tool designed to work in an asynchronous environment. Here’s a
+basic outline for a MongooseJS cheat sheet:
+
+==== 1. Setting Up and Connecting to MongoDB
+
+[source,javascript]
+----
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/databaseName', { useNewUrlParser: true, useUnifiedTopology: true });
+----
+
+==== 2. Defining a Schema
+
+[source,javascript]
+----
+const Schema = mongoose.Schema;
+const exampleSchema = new Schema({
+  name: String,
+  age: Number,
+  // ... other fields
+});
+----
+
+==== 3. Creating a Model
+
+[source,javascript]
+----
+const Example = mongoose.model('Example', exampleSchema);
+----
+
+==== 4. Creating a Document
+
+[source,javascript]
+----
+const exampleDocument = new Example({ name: 'John', age: 30 });
+exampleDocument.save();
+----
+
+==== 5. Reading Documents
+
+* Find one: `+Example.findOne({ name: 'John' })+`
+* Find all: `+Example.find()+`
+* Find with condition: `+Example.find({ age: { $gt: 20 } })+`
+
+==== 6. Updating Documents
+
+* Update one: `+Example.updateOne({ name: 'John' }, { age: 31 })+`
+* Update many: `+Example.updateMany({ age: { $lt: 30 } }, { age: 30 })+`
+
+==== 7. Deleting Documents
+
+* Delete one: `+Example.deleteOne({ name: 'John' })+`
+* Delete many: `+Example.deleteMany({ age: { $gt: 50 } })+`
+
+==== 8. Working with Relations (Populate)
+
+[source,javascript]
+----
+// Assuming anotherModel is related to Example
+Example.find().populate('anotherModel');
+----
+
+==== 9. Middleware (Pre and Post Hooks)
+
+[source,javascript]
+----
+exampleSchema.pre('save', function(next) {
+  // ... actions before saving
+  next();
+});
+----
+
+==== 10. Indexing
+
+[source,javascript]
+----
+exampleSchema.index({ name: 1 });
+----
+
+==== 11. Virtuals
+
+[source,javascript]
+----
+exampleSchema.virtual('nameAge').get(function() {
+  return this.name + ' ' + this.age;
+});
+----
+
+==== 12. Error Handling
+
+[source,javascript]
+----
+exampleDocument.save(function(err) {
+  if (err) console.error(err);
+});
+----
+
+==== 13. Additional Options
+
+* Schema options: timestamps, typeKey, etc.
+* Query helpers
+* Static methods
+
+'''''
+
+This cheat sheet covers fundamental aspects of working with MongooseJS.
+It includes basic operations like connecting to a database, CRUD
+operations, and advanced features like virtuals and middleware. For a
+more comprehensive guide, you might want to refer to the official
+https://mongoosejs.com/docs/guide.html[Mongoose documentation].
