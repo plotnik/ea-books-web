@@ -36,3 +36,55 @@ Deep learning is considered a significant advancement in AI with several propert
 
 While deep learning has been prominent for only a few years, its potential is still unfolding with new use cases and improvements. The field saw rapid progress initially, which is now stabilizing into more incremental advancements. Innovations like Transformer-based models in natural language processing have marked significant milestones. As of 2021, deep learning may be entering a phase of more steady and less explosive growth, but significant developments are still anticipated in the coming years. The deployment of deep learning across numerous applications is expected to continue, as its full potential has yet to be fully realized.
 
+== 2 The mathematical building blocks of neural networks
+
+=== 2.1 A first look at a neural network
+
+An overview of a neural network example using Keras, a Python library, to classify handwritten digits from the MNIST dataset. The dataset includes 60,000 training images and 10,000 test images of grayscale digits, each 28x28 pixels. The classification task involves assigning these images to one of ten classes (0-9).
+
+The neural network architecture consists of two densely connected layers. The first layer has 512 units with `ReLU` activation, and the second is a `softmax` layer with 10 units, corresponding to the 10 digit classes. The softmax layer outputs a probability distribution across the classes.
+
+To prepare the model for training, the following steps are taken:
+
+1. Compiling the model with an optimizer (`RMSprop`), a loss function (`sparse_categorical_crossentropy`), and a metric (`accuracy`).
+2. Preprocessing the image data by reshaping it into a flat array and normalizing pixel values to the range `[0, 1]`.
+
+The model is trained using the `fit` method on the preprocessed training data for 5 epochs with a batch size of 128. The performance is measured in terms of loss and accuracy on the training data, achieving a high accuracy of 98.9%.
+
+After training, the model can predict class probabilities for new images. For example, when the model predicts the class for a test digit, it outputs a probability distribution, with the highest probability indicating the predicted class.
+
+Evaluating the model on the test set shows an accuracy of 97.8%, which is slightly lower than the training accuracy due to overfitting—a common issue in machine learning where models perform better on training data than on new, unseen data.
+
+The example serves as an introduction to building and training a neural network for digit classification and sets the stage for deeper explanations in subsequent chapters about tensors, tensor operations, and gradient descent. The reader is not expected to understand all details at this point, as the forthcoming chapters will provide a more thorough explanation.
+
+=== 2.2 Data representations for neural networks
+
+A tensor is a container for numerical data, which generalizes the concept of matrices to higher dimensions, known as axes. The following points summarize the key ideas and examples provided about tensors:
+
+- **Scalars (0D tensors)**: A single number, having zero axes (ndim = 0).
+- **Vectors (1D tensors)**: An array of numbers, having one axis.
+- **Matrices (2D tensors)**: An array of vectors, having two axes (rows and columns).
+- **Higher-rank tensors**: Arrays of 2D tensors are 3D tensors, and so on. Deep learning typically involves tensors with 0 to 4 axes, occasionally 5 for video data.
+
+Tensors are characterized by three main attributes:
+
+- **Number of axes (rank)**: The dimensionality or number of axes in a tensor.
+- **Shape**: The dimensions the tensor has along each axis.
+- **Data type (dtype)**: The type of data stored in the tensor (e.g., float32, uint8).
+
+In the context of machine learning, you often deal with tensors that have specific shapes and meanings, such as:
+
+- **Data batches**: The first axis (axis 0) is usually the samples axis, used for mini-batches in training.
+- **Real-world data tensors**: These can include vector data (2D tensors), time series or sequence data (3D), images (4D), and videos (5D).
+
+Specific examples include:
+
+- **Vector data**: Rank-2 tensors with shape `(samples, features)`.
+- **Time series data**: Rank-3 tensors with shape `(samples, timesteps, features)`.
+- **Image data**: Rank-4 tensors with shape `(samples, height, width, channels)` or `(samples, channels, height, width)`.
+- **Video data**: Rank-5 tensors with shape `(samples, frames, height, width, channels)`.
+
+In practice, slicing tensors allows for selecting specific elements, sequences, or regions from these arrays. For instance, to access a portion of an image or a sequence of data points within a time series.
+
+Understanding these tensor operations is crucial for preprocessing and manipulating the data used to train machine learning models, like the example shown where a digit from the MNIST dataset is displayed using Matplotlib, or when taking a specific batch of images from a larger tensor for processing.
+

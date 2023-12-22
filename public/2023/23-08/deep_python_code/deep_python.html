@@ -450,6 +450,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_1_3_why_deep_learning_why_now">1.3 Why deep learning - Why now</a></li>
 </ul>
 </li>
+<li><a href="#_2_the_mathematical_building_blocks_of_neural_networks">2 The mathematical building blocks of neural networks</a>
+<ul class="sectlevel2">
+<li><a href="#_2_1_a_first_look_at_a_neural_network">2.1 A first look at a neural network</a></li>
+<li><a href="#_2_2_data_representations_for_neural_networks">2.2 Data representations for neural networks</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -511,10 +517,125 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_2_the_mathematical_building_blocks_of_neural_networks">2 The mathematical building blocks of neural networks</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_2_1_a_first_look_at_a_neural_network">2.1 A first look at a neural network</h3>
+<div class="paragraph">
+<p>An overview of a neural network example using Keras, a Python library, to classify handwritten digits from the MNIST dataset. The dataset includes 60,000 training images and 10,000 test images of grayscale digits, each 28x28 pixels. The classification task involves assigning these images to one of ten classes (0-9).</p>
+</div>
+<div class="paragraph">
+<p>The neural network architecture consists of two densely connected layers. The first layer has 512 units with <code>ReLU</code> activation, and the second is a <code>softmax</code> layer with 10 units, corresponding to the 10 digit classes. The softmax layer outputs a probability distribution across the classes.</p>
+</div>
+<div class="paragraph">
+<p>To prepare the model for training, the following steps are taken:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Compiling the model with an optimizer (<code>RMSprop</code>), a loss function (<code>sparse_categorical_crossentropy</code>), and a metric (<code>accuracy</code>).</p>
+</li>
+<li>
+<p>Preprocessing the image data by reshaping it into a flat array and normalizing pixel values to the range <code>[0, 1]</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The model is trained using the <code>fit</code> method on the preprocessed training data for 5 epochs with a batch size of 128. The performance is measured in terms of loss and accuracy on the training data, achieving a high accuracy of 98.9%.</p>
+</div>
+<div class="paragraph">
+<p>After training, the model can predict class probabilities for new images. For example, when the model predicts the class for a test digit, it outputs a probability distribution, with the highest probability indicating the predicted class.</p>
+</div>
+<div class="paragraph">
+<p>Evaluating the model on the test set shows an accuracy of 97.8%, which is slightly lower than the training accuracy due to overfitting—a common issue in machine learning where models perform better on training data than on new, unseen data.</p>
+</div>
+<div class="paragraph">
+<p>The example serves as an introduction to building and training a neural network for digit classification and sets the stage for deeper explanations in subsequent chapters about tensors, tensor operations, and gradient descent. The reader is not expected to understand all details at this point, as the forthcoming chapters will provide a more thorough explanation.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_2_data_representations_for_neural_networks">2.2 Data representations for neural networks</h3>
+<div class="paragraph">
+<p>A tensor is a container for numerical data, which generalizes the concept of matrices to higher dimensions, known as axes. The following points summarize the key ideas and examples provided about tensors:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Scalars (0D tensors)</strong>: A single number, having zero axes (ndim = 0).</p>
+</li>
+<li>
+<p><strong>Vectors (1D tensors)</strong>: An array of numbers, having one axis.</p>
+</li>
+<li>
+<p><strong>Matrices (2D tensors)</strong>: An array of vectors, having two axes (rows and columns).</p>
+</li>
+<li>
+<p><strong>Higher-rank tensors</strong>: Arrays of 2D tensors are 3D tensors, and so on. Deep learning typically involves tensors with 0 to 4 axes, occasionally 5 for video data.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Tensors are characterized by three main attributes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Number of axes (rank)</strong>: The dimensionality or number of axes in a tensor.</p>
+</li>
+<li>
+<p><strong>Shape</strong>: The dimensions the tensor has along each axis.</p>
+</li>
+<li>
+<p><strong>Data type (dtype)</strong>: The type of data stored in the tensor (e.g., float32, uint8).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In the context of machine learning, you often deal with tensors that have specific shapes and meanings, such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Data batches</strong>: The first axis (axis 0) is usually the samples axis, used for mini-batches in training.</p>
+</li>
+<li>
+<p><strong>Real-world data tensors</strong>: These can include vector data (2D tensors), time series or sequence data (3D), images (4D), and videos (5D).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Specific examples include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Vector data</strong>: Rank-2 tensors with shape <code>(samples, features)</code>.</p>
+</li>
+<li>
+<p><strong>Time series data</strong>: Rank-3 tensors with shape <code>(samples, timesteps, features)</code>.</p>
+</li>
+<li>
+<p><strong>Image data</strong>: Rank-4 tensors with shape <code>(samples, height, width, channels)</code> or <code>(samples, channels, height, width)</code>.</p>
+</li>
+<li>
+<p><strong>Video data</strong>: Rank-5 tensors with shape <code>(samples, frames, height, width, channels)</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In practice, slicing tensors allows for selecting specific elements, sequences, or regions from these arrays. For instance, to access a portion of an image or a sequence of data points within a time series.</p>
+</div>
+<div class="paragraph">
+<p>Understanding these tensor operations is crucial for preprocessing and manipulating the data used to train machine learning models, like the example shown where a digit from the MNIST dataset is displayed using Matplotlib, or when taking a specific batch of images from a larger tensor for processing.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-12-20 23:51:01 +0200
+Last updated 2023-12-22 04:48:21 +0200
 </div>
 </div>
 </body>
