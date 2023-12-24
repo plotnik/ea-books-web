@@ -1,6 +1,7 @@
 = 23-08 Deep Learning with Python - 2nd Edition
-François Chollet
+:source-highlighter: coderay
 :toc:
+François Chollet
 
 == 1 What is deep learning?
 
@@ -42,7 +43,7 @@ While deep learning has been prominent for only a few years, its potential is st
 
 An overview of a neural network example using Keras, a Python library, to classify handwritten digits from the MNIST dataset. The dataset includes 60,000 training images and 10,000 test images of grayscale digits, each 28x28 pixels. The classification task involves assigning these images to one of ten classes (0-9).
 
-The neural network architecture consists of two densely connected layers. The first layer has 512 units with `ReLU` activation, and the second is a `softmax` layer with 10 units, corresponding to the 10 digit classes. The softmax layer outputs a probability distribution across the classes.
+The neural network architecture consists of two densely connected layers. The first layer has 512 units with `ReLU` activation, and the second is a `softmax` layer with 10 units, corresponding to the 10 digit classes. The `softmax` layer outputs a probability distribution across the classes.
 
 To prepare the model for training, the following steps are taken:
 
@@ -61,7 +62,7 @@ The example serves as an introduction to building and training a neural network 
 
 A tensor is a container for numerical data, which generalizes the concept of matrices to higher dimensions, known as axes. The following points summarize the key ideas and examples provided about tensors:
 
-- **Scalars (0D tensors)**: A single number, having zero axes (ndim = 0).
+- **Scalars (0D tensors)**: A single number, having zero axes (`ndim = 0`).
 - **Vectors (1D tensors)**: An array of numbers, having one axis.
 - **Matrices (2D tensors)**: An array of vectors, having two axes (rows and columns).
 - **Higher-rank tensors**: Arrays of 2D tensors are 3D tensors, and so on. Deep learning typically involves tensors with 0 to 4 axes, occasionally 5 for video data.
@@ -70,11 +71,11 @@ Tensors are characterized by three main attributes:
 
 - **Number of axes (rank)**: The dimensionality or number of axes in a tensor.
 - **Shape**: The dimensions the tensor has along each axis.
-- **Data type (dtype)**: The type of data stored in the tensor (e.g., float32, uint8).
+- **Data type (dtype)**: The type of data stored in the tensor (e.g., `float32`, `uint8`).
 
 In the context of machine learning, you often deal with tensors that have specific shapes and meanings, such as:
 
-- **Data batches**: The first axis (axis 0) is usually the samples axis, used for mini-batches in training.
+- **Data batches**: The first axis (axis 0) is usually the _samples axis_, used for mini-batches in training.
 - **Real-world data tensors**: These can include vector data (2D tensors), time series or sequence data (3D), images (4D), and videos (5D).
 
 Specific examples include:
@@ -87,4 +88,112 @@ Specific examples include:
 In practice, slicing tensors allows for selecting specific elements, sequences, or regions from these arrays. For instance, to access a portion of an image or a sequence of data points within a time series.
 
 Understanding these tensor operations is crucial for preprocessing and manipulating the data used to train machine learning models, like the example shown where a digit from the MNIST dataset is displayed using Matplotlib, or when taking a specific batch of images from a larger tensor for processing.
+
+=== 2.3 The gears of neural networks - Tensor operations
+
+`relu` (rectified linear unit) and addition are element-wise operations that can be applied to each element of tensors independently.
+
+Two naive Python implementations of the `relu` and addition operations are included, which loop over the elements of rank-2 NumPy tensors (2D arrays) and apply the operations in a non-vectorized manner. The `relu` operation sets each element to the maximum of its current value and zero, while the addition operation sums corresponding elements from two tensors.
+
+It is mentioned that, in practice, one would use optimized NumPy functions for these operations, which are significantly faster because they utilize Basic Linear Algebra Subprograms (BLAS) that are low-level, highly optimized, and parallel.
+
+_Broadcasting_ in the context of tensor addition when the tensors have different shapes
+allows for element-wise operations between tensors of different shapes by virtually extending the smaller tensor to match the shape of the larger one without actually copying data.
+
+Here's a summary of the steps and principles involved in broadcasting:
+
+1. If one tensor is smaller, it will be virtually "broadcast" to match the shape of the larger tensor for addition.
+2. The process involves adding broadcast axes to the smaller tensor so that its number of dimensions (`ndim`) matches that of the larger tensor.
+3. The smaller tensor is then virtually replicated along these new axes to have the same shape as the larger tensor.
+
+For example, to add a matrix `X` with shape `(32, 10)` and a vector `y` with shape `(10,)`, `y` is first reshaped to `(1, 10)`. It is then virtually repeated 32 times to form a matrix `Y` with shape `(32, 10)`, allowing for the addition with `X`.
+
+Naive Python implementation of matrix-vector addition included, that manually implements broadcasting. Additionally, it mentions that broadcasting can be used with tensors where the smaller tensor's shape matches the trailing dimensions of the larger tensor's shape. An example of using broadcasting with the `np.maximum` function is given, where a tensor `x` of shape `(64, 3, 32, 10)` is element-wise compared with a tensor `y` of shape `(32, 10)` to produce a tensor `z` of shape `(64, 3, 32, 10)`.
+
+The _tensor product_, commonly known as the _dot product_, is a crucial operation in tensor algebra. In NumPy, this operation is performed using the `np.dot` function. When two vectors are involved, the dot product is a scalar that sums the products of the corresponding elements of equal-length vectors. For a matrix and a vector, the result is a vector whose elements are the dot products of the vector with each row of the matrix. The dot product can also be generalized to two matrices, where it results in a new matrix with elements formed from the dot products of rows of the first matrix with columns of the second matrix. The shapes of the tensors must be compatible, meaning that the length of the row vector in the first matrix must match the length of the column vector in the second matrix. The concept extends to higher-dimensional tensors, where the rule of matching the last dimension of the first tensor with the second-to-last dimension of the second tensor still applies.
+
+_Tensor reshaping_ is a fundamental operation when working with neural networks. This operation changes the shape of a tensor without altering the total number of elements it contains.
+
+Tensor operations can be understood as geometric transformations in space. The addition of two vectors, such as `A = [0.5, 1]` and `B = [1, 0.25]`, results in a translation, where vector `B` moves point `A` to a new location. Other basic tensor operations that have geometric interpretations include:
+
+- **Translation**: Moving an object in space without distortion, represented by vector addition.
+- **Rotation**: A counterclockwise rotation around the origin in a 2D space can be achieved by multiplying a vector by a rotation matrix R consisting of sine and cosine values of the rotation angle.
+- **Scaling**: Changing the size of an object in space by a certain factor along various axes is achieved by multiplying the object's vector representation by a scaling matrix S, which is a diagonal matrix with scaling factors.
+- **Linear Transform**: A dot product with any matrix represents a linear transformation, which includes scaling and rotation.
+- **Affine Transform**: Combining a linear transform with a translation, similar to the operation done by a Dense layer in neural networks without an activation function.
+
+In the context of neural networks, a Dense layer with a `relu` activation function enables the network to learn non-linear transformations, which is crucial since a sequence of affine transformations without non-linearity would collapse into a single affine transformation. Activation functions like `relu` introduce non-linearity, allowing deep neural networks to represent complex transformations and hypotheses.
+
+
+Neural networks operate through a series of tensor operations that can be seen as geometric transformations in high-dimensional space, simplifying these transformations into manageable steps. A useful analogy for understanding this concept is to visualize crumpled paper representing mixed classes of data in a 3D space. The goal of a neural network is to 'uncrumple' this ball of paper in order to separate the classes again, making them distinct and easily identifiable. This process is akin to finding simpler representations for complex data structures, known as manifolds, within these high-dimensional spaces. Deep learning is particularly adept at this task because it breaks down the complex disentanglement into a succession of simpler transformations, much like how a person would methodically unfold a crumpled ball of paper. Each layer of the neural network contributes to gradually unraveling the data until the classes are clearly separated.
+
+=== 2.4 The engine of neural networks - Gradient-based optimization
+
+The basic operation and training process of a neural network. The model transforms its input using a layer that applies a dot product with _weights_ (W) and a _bias_ (b), followed by a `ReLU` activation function. The weights are initially set to small random values and are adjusted during training to minimize the loss, which is the difference between the model's predictions and the actual target values.
+
+The training process follows these steps:
+
+1. Select a batch of training data and corresponding targets.
+2. Perform a forward pass to generate predictions.
+3. Calculate the loss to measure how well the model's predictions match the targets.
+4. Update the weights to reduce the loss on this batch.
+
+Updating the weights is the key challenge in training, and doing this efficiently is crucial. A naive approach of individually tweaking each weight is impractical due to computational expense. Instead, _gradient descent_ is used as an optimization technique. Functions in the model are differentiable, meaning small changes in weights lead to small and predictable changes in the loss. By computing the gradient of the loss with respect to the weights, it's possible to adjust all the weights in a direction that reduces the loss.
+
+
+The concept of derivatives extends to functions that take tensors as inputs, creating gradients. A gradient represents how the output of a tensor function changes in response to variations in input.
+
+The example provided is in the context of machine learning, where an input vector `x`, a weight matrix `W`, and a target `y_true` are used to compute a loss function, which measures the discrepancy between the predicted output `y_pred` and the actual target `y_true`. The goal is to adjust `W` to minimize the loss.
+
+The loss function can be seen as mapping the weights `W` to loss values, and the gradient of the loss function with respect to `W` at a point `W0` indicates how changes in `W`'s coefficients affect the loss. This gradient is a tensor with the same shape as `W`, and each coefficient shows the direction and magnitude of the impact on the loss value when that specific coefficient in `W` is tweaked.
+
+In practice, the gradient is used to update the weights in the opposite direction of the steepest ascent to reduce the loss value. This is done by subtracting a fraction (determined by a scaling factor `step`) of the gradient from the current weight values. This process is based on the idea that moving against the direction of steepest ascent should lead to a lower point on the loss curve. The scaling factor is necessary to ensure that the approximation of curvature provided by the gradient remains accurate by not straying too far from the current point `W0`.
+
+
+An approach to finding the minimum of a differentiable function analytically by setting its derivative to zero and solving for the function's variables. However, this approach is not feasible for neural networks due to the large number of parameters involved.
+
+Instead, the text outlines a practical four-step algorithm known as _mini-batch stochastic gradient descent_ (SGD) for optimizing neural networks:
+
+1. Select a random batch of training samples and corresponding targets.
+2. Perform a forward pass to generate predictions from the input samples.
+3. Calculate the loss, which measures how well the predictions match the targets.
+4. Compute the gradient of the loss with respect to the model parameters and adjust the parameters in the opposite direction of the gradient to reduce the loss.
+
+The learning rate is a factor that determines the step size taken when adjusting the parameters. Choosing an appropriate learning rate is important to ensure convergence and avoid being trapped in local minima or making erratic updates.
+
+SGD can be performed with individual samples (true SGD) or the entire dataset (batch gradient descent), but mini-batch SGD is a compromise between these methods.
+
+
+Variants of SGD that incorporate previous updates into the current update, such as _momentum_, which helps to accelerate convergence and avoid local minima. Momentum is likened to a ball rolling down a loss curve, where it uses both the current slope and its existing velocity to move through parameter space.
+
+_Backpropagation_ is a method for computing the gradient of the loss function of a neural network with respect to its parameters, which are typically the weights and biases. It utilizes the derivatives of simple operations, such as addition, ReLU, or tensor product, which are the building blocks of neural networks. These operations are easily differentiable, allowing for the calculation of gradients in complex networks.
+
+A neural network can be represented as a function with parameters like `W1`, `b1`, `W2`, and `b2`. These parameters are used in operations like `dot` product, `relu`, `softmax`, and addition, combined with a loss function. The chain of operations can be expressed as follows:
+
+```python
+loss_value = loss(y_true, softmax(dot(relu(dot(inputs, W1) + b1), W2) + b2))
+```
+
+The chain rule from calculus is employed to derive this function. It states that the gradient of a composed function `fg(x) = f(g(x))` can be calculated by multiplying the derivatives of the individual functions involved:
+
+```python
+grad(y, x) == grad(y, x1) * grad(x1, x)
+```
+
+When more functions are composed together, the chain rule extends like a chain:
+
+```python
+grad(y, x) == grad(y, x3) * grad(x3, x2) * grad(x2, x1) * grad(x1, x)
+```
+
+By applying the chain rule to each layer of the network in reverse order (from the output to the input), backpropagation efficiently computes the gradients needed to update the network's parameters during training.
+
+The `GradientTape` API in TensorFlow is utilized for automatic differentiation by recording tensor operations within its scope to create a computation graph. Variables, which are mutable tensors, are often used for model parameters. To use the `GradientTape`:
+
+1. Create a `tf.Variable`.
+2. Open a `tf.GradientTape` context.
+3. Perform tensor computations inside this context.
+4. Calculate gradients of an output with respect to variables using `tape.gradient()`.
+
+The `GradientTape` can handle various tensor operations and can work with both single variables and lists of variables. For example, it can be used to calculate the gradient of a simple linear equation, or more complex operations like a matrix multiplication followed by an addition. The resulting gradients will have the same shape as the variables they are derived from.
 

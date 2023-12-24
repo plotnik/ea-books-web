@@ -433,6 +433,95 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<style>
+/*! Stylesheet for CodeRay to loosely match GitHub themes | MIT License */
+pre.CodeRay{background:#f7f7f8}
+.CodeRay .line-numbers{border-right:1px solid;opacity:.35;padding:0 .5em 0 0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.75em}
+.CodeRay .line-numbers strong{color:#000}
+table.CodeRay{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.CodeRay td{vertical-align:top;line-height:inherit}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.code{padding:0 0 0 .75em}
+.CodeRay .debug{color:#fff!important;background:navy!important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:navy}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:teal}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:teal}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:teal}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword{color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:teal}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}
+</style>
 </head>
 <body class="article">
 <div id="header">
@@ -454,6 +543,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_2_1_a_first_look_at_a_neural_network">2.1 A first look at a neural network</a></li>
 <li><a href="#_2_2_data_representations_for_neural_networks">2.2 Data representations for neural networks</a></li>
+<li><a href="#_2_3_the_gears_of_neural_networks_tensor_operations">2.3 The gears of neural networks - Tensor operations</a></li>
+<li><a href="#_2_4_the_engine_of_neural_networks_gradient_based_optimization">2.4 The engine of neural networks - Gradient-based optimization</a></li>
 </ul>
 </li>
 </ul>
@@ -526,7 +617,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>An overview of a neural network example using Keras, a Python library, to classify handwritten digits from the MNIST dataset. The dataset includes 60,000 training images and 10,000 test images of grayscale digits, each 28x28 pixels. The classification task involves assigning these images to one of ten classes (0-9).</p>
 </div>
 <div class="paragraph">
-<p>The neural network architecture consists of two densely connected layers. The first layer has 512 units with <code>ReLU</code> activation, and the second is a <code>softmax</code> layer with 10 units, corresponding to the 10 digit classes. The softmax layer outputs a probability distribution across the classes.</p>
+<p>The neural network architecture consists of two densely connected layers. The first layer has 512 units with <code>ReLU</code> activation, and the second is a <code>softmax</code> layer with 10 units, corresponding to the 10 digit classes. The <code>softmax</code> layer outputs a probability distribution across the classes.</p>
 </div>
 <div class="paragraph">
 <p>To prepare the model for training, the following steps are taken:</p>
@@ -562,7 +653,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Scalars (0D tensors)</strong>: A single number, having zero axes (ndim = 0).</p>
+<p><strong>Scalars (0D tensors)</strong>: A single number, having zero axes (<code>ndim = 0</code>).</p>
 </li>
 <li>
 <p><strong>Vectors (1D tensors)</strong>: An array of numbers, having one axis.</p>
@@ -587,7 +678,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><strong>Shape</strong>: The dimensions the tensor has along each axis.</p>
 </li>
 <li>
-<p><strong>Data type (dtype)</strong>: The type of data stored in the tensor (e.g., float32, uint8).</p>
+<p><strong>Data type (dtype)</strong>: The type of data stored in the tensor (e.g., <code>float32</code>, <code>uint8</code>).</p>
 </li>
 </ul>
 </div>
@@ -597,7 +688,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Data batches</strong>: The first axis (axis 0) is usually the samples axis, used for mini-batches in training.</p>
+<p><strong>Data batches</strong>: The first axis (axis 0) is usually the <em>samples axis</em>, used for mini-batches in training.</p>
 </li>
 <li>
 <p><strong>Real-world data tensors</strong>: These can include vector data (2D tensors), time series or sequence data (3D), images (4D), and videos (5D).</p>
@@ -630,12 +721,207 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Understanding these tensor operations is crucial for preprocessing and manipulating the data used to train machine learning models, like the example shown where a digit from the MNIST dataset is displayed using Matplotlib, or when taking a specific batch of images from a larger tensor for processing.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_2_3_the_gears_of_neural_networks_tensor_operations">2.3 The gears of neural networks - Tensor operations</h3>
+<div class="paragraph">
+<p><code>relu</code> (rectified linear unit) and addition are element-wise operations that can be applied to each element of tensors independently.</p>
+</div>
+<div class="paragraph">
+<p>Two naive Python implementations of the <code>relu</code> and addition operations are included, which loop over the elements of rank-2 NumPy tensors (2D arrays) and apply the operations in a non-vectorized manner. The <code>relu</code> operation sets each element to the maximum of its current value and zero, while the addition operation sums corresponding elements from two tensors.</p>
+</div>
+<div class="paragraph">
+<p>It is mentioned that, in practice, one would use optimized NumPy functions for these operations, which are significantly faster because they utilize Basic Linear Algebra Subprograms (BLAS) that are low-level, highly optimized, and parallel.</p>
+</div>
+<div class="paragraph">
+<p><em>Broadcasting</em> in the context of tensor addition when the tensors have different shapes
+allows for element-wise operations between tensors of different shapes by virtually extending the smaller tensor to match the shape of the larger one without actually copying data.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a summary of the steps and principles involved in broadcasting:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>If one tensor is smaller, it will be virtually "broadcast" to match the shape of the larger tensor for addition.</p>
+</li>
+<li>
+<p>The process involves adding broadcast axes to the smaller tensor so that its number of dimensions (<code>ndim</code>) matches that of the larger tensor.</p>
+</li>
+<li>
+<p>The smaller tensor is then virtually replicated along these new axes to have the same shape as the larger tensor.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For example, to add a matrix <code>X</code> with shape <code>(32, 10)</code> and a vector <code>y</code> with shape <code>(10,)</code>, <code>y</code> is first reshaped to <code>(1, 10)</code>. It is then virtually repeated 32 times to form a matrix <code>Y</code> with shape <code>(32, 10)</code>, allowing for the addition with <code>X</code>.</p>
+</div>
+<div class="paragraph">
+<p>Naive Python implementation of matrix-vector addition included, that manually implements broadcasting. Additionally, it mentions that broadcasting can be used with tensors where the smaller tensor&#8217;s shape matches the trailing dimensions of the larger tensor&#8217;s shape. An example of using broadcasting with the <code>np.maximum</code> function is given, where a tensor <code>x</code> of shape <code>(64, 3, 32, 10)</code> is element-wise compared with a tensor <code>y</code> of shape <code>(32, 10)</code> to produce a tensor <code>z</code> of shape <code>(64, 3, 32, 10)</code>.</p>
+</div>
+<div class="paragraph">
+<p>The <em>tensor product</em>, commonly known as the <em>dot product</em>, is a crucial operation in tensor algebra. In NumPy, this operation is performed using the <code>np.dot</code> function. When two vectors are involved, the dot product is a scalar that sums the products of the corresponding elements of equal-length vectors. For a matrix and a vector, the result is a vector whose elements are the dot products of the vector with each row of the matrix. The dot product can also be generalized to two matrices, where it results in a new matrix with elements formed from the dot products of rows of the first matrix with columns of the second matrix. The shapes of the tensors must be compatible, meaning that the length of the row vector in the first matrix must match the length of the column vector in the second matrix. The concept extends to higher-dimensional tensors, where the rule of matching the last dimension of the first tensor with the second-to-last dimension of the second tensor still applies.</p>
+</div>
+<div class="paragraph">
+<p><em>Tensor reshaping</em> is a fundamental operation when working with neural networks. This operation changes the shape of a tensor without altering the total number of elements it contains.</p>
+</div>
+<div class="paragraph">
+<p>Tensor operations can be understood as geometric transformations in space. The addition of two vectors, such as <code>A = [0.5, 1]</code> and <code>B = [1, 0.25]</code>, results in a translation, where vector <code>B</code> moves point <code>A</code> to a new location. Other basic tensor operations that have geometric interpretations include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Translation</strong>: Moving an object in space without distortion, represented by vector addition.</p>
+</li>
+<li>
+<p><strong>Rotation</strong>: A counterclockwise rotation around the origin in a 2D space can be achieved by multiplying a vector by a rotation matrix R consisting of sine and cosine values of the rotation angle.</p>
+</li>
+<li>
+<p><strong>Scaling</strong>: Changing the size of an object in space by a certain factor along various axes is achieved by multiplying the object&#8217;s vector representation by a scaling matrix S, which is a diagonal matrix with scaling factors.</p>
+</li>
+<li>
+<p><strong>Linear Transform</strong>: A dot product with any matrix represents a linear transformation, which includes scaling and rotation.</p>
+</li>
+<li>
+<p><strong>Affine Transform</strong>: Combining a linear transform with a translation, similar to the operation done by a Dense layer in neural networks without an activation function.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In the context of neural networks, a Dense layer with a <code>relu</code> activation function enables the network to learn non-linear transformations, which is crucial since a sequence of affine transformations without non-linearity would collapse into a single affine transformation. Activation functions like <code>relu</code> introduce non-linearity, allowing deep neural networks to represent complex transformations and hypotheses.</p>
+</div>
+<div class="paragraph">
+<p>Neural networks operate through a series of tensor operations that can be seen as geometric transformations in high-dimensional space, simplifying these transformations into manageable steps. A useful analogy for understanding this concept is to visualize crumpled paper representing mixed classes of data in a 3D space. The goal of a neural network is to 'uncrumple' this ball of paper in order to separate the classes again, making them distinct and easily identifiable. This process is akin to finding simpler representations for complex data structures, known as manifolds, within these high-dimensional spaces. Deep learning is particularly adept at this task because it breaks down the complex disentanglement into a succession of simpler transformations, much like how a person would methodically unfold a crumpled ball of paper. Each layer of the neural network contributes to gradually unraveling the data until the classes are clearly separated.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_4_the_engine_of_neural_networks_gradient_based_optimization">2.4 The engine of neural networks - Gradient-based optimization</h3>
+<div class="paragraph">
+<p>The basic operation and training process of a neural network. The model transforms its input using a layer that applies a dot product with <em>weights</em> (W) and a <em>bias</em> (b), followed by a <code>ReLU</code> activation function. The weights are initially set to small random values and are adjusted during training to minimize the loss, which is the difference between the model&#8217;s predictions and the actual target values.</p>
+</div>
+<div class="paragraph">
+<p>The training process follows these steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Select a batch of training data and corresponding targets.</p>
+</li>
+<li>
+<p>Perform a forward pass to generate predictions.</p>
+</li>
+<li>
+<p>Calculate the loss to measure how well the model&#8217;s predictions match the targets.</p>
+</li>
+<li>
+<p>Update the weights to reduce the loss on this batch.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Updating the weights is the key challenge in training, and doing this efficiently is crucial. A naive approach of individually tweaking each weight is impractical due to computational expense. Instead, <em>gradient descent</em> is used as an optimization technique. Functions in the model are differentiable, meaning small changes in weights lead to small and predictable changes in the loss. By computing the gradient of the loss with respect to the weights, it&#8217;s possible to adjust all the weights in a direction that reduces the loss.</p>
+</div>
+<div class="paragraph">
+<p>The concept of derivatives extends to functions that take tensors as inputs, creating gradients. A gradient represents how the output of a tensor function changes in response to variations in input.</p>
+</div>
+<div class="paragraph">
+<p>The example provided is in the context of machine learning, where an input vector <code>x</code>, a weight matrix <code>W</code>, and a target <code>y_true</code> are used to compute a loss function, which measures the discrepancy between the predicted output <code>y_pred</code> and the actual target <code>y_true</code>. The goal is to adjust <code>W</code> to minimize the loss.</p>
+</div>
+<div class="paragraph">
+<p>The loss function can be seen as mapping the weights <code>W</code> to loss values, and the gradient of the loss function with respect to <code>W</code> at a point <code>W0</code> indicates how changes in <code>W&#8217;s coefficients affect the loss. This gradient is a tensor with the same shape as `W</code>, and each coefficient shows the direction and magnitude of the impact on the loss value when that specific coefficient in <code>W</code> is tweaked.</p>
+</div>
+<div class="paragraph">
+<p>In practice, the gradient is used to update the weights in the opposite direction of the steepest ascent to reduce the loss value. This is done by subtracting a fraction (determined by a scaling factor <code>step</code>) of the gradient from the current weight values. This process is based on the idea that moving against the direction of steepest ascent should lead to a lower point on the loss curve. The scaling factor is necessary to ensure that the approximation of curvature provided by the gradient remains accurate by not straying too far from the current point <code>W0</code>.</p>
+</div>
+<div class="paragraph">
+<p>An approach to finding the minimum of a differentiable function analytically by setting its derivative to zero and solving for the function&#8217;s variables. However, this approach is not feasible for neural networks due to the large number of parameters involved.</p>
+</div>
+<div class="paragraph">
+<p>Instead, the text outlines a practical four-step algorithm known as <em>mini-batch stochastic gradient descent</em> (SGD) for optimizing neural networks:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Select a random batch of training samples and corresponding targets.</p>
+</li>
+<li>
+<p>Perform a forward pass to generate predictions from the input samples.</p>
+</li>
+<li>
+<p>Calculate the loss, which measures how well the predictions match the targets.</p>
+</li>
+<li>
+<p>Compute the gradient of the loss with respect to the model parameters and adjust the parameters in the opposite direction of the gradient to reduce the loss.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The learning rate is a factor that determines the step size taken when adjusting the parameters. Choosing an appropriate learning rate is important to ensure convergence and avoid being trapped in local minima or making erratic updates.</p>
+</div>
+<div class="paragraph">
+<p>SGD can be performed with individual samples (true SGD) or the entire dataset (batch gradient descent), but mini-batch SGD is a compromise between these methods.</p>
+</div>
+<div class="paragraph">
+<p>Variants of SGD that incorporate previous updates into the current update, such as <em>momentum</em>, which helps to accelerate convergence and avoid local minima. Momentum is likened to a ball rolling down a loss curve, where it uses both the current slope and its existing velocity to move through parameter space.</p>
+</div>
+<div class="paragraph">
+<p><em>Backpropagation</em> is a method for computing the gradient of the loss function of a neural network with respect to its parameters, which are typically the weights and biases. It utilizes the derivatives of simple operations, such as addition, ReLU, or tensor product, which are the building blocks of neural networks. These operations are easily differentiable, allowing for the calculation of gradients in complex networks.</p>
+</div>
+<div class="paragraph">
+<p>A neural network can be represented as a function with parameters like <code>W1</code>, <code>b1</code>, <code>W2</code>, and <code>b2</code>. These parameters are used in operations like <code>dot</code> product, <code>relu</code>, <code>softmax</code>, and addition, combined with a loss function. The chain of operations can be expressed as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python">loss_value = loss(y_true, softmax(dot(relu(dot(inputs, W1) + b1), W2) + b2))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The chain rule from calculus is employed to derive this function. It states that the gradient of a composed function <code>fg(x) = f(g(x))</code> can be calculated by multiplying the derivatives of the individual functions involved:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python">grad(y, x) == grad(y, x1) * grad(x1, x)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When more functions are composed together, the chain rule extends like a chain:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python">grad(y, x) == grad(y, x3) * grad(x3, x2) * grad(x2, x1) * grad(x1, x)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By applying the chain rule to each layer of the network in reverse order (from the output to the input), backpropagation efficiently computes the gradients needed to update the network&#8217;s parameters during training.</p>
+</div>
+<div class="paragraph">
+<p>The <code>GradientTape</code> API in TensorFlow is utilized for automatic differentiation by recording tensor operations within its scope to create a computation graph. Variables, which are mutable tensors, are often used for model parameters. To use the <code>GradientTape</code>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a <code>tf.Variable</code>.</p>
+</li>
+<li>
+<p>Open a <code>tf.GradientTape</code> context.</p>
+</li>
+<li>
+<p>Perform tensor computations inside this context.</p>
+</li>
+<li>
+<p>Calculate gradients of an output with respect to variables using <code>tape.gradient()</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The <code>GradientTape</code> can handle various tensor operations and can work with both single variables and lists of variables. For example, it can be used to calculate the gradient of a simple linear equation, or more complex operations like a matrix multiplication followed by an addition. The resulting gradients will have the same shape as the variables they are derived from.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-12-22 04:48:21 +0200
+Last updated 2023-12-24 11:48:16 +0200
 </div>
 </div>
 </body>
