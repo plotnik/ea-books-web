@@ -545,6 +545,8 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_2_2_data_representations_for_neural_networks">2.2 Data representations for neural networks</a></li>
 <li><a href="#_2_3_the_gears_of_neural_networks_tensor_operations">2.3 The gears of neural networks - Tensor operations</a></li>
 <li><a href="#_2_4_the_engine_of_neural_networks_gradient_based_optimization">2.4 The engine of neural networks - Gradient-based optimization</a></li>
+<li><a href="#_2_5_looking_back_at_our_first_example">2.5 Looking back at our first example</a></li>
+<li><a href="#_summary">Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -796,7 +798,7 @@ allows for element-wise operations between tensors of different shapes by virtua
 <div class="sect2">
 <h3 id="_2_4_the_engine_of_neural_networks_gradient_based_optimization">2.4 The engine of neural networks - Gradient-based optimization</h3>
 <div class="paragraph">
-<p>The basic operation and training process of a neural network. The model transforms its input using a layer that applies a dot product with <em>weights</em> (W) and a <em>bias</em> (b), followed by a <code>ReLU</code> activation function. The weights are initially set to small random values and are adjusted during training to minimize the loss, which is the difference between the model&#8217;s predictions and the actual target values.</p>
+<p>Model transforms its input using a layer that applies a dot product with <em>weights</em> (W) and a <em>bias</em> (b), followed by a <code>ReLU</code> activation function. The weights are initially set to small random values and are adjusted during training to minimize the loss, which is the difference between the model&#8217;s predictions and the actual target values.</p>
 </div>
 <div class="paragraph">
 <p>The training process follows these steps:</p>
@@ -916,12 +918,104 @@ allows for element-wise operations between tensors of different shapes by virtua
 <p>The <code>GradientTape</code> can handle various tensor operations and can work with both single variables and lists of variables. For example, it can be used to calculate the gradient of a simple linear equation, or more complex operations like a matrix multiplication followed by an addition. The resulting gradients will have the same shape as the variables they are derived from.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_2_5_looking_back_at_our_first_example">2.5 Looking back at our first example</h3>
+<div class="paragraph">
+<p>A model is described as a series of layers that transform input data into predictions. These predictions are then evaluated by a loss function against the expected outcomes, producing a loss value that indicates the model&#8217;s performance. An optimizer uses this loss value to adjust the model’s weights.</p>
+</div>
+<div class="paragraph">
+<p>The author revisits the first example from the chapter, explaining the process step by step. First, the input data is preprocessed and formatted into a specific shape and data type suitable for the model. The model itself is a sequential composition of two dense layers, each performing operations on the input data with weight tensors, which are essentially the learned parameters of the model.</p>
+</div>
+<div class="paragraph">
+<p>The model compilation step involves defining the loss function and optimizer. The loss function used here is <code>sparse_categorical_crossentropy</code>, providing a signal to guide the learning process by minimizing loss. The <code>rmsprop</code> optimizer sets the specific rules for the gradient descent process during training.</p>
+</div>
+<div class="paragraph">
+<p>Finally, the training loop is discussed, illustrating how the model iterates over the training data in mini-batches, updating the model weights in each epoch through backpropagation. After several epochs, the model&#8217;s loss decreases, and its accuracy in classifying handwritten digits improves.</p>
+</div>
+<div class="paragraph">
+<p>The implementation of a simple Python class <code>NaiveDense</code> which simulates a dense (fully connected) layer in a neural network using TensorFlow. The class is initialized with an input size, an output size, and an activation function. It creates two TensorFlow variables: <code>W</code> (weights matrix) and <code>b</code> (biases vector). The weights are initialized with random values within a specified range, while the biases are initialized with zeros.</p>
+</div>
+<div class="paragraph">
+<p>The class defines a <code><em>call</em></code> method that performs the forward pass by computing the dot product of the inputs and weights, adding the biases, and then applying the activation function to the result.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, the class includes a <code>weights</code> property that provides convenient access to the layer&#8217;s parameters (weights and biases).</p>
+</div>
+<div class="paragraph">
+<p><code>NaiveSequential</code> class is used to create a neural network by chaining together multiple layers. The class takes a list of layers as an argument and sequentially applies each layer to the input data. The <code><em>call</em>()</code> method is used to process the inputs through the layers in the order they were added. The class also includes a <code>weights</code> property that aggregates all the parameters from the individual layers.</p>
+</div>
+<div class="paragraph">
+<p>Following the description, an example usage of the <code>NaiveSequential</code> class is given, where a simple neural network model is created with two layers: a <code>NaiveDense</code> layer with ReLU activation followed by another <code>NaiveDense</code> layer with softmax activation. The model is expected to have four sets of weights, indicating that each <code>NaiveDense</code> layer has both weights and biases.</p>
+</div>
+<div class="paragraph">
+<p>The steps involved in the training process of a machine learning model and code snippets for implementing these steps using TensorFlow. The main steps in the training process are:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run the model on a batch of images to generate predictions.</p>
+</li>
+<li>
+<p>Calculate the loss using the model&#8217;s predictions and the actual labels.</p>
+</li>
+<li>
+<p>Compute the gradient of the loss with respect to the model&#8217;s weights.</p>
+</li>
+<li>
+<p>Adjust the weights slightly in the opposite direction of the gradient to minimize loss.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The code uses TensorFlow&#8217;s <code>GradientTape</code> to record operations for automatic differentiation. Within the <code>one_training_step</code> function, a forward pass is performed to compute predictions and loss, and then the gradient is calculated. This gradient is used by the <code>update_weights</code> function to adjust the model weights, with a defined learning rate as a scaling factor.</p>
+</div>
+<div class="paragraph">
+<p>Two approaches for the weight update step are provided: a manual approach that directly modifies the weights using <code>assign_sub</code>, and a more practical approach that employs Keras' <code>Optimizer</code> class, specifically the <code>SGD</code> (Stochastic Gradient Descent) optimizer, to handle the weight adjustment.</p>
+</div>
+<div class="paragraph">
+<p>These steps are part of the training loop, which iterates over the training data for multiple epochs to improve the model&#8217;s performance.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_summary">Summary</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Tensors</em> form the foundation of modern machine learning systems. They come in various flavors of <code>dtype</code>, <code>rank</code>, and <code>shape</code>.</p>
+</li>
+<li>
+<p>You can manipulate numerical tensors via <em>tensor operations</em> (such as addition, tensor product, or element-wise multiplication), which can be interpreted as encoding geometric transformations. In general, everything in deep learning is amenable to a geometric interpretation.</p>
+</li>
+<li>
+<p>Deep learning models consist of chains of simple tensor operations, parameterized by <em>weights</em>, which are themselves tensors. The weights of a model are where its “knowledge” is stored.</p>
+</li>
+<li>
+<p><em>Learning</em> means finding a set of values for the model’s weights that minimizes a <em>loss function</em> for a given set of training data samples and their corresponding targets.</p>
+</li>
+<li>
+<p>Learning happens by drawing random batches of data samples and their targets, and computing the gradient of the model parameters with respect to the loss on the batch. The model parameters are then moved a bit (the magnitude of the move is defined by the learning rate) in the opposite direction from the gradient. This is called <em>mini-batch stochastic gradient descent</em>.</p>
+</li>
+<li>
+<p>The entire learning process is made possible by the fact that all tensor operations in neural networks are differentiable, and thus it’s possible to apply the chain rule of derivation to find the gradient function mapping the current parameters and current batch of data to a gradient value. This is called <em>backpropagation</em>.</p>
+</li>
+<li>
+<p>Two key concepts you’ll see frequently in future chapters are <em>loss</em> and <em>optimizers</em>. These are the two things you need to define before you begin feeding data into a model.</p>
+</li>
+<li>
+<p>The <em>loss</em> is the quantity you’ll attempt to minimize during training, so it should represent a measure of success for the task you’re trying to solve.</p>
+</li>
+<li>
+<p>The <em>optimizer</em> specifies the exact way in which the gradient of the loss will be used to update parameters: for instance, it could be the RMSProp optimizer, SGD with momentum, and so on.</p>
+</li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-12-24 11:48:16 +0200
+Last updated 2023-12-25 12:48:34 +0200
 </div>
 </div>
 </body>

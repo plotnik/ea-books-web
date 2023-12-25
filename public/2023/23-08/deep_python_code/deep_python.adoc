@@ -129,7 +129,7 @@ Neural networks operate through a series of tensor operations that can be seen a
 
 === 2.4 The engine of neural networks - Gradient-based optimization
 
-The basic operation and training process of a neural network. The model transforms its input using a layer that applies a dot product with _weights_ (W) and a _bias_ (b), followed by a `ReLU` activation function. The weights are initially set to small random values and are adjusted during training to minimize the loss, which is the difference between the model's predictions and the actual target values.
+Model transforms its input using a layer that applies a dot product with _weights_ (W) and a _bias_ (b), followed by a `ReLU` activation function. The weights are initially set to small random values and are adjusted during training to minimize the loss, which is the difference between the model's predictions and the actual target values.
 
 The training process follows these steps:
 
@@ -197,3 +197,58 @@ The `GradientTape` API in TensorFlow is utilized for automatic differentiation b
 
 The `GradientTape` can handle various tensor operations and can work with both single variables and lists of variables. For example, it can be used to calculate the gradient of a simple linear equation, or more complex operations like a matrix multiplication followed by an addition. The resulting gradients will have the same shape as the variables they are derived from.
 
+=== 2.5 Looking back at our first example
+
+A model is described as a series of layers that transform input data into predictions. These predictions are then evaluated by a loss function against the expected outcomes, producing a loss value that indicates the model's performance. An optimizer uses this loss value to adjust the model’s weights.
+
+The author revisits the first example from the chapter, explaining the process step by step. First, the input data is preprocessed and formatted into a specific shape and data type suitable for the model. The model itself is a sequential composition of two dense layers, each performing operations on the input data with weight tensors, which are essentially the learned parameters of the model.
+
+The model compilation step involves defining the loss function and optimizer. The loss function used here is `sparse_categorical_crossentropy`, providing a signal to guide the learning process by minimizing loss. The `rmsprop` optimizer sets the specific rules for the gradient descent process during training.
+
+Finally, the training loop is discussed, illustrating how the model iterates over the training data in mini-batches, updating the model weights in each epoch through backpropagation. After several epochs, the model's loss decreases, and its accuracy in classifying handwritten digits improves.
+
+
+The implementation of a simple Python class `NaiveDense` which simulates a dense (fully connected) layer in a neural network using TensorFlow. The class is initialized with an input size, an output size, and an activation function. It creates two TensorFlow variables: `W` (weights matrix) and `b` (biases vector). The weights are initialized with random values within a specified range, while the biases are initialized with zeros.
+
+The class defines a `__call__` method that performs the forward pass by computing the dot product of the inputs and weights, adding the biases, and then applying the activation function to the result.
+
+Additionally, the class includes a `weights` property that provides convenient access to the layer's parameters (weights and biases).
+
+
+`NaiveSequential` class is used to create a neural network by chaining together multiple layers. The class takes a list of layers as an argument and sequentially applies each layer to the input data. The `__call__()` method is used to process the inputs through the layers in the order they were added. The class also includes a `weights` property that aggregates all the parameters from the individual layers.
+
+Following the description, an example usage of the `NaiveSequential` class is given, where a simple neural network model is created with two layers: a `NaiveDense` layer with ReLU activation followed by another `NaiveDense` layer with softmax activation. The model is expected to have four sets of weights, indicating that each `NaiveDense` layer has both weights and biases.
+
+
+The steps involved in the training process of a machine learning model and code snippets for implementing these steps using TensorFlow. The main steps in the training process are:
+
+1. Run the model on a batch of images to generate predictions.
+2. Calculate the loss using the model's predictions and the actual labels.
+3. Compute the gradient of the loss with respect to the model's weights.
+4. Adjust the weights slightly in the opposite direction of the gradient to minimize loss.
+
+The code uses TensorFlow's `GradientTape` to record operations for automatic differentiation. Within the `one_training_step` function, a forward pass is performed to compute predictions and loss, and then the gradient is calculated. This gradient is used by the `update_weights` function to adjust the model weights, with a defined learning rate as a scaling factor.
+
+Two approaches for the weight update step are provided: a manual approach that directly modifies the weights using `assign_sub`, and a more practical approach that employs Keras' `Optimizer` class, specifically the `SGD` (Stochastic Gradient Descent) optimizer, to handle the weight adjustment.
+
+These steps are part of the training loop, which iterates over the training data for multiple epochs to improve the model's performance.
+
+=== Summary
+
+- _Tensors_ form the foundation of modern machine learning systems. They come in various flavors of `dtype`, `rank`, and `shape`.
+
+- You can manipulate numerical tensors via _tensor operations_ (such as addition, tensor product, or element-wise multiplication), which can be interpreted as encoding geometric transformations. In general, everything in deep learning is amenable to a geometric interpretation.
+
+- Deep learning models consist of chains of simple tensor operations, parameterized by _weights_, which are themselves tensors. The weights of a model are where its “knowledge” is stored.
+
+- _Learning_ means finding a set of values for the model’s weights that minimizes a _loss function_ for a given set of training data samples and their corresponding targets.
+
+- Learning happens by drawing random batches of data samples and their targets, and computing the gradient of the model parameters with respect to the loss on the batch. The model parameters are then moved a bit (the magnitude of the move is defined by the learning rate) in the opposite direction from the gradient. This is called _mini-batch stochastic gradient descent_.
+
+- The entire learning process is made possible by the fact that all tensor operations in neural networks are differentiable, and thus it’s possible to apply the chain rule of derivation to find the gradient function mapping the current parameters and current batch of data to a gradient value. This is called _backpropagation_.
+
+- Two key concepts you’ll see frequently in future chapters are _loss_ and _optimizers_. These are the two things you need to define before you begin feeding data into a model.
+
+    - The _loss_ is the quantity you’ll attempt to minimize during training, so it should represent a measure of success for the task you’re trying to solve.
+
+    - The _optimizer_ specifies the exact way in which the gradient of the loss will be used to update parameters: for instance, it could be the RMSProp optimizer, SGD with momentum, and so on.
