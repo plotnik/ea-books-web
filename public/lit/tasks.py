@@ -10,6 +10,6 @@ def rst(ctx):
 def py(ctx):
 	ctx.run("pylit -t cmp_folders.py.rst cmp_folders.py")
 
-@task
+@task(default=True)
 def lit(ctx):
 	ctx.run(f"make html")

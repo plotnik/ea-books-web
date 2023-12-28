@@ -11,4 +11,5 @@ Literate Programs
    :caption: Contents:
 
    cmp_folders.py
+   adoc_links.py
 
