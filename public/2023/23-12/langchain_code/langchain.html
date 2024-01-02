@@ -444,6 +444,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_1_what_is_generative_ai">1. What Is Generative AI?</a></li>
+<li><a href="#_2_langchain_for_llm_apps">2. LangChain for LLM Apps</a></li>
+<li><a href="#_3_getting_started_with_langchain">3. Getting Started with LangChain</a></li>
 </ul>
 </div>
 </div>
@@ -593,12 +595,431 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>Perplexity is used to compare performance across different language models, where a lower value signifies a more effective model. The training process begins with tokenization, which converts words to numerical representations necessary for the model to process the input.</p>
 </div>
+<hr>
+<div class="paragraph">
+<p>Tokenization is the process of breaking down text into smaller units called tokens, which can be words, subwords, punctuation marks, or numbers. These tokens are then converted into unique numerical IDs through a mapping dictionary. The dictionary is created from the training data before training a Large Language Model (LLM) and remains unchanged afterward.</p>
+</div>
+<div class="paragraph">
+<p>The numerical IDs assigned to tokens are not random; they are within a specific range, determined by the size of the tokenizer&#8217;s vocabulary. Tokens are essential for constructing sequences of text during the processing of natural language.</p>
+</div>
+<div class="paragraph">
+<p>Different tokenization methods like Byte-Pair Encoding (BPE), WordPiece, and SentencePiece are used in various models. For instance, LLaMa 2&#8217;s BPE tokenizer breaks numbers into single digits and decomposes unknown UTF-8 characters using bytes, with a total vocabulary size of 32,000 tokens.</p>
+</div>
+<div class="paragraph">
+<p>LLMs have a context window that limits the length of the token sequence they can process, usually ranging from 1,000 to 10,000 tokens. The large scale of these models is briefly mentioned as a topic for further discussion.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The content discusses the trend of increasing language model sizes in machine learning, referencing a figure that shows their growth over time. This trend is linked to the decrease in computing costs and the pursuit of higher performance. Key findings from various research papers are highlighted:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A 2020 paper by Kaplan et al. from OpenAI analyzed scaling laws for neural language models and found that transformers outperform LSTMs in handling long contexts, which leads to better performance and efficiency.</p>
+</li>
+<li>
+<p>The paper also established a power-law relationship between a model&#8217;s performance and the dataset size, model size, and computational resources, suggesting that these factors should be scaled together to avoid performance bottlenecks.</p>
+</li>
+<li>
+<p>DeepMind researchers in 2022 suggested that large language models (LLMs) are undertrained relative to what scaling laws would recommend for compute budget and dataset size. They showed that a smaller model (Chinchilla) could outperform a larger one (Gopher) if trained longer with a proportional dataset.</p>
+</li>
+<li>
+<p>Contrary to the trend of larger models, Microsoft Research&#8217;s recent study found that a smaller network (350M parameters) trained on high-quality data can perform competitively, challenging the notion that bigger is always better.</p>
+</li>
+<li>
+<p>Future chapters of the source will explore the implications of scaling laws for generative models and the potential for new scaling laws related to data quality.</p>
+</li>
+<li>
+<p>Lastly, the content mentions that after pre-training, models are prepared for specific tasks through fine-tuning or prompting, which will be discussed in the context of task conditioning.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>Conditioning Large Language Models (LLMs) involves adapting them for specific purposes, and it can be achieved through fine-tuning and prompting:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Fine-tuning</strong> is the process of further training a pre-trained LLM on a specific dataset to improve its performance on a particular task. This can include instruction tuning, where the model learns to follow natural language instructions, and Reinforcement Learning from Human Feedback (RLHF), which aims to make the model more helpful and safe.</p>
+</li>
+<li>
+<p><strong>Prompting techniques</strong> involve providing the model with text-based problems to solve. These can range from simple questions to complex instructions, and may or may not include examples. Zero-shot prompting doesn&#8217;t use examples, while few-shot prompting provides a few example problems and solutions to guide the model.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>The provided content explains how to access OpenAI&#8217;s model and other language models (LLMs) through their website, API, or platforms like Hugging Face. Open-source LLMs can be downloaded, fine-tuned, or fully trained, with a guide to fine-tuning provided in Chapter 8 of the referenced book. It also mentions the use of generative AI in creating 3D images, avatars, and other graphical content, with a focus on text-to-image generation. The book will primarily discuss LLMs due to their wide-ranging applications but will also touch upon image models. Upcoming sections will review state-of-the-art methods for text-conditioned image generation, including progress, challenges, and future directions.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Text-to-image models are AI systems that generate images from textual descriptions. They are used in various fields, such as art, design, and advertising, to create visuals based on textual prompts. The models employ techniques like diffusion processes, where they start with a random noise and refine it into an image. They also use text encoders to convert text into embeddings, which are then processed in successive stages to produce images.</p>
+</div>
+<div class="paragraph">
+<p>There are two main types of models: Generative Adversarial Networks (GANs) and diffusion models. GANs consist of two competing networks, a generator and a discriminator, which improve over time to create realistic images. Diffusion models work by gradually denoising a noisy image until it becomes a coherent picture corresponding to the text prompt.</p>
+</div>
+<div class="paragraph">
+<p>Stable Diffusion is a notable example that operates in latent space, which is more computationally efficient than pixel space. It uses a Variational Autoencoder (VAE) for compression and a U-Net architecture for denoising. Stable Diffusion has been made available publicly under an open license, allowing wide access and use on consumer-grade hardware.</p>
+</div>
+<div class="paragraph">
+<p>The training for these models is done on large datasets, and images are generated through a series of steps, including encoding, denoising, and decoding. The models can also be conditioned with specific inputs like depth maps or outlines to create images that closely match the text prompts.</p>
+</div>
+<div class="paragraph">
+<p>These AI capabilities also extend to other domains beyond image generation, but the provided content focuses on the text-to-image context.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_langchain_for_llm_apps">2. LangChain for LLM Apps</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>LLMs (Large Language Models) are powerful tools for language processing but have notable limitations, which need to be understood when they are employed in applications:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Outdated Knowledge</strong>: LLMs are trained on historical data and cannot update their knowledge without new training, leaving them unaware of recent events or developments.</p>
+</li>
+<li>
+<p><strong>Inability to Take Action</strong>: LLMs are not capable of performing interactive actions such as web searches or data retrieval, which limits their practical use.</p>
+</li>
+<li>
+<p><strong>Lack of Real-Time Context</strong>: They struggle with understanding context from previous interactions, and cannot incorporate new context without external data sources.</p>
+</li>
+<li>
+<p><strong>Hallucination Risks</strong>: LLMs may generate inaccurate or nonsensical responses when they lack concrete information on a topic.</p>
+</li>
+<li>
+<p><strong>Biases and Discrimination</strong>: The biases present in their training data can lead to biased outputs, which reflect religious, ideological, or political prejudices.</p>
+</li>
+<li>
+<p><strong>Lack of Transparency</strong>: The complexity of LLMs can make their decision-making process opaque and not easily understandable.</p>
+</li>
+<li>
+<p><strong>Memory Limitations</strong>: LLMs may not remember details from earlier parts of a conversation or struggle to provide relevant additional information.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>To illustrate these limitations, the author provides examples where an LLM:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Lacks up-to-date information about a query concerning LangChain, potentially leading to incorrect responses about a different entity with the same name.</p>
+</li>
+<li>
+<p>Performs inconsistently in solving math problems, correctly answering one question but failing another, highlighting the LLM&#8217;s reliance on training data rather than computational ability.</p>
+</li>
+<li>
+<p>Could face problems with reasoning, such as determining whether a fruit would float based on its density compared to water, due to difficulties in synthesizing information.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The challenges posed by these limitations can be addressed by integrating LLMs with external data sources, analytical tools, and other applications to provide real-world context and enhance functionality. However, careful design and monitoring are required to mitigate risks such as bias and inappropriate content.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The excerpt discusses various techniques to improve the performance and reliability of large language models (LLMs), which include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Retrieval augmentation</strong>: Enhancing model responses with information from knowledge bases to provide current context and reduce false information.</p>
+</li>
+<li>
+<p><strong>Chaining</strong>: Allowing the model to perform searches and calculations as part of its response process.</p>
+</li>
+<li>
+<p><strong>Prompt engineering</strong>: Designing prompts that include critical context to steer the model towards appropriate responses.</p>
+</li>
+<li>
+<p><strong>Monitoring, filtering, and reviews</strong>: Implementing continuous oversight to identify and correct issues with the model’s inputs and outputs through:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Automated <strong>filters</strong> like block lists and sensitivity classifiers.</p>
+</li>
+<li>
+<p>Monitoring based on <strong>constitutional principles</strong> to ensure ethical content.</p>
+</li>
+<li>
+<p><strong>Human reviews</strong> to gain insights into the model’s behavior and outputs.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p><strong>Memory</strong>: Maintaining the context of conversations over time.</p>
+</li>
+<li>
+<p><strong>Fine-tuning</strong>: Adapting the model with data that&#8217;s more relevant to its intended use to align with application-specific requirements.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The text emphasizes that merely increasing a model&#8217;s size does not grant it advanced reasoning skills. Instead, explicit strategies like prompting and chain-of-thought reasoning are necessary for compositional tasks. Techniques like self-ask prompting encourage the model to break down complex problems methodically.</p>
+</div>
+<div class="paragraph">
+<p>The integration of these tools into training helps bridge gaps in the model’s abilities, where prompting provides context, chaining allows for logical inference, and retrieval adds factual data. This turns basic LLMs into more sophisticated reasoning tools.</p>
+</div>
+<div class="paragraph">
+<p>Proper prompt engineering and fine-tuning are essential for preparing models for practical applications, while continuous monitoring ensures any problems are promptly addressed. Filters serve as an initial safeguard, and adherence to AI constitutional principles aims to ensure ethical behavior.</p>
+</div>
+<div class="paragraph">
+<p>Connecting LLMs to external data sources is important for maintaining accuracy and reducing the generation of false information (hallucination), although it adds complexity to the system. Frameworks like LangChain offer a structured approach to responsibly use LLMs by enabling the combination of model queries with data sources, thus overcoming the limitations of standalone LLMs. The text suggests that with these enhancements, it is possible to create AI systems that were not feasible before due to inherent model limitations, setting the stage for further discussion on the topic.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Large Language Models (LLMs), when integrated with specialized tools into applications, can significantly impact the digital landscape. These applications often involve a series of prompted interactions with LLMs, sometimes supplemented with external services or data sources to complete tasks.</p>
+</div>
+<div class="paragraph">
+<p>Traditional software applications follow a multi-layer architecture with distinct client, frontend, backend, and database layers. In contrast, an LLM app uses an LLM to understand and respond to natural language prompts, including a client layer for user input, prompt engineering to guide the LLM, an LLM backend for processing, an output parsing layer, and optional integration with external services.</p>
+</div>
+<div class="paragraph">
+<p>LLM apps can be enhanced with functions such as API access, advanced reasoning algorithms, and retrieval augmented generation (RAG) which weaves in external knowledge for more robust capabilities. These extensions enable LLM apps to execute complex logic chains, interact with databases conversationally, and provide dynamic responses based on up-to-date information.</p>
+</div>
+<div class="paragraph">
+<p>The advantages of LLM applications include nuanced language processing, personalization, contextualization, and the ability to perform multi-step inferences. They facilitate natural user interactions and can be developed more efficiently since they do not require manual coding for every language scenario.</p>
+</div>
+<div class="paragraph">
+<p>However, responsible data practices are crucial to address concerns around privacy, security, and potential misuse. LLM applications can be applied in various domains, such as chatbots, intelligent search engines, automated content creation, question answering, sentiment analysis, text summarization, data analysis, and code generation.</p>
+</div>
+<div class="paragraph">
+<p>The effectiveness of LLMs is amplified when they are combined with other knowledge sources and computational tools. The LangChain framework is designed to integrate LLMs with other components to build complex, reasoning-based applications, addressing challenges associated with LLMs and enabling the creation of customized NLP solutions.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>LangChain is an open-source Python framework created by Harrison Chase in 2022, designed to ease the development of applications powered by large language models (LLMs). It provides a modular structure that allows developers to integrate language models with external data sources and services. Sequoia Capital and Benchmark, known for funding major tech companies, have invested in LangChain.</p>
+</div>
+<div class="paragraph">
+<p>The framework offers reusable components and pre-assembled chains to streamline the creation of complex LLM applications. It addresses common challenges in LLM application development, such as prompt engineering, bias mitigation, and integrating external data, by providing abstracted and composable tools.</p>
+</div>
+<div class="paragraph">
+<p>LangChain also supports advanced features like conversational context, persistence through agents and memory, and the ability to interact more sophisticatedly with the environment. Its key benefits include its modular design, chaining capabilities, memory and persistence for stateful interactions, and the open-source community.</p>
+</div>
+<div class="paragraph">
+<p>Although LangChain is primarily a Python-based framework, there are companion projects in JavaScript (LangChain.js) and Ruby (<code>Langchain.rb</code>). Development of LLM applications can be challenging, but resources like documentation, courses, communities, and a Discord server are available to support developers.</p>
+</div>
+<div class="paragraph">
+<p>An ecosystem is growing around LangChain, with extensions and integrations being regularly added. LangSmith offers debugging, testing, and monitoring tools for LLM apps. LlamaHub and LangChainHub provide libraries for building LLM systems, with LlamaHub focusing on data integration and LangChainHub serving as a repository for sharing LangChain artifacts.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, LangFlow and Flowise are UIs that facilitate the visual assembly of LangChain components into executable workflows. LangChain can be deployed locally or on various platforms, and <code>langchain-serve</code> streamlines deployment on the Jina AI cloud.</p>
+</div>
+<div class="paragraph">
+<p>The framework aims to simplify the development process for more advanced LLM applications by leveraging its modular components, including memory, chaining, and agents.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The passage discusses the concept of "chains" in LangChain, which are sequences of calls to components that can be used to build complex applications. Chains can include various components, such as language model calls, mathematical tools, and database queries, and are designed to be modular, composable, and reusable. They can be used to improve LangChain application performance by chaining prompts together or integrating specific tools, and they can enforce policies to moderate content or align with ethical standards.</p>
+</div>
+<div class="paragraph">
+<p>For example, the <code>LLMCheckerChain</code> is used to verify statements and reduce inaccurate responses, a technique supported by a research paper which showed a 20% improvement in task performance. Router chains can autonomously decide which tool to use for a given task.</p>
+</div>
+<div class="paragraph">
+<p>Benefits of using chains include modularity, composability, readability, maintainability, reusability, easy tool integration, and productivity. Creating a chain typically involves breaking down a workflow into logical steps and ensuring that components are single-responsibility and stateless for maximum reusability. Customizable configurations, robust error handling, and monitoring/logging are essential for creating reliable chains.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Agents in LangChain are self-governing software entities designed to perform tasks and achieve specific goals through interaction with users and environments. They are distinct from chains, which are sequences of components that execute logical steps. Agents use chains by orchestrating them to take actions based on goals. They make decisions on actions by using large language models (LLMs) as reasoning engines, which process the available tools, user input, and past actions to determine the next step or final response.</p>
+</div>
+<div class="paragraph">
+<p>Tools are essential functions that agents utilize to interact with the real world, and the agent executor runtime manages the continuous cycle of querying the agent, performing tool actions, and incorporating feedback from the environment, while handling technical details like error management and parsing.</p>
+</div>
+<div class="paragraph">
+<p>The main advantages of agents include goal-driven behavior, the ability to dynamically adjust to environmental changes, maintaining context through statefulness, robust error handling through alternatives, and the composition of reusable chains.</p>
+</div>
+<div class="paragraph">
+<p>Agents enable complex, multi-step tasks and interactive applications such as chatbots. They are designed to select and use the appropriate tools, as exemplified by an agent choosing to use a calculator or Python interpreter for calculations, indicating that sometimes simpler tools are more effective than complex LLMs for specific tasks.</p>
+</div>
+<div class="paragraph">
+<p>However, agents and chains typically operate without retaining context from one execution to the next, presenting a limitation in statelessness. To address this, LangChain introduces memory components that allow information to be carried over between executions, enabling agents to maintain state and context.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>LangChain&#8217;s concept of memory allows for the persistence of state between executions of a chain or agent, enhancing the development of conversational and interactive applications. Memory enables the storage of conversational contexts, facts, relationships, and task progress, which improves response coherence and relevance, provides consistency, and maintains contextual information across sessions. This memory system reduces redundant LLM calls, saving on API costs and maintaining necessary context for the agent or chain.</p>
+</div>
+<div class="paragraph">
+<p>LangChain offers a standard memory interface and various storage integrations, including databases. Some of the memory options provided are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ConversationBufferMemory</code> for full message history storage, though it increases latency and costs.</p>
+</li>
+<li>
+<p><code>ConversationBufferWindowMemory</code> for retaining only recent messages.</p>
+</li>
+<li>
+<p><code>ConversationKGMemory</code> for summarizing exchanges into a knowledge graph.</p>
+</li>
+<li>
+<p><code>EntityMemory</code> for persisting agent states and facts, often backed by a database.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There are multiple database options available for durable storage, such as SQL databases (e.g., Postgres, SQLite), NoSQL databases (e.g., MongoDB, Cassandra), in-memory databases like Redis, and managed cloud services like AWS DynamoDB. Specialized memory servers like Remembrall and Motörhead are also available for optimized conversational context.</p>
+</div>
+<div class="paragraph">
+<p>The choice of memory approach depends on specific requirements such as persistence needs, data relationships, scalability, and resources. Effective memory patterns are crucial for creating stateful, context-aware agents, and LangChain provides the tools and integrations necessary to build such advanced AI systems.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>LangChain provides a framework for integrating external services, such as databases and APIs, into language models, enhancing their capabilities beyond simple text processing. Tools within LangChain offer various functionalities, including document loading, indexing, and data storage, and can be organized into toolkits that share resources. These tools can be combined with language models to address a wide range of tasks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Machine translator</strong>: Helps models understand and respond in multiple languages.</p>
+</li>
+<li>
+<p><strong>Calculator</strong>: Performs basic arithmetic operations.</p>
+</li>
+<li>
+<p><strong>Maps</strong>: Provides location-based services, routing, and points of interest information.</p>
+</li>
+<li>
+<p><strong>Weather</strong>: Supplies real-time weather data for various locations.</p>
+</li>
+<li>
+<p><strong>Stocks</strong>: Accesses stock market data for financial analysis.</p>
+</li>
+<li>
+<p><strong>Slides</strong>: Assists in creating presentation slides based on high-level semantics.</p>
+</li>
+<li>
+<p><strong>Table processing</strong>: Analyzes and visualizes tabular data using data manipulation APIs.</p>
+</li>
+<li>
+<p><strong>Knowledge graphs</strong>: Facilitates querying of structured factual data.</p>
+</li>
+<li>
+<p><strong>Search engine</strong>: Enhances web-based information retrieval.</p>
+</li>
+<li>
+<p><strong>Wikipedia</strong>: Aids in searching and disambiguating Wikipedia content.</p>
+</li>
+<li>
+<p><strong>Online shopping</strong>: Enables e-commerce functionalities like product searching and selection.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Additional tools include AI Painting for image generation, 3D Model Construction for creating 3D visuals, Chemical Properties for scientific inquiries, and database tools for interacting with databases using natural language.</p>
+</div>
+<div class="paragraph">
+<p>These tools significantly expand the applications of language models, allowing them to perform various specialized tasks efficiently.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>LangChain is a framework designed to build applications using large language models (LLMs) by providing modular components for various tasks. It enables the creation of pipelines, also known as chains, to perform sequences of actions such as loading documents, embedding for retrieval, querying LLMs, parsing outputs, and writing to memory. These components can be mixed and matched to align with specific application goals.</p>
+</div>
+<div class="paragraph">
+<p>Key components of LangChain include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Interfaces for interacting with LLMs and chat models, supporting asynchronous, streaming, and batch operations.</p>
+</li>
+<li>
+<p>Document loaders for ingesting data from various sources into text and metadata.</p>
+</li>
+<li>
+<p>Document transformers for adapting data through manipulation like splitting, combining, and filtering.</p>
+</li>
+<li>
+<p>Text embedding models for creating vector representations of text to facilitate semantic search.</p>
+</li>
+<li>
+<p>Vector stores for indexing document vectors to improve retrieval efficiency.</p>
+</li>
+<li>
+<p>Retrievers to return relevant documents based on a query.</p>
+</li>
+<li>
+<p>Tools for interacting with external systems such as databases or web searches.</p>
+</li>
+<li>
+<p>Agents that are goal-driven systems using LLMs to plan and execute actions.</p>
+</li>
+<li>
+<p>Toolkits to initialize groups of tools sharing resources.</p>
+</li>
+<li>
+<p>Memory components to maintain conversation and workflow information across sessions.</p>
+</li>
+<li>
+<p>Callbacks for integrating with pipeline stages for tasks like logging and monitoring.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The framework offers standardized interfaces for integrating with various language model providers, allowing for easy swapping of models depending on cost, energy efficiency, or performance needs. It also provides prompt classes for user interaction with LLMs, which can be optimized through prompt engineering, and a collection of templates and battle-tested prompts.</p>
+</div>
+<div class="paragraph">
+<p>LangChain supports a variety of data types and includes utilities for external system interaction, with the aim to enhance LLMs' knowledge and performance in applications like question answering and summarization. It also offers numerous integrations for vector storage, facilitating efficient document retrieval even for large documents.</p>
+</div>
+<div class="paragraph">
+<p>For more detailed information, the LangChain API reference and code examples are available online. LangChain stands out as a comprehensive and feature-rich framework for building LLM applications.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>This text discusses the landscape of application frameworks designed for large language models (LLMs), with a focus on open-source libraries in Python for building dynamic LLM applications. It compares the popularity of various frameworks using GitHub stars over time, referencing a graph that illustrates their relative growth.</p>
+</div>
+<div class="paragraph">
+<p>The frameworks mentioned include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Haystack</strong>: The oldest framework mentioned, which started in early 2020 and is focused on creating large-scale search systems. Despite its early start, it is the least popular among those discussed.</p>
+</li>
+<li>
+<p><strong>LangChain</strong>: A rapidly growing framework that specializes in chaining LLMs together using agents, prompt optimization, and context-aware information retrieval/generation. It is praised for its modular interface and comprehensive toolset.</p>
+</li>
+<li>
+<p><strong>LlamaIndex (previously GPTIndex)</strong>: Aimed at advanced retrieval tasks rather than a broad range of LLM applications.</p>
+</li>
+<li>
+<p><strong>SuperAGI</strong>: Offers features similar to LangChain, including a marketplace for tools and agents, but it is not as extensive or well-supported.</p>
+</li>
+<li>
+<p><strong>AutoGen</strong>: A Microsoft project that facilitates the creation of workflows powered by LLMs, particularly through customizable conversational agents that automate coordination between LLMs, humans, and tools.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The text also references AutoGPT and other tools focused on prompt engineering, such as Promptify, but notes their limitations in reasoning and tendency to fall into logic loops. Additionally, it mentions frameworks in other programming languages, like Dust in Rust, which is geared towards the design and deployment of LLM apps.</p>
+</div>
+<div class="paragraph">
+<p>The author emphasizes the importance of foundational knowledge in leveraging LLM frameworks effectively and responsibly, and suggests that investment in education is crucial to develop capable LLM applications.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_getting_started_with_langchain">3. Getting Started with LangChain</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The provided text describes the use of a fake LLM (Large Language Model) in testing environments to simulate responses from a real LLM without making actual API calls. This allows developers to rapidly prototype and test their applications without being constrained by rate limits or the need for a live LLM. The fake LLM can be used for mocking various responses to ensure that an application handles them correctly, thus facilitating quick iteration.</p>
+</div>
+<div class="paragraph">
+<p>The text includes a simple example of initializing a <code>FakeLLM</code> in Python that returns a single response "Hello". It also provides a more complex example using <code>FakeListLLM</code> to mock a sequence of responses within an agent framework that leverages tools like a Python REPL. This is used to demonstrate how an agent can interact with a tool based on the fake LLM&#8217;s output. The agent in this example is set up to react to input text ("what&#8217;s 2 + 2") and, through the fake LLM&#8217;s responses, perform an action (running Python code via REPL) and return a result ("Final Answer: 4").</p>
+</div>
+<div class="paragraph">
+<p>The text highlights that the action performed by the agent must match the <code>name</code> attribute of the tool, which in this example is "Python_REPL". The fake LLM can be programmed to return a different final answer, which would not be consistent with the actual computation.</p>
+</div>
+<hr>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-12-31 13:38:10 +0200
+Last updated 2024-01-02 14:00:19 +0200
 </div>
 </div>
 </body>

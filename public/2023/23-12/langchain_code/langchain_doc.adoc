@@ -1,0 +1,67 @@
+= LangChain Docs
+:source-highlighter: coderay
+:toc:
+
+
+== Get started
+
+=== Introduction
+
+> https://python.langchain.com/docs/get_started/introduction
+
+LangChain is a developmental framework for creating applications that leverage language models. It provides tools that allow applications to be context-aware and capable of reasoning. The LangChain ecosystem includes the following key components:
+
+- **LangChain Libraries**: Includes Python and JavaScript libraries with interfaces, integrations, and pre-built chains and agents for developing applications.
+- **LangChain Templates**: A set of reference architectures for various tasks that can be quickly deployed.
+- **LangServe**: A tool for deploying LangChain chains as REST APIs.
+- **LangSmith**: A platform for debugging, testing, evaluating, and monitoring chains, integrating smoothly with LangChain.
+
+The framework covers the entire application lifecycle from development to deployment, offering components for building applications and off-the-shelf chains for common tasks. LangChain Libraries consist of different packages including `langchain-core`, `langchain-community`, and `langchain` for various aspects of a cognitive architecture.
+
+To get started with LangChain, there are installation guides, a quickstart tutorial, and security best practices available. The LangChain Expression Language (LCEL) is a declarative method for composing chains that supports transitioning from prototypes to production without code changes.
+
+LangChain provides standard interfaces and integrations for modules such as Model I/O, Retrieval, and Agents. It also offers use case walkthroughs, a list of integrations, guides for development, a comprehensive API reference, a developer's guide for contributors, and a community platform for collaboration and discussion.
+
+=== Quickstart
+
+The provided text outlines the process of setting up and using the OpenAI API for various tasks, including creating chatbots and retrieval systems using Python. Here is a summary of the steps and concepts discussed:
+
+1. **Installation and Initialization**:
+    - Install the OpenAI Python package.
+    - Obtain an API key and set it as an environment variable or pass it directly to the `ChatOpenAI` class upon instantiation.
+    - Initialize the `ChatOpenAI` model and use it to interact with the OpenAI API.
+
+2. **Using Prompts and Output Parsers**:
+    - Create prompt templates to guide the language model's responses, ensuring they match the tone of a technical documentation writer.
+    - Combine prompt templates with the language model to form a chain.
+    - Parse the chat model's output into a string using `StrOutputParser`.
+
+3. **Retrieval Chain**:
+    - Set up a retrieval system to provide the language model with relevant context for answering questions.
+    - Load and index documents into a vector store using an embedding model and a retriever.
+    - Create a retrieval chain that takes a question, retrieves relevant documents, and generates an answer from the language model.
+
+4. **Conversation Retrieval Chain**:
+    - Adapt the retrieval system to handle conversations and follow-up questions.
+    - Implement a retriever that considers the entire conversation history to generate a search query.
+    - Update the language model chain to use the retriever and provide coherent answers in a chatbot context.
+
+5. **Agent**:
+    - Build an agent that decides the steps to take when interacting with a user.
+    - Set up tools for the agent to use, such as a retriever and a search tool.
+    - Deploy the agent using predefined prompts and an executor to handle user inputs and provide responses.
+
+Throughout the text, the reader is encouraged to refer to the LangChain documentation for a deeper understanding of the concepts and for more advanced configurations. The examples provided demonstrate the creation of a system capable of answering questions with context, handling conversations, and building a functional chatbot using the OpenAI API and additional tools and libraries.
+
+== LangChain Expression Language
+
+> https://python.langchain.com/docs/expression_language/get_started
+
+LCEL is a framework that allows for the easy construction of complex workflows by chaining together basic components, which can include features like streaming, parallelism, and logging.
+
+The first example provided demonstrates how to generate a joke on a specified topic by chaining a prompt template, a language model, and an output parser. This is done using the `|` operator, akin to a Unix pipe, to pass the output of one component as the input to the next. The process involves creating a prompt using the user's topic, invoking a model (such as ChatOpenAI) to generate a response based on the prompt, and then parsing the model's output into a string.
+
+In the second example, a more complex chain is built for retrieval-augmented generation (RAG). This involves setting up an in-memory document store with relevant texts, using a retriever to fetch documents based on a query, and then constructing a prompt that combines the retrieved documents (as context) with the user's question. This prompt is then fed into a language model to generate a relevant answer, which is finally parsed into a string. The `RunnableParallel` and `RunnablePassthrough` components are used to manage the parallel inputs (context and question) for the prompt template.
+
+Both examples illustrate how LCEL can streamline the process of creating sophisticated workflows by integrating different components and managing the flow of data between them.
+
