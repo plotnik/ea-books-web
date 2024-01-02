@@ -1,0 +1,90 @@
+= 23-12 Generative AI with LangChain
+:source-highlighter: coderay
+:toc:
+Ben Auffarth
+
+== 1. What Is Generative AI?
+
+Text generation models such as GPT-4 are advanced tools capable of producing coherent and grammatically correct text across various languages and formats. These models have significant applications in content creation and natural language processing (NLP), striving to achieve algorithms that understand and generate human-like text.
+
+Language models predict the next element in a sequence, helping encode the rules of language in a machine-readable format. They are vital for NLP tasks including content creation, translation, summarization, and text editing.
+
+Representation learning is a key concept where models autonomously learn to represent data to perform tasks without explicit feature engineering. This approach is used in various applications like image recognition, where models learn to identify visual features.
+
+Language models like GPT-4 have been employed in diverse tasks such as essay writing, coding, translation, and genetic sequence analysis. They are utilized in:
+
+- Question answering for efficient customer support through AI chatbots.
+- Automatic summarization for quick understanding of lengthy texts.
+- Sentiment analysis to gauge customer opinions for businesses.
+- Topic modeling to uncover themes in document collections.
+- Semantic search to enhance search relevance through NLP.
+- Machine translation to aid businesses in international markets, with some models reaching the efficiency of commercial products like Google Translate.
+
+Despite their advancements, language models have limitations in complex reasoning tasks and are prone to generating plausible but false information, known as hallucinations. The potential of increasing model scale to achieve new reasoning capabilities is still uncertain.
+
+---
+
+Large Language Models (LLMs), such as ChatGPT, are sophisticated deep neural networks that excel in language comprehension and generation. These models, including transformers and Generative Pre-Trained Transformers (GPTs), have been trained on vast amounts of text data to learn language patterns through both unsupervised and supervised learning methods. The most recent models, like GPT-4, are capable of multiple modalities, including image processing, and have been trained on trillions of tokens. Despite their abilities, LLMs can produce incorrect or nonsensical answers, a phenomenon known as hallucination.
+
+The article mentions the evolution of LLMs from BERT to GPT-4 in terms of size, training budget, and the organizations involved. OpenAI's GPT series has been at the forefront of LLM development, with GPT-3 having 175 billion parameters and GPT-4 rumored to have between 200 and 500 billion. The cost of training such models is substantial, with GPT-4's training allegedly exceeding $100 million. OpenAI has utilized a Mixture of Experts model to keep costs reasonable and potentially applied speculative decoding to speed up processing, though this could affect quality.
+
+GPT-4 has been trained on a massive scale and can handle complex tasks more effectively, including avoiding harmful responses. It also has a multi-modal version capable of interpreting images and videos. The graph provided in the content shows various LLMs, indicating that there are several models available besides OpenAI's, some of which could serve as alternatives to OpenAI's proprietary models.
+
+---
+
+OpenAI’s GPT-4 is a leading model in the field of generative transformer-based language models, but there are other significant models like Google DeepMind’s PaLM 2 and Meta AI's LLaMa series that also demonstrate strong performance in various tasks.
+
+PaLM 2, released in May 2023, focuses on better multilingual and reasoning capabilities with improved computational efficiency. Though smaller than its predecessor, PaLM 2 excels in tasks like language proficiency exams across several languages and shows enhanced abilities in multilingual common sense, mathematical reasoning, and coding.
+
+The LLaMa and LLaMa 2 series from Meta AI, released in February and July 2023 respectively, have spurred a wave of open-source language model developments. LLaMa 2 has expanded on the original by increasing its training data, context length, and adopting new attention mechanisms. It offers multiple model sizes and is available for both research and commercial use.
+
+Anthropic's Claude and Claude 2 AI assistants are also notable, with Claude 2 emerging as a strong competitor to GPT-4. Released in July 2023, it has shown improvements in helpfulness and a reduction in bias, and it performs well in areas like coding and summarization.
+
+Although all these models have made significant strides, they still share limitations like potential biases, factual inaccuracies, and the capacity for misuse, which their developers are actively working to mitigate. The evolution of large language models remains concentrated among a few key players due to the high computational demands of developing and training such models.
+
+---
+
+This passage discusses the development and deployment of large language models (LLMs) by various companies and institutions. Training such models requires immense computational resources and expertise, with costs ranging from $10 million to over $100 million. Meta's LLaMa 2 model, with 70 billion parameters, and Google's PaLM 2 model, with 340 billion parameters, are examples of LLMs trained on extensive datasets in multiple languages.
+
+Few organizations have the capability to train and deploy very large models; notable contributors include tech giants like Microsoft and Google, as well as universities like KAUST and Carnegie Mellon. Collaborations between companies and universities have resulted in projects like Stable Diffusion, Soundify, and DreamFusion.
+
+Several entities are developing generative AI and LLMs, with varied approaches to sharing their work:
+
+- **OpenAI** released GPT-2 as open source but has since restricted access to later models, offering them through an API.
+- **Google** and **DeepMind** have created models such as BERT and PaLM, with some initially open-sourced but more recent development being more secretive.
+- **Anthropic** offers public usage of its Claude models through their website, with API in private beta.
+- **Meta** has released models like RoBERTa and LLaMa 2, including parameters and setup code, often under non-commercial licenses.
+- **Microsoft** has developed its own models but also integrates OpenAI models into its products, releasing some parameters for research.
+- **Stability AI**, the creator of Stable Diffusion, released model weights under a non-commercial license.
+- **Mistral**, a French startup, offers a free, open-license 7B model.
+- **EleutherAI** provides fully open-source models like GPT-Neo and GPT-J to the public.
+- Companies like **Aleph Alpha**, **Alibaba**, and **Baidu** prefer providing API access or integrating models into products rather than releasing their training code or parameters.
+
+Additionally, the **Technology Innovation Institute** has open-sourced its Falcon LLM for research and commercial use.
+
+Despite the high computational costs, the release of models like LLaMa has enabled smaller companies to make significant advancements, particularly in coding capabilities.
+
+---
+
+The provided text discusses the transformative impact of the Transformer deep neural network architecture on natural language processing (NLP), particularly with the advent of models like BERT and GPT. This architecture, introduced in the paper "Attention Is All You Need" by Vaswani et al. in 2017, differs from previous models by processing words in parallel rather than sequentially, allowing for more efficient computation.
+
+Transformers consist of an encoder and decoder, each comprising multiple layers with attention mechanisms and feed-forward networks. These models use positional encoding to retain information about word order, layer normalization for stable learning, and multi-head attention to capture different aspects of information simultaneously.
+
+Attention mechanisms, a key feature of transformers, involve computing weighted sums of values based on the similarity between positions in the input sequence. Multi-Query Attention (MQA) is an extension that enhances efficiency, used in models such as OpenAI's GPT series.
+
+Grouped-Query Attention (GQA) is another technique used to speed up attention computation by caching key and value pairs, although it has memory cost issues with larger contexts or batch sizes.
+
+Other efficiency-increasing methods include sparse and low-rank attention, latent bottlenecks, and architectures like transformer-XL which use recursion to store and leverage hidden states of previously encoded sentences.
+
+The majority of large language models (LLMs) are based on the Transformer architecture due to its effectiveness in understanding and generating human language, as well as applications in other domains like image, sound, and 3D object processing.
+
+The text concludes by mentioning that GPT models, which dominate the landscape of LLMs, are characterized by their pre-training process, setting the stage for a discussion on how these models are trained.
+
+---
+
+The transformer model is trained in two stages: unsupervised pre-training and task-specific fine-tuning. Pre-training's objective is to learn a universal representation for various tasks. Masked Language Modeling (MLM) is a pre-training method where the model predicts missing words in a sentence. The model's parameters are updated to minimize the difference between its predictions and the actual tokens.
+
+Two key metrics for training and evaluating language models are Negative Log-Likelihood (NLL) and Perplexity (PPL). NLL measures the probability of correct predictions, with lower values indicating better learning. PPL, which is the exponentiation of NLL, provides a more intuitive measure of model performance; a lower PPL suggests a model that accurately predicts words and is "less surprised" by the next word.
+
+Perplexity is used to compare performance across different language models, where a lower value signifies a more effective model. The training process begins with tokenization, which converts words to numerical representations necessary for the model to process the input.
+
