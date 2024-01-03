@@ -433,19 +433,43 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article">
+<body class="article toc2 toc-right">
 <div id="header">
 <h1>23-12 Generative AI with LangChain</h1>
 <div class="details">
 <span id="author" class="author">Ben Auffarth</span><br>
 </div>
-<div id="toc" class="toc">
+<div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_1_what_is_generative_ai">1. What Is Generative AI?</a></li>
 <li><a href="#_2_langchain_for_llm_apps">2. LangChain for LLM Apps</a></li>
-<li><a href="#_3_getting_started_with_langchain">3. Getting Started with LangChain</a></li>
+<li><a href="#_3_getting_started_with_langchain">3. Getting Started with LangChain</a>
+<ul class="sectlevel2">
+<li><a href="#_3_4_building_an_application_for_customer_service">3.4. Building an application for customer service</a>
+<ul class="sectlevel3">
+<li><a href="#_summarizing_with_chain_of_density">Summarizing with Chain of density</a></li>
+<li><a href="#_summarizing_with_langchain_map_reduce">Summarizing with LangChain Map-Reduce</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_4_building_capable_assistants">4. Building Capable Assistants</a>
+<ul class="sectlevel2">
+<li><a href="#_4_1_mitigating_hallucinations_through_fact_checking">4.1. Mitigating hallucinations through fact-checking</a></li>
+<li><a href="#_4_2_summarizing_information">4.2. Summarizing information</a>
+<ul class="sectlevel3">
+<li><a href="#_4_2_4_map_reduce_pipelines">4.2.4. Map-Reduce pipelines</a></li>
+<li><a href="#_4_2_5_monitoring_token_usage">4.2.5. Monitoring token usage</a></li>
+</ul>
+</li>
+<li><a href="#_4_3_extracting_information_from_documents">4.3. Extracting information from documents</a></li>
+<li><a href="#_4_4_answering_questions_with_tools">4.4. Answering questions with tools</a></li>
+<li><a href="#_4_5_exploring_reasoning_strategies">4.5. Exploring reasoning strategies</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1014,12 +1038,274 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>The text highlights that the action performed by the agent must match the <code>name</code> attribute of the tool, which in this example is "Python_REPL". The fake LLM can be programmed to return a different final answer, which would not be consistent with the actual computation.</p>
 </div>
 <hr>
+<div class="paragraph">
+<p>To use OpenAI&#8217;s API, it is necessary to obtain an API key, and the text provides a step-by-step guide on how to do this, including creating a login, setting up billing, and generating a new key on the OpenAI platform. A Python code snippet is also given, showing how to set up an OpenAI language model class and create an agent that can perform calculations. An example demonstrates the agent correctly solving a simple arithmetic problem.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Hugging Face is a leading company in the field of natural language processing (NLP), known for its open-source contributions and machine learning hosting services. It is based in the United States and is responsible for creating the widely-used Transformers Python library, which supports NLP models like Mistral 7B, BERT, and GPT-2, while being compatible with PyTorch, TensorFlow, and JAX.</p>
+</div>
+<div class="paragraph">
+<p>The company also operates the Hugging Face Hub, an online platform with over 120,000 models, 20,000 datasets, and 50,000 demo applications (spaces) that serves as a collaborative environment for machine learning practitioners. Their ecosystem includes other libraries such as <code>Datasets</code> for managing datasets, <code>Evaluate</code> for model evaluation, <code>Simulate</code> for running simulations, and <code>Gradio</code> for creating machine learning demos.</p>
+</div>
+<div class="paragraph">
+<p>Hugging Face has engaged in significant research initiatives, such as the BigScience Research Workshop and the release of the BLOOM model, which has 176 billion parameters. They have secured substantial funding, with a Series C round valuing the company at $2 billion, and have formed partnerships with industry giants like Graphcore and AWS.</p>
+</div>
+<div class="paragraph">
+<p>Users can access and integrate Hugging Face models into their applications by creating an account and obtaining API keys. For example, using the Flan-T5-XXL model developed by Google, one can run NLP tasks like answering questions, as demonstrated in the provided Python code snippet.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Google Cloud Platform offers access to various machine learning models and functions through Vertex AI, with language models such as LaMDA, T5, and PaLM available. The Natural Language API has been updated with a new large language model for Content Classification, featuring over 1,000 labels and supporting 11 languages.</p>
+</div>
+<div class="paragraph">
+<p>To use models on GCP, one must install the <code>gcloud</code> command-line interface and authenticate using the provided command. Vertex AI must be enabled for the project, which involves installing the Google Vertex AI SDK.</p>
+</div>
+<div class="paragraph">
+<p>Setting up the Google Cloud project ID can be done in multiple ways, including using <code>gcloud</code>, passing a constructor argument, using <code>aiplatform.init()</code>, or setting a GCP environment variable.</p>
+</div>
+<div class="paragraph">
+<p>Running a model involves using the VertexAI class and LLMChain with a PromptTemplate. The provided example demonstrates running a query about which NFL team won the Super Bowl in the year Justin Bieber was born, with a step-by-step reasoning approach. The response correctly identifies the San Francisco 49ers as the winners in 1994, despite a misspelling of Bieber&#8217;s name.</p>
+</div>
+<div class="paragraph">
+<p>Vertex AI has specialized models for various tasks, such as following instructions, conversation, and code generation. Models like text-bison, chat-bison, code-bison, codechat-bison, and code-gecko have different token limits and are designed for specific use cases.</p>
+</div>
+<div class="paragraph">
+<p>The example also shows the code-bison model generating a Python function to solve the FizzBuzz problem, suggesting the model&#8217;s capability to generate functional code for common programming tasks. The documentation provides more detailed and current information about the models and their updates.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Jina AI is an AI company based in Berlin that provides cloud-native neural search solutions for various data types, including text, image, audio, and video. The company, founded in 2020, has developed an open-source neural search ecosystem to help developers create scalable and efficient information retrieval systems. They also introduced a tool called Finetuner for fine-tuning deep neural networks according to specific needs.</p>
+</div>
+<div class="paragraph">
+<p>The company has raised $37.5 million through funding rounds, with significant investment from GGV Capital and Canaan Partners. Jina AI offers an API platform for setting up services like image captioning and visual question answering.</p>
+</div>
+<div class="paragraph">
+<p>The document includes an example of setting up a Visual Question Answering API and a guide to using Jina AI&#8217;s services with LangChain, a library that facilitates working with language models. Although Jina AI APIs are not directly available through LangChain, users can integrate them by subclassing the <code>LLM</code> class. Instructions on setting up a chatbot with Jina AI are provided, along with examples of API calls for translation and food recommendation tasks.</p>
+</div>
+<div class="paragraph">
+<p>The document distinguishes between LLMs (text completion models) and chat models (designed for conversational interactions) in LangChain, noting that both implement a base language model interface allowing for versatility in application usage.</p>
+</div>
+<div class="sect2">
+<h3 id="_3_4_building_an_application_for_customer_service">3.4. Building an application for customer service</h3>
+<div class="paragraph">
+<p>Generative AI can greatly assist customer service agents by classifying customer sentiment, summarizing lengthy messages, predicting customer intent, and suggesting answers to improve response accuracy and timeliness. LangChain facilitates the use of various models, including those from Hugging Face, for tasks like sentiment analysis and summarization. For instance, sentiment analysis can identify negative or positive emotions in customer communications, while summarization tools condense lengthy texts. Popular models on Hugging Face for these tasks include <code>distilbert-base-uncased-finetuned-sst-2-english</code> for sentiment classification and <code>facebook/bart-large-cnn</code> for summarization. The use of AI in customer service can help with the quick resolution of common issues, allowing human agents to focus on complex problems, thereby enhancing customer service efficiency and effectiveness.</p>
+</div>
+<div class="sect3">
+<h4 id="_summarizing_with_chain_of_density">Summarizing with Chain of density</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Missing entities</dt>
+<dd>
+<p>Generative AI; LangChain; Hugging Face integrations; sentiment analysis; summarization; intent classification; Zengzhi Wang; Financial PhraseBank; ProsusAI/finbert; Python code; Vertex AI; Prototype; Chapter 5; Chatbot; GPT-3.5; GitHub; spaCy; Cohere; NLP Cloud; LLMs; few-shot prompts; pipeline; <code>HuggingFaceHub</code>; <code>load_huggingface_tool()</code>; <code>cardiffnlp/twitter-roberta-base-sentiment</code>; emoji prediction; irony detection; hate speech detection; offensive language identification; stance detection; <code>LABEL_0</code>; facebook/bart-large-cnn; t5-small; t5-base; sshleifer/distilbart-cnn-12-6; t5-large; <code>HUGGINGFACEHUB_API_TOKEN</code>; PromptTemplate; LLMChain; graphical interface; AI automation; customer service workflows</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Generative AI tools like LangChain can enhance customer service by offering sentiment analysis, summarization, and intent classification. Integrations with platforms like Hugging Face provide access to specialized models, such as ProsusAI/finbert for financial text. Python code examples demonstrate how to use these tools, highlighting their application in a prototype for a chatbot in Chapter 5. For instance, GPT-3.5 generated a customer email complaint, available on GitHub, which was analyzed using spaCy, Cohere, and NLP Cloud models. Using few-shot prompts, LLMs can be executed through a pipeline or via <code>HuggingFaceHub</code> and <code>load_huggingface_tool()</code> loaders. The <code>cardiffnlp/twitter-roberta-base-sentiment</code> model, capable of emoji prediction, irony detection, hate speech detection, offensive language identification, and stance detection, identified the email&#8217;s sentiment as negative (<code>LABEL_0</code>). The <code>facebook/bart-large-cnn</code> is among the most downloaded summarization models on Hugging Face, along with t5 variants. With <code>HUGGINGFACEHUB_API_TOKEN</code>, the model can summarize text remotely. Vertex AI is also showcased, where a PromptTemplate and LLMChain identified the email&#8217;s category. The potential for AI automation in customer service workflows is evident, and a graphical interface can be implemented for agents to interact with AI-enhanced systems.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_summarizing_with_langchain_map_reduce">Summarizing with LangChain Map-Reduce</h4>
+<div class="paragraph">
+<p>Generative AI can enhance customer service by assisting agents with tasks such as sentiment classification, summarization, and intent classification, leading to more personalized and efficient service. LangChain allows the use of various AI models, including those from Hugging Face, for these purposes. The text illustrates how AI can interpret customer sentiment, summarize communications, and categorize issues, suggesting that AI could manage routine inquiries and free up human agents for complex problems. The integration of AI tools into a user-friendly interface for agents is proposed for future exploration.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_4_building_capable_assistants">4. Building Capable Assistants</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_4_1_mitigating_hallucinations_through_fact_checking">4.1. Mitigating hallucinations through fact-checking</h3>
+<div class="paragraph">
+<p>The text discusses the issue of hallucination in Large Language Models (LLMs), where generated text does not accurately reflect the input, leading to misinformation. It emphasizes the importance of fact-checking to maintain information integrity and mitigate societal harm caused by misinformation, such as distrust in science and damage to democratic processes.</p>
+</div>
+<div class="paragraph">
+<p>The process of automatic fact-checking is described in three stages: claim detection, evidence retrieval, and verdict prediction. The process is demonstrated using a pipeline diagram from a GitHub repository. Pre-trained LLMs with extensive world knowledge from sources like Wikipedia can be prompted to retrieve facts for evidence verification, or external tools can be used to search knowledge bases and other corpora.</p>
+</div>
+<div class="paragraph">
+<p>A practical application is introduced with the <code>LLMCheckerChain</code> in LangChain, which uses prompt chaining to question the assumptions behind statements and check their validity. The model sequentially lists assumptions, checks their truthfulness, and makes a final judgment on the initial question. The example provided shows how this process can be used to verify which mammal lays the largest eggs, demonstrating that while not infallible, the fact-checking approach can improve the reliability of LLMs.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_2_summarizing_information">4.2. Summarizing information</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Example</dt>
+<dd>
+<p>generative_ai_with_langchain/summarize/prompts.py</p>
+</dd>
+<dt class="hdlist1">Web Server</dt>
+<dd>
+<p>generative_ai_with_langchain/webserver/chat.py</p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The provided text explains how to use LangChain, a Python library, to summarize text using OpenAI&#8217;s language models. It describes two methods: a basic approach using prompts and a more Pythonic way using LangChain decorators. The latter offers a cleaner interface, enabling developers to write natural Python code while leveraging the power of language models for tasks such as summarization. An example demonstrates summarizing a piece of text into a one-sentence summary using the <code>@llm_prompt</code> decorator.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The provided text describes the use of prompt templates in LangChain Expression Language (LCEL) to dynamically insert text into prompts, which is useful for tasks like text summarization. The example code demonstrates how to set up a prompt template and create a chain in LCEL that includes a language model (LLM) and an output parser. The chain is then used to generate a summary of the provided text. LCEL offers benefits such as asynchronous processing, batching, streaming, and other features that enhance productivity and integration.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Salesforce researchers have devised a method called Chain of Density (CoD) for GPT-4 that produces increasingly dense and concise summaries by iteratively including more informative entities without extending the length. Using a structured prompt, the process starts with a sparse summary and, through five rounds of editing, integrates additional entities while maintaining word count. This technique enhances the information density of summaries, but there&#8217;s a balance to strike as too many entities can reduce clarity. The effectiveness of CoD is evaluated through human studies and GPT-4 scoring, highlighting the trade-offs between detail and coherence in AI-generated text.</p>
+</div>
+<div class="sect3">
+<h4 id="_4_2_4_map_reduce_pipelines">4.2.4. Map-Reduce pipelines</h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Jupyter</dt>
+<dd>
+<p>my/08_summarize.ipynb</p>
+</dd>
+<dt class="hdlist1">LangChain - Summarization</dt>
+<dd>
+<p><a href="https://python.langchain.com/docs/use_cases/summarization" class="bare">https://python.langchain.com/docs/use_cases/summarization</a></p>
+</dd>
+<dt class="hdlist1">Markdown Loader</dt>
+<dd>
+<p><a href="https://python.langchain.com/docs/modules/data_connection/document_loaders/markdown" class="bare">https://python.langchain.com/docs/modules/data_connection/document_loaders/markdown</a></p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>LangChain enables efficient processing of documents using a map-reduce approach with large language models (LLMs). Documents are split into chunks, each summarized in parallel (map step), and then combined and further summarized (reduce step). This method allows for scaling summarization to any text length and can include an optional collapsing step to ensure chunks fit within token limits.</p>
+</div>
+<div class="paragraph">
+<p>The process involves loading a document, like a PDF, summarizing each part independently, and then combining these summaries into a final, concise document. Custom prompts can be used for different steps to tailor the output, such as summarizing, translating, or rephrasing.</p>
+</div>
+<div class="paragraph">
+<p>An example in Python demonstrates loading a PDF, summarizing it with a map-reduce chain, and outputting the summary. The approach is customizable, allows parallel processing, and can be used for various applications like literature reviews. However, when using cloud services, this method may increase computational costs due to the number of tokens processed.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_2_5_monitoring_token_usage">4.2.5. Monitoring token usage</h4>
+<div class="paragraph">
+<p>When using language models like those from OpenAI, it is crucial to monitor token usage to manage costs. OpenAI offers a variety of models tailored to different tasks, such as ChatGPT for dialogue and InstructGPT for instruction-following, with varying levels of speed and capability, affecting their pricing. For image generation, OpenAI has DALL·E, and for speech transcription and translation, it provides Whisper, each with different pricing structures.</p>
+</div>
+<div class="paragraph">
+<p>To track token usage and costs, OpenAI provides a callback function in Python that displays the number of tokens used and the associated cost for each operation. Additionally, the <code>generate()</code> method and the chat completions response format offer information on token usage. Understanding these costs is essential for managing the budget in production environments. The upcoming chapter will discuss tools that offer further insights into the token usage of generative AI models.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_3_extracting_information_from_documents">4.3. Extracting information from documents</h3>
+<div class="paragraph">
+<p>OpenAI announced updates to their API in June 2023, adding <strong>function calling</strong> capabilities to enhance the interaction with GPT models, specifically <code>gpt-4-0613</code> and <code>gpt-3.5-turbo-0613</code>. This new feature allows developers to define functions in a schema format which the models can use to return structured outputs, such as JSON objects. This is particularly useful for creating chatbots, converting natural language into API or database queries, and extracting structured data from text.</p>
+</div>
+<div class="paragraph">
+<p>Developers can define functions using the <code>functions</code> parameter in the API and describe them using JSON schema. This enables precise extraction of information, as demonstrated with an example schema for a Curriculum Vitae (CV) using the Pydantic library for parsing.</p>
+</div>
+<div class="paragraph">
+<p>LangChain, a tool for building LLM applications, can utilize these function calls for tasks such as information extraction from documents. An example code snippet demonstrates how one might extract information from a CV using LangChain’s <code>create_extraction_chain_pydantic()</code> function and an OpenAI model.</p>
+</div>
+<div class="paragraph">
+<p>The result of this extraction process may not be perfect, capturing only a part of the desired information, but it illustrates the potential of this approach. OpenAI&#8217;s function calling is integrated into the system message and is optimized for their models, which affects the context limit and billing.</p>
+</div>
+<div class="paragraph">
+<p>LangChain supports function calls natively and can use models from providers other than OpenAI. The chapter also hints at further integrations, allowing LLM agents to execute function calls to connect with live data, services, and runtime environments. The next section is set to discuss how tools can augment context by retrieving external knowledge sources.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_4_answering_questions_with_tools">4.4. Answering questions with tools</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Streamlit</dt>
+<dd>
+<p>st_langchain.py</p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>LangChain is a platform that enhances the capabilities of large language models (LLMs) by enabling them to interact with external data sources and tools, thus allowing them to perform domain-specific tasks and access real-time information. This functionality is facilitated by a framework of agents and chains that can be developed to include tools like calculators, search engines (like DuckDuckGo and Wolfram Alpha), and information databases (like arXiv and Wikipedia). These tools help LLMs provide more accurate and relevant responses by grounding them in real-world data and reducing incorrect or hallucinated replies.</p>
+</div>
+<div class="paragraph">
+<p>The integration of LLMs with tools can be demonstrated by setting up an agent in Python, which includes a DuckDuckGo search tool for privacy-focused searches, Wolfram Alpha for math questions, arXiv for academic research, and Wikipedia for information about notable entities. To use Wolfram Alpha, a developer account and token are required.</p>
+</div>
+<div class="paragraph">
+<p>LangChain can also be used to build interactive web applications using Streamlit, a platform that facilitates the creation of user interfaces for machine learning workflows. An example provided in the text shows how to create a Streamlit app that enables users to interact with a chatbot powered by LangChain. This Streamlit integration allows for real-time updates, easy deployment, and sharing through Streamlit Community Cloud or Hugging Face Spaces.</p>
+</div>
+<div class="paragraph">
+<p>The text illustrates the process of building a Streamlit app and deploying it, highlighting the advantages of a quick and intuitive user interface that can be tailored to specific use cases. Streamlit apps are responsive and can handle complex workflows, allowing users to interact with the LLM-powered agent with ease. Despite these advancements, the LLM&#8217;s reasoning abilities are limited, and the text suggests that more advanced types of agents can be implemented to overcome these limitations.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_5_exploring_reasoning_strategies">4.5. Exploring reasoning strategies</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Streamlit</dt>
+<dd>
+<p>st_plan.py</p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Language Large Models (LLMs) are adept at recognizing patterns but have limitations in performing complex multi-step symbolic reasoning. To enhance their capabilities, hybrid systems combining neural pattern recognition and symbolic manipulation are being developed. These advanced systems can perform multi-step deductive reasoning, mathematical problem-solving, and optimized action planning.</p>
+</div>
+<div class="paragraph">
+<p>Hybrid systems involve various components and architectures such as action agents, which iterate based on new observations, and plan-and-execute agents, which create a full plan before taking action. Action agents use an observation-dependent approach, while plan-and-execute agents involve a Planner to create plans and a Solver to execute the final output after evidence is gathered.</p>
+</div>
+<div class="paragraph">
+<p>The research application LangChain demonstrates how to implement these reasoning strategies, allowing users to select between zero-shot-react and plan-and-solve strategies. The application uses a combination of tools and LLMs to answer complex questions, and it can be executed using Streamlit, a tool for creating web applications.</p>
+</div>
+<div class="paragraph">
+<p>The plan-and-solve strategy is particularly efficient as it can use specialized, smaller models for planning and solving, and it can handle more complex tasks by breaking them down into subtasks. However, challenges such as calculation errors and semantic misunderstandings can arise. Despite these issues, these strategies are valuable for improving the reasoning capabilities of LLMs and their effectiveness in problem-solving tasks.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-01-02 14:00:19 +0200
+Last updated 2024-01-03 19:13:50 +0200
 </div>
 </div>
 </body>
