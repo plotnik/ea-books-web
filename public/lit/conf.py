@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'lit'
-copyright = '2023, EA'
+copyright = '2024, EA'
 author = 'EA'
 
 

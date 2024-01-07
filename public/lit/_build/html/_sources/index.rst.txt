@@ -10,6 +10,7 @@ Literate Programs
    :maxdepth: 2
    :caption: Contents:
 
+   st_python.py
    cmp_folders.py
    adoc_links.py
 

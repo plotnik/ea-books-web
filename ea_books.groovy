@@ -70,7 +70,11 @@ class EABooks implements Callable<Integer> {
 		f.println ":icons: font"
 		f.println ":toc: right"
 		f.println ""
-		f.println "https://ea-books.netlify.app/"
+		f.println "[NOTE]"
+		f.println "===="
+		f.println "- https://ea-books.netlify.app/"
+		f.println "- link:lit/_build/html/index.html[literate programs]"
+		f.println "===="
 		f.println ""
 	
 		for (def book in bookList) {
