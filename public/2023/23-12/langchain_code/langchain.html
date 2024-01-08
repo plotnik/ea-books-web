@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.20">
+<meta name="generator" content="Asciidoctor 2.0.17">
 <meta name="author" content="Ben Auffarth">
 <title>23-12 Generative AI with LangChain</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -85,10 +85,10 @@ code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;
 ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
 ul,ol{margin-left:1.5em}
 ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
 ul.circle{list-style-type:circle}
 ul.disc{list-style-type:disc}
-ul.square{list-style-type:square}
-ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
 ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
 dl dt{margin-bottom:.3125em;font-weight:bold}
 dl dd{margin-bottom:1.25em}
@@ -209,10 +209,13 @@ table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
 .admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
 .exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
 .sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
 .sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
-.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
-.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
 .literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
 @media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
 @media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
@@ -391,7 +394,7 @@ b.conum *{color:inherit!important}
 dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
 h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
 p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
-p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
+p,blockquote,dt,td.content,span.alt,summary{font-size:1.0625rem}
 p{margin-bottom:1.25rem}
 .sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
 .exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
@@ -470,6 +473,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_4_5_exploring_reasoning_strategies">4.5. Exploring reasoning strategies</a></li>
 </ul>
 </li>
+<li><a href="#_5_building_a_chatbot_like_chatgpt">5. Building a Chatbot like ChatGPT</a></li>
+<li><a href="#_6_developing_software_with_generative_ai">6. Developing Software with Generative AI</a></li>
 </ul>
 </div>
 </div>
@@ -1302,10 +1307,136 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_5_building_a_chatbot_like_chatgpt">5. Building a Chatbot like ChatGPT</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Example</dt>
+<dd>
+<p>generative_ai_with_langchain/chat_with_retrieval/app.py</p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Retrieval-augmented generation (RAG) is a method used to improve text generation by incorporating external knowledge into language models, referred to as Retrieval-Augmented Language Models (RALMs). Unlike traditional language models that rely solely on a given prompt, RALMs use semantic search algorithms to find and use relevant information from external sources to create more accurate and contextually appropriate text. This process involves dynamically querying and retrieving data to inform the generation process, which can lead to more nuanced, factually correct, and useful outputs. The technique relies on efficient storage and indexing of vector embeddings to perform real-time semantic searches across vast document collections. By leveraging RAG, language models can reduce incorrect or irrelevant responses, especially in specialized fields like healthcare. Vector search, a related concept, involves retrieving vectors based on similarity to enhance various applications including search engines and chatbots.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Embeddings are numerical vectors that represent objects like words, sentences, or images in a format that machines can understand, capturing their semantic content. In OpenAI LLM an embedding consists of 1,536 numbers that encapsulate the text&#8217;s meaning. Word embeddings can be visualized in a vector space where semantic similarity corresponds to proximity. Traditional methods like the <strong>bag-of-words</strong> have been succeeded by more advanced models like <strong>word2vec</strong>, which learn embeddings from word context. For images, embeddings can be derived from convolutional neural networks.</p>
+</div>
+<div class="paragraph">
+<p>Embeddings are used for a variety of machine learning tasks, such as measuring similarity, classification, or as input for other models. In LangChain, embeddings can be obtained using methods like <code>embed_query()</code> for single inputs or <code>embed_documents()</code> for multiple inputs. Arithmetic operations can be performed on embeddings, like calculating distances to analyze similarity.</p>
+</div>
+<div class="paragraph">
+<p>The text also discusses how to generate and analyze embeddings using LangChain and Python code, including visualizing distances between word embeddings to confirm their semantic relationships. Additionally, LangChain offers tools for integrating embeddings into apps and systems, as well as a <code>FakeEmbeddings</code> class for testing without external calls.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Vector search is a technique used to find similar data points in a high-dimensional space by representing data as vectors and measuring the similarity between them. This method is useful in applications such as recommendation systems and image or text search. Data points are organized through indexing, using algorithms such as k-d trees, Annoy, and product quantization for efficient retrieval.</p>
+</div>
+<div class="paragraph">
+<p>Vector libraries, like Faiss and Annoy, offer functions for indexing and searching vectors, with some libraries being more popular than others based on GitHub stars. Vector databases like Milvus and Pinecone provide a comprehensive solution for managing and querying vector embeddings, supporting a variety of use cases such as anomaly detection, personalization, and natural language processing.</p>
+</div>
+<div class="paragraph">
+<p>The market for vector databases is growing, with open-source options being popular for their AI and data management capabilities. They are designed for specific tasks such as similarity search and can handle high-dimensional data efficiently. Examples of vector databases include Chroma, Qdrant, and Milvus, among others, each with its unique features, business models, indexing methods, and licensing.</p>
+</div>
+<div class="paragraph">
+<p>LangChain&#8217;s <code>vectorstores</code> module can be used to implement vector storage, with Chroma as an example backend optimized for storing and querying vectors. To use Chroma, one must import the necessary modules, create an instance with documents and an embedding method, and then query the vector store to find similar vectors. Document loaders and retrievers are also important components when building applications like chatbots.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>LangChain provides a toolchain for creating retrieval systems, including a pipeline for building a chatbot with Retrieval-Augmented Generation (RAG). The process involves data loaders to import documents, document transformers to process them, embedding models to convert text to vector representations, vector stores to maintain these embeddings, and retrievers to fetch relevant information based on queries.</p>
+</div>
+<div class="paragraph">
+<p>Data loaders help load documents from various sources, such as text files, web pages, Arxiv, or YouTube, into the LangChain framework as Document objects with text and metadata. Examples of different loaders include <code>TextLoader</code>, <code>WebBaseLoader</code>, <code>ArxivLoader</code>, <code>YoutubeLoader</code>, and <code>ImageCaptionLoader</code>. These loaders can fetch documents either eagerly or lazily as needed.</p>
+</div>
+<div class="paragraph">
+<p>Retrievers are components used to search and retrieve information from a vector store, where document embeddings are indexed. Different types of retrievers are available, such as BM25, TF-IDF, dense, and kNN retrievers, each with its own strengths and use cases. Specialized retrievers, like the <code>ArxivRetriever</code> and <code>WikipediaRetriever</code>, cater to specific domains like scientific literature and Wikipedia respectively.</p>
+</div>
+<div class="paragraph">
+<p>Examples are provided for using a kNN retriever with OpenAI embeddings to retrieve documents based on text similarity, and a PubMed retriever to fetch biomedical literature relevant to queries like "COVID."</p>
+</div>
+<div class="paragraph">
+<p>Additionally, custom retrievers can be created by inheriting from the <code>BaseRetriever</code> class and implementing the <code>get_relevant_documents()</code> method to define the retrieval logic for any specific requirements.</p>
+</div>
+<div class="paragraph">
+<p>In summary, LangChain helps build chatbots and other retrieval systems by offering tools to load, transform, embed, store, and retrieve documents, with flexibility to handle various data sources and to customize retrievers as per the application&#8217;s needs.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The provided content outlines how to implement a simple chatbot using the LangChain framework. The process involves setting up a document loader to read various document formats (PDF, text, EPUB, Word), storing documents in a vector store, and configuring a chatbot to retrieve information from the vector storage.</p>
+</div>
+<div class="paragraph">
+<p>The document loader is designed to support multiple file extensions and load files as a list of documents, while the vector storage is configured using a Hugging Face model for embeddings and DocArray for in-memory storage. The retriever employs maximum marginal relevance (MMR) to retrieve diverse and relevant documents.</p>
+</div>
+<div class="paragraph">
+<p>Contextual compression techniques are mentioned to enhance retrieval by filtering out irrelevant information, with options like LLMChainExtractor, LLMChainFilter, and EmbeddingsFilter. The chatbot chain is set up with memory for contextual conversation and a ChatOpenAI model.</p>
+</div>
+<div class="paragraph">
+<p>The interface for the chatbot is created using Streamlit, allowing users to upload documents and interact with the chatbot. However, limitations such as input size, cost, and complexity of in-house model hosting are acknowledged, with further discussion to be found in a later chapter on customizing language models.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Memory is crucial for chatbots to have coherent conversations by remembering previous interactions. It provides context, personalization, and the ability to learn from past exchanges. LangChain&#8217;s <code>ConversationBufferMemory</code> and <code>ConversationBufferWindowMemory</code> are examples of how to implement memory in chatbots. <code>ConversationBufferMemory</code> stores all messages, while <code>ConversationBufferWindowMemory</code> keeps only a specified number of recent interactions.</p>
+</div>
+<div class="paragraph">
+<p>Customization of conversational memory is possible by changing prefixes and templates in LangChain. <code>ConversationSummaryMemory</code> provides a condensed version of conversation history, and <code>ConversationKGMemory</code> enables storing facts in a knowledge graph format. Multiple memory strategies can be combined with <code>CombinedMemory</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>ConversationSummaryBufferMemory</code> summarizes old interactions and keeps recent ones to manage token limits. Long-term persistence can be achieved using platforms like Zep, which offer persistent backends for storing, summarizing, and searching chat histories. This enhances AI capabilities and context awareness.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Moderation in chatbots is crucial for ensuring interactions are appropriate and respectful, aligning with ethical standards, and protecting users from offensive content. A "constitution" for chatbots establishes guidelines for their behavior, promoting ethical engagement and safeguarding brand reputation. This framework also helps in meeting legal requirements for content moderation.</p>
+</div>
+<div class="paragraph">
+<p>To implement moderation, developers can use pre-built moderation chains such as the <code>OpenAIModerationChain</code> in LangChain, which can be appended to the chatbot&#8217;s operational chain. If harmful content is detected, the system can either throw an error or inform the user that the content is unacceptable.</p>
+</div>
+<div class="paragraph">
+<p>Guardrails are additional controls that provide programmable constraints to guide the chatbot&#8217;s output, preventing discussions on sensitive topics, ensuring conversations follow predefined paths, maintaining a specific language style, and extracting structured data from interactions. These measures ensure that chatbots operate within safe and desired parameters, maintaining user trust and compliance with standards.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_developing_software_with_generative_ai">6. Developing Software with Generative AI</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Example</dt>
+<dd>
+<p>generative_ai_with_langchain/software_development/baby_dev.py</p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-01-03 19:13:50 +0200
+Last updated 2024-01-08 15:06:20 +0200
 </div>
 </div>
 </body>

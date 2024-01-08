@@ -459,3 +459,78 @@ The research application LangChain demonstrates how to implement these reasoning
 
 The plan-and-solve strategy is particularly efficient as it can use specialized, smaller models for planning and solving, and it can handle more complex tasks by breaking them down into subtasks. However, challenges such as calculation errors and semantic misunderstandings can arise. Despite these issues, these strategies are valuable for improving the reasoning capabilities of LLMs and their effectiveness in problem-solving tasks.
 
+== 5. Building a Chatbot like ChatGPT
+
+[NOTE]
+====
+Example::
+generative_ai_with_langchain/chat_with_retrieval/app.py
+====
+
+Retrieval-augmented generation (RAG) is a method used to improve text generation by incorporating external knowledge into language models, referred to as Retrieval-Augmented Language Models (RALMs). Unlike traditional language models that rely solely on a given prompt, RALMs use semantic search algorithms to find and use relevant information from external sources to create more accurate and contextually appropriate text. This process involves dynamically querying and retrieving data to inform the generation process, which can lead to more nuanced, factually correct, and useful outputs. The technique relies on efficient storage and indexing of vector embeddings to perform real-time semantic searches across vast document collections. By leveraging RAG, language models can reduce incorrect or irrelevant responses, especially in specialized fields like healthcare. Vector search, a related concept, involves retrieving vectors based on similarity to enhance various applications including search engines and chatbots.
+
+---
+
+Embeddings are numerical vectors that represent objects like words, sentences, or images in a format that machines can understand, capturing their semantic content. In OpenAI LLM an embedding consists of 1,536 numbers that encapsulate the text's meaning. Word embeddings can be visualized in a vector space where semantic similarity corresponds to proximity. Traditional methods like the *bag-of-words* have been succeeded by more advanced models like *word2vec*, which learn embeddings from word context. For images, embeddings can be derived from convolutional neural networks.
+
+Embeddings are used for a variety of machine learning tasks, such as measuring similarity, classification, or as input for other models. In LangChain, embeddings can be obtained using methods like `embed_query()` for single inputs or `embed_documents()` for multiple inputs. Arithmetic operations can be performed on embeddings, like calculating distances to analyze similarity.
+
+The text also discusses how to generate and analyze embeddings using LangChain and Python code, including visualizing distances between word embeddings to confirm their semantic relationships. Additionally, LangChain offers tools for integrating embeddings into apps and systems, as well as a `FakeEmbeddings` class for testing without external calls.
+
+---
+
+Vector search is a technique used to find similar data points in a high-dimensional space by representing data as vectors and measuring the similarity between them. This method is useful in applications such as recommendation systems and image or text search. Data points are organized through indexing, using algorithms such as k-d trees, Annoy, and product quantization for efficient retrieval.
+
+Vector libraries, like Faiss and Annoy, offer functions for indexing and searching vectors, with some libraries being more popular than others based on GitHub stars. Vector databases like Milvus and Pinecone provide a comprehensive solution for managing and querying vector embeddings, supporting a variety of use cases such as anomaly detection, personalization, and natural language processing.
+
+The market for vector databases is growing, with open-source options being popular for their AI and data management capabilities. They are designed for specific tasks such as similarity search and can handle high-dimensional data efficiently. Examples of vector databases include Chroma, Qdrant, and Milvus, among others, each with its unique features, business models, indexing methods, and licensing.
+
+LangChain's `vectorstores` module can be used to implement vector storage, with Chroma as an example backend optimized for storing and querying vectors. To use Chroma, one must import the necessary modules, create an instance with documents and an embedding method, and then query the vector store to find similar vectors. Document loaders and retrievers are also important components when building applications like chatbots.
+
+---
+
+LangChain provides a toolchain for creating retrieval systems, including a pipeline for building a chatbot with Retrieval-Augmented Generation (RAG). The process involves data loaders to import documents, document transformers to process them, embedding models to convert text to vector representations, vector stores to maintain these embeddings, and retrievers to fetch relevant information based on queries.
+
+Data loaders help load documents from various sources, such as text files, web pages, Arxiv, or YouTube, into the LangChain framework as Document objects with text and metadata. Examples of different loaders include `TextLoader`, `WebBaseLoader`, `ArxivLoader`, `YoutubeLoader`, and `ImageCaptionLoader`. These loaders can fetch documents either eagerly or lazily as needed.
+
+Retrievers are components used to search and retrieve information from a vector store, where document embeddings are indexed. Different types of retrievers are available, such as BM25, TF-IDF, dense, and kNN retrievers, each with its own strengths and use cases. Specialized retrievers, like the `ArxivRetriever` and `WikipediaRetriever`, cater to specific domains like scientific literature and Wikipedia respectively.
+
+Examples are provided for using a kNN retriever with OpenAI embeddings to retrieve documents based on text similarity, and a PubMed retriever to fetch biomedical literature relevant to queries like "COVID."
+
+Additionally, custom retrievers can be created by inheriting from the `BaseRetriever` class and implementing the `get_relevant_documents()` method to define the retrieval logic for any specific requirements.
+
+In summary, LangChain helps build chatbots and other retrieval systems by offering tools to load, transform, embed, store, and retrieve documents, with flexibility to handle various data sources and to customize retrievers as per the application's needs.
+
+---
+
+The provided content outlines how to implement a simple chatbot using the LangChain framework. The process involves setting up a document loader to read various document formats (PDF, text, EPUB, Word), storing documents in a vector store, and configuring a chatbot to retrieve information from the vector storage.
+
+The document loader is designed to support multiple file extensions and load files as a list of documents, while the vector storage is configured using a Hugging Face model for embeddings and DocArray for in-memory storage. The retriever employs maximum marginal relevance (MMR) to retrieve diverse and relevant documents.
+
+Contextual compression techniques are mentioned to enhance retrieval by filtering out irrelevant information, with options like LLMChainExtractor, LLMChainFilter, and EmbeddingsFilter. The chatbot chain is set up with memory for contextual conversation and a ChatOpenAI model.
+
+The interface for the chatbot is created using Streamlit, allowing users to upload documents and interact with the chatbot. However, limitations such as input size, cost, and complexity of in-house model hosting are acknowledged, with further discussion to be found in a later chapter on customizing language models.
+
+---
+
+Memory is crucial for chatbots to have coherent conversations by remembering previous interactions. It provides context, personalization, and the ability to learn from past exchanges. LangChain's `ConversationBufferMemory` and `ConversationBufferWindowMemory` are examples of how to implement memory in chatbots. `ConversationBufferMemory` stores all messages, while `ConversationBufferWindowMemory` keeps only a specified number of recent interactions.
+
+Customization of conversational memory is possible by changing prefixes and templates in LangChain. `ConversationSummaryMemory` provides a condensed version of conversation history, and `ConversationKGMemory` enables storing facts in a knowledge graph format. Multiple memory strategies can be combined with `CombinedMemory`.
+
+`ConversationSummaryBufferMemory` summarizes old interactions and keeps recent ones to manage token limits. Long-term persistence can be achieved using platforms like Zep, which offer persistent backends for storing, summarizing, and searching chat histories. This enhances AI capabilities and context awareness. 
+
+---
+
+Moderation in chatbots is crucial for ensuring interactions are appropriate and respectful, aligning with ethical standards, and protecting users from offensive content. A "constitution" for chatbots establishes guidelines for their behavior, promoting ethical engagement and safeguarding brand reputation. This framework also helps in meeting legal requirements for content moderation. 
+
+To implement moderation, developers can use pre-built moderation chains such as the `OpenAIModerationChain` in LangChain, which can be appended to the chatbot's operational chain. If harmful content is detected, the system can either throw an error or inform the user that the content is unacceptable.
+
+Guardrails are additional controls that provide programmable constraints to guide the chatbot's output, preventing discussions on sensitive topics, ensuring conversations follow predefined paths, maintaining a specific language style, and extracting structured data from interactions. These measures ensure that chatbots operate within safe and desired parameters, maintaining user trust and compliance with standards.
+
+== 6. Developing Software with Generative AI
+
+[NOTE]
+====
+Example::
+generative_ai_with_langchain/software_development/baby_dev.py
+====

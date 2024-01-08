@@ -11,6 +11,7 @@ Literate Programs
    :caption: Contents:
 
    st_python.py
+   st_openai.py
    cmp_folders.py
    adoc_links.py
 
