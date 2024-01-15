@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.17">
+<meta name="generator" content="Asciidoctor 2.0.20">
 <title>LangChain Docs</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -84,10 +84,10 @@ code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;
 ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
 ul,ol{margin-left:1.5em}
 ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
-ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
-ul.square{list-style-type:square}
 ul.circle{list-style-type:circle}
 ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
 ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
 dl dt{margin-bottom:.3125em;font-weight:bold}
 dl dd{margin-bottom:1.25em}
@@ -208,13 +208,10 @@ table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
 .admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
 .exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
-.exampleblock>.content>:first-child{margin-top:0}
-.exampleblock>.content>:last-child{margin-bottom:0}
 .sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
-.sidebarblock>:first-child{margin-top:0}
-.sidebarblock>:last-child{margin-bottom:0}
 .sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
-.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
 .literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
 @media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
 @media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
@@ -393,7 +390,7 @@ b.conum *{color:inherit!important}
 dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
 h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
 p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
-p,blockquote,dt,td.content,span.alt,summary{font-size:1.0625rem}
+p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
 p{margin-bottom:1.25rem}
 .sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
 .exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
@@ -450,6 +447,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_langchain_expression_language">LangChain Expression Language</a></li>
+<li><a href="#_modules">Modules</a>
+<ul class="sectlevel2">
+<li><a href="#_model_io">Model I/O</a></li>
+</ul>
+</li>
+<li><a href="#_more">More</a>
+<ul class="sectlevel2">
+<li><a href="#_templates">Templates</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -519,6 +526,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="sect2">
 <h3 id="_quickstart">Quickstart</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><a href="https://python.langchain.com/docs/get_started/quickstart" class="bare">https://python.langchain.com/docs/get_started/quickstart</a></p>
+</div>
+</blockquote>
+</div>
 <div class="paragraph">
 <p>The provided text outlines the process of setting up and using the OpenAI API for various tasks, including creating chatbots and retrieval systems using Python. Here is a summary of the steps and concepts discussed:</p>
 </div>
@@ -636,10 +650,88 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_modules">Modules</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_model_io">Model I/O</h3>
+<div class="sect3">
+<h4 id="_concepts">Concepts</h4>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><a href="https://python.langchain.com/docs/modules/model_io/concepts" class="bare">https://python.langchain.com/docs/modules/model_io/concepts</a></p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>LangChain is a framework designed for interfacing with language models, providing tools to easily work with different types of models, construct input prompts, and handle outputs. It supports two primary types of models: LLMs for text completion tasks, like GPT-3, and Chat Models for conversational interactions, like GPT-4 or Anthropic&#8217;s Claude-2. Each model type has distinct input/output formats and may require different prompting strategies.</p>
+</div>
+<div class="paragraph">
+<p>LLMs accept string prompts and return string completions, while Chat Models take a list of messages as input and output an AI-generated message. Messages in Chat Models have a role (e.g., Human, AI, System, Function, or Tool) and content, with additional parameters for provider-specific information.</p>
+</div>
+<div class="paragraph">
+<p>LangChain provides utilities for creating prompts, known as Prompt Templates, which help transform user inputs into the right format for the model. Different templates are available for various message types, supporting interoperability between LLMs and Chat Models.</p>
+</div>
+<div class="paragraph">
+<p>Output Parsers are used to transform the raw output from models into a more usable form, such as strings or structured data. This includes simple string output parsers and specialized parsers for functions or actions determined by the model output.</p>
+</div>
+<div class="paragraph">
+<p>The framework emphasizes the need for tailored prompts for different models due to their unique characteristics and the importance of considering the best practices for each model type when developing applications.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_more">More</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_templates">Templates</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><a href="https://python.langchain.com/docs/templates" class="bare">https://python.langchain.com/docs/templates</a></p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>The provided content describes various templates available at python.langchain.com for different purposes, including chatbots, data extraction, retrieval augmentation, summarization, and safety measures. Here&#8217;s a summary of each category:</p>
+</div>
+<div class="paragraph">
+<p><strong>Popular Templates</strong>: Popular choices among users for building chatbots, extracting structured data, and creating agents with OpenAI functions, local tooling, or specific platforms like Anthropic and You.com.</p>
+</div>
+<div class="paragraph">
+<p><strong>Advanced Retrieval</strong>: Templates focusing on sophisticated retrieval techniques, such as reranking, iterative search, parent document retrieval, semi-structured data retrieval, and temporal data retrieval.</p>
+</div>
+<div class="paragraph">
+<p><strong>Advanced Retrieval - Query Transformation</strong>: Methods that transform user queries to enhance retrieval, including hypothetical document embeddings, query rewrites, "step-back" questioning, RAG-Fusion, and multi-query retrieval.</p>
+</div>
+<div class="paragraph">
+<p><strong>Advanced Retrieval - Query Construction</strong>: Techniques for constructing queries in domain-specific languages from natural language, enabling interaction with structured databases through language like Elastic Search queries or Cypher statements.</p>
+</div>
+<div class="paragraph">
+<p><strong>OSS Models</strong>: Templates utilizing open-source models for privacy-centric applications, including local retrieval, SQL question answering with various implementations, and chatbot building.</p>
+</div>
+<div class="paragraph">
+<p><strong>Extraction</strong>: Templates designed to structure data extraction following a user-defined schema, leveraging OpenAI and Anthropic functions, or extracting specific data types like biotech plate data.</p>
+</div>
+<div class="paragraph">
+<p><strong>Summarization and Tagging</strong>: Templates for summarizing or categorizing documents, such as using Anthropic&#8217;s Claude2 for document summarization.</p>
+</div>
+<div class="paragraph">
+<p><strong>Agents</strong>: Templates to create chatbots capable of taking actions, employing OpenAI function calling or platforms like Anthropic and You.com.</p>
+</div>
+<div class="paragraph">
+<p><strong>Safety and Evaluation</strong>: Templates for moderating or evaluating LLM outputs, including guardrail implementations and feedback systems for chatbot responses.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-01-08 15:25:57 +0200
+Last updated 2024-01-10 16:45:15 +0200
 </div>
 </div>
 </body>

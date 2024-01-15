@@ -1,0 +1,348 @@
+= 24-01 Pro Oracle SQL Development
+:source-highlighter: coderay
+:icons: font
+:toc: right
+:toclevels: 4
+Jon Heller
+
+== Introduction
+
+The book is designed to elevate the reader's Oracle SQL skills, encouraging them to think differently about writing SQL queries and become experts. It specifically does not focus on syntax trivia or exam preparation. The book highlights Oracle SQL's advantages, including its declarative nature, popularity, portability, simplicity, interpretability, power, and speed, while also pointing out that it is often underutilized.
+
+The intended audience includes database developers, application/front-end/full-stack developers, data analysts and testers, data scientists, and database administrators, all of whom can benefit from advanced SQL knowledge.
+
+The book is structured into five parts:
+
+- Part I focuses on foundational thinking for advanced Oracle SQL development.
+- Part II discusses powerful SQL through sets and advanced features.
+- Part III covers the art of writing elegant SQL with patterns and styles.
+- Part IV deals with improving SQL performance.
+- Part V teaches how to solve complex problems with Oracle SQL and introduces PL/SQL.
+
+The book is not about memorizing syntax but about understanding concepts. It uses a real data set from the JSR Launch Vehicle Database to illustrate examples, which are available on GitHub. The examples should work on any supported platform and version of Oracle, and the book is written with the assumption that the reader is using at least version 12.2. It is recommended to use a graphical IDE for running examples, though running them is not necessary to understand the book's content.
+
+== Part I: Learn How to Learn
+
+=== Chapter 1: Understand Relational Databases
+
+==== History of Relational Databases
+
+Relational databases, based on principles described by E. F. Codd in 1970, have been significantly shaped by Oracle Corporation, which released the first commercial SQL database in 1979 under the leadership of co-founder Larry Ellison. Oracle has since maintained a dominant position in the database market.
+
+Despite its success, the Oracle database has some outdated and confusing features for developers, such as unconventional join syntax, treating empty strings as null, a 30-byte name limit (now extended to 128 bytes), and quirky behaviors in SQL*Plus. Oracle's adherence to standards has been criticized, but it is also acknowledged that many of its early decisions predated the establishment of those standards.
+
+Oracle has a history of continuously adding features, sometimes in response to industry trends, which has led to a wide variety of capabilities being integrated into the database over time, including multiversion concurrency control, PL/SQL, object-relational and Java support, and cloud integration, among others. However, not all of these features have been successful or well-received, with some being criticized for moving the database in the wrong direction.
+
+Despite this, Oracle's comprehensive feature set allows it to function like a Swiss Army knife for database solutions, catering to a broad range of technological trends without requiring a different database for each new innovation. The company is expected to continue introducing important new features, but users should approach these with caution, staying informed through resources like the "New Features" chapter of the Oracle manual, rather than immediately adopting them.
+
+==== Relational Model and Why It Matters
+
+The relational model, foundational to the Oracle database, was introduced by E. F. Codd in 1970. It emphasizes simplicity and the use of tables, rows, and columns—referred to in theoretical terms as relations, tuples, and attributes. The model advocates for eliminating redundancy and complexity through normalization and use of primary keys to maintain data integrity and prevent update anomalies. The relational model simplifies database design by focusing on relationships between tables, which are handled through constraints and joins. While tables are a common and seemingly simple data structure, creating more tables rather than complicating existing ones is the recommended approach for handling complex data.
+
+Implementing the relational model comes with challenges, as it requires the database to manage the physical data structures and access algorithms. Oracle, as a database management system, does much of this heavy lifting, though users must still make trade-offs regarding performance and storage. Codd acknowledged that some data redundancy is inevitable and suggested the future development of metadata systems to prevent inconsistencies, a solution that is not yet fully automated. For now, database administrators and developers must remain vigilant and disciplined to avoid and manage data inconsistencies.
+
+==== Relational Model and Why It Doesn’t Matter
+
+The provided text highlights the importance of practicality over purity in the use of relational databases and the SQL language. It addresses common criticisms of the relational model and suggests practical workarounds:
+
+- **The NULL Problem**: The text acknowledges the complexity of dealing with NULL values and three-valued logic, but argues that NULLs are necessary to represent unknown data. It suggests that creating separate tables for every nullable column is impractical and unnecessary.
+
+- **Column Order**: The text emphasizes that while the physical order of columns doesn't matter in the relational model, the logical order can be important for readability and understanding. It advises against haphazardly adding columns to tables and instead suggests organizing them meaningfully.
+
+- **Denormalization**: The text recognizes that while full normalization is ideal, performance considerations may necessitate denormalization, such as duplicating data for faster read times or using materialized views. It acknowledges that this doesn't violate the relational model, as even E. F. Codd accepted that denormalization would happen.
+
+- **All Rows Are Distinct**: The text discusses the principle that all rows should be unique, as the relational model is based on sets. However, it concedes that enforcing uniqueness at all times is impractical due to storage and processing constraints, and living with the potential for duplicates is often preferable.
+
+In summary, the text argues for a balanced approach to using relational databases, where theoretical ideals are tempered with practical solutions to real-world problems. It encourages accepting certain imperfections like NULLs and denormalization as part of effective database design and operation.
+
+==== SQL Programming Language
+
+The text discusses the significance of SQL (Structured Query Language) as the predominant language for interacting with relational databases. It touches on the history of SQL, the importance of understanding relational operations, and the enduring relevance of SQL despite the existence of alternative query languages.
+
+Key points include:
+
+- The need for a specialized language to work with relational data was highlighted by E. F. Codd in 1970, leading to SQL's development.
+- SQL is rooted in IBM's SEQUEL from the 1960s, with a pronunciation that varies across different database systems.
+- The language is designed to be English-like for ease of use, exemplified by Oracle's PL/SQL and its syntax.
+- SQL remains highly popular, even though surveys may underrepresent its usage as many non-programmers use it.
+- Alternatives to SQL for querying relational data are mainly of academic interest due to SQL's dominance.
+- While visual programming languages like LabVIEW exist, textual SQL is preferred for its shareability and easier management of complex queries.
+- The text argues that SQL is indeed a "real" programming language, despite not being Turing complete, and notes that Oracle SQL has extensions that allow for procedural programming.
+
+In conclusion, SQL is seen as a high-level language that is unlikely to be replaced in the near future for querying relational data. The text emphasizes the language's adaptability, its acceptance as a programming language, and the impracticality of visual query builders for complex tasks.
+
+==== Different Database Types
+
+This section discusses the broad array of database technologies available and the capabilities of Oracle databases, emphasizing that Oracle is a robust and versatile database management system (DBMS) that can handle a variety of database workloads, including both online transaction processing (OLTP) and data warehousing (DW).
+
+Key points include:
+
+- There are numerous types of databases beyond relational databases, such as key-value, object, graph, document, hierarchical, OLAP, in-memory, embedded, streaming, column-oriented, distributed/sharded, and blockchain databases.
+- Oracle is a converged database that supports a wide range of functionalities, countering any claim that "Oracle cannot do X" without considering cost.
+- Oracle databases can be categorized into OLTP, which are designed for managing live transactions with a focus on ACID properties (Atomicity, Consistency, Isolation, Durability), and DW, which are optimized for querying and analyzing large amounts of data from various sources, often with a denormalized schema.
+- While Oracle is set up by default for OLTP, it is also equipped with many features for effective data warehousing, debunking the myth that it's not suitable for DW.
+- There is a cultural and operational difference between managing OLTP databases and data warehouses, with the former generally being maintained by application developers and the latter by database programmers, each with different priorities and concerns.
+- Many systems combine elements of OLTP and data warehousing, and while the section provides an overview, there are comprehensive resources like Oracle's _Data Warehousing Guide_ for an in-depth understanding.
+
+==== Key Concepts
+
+The provided text is a summary and guide on writing SQL statements, with a focus on the importance of understanding ANSI join syntax, inline views, nulls, and various types of joins in Oracle SQL. The key points are:
+
+- ANSI join syntax uses the JOIN keyword, which is preferred over the older comma-separated list of tables.
+- Inline views are subqueries within the FROM clause.
+- Understanding nulls and joins is fundamental for mastering Oracle SQL.
+- Nulls are tricky as they represent an absence of value and don't equate to zero or an empty string. They require special handling (`IS NULL`, `IS NOT NULL`) since direct comparison (`= NULL`, `<> NULL`) doesn't work as expected.
+- Joins are essential for relational databases, and there are several types, including inner join, left and right outer joins, full outer join, and cross join.
+- The ANSI join syntax is recommended, while the older methods (using commas and where clauses) are discouraged, though still necessary to understand due to their usage in legacy code.
+- Joins should be thoroughly understood before proceeding with advanced SQL, as they are fundamental to database operations.
+
+This summary omits the visual aids and specific code examples provided for each type of join but captures the main educational points regarding the importance and use of null handling and joins in SQL.
+
+=== Chapter 2: Create an Efficient Database Development Process
+
+==== Shared Database vs. Private Database
+
+The text discusses two approaches to Oracle database development: the common shared database server approach and the less common private database for each developer approach. The author advocates for private database development for most projects due to the increased control it offers developers, despite acknowledging that shared database development may still be suitable for certain situations with small teams or stable applications. Although private database development may initially seem daunting due to concerns about environment, security, and deployment, the author assures that such challenges can be overcome, as demonstrated by many successful organizations. The chapter focuses on private database development and suggests that having full control over an imperfect copy of the production environment is preferable to having little control over a perfect copy.
+
+==== Create an Infinite Number of Databases
+
+The text discusses the benefits of using private Oracle databases for development compared to shared databases and outlines methods to set up private databases.
+
+**Benefits of Private Databases:**
+
+1. Developers can innovate without restrictions, learning and experimenting freely.
+2. Work on multiple versions in parallel is possible with unlimited databases.
+3. Standardized configuration is achievable through automation.
+4. Smaller, more secure, and useful test data sets are preferable over large production data.
+5. Better security is achievable as private instances can be more thoroughly locked down.
+6. Performance can be better on personal computers than shared servers.
+7. Licensing is less complicated and expensive for private databases.
+8. Initial setup of private databases is easier due to the standardization and automation.
+
+**Setting up Private Databases:**
+
+- **Local Installation:** The simplest method is to install Oracle on personal computers. This does not require fancy technology and allows developers to use a powerful version of Oracle similar to the production environment. Local administration is easier since developers can ignore backups and reinstall if necessary.
+
+- **Other Options:** Alternatives include cloud platforms, virtual machines, containers, and the multitenant option. The cloud offers advantages like not having to manage low-level tasks, and Oracle's Always Free tier is good for small, non-commercial databases. Virtual machines allow for the creation of entire environments rapidly and can be shared among a team. Containers offer resource efficiency by sharing the operating system resources among applications. The multitenant option in Oracle allows a single container database to manage several pluggable databases, which are lightweight and easy to clone.
+
+In conclusion, the text advocates for the use of private databases in development environments to enhance productivity, security, and innovation while providing various ways to set up these private databases, from simple local installations to more advanced options like cloud services and containers.
+
+==== Rapidly Drop and Recreate Schemas
+
+The provided text emphasizes the importance of frequent database deployments and the use of simple, disciplined approaches to manage deployment scripts. The key points are:
+
+1. **Frequent Deployments**: Deploying database changes often reduces errors and uncertainties. Frequent practice leads to smoother processes, and it's recommended to test build scripts by dropping and recreating schemas immediately after changes are made.
+
+2. **Involvement and Pride**: All team members should be involved in creating build scripts, and there should be a sense of pride in the deployment process. A culture that discourages breaking the build is crucial for team efficiency.
+
+3. **Simple Tools Over Automation**: Automated deployment tools are often not tailored to specific databases and can force the use of a simplified SQL that doesn't leverage the full capabilities of the database, such as Oracle. Hence, using simple tools like text files and SQLPlus is recommended.
+
+4. **SQLPlus for Deployment Scripts**: Despite its age, SQLPlus is considered effective for creating database installation scripts. It is free, easy to configure, and platform-independent. However, discipline is necessary for managing the scripts effectively.
+
+5. **Structure of Installation Scripts**: Installation scripts should have a clear structure, starting with comments and prerequisites, followed by schema drops, object creation, and grants to roles. They should be modular, with separate scripts for different object types, to improve maintainability and handle dependencies.
+
+6. **Validation and Patch Scripts**: Always validate schemas after installation to ensure no errors are missed. Patch scripts are needed for production environments where dropping schemas isn't an option. However, manual creation of patch scripts is preferred for quality control.
+
+7. **Maintaining Installation Scripts**: Installation scripts serve as documentation for the database's creation. Therefore, when creating patch scripts, corresponding changes should be added to the installation scripts to keep the documentation accurate and useful.
+
+In summary, the text advocates for disciplined, frequent database deployments using simple tools like SQLPlus and manual script creation. This approach ensures reliability, maintainability, and leverages the full features of the database system.
+
+==== Control Schemas with Version-Controlled Text Files
+
+This text emphasizes the importance of using version control for managing database schemas and code, rather than relying on databases for this purpose. It argues that all code should have a single source of truth, which is best maintained through text files in version control systems like Git or Subversion. These systems offer flexibility and tools for branching, merging, and resolving conflicts, which are not provided by databases.
+
+The author advises that development should start by cloning a repository or pulling the latest files from the file system, and any modifications should be made from the file system, not directly on the database. Modern Integrated Development Environments (IDEs) support this workflow and can make development more organized.
+
+The author also recommends manually creating and saving changes to files, cautioning against relying on automated tools that generate changes based on database states. These tools often produce code that is difficult to maintain and may not align with the developer's intent or style. Instead, changes should be carefully crafted by developers themselves.
+
+In summary, the text advocates for managing database objects and code within a version-controlled environment, where changes are made manually, to ensure better quality, maintainability, and collaboration among developers.
+
+==== Empower Everyone
+
+This chapter focuses on ways to democratize Oracle schema development to empower team members, reduce dependency on others for permission, and foster experimentation. It emphasizes the need to address power imbalances between database developers and administrators, improve transparency, and lower barriers to entry in the workplace.
+
+Key points include:
+
+- **Power Imbalance**: There is often a power dynamic where database administrators (DBAs) have authority over developers, primarily due to the nonnegotiable requirements of database security, availability, and integrity. However, it's important for DBAs to support developers, who are crucial in creating value, and for developers to engage with DBAs to understand their decisions.
+- **Transparency**: The chapter encourages openness in sharing code, project plans, and documentation with everyone, despite the risk of making mistakes public. It quotes Linus's Law which suggests that more reviewers lead to quicker bug identification and resolution.
+- **Lower Barriers to Entry**: It advocates for making systems and knowledge more accessible, such as using wikis for documentation and version control systems that facilitate easy forking of software. This openness can lead to misuse or errors, but it's a necessary trade-off for broader participation and innovation.
+
+Overall, the chapter underscores the importance of fostering an inclusive and collaborative environment in Oracle development to enhance efficiency and creativity.
+
+== Part II: Write Powerful SQL with Sets and Advanced Features
+
+=== Chapter 6: Build Sets with Inline Views and ANSI Join Syntax
+
+==== Spaghetti Code from Nonstandard Syntax
+
+The provided text discusses the disadvantages of using the old join syntax in SQL compared to the more modern ANSI join syntax. The old syntax separates tables from their join conditions, making code hard to read and debug, and it increases the risk of accidental cross joins (Cartesian products), which can lead to poor performance and incorrect results. It also mentions that the old syntax is nonstandard, as it predates the SQL-92 standardization of join syntax, making code less portable between different database systems.
+
+The text suggests embracing the ANSI join syntax, which explicitly specifies the type of join and the join condition together, leading to more readable and maintainable code. While the old syntax is still valid and occasionally useful, it is recommended to be used sparingly, with an acknowledgement that there are rare cases where it may be necessary or perform better. Examples are provided to illustrate the differences between the old and ANSI join syntaxes, and the text emphasizes the importance of writing queries in a way that makes them easier to read, maintain, and debug.
+
+==== Too Much Context
+
+The provided text discusses the importance of minimizing context within SQL queries to improve their understandability and maintainability. It argues that excessive context can lead to complex dependencies that make SQL code harder to debug and work with. The text particularly advises against the overuse of correlated subqueries and common table expressions (CTEs), which can increase the context and complexity of SQL statements.
+
+Correlated subqueries, which are subqueries that reference columns from the outer query, can create indirect links that complicate the query structure. While they might not pose a significant issue in smaller queries, in larger ones, they can make it difficult to understand the query in smaller parts.
+
+Common table expressions, while useful in certain scenarios, are also criticized for unnecessarily increasing the context of a query. They can make it harder to isolate and test portions of the query independently, as the whole query remains interconnected.
+
+The text acknowledges that both correlated subqueries and CTEs have their place and can sometimes lead to performance improvements or cleaner code. However, it emphasizes that if the goal is to create modular and simple SQL code, alternative techniques should be used that minimize intra-query dependencies.
+
+==== Sets, Chunking, and Functional Programming to the Rescue
+
+The section discusses strategies for writing readable and powerful SQL statements by conceptualizing queries as nested sets, using chunking to manage complexity, and applying functional programming principles.
+
+**Sets**:
+- Visualizing SQL statements as sets helps with both performance and readability.
+- Sets are collections of objects, which can contain other sets, allowing for a nested representation of information.
+- Relational sets in SQL differ from mathematical sets as they are not always distinct and need to be represented as simple rows and columns for practical use.
+- Joins combine multiple sets into tabular data, avoiding storing sets within single columns to facilitate filtering and joining.
+
+**Chunking**:
+- Chunking involves grouping small pieces of information into meaningful units to manage complex ideas with limited short-term memory (typically 7 ± 2 items).
+- In SQL, chunking can be applied by breaking down a query into smaller, understandable parts and joining these parts together.
+- A modified rule of 3 ± 1 is suggested for SQL due to its interconnected nature.
+- Nesting sets in SQL allows for simplification of code, with each level of a statement containing a manageable number of chunks.
+
+**Functional Programming**:
+- Functional programming involves writing deterministic functions that always return the same output for the same input without side effects.
+- While SQL is not inherently a functional language, its simplicity allows for the implementation of functional programming concepts.
+- SQL statements should deal with relational data as inputs and outputs, avoiding program state to reduce side effects and bugs.
+- Data in SQL should be passed through nested sets, minimizing dependencies and context by avoiding global variables, bind variables, and correlated subqueries.
+
+In summary, to improve SQL readability and manageability, one should think in terms of sets, use chunking to break down complex queries, and adopt functional programming ideas to minimize side effects and dependencies.
+
+==== Inline Views
+
+Inline views, or subqueries in the FROM clause, are a method of structuring SQL queries by breaking them into smaller, independent sections, making the code easier to write and understand. They are different from regular subqueries and correlated subqueries, with the latter referencing columns from the outer query. Inline views behave like tables or views, can be nested within each other, and offer the benefits of a functional programming approach by passing and returning sets.
+
+Inline views can make the SQL code larger due to the need for additional joins when splitting complex queries into simpler chunks, but they help manage complexity. For instance, joining ten tables at once leads to an overwhelming number of possible combinations, making it hard to visualize and understand, but splitting them into two groups of five reduces the complexity significantly.
+
+The use of inline views is exemplified by a query to find the most popular rocket fuels per year, broken down into three separate inline views for launches, launch vehicle engines, and engine fuels. These independent chunks simplify the overall query, despite sometimes being so simple that they only filter data without joining tables. This approach helps to accommodate the cognitive limits of query writers and users, ensuring that queries remain within a manageable scope of understanding. The next steps involve putting these pieces together using ANSI join syntax and considering style and performance implications of building large, nested queries.
+
+==== ANSI Joins - Example
+
+The provided SQL query is designed to identify the top three most common rocket fuels used per year. It achieves this by constructing a complex query with several nested inline views that progressively build upon each other:
+
+1. It begins by selecting all orbital and deep space launches.
+2. It then joins this information with data on launch vehicle engines.
+3. Next, it links the engines to their respective fuels, focusing on those marked as 'fuel'.
+4. The query counts how many times each fuel is used per year.
+5. It ranks these counts within each year.
+6. Finally, it selects the top three fuels for each year based on the ranking.
+
+The query uses ANSI join syntax and window functions. It is recommended to explore this query in an IDE to understand how each section contributes to the final result.
+
+The initial results show that historically common rocket fuels have been variants of kerosene and UDMH. In more recent years, liquid hydrogen has gained popularity. The data might not be perfect and could require some grouping to refine the results, but it is still considered valid for the purpose of the query.
+
+The code and other examples can be found in a GitHub repository, and it is intended for use with Oracle database version 12.2 or higher. The book from which this code is taken suggests that while it's not necessary to run every example while reading, this particular complex query is worth experimenting with in an IDE for a better understanding of its structure and debugging process.
+
+.Version for Postgres
+```sql
+--Top 3 fuels used per year using ANSI join syntax.
+--
+--#6: Select only the top N.
+SELECT launch_year, fuel, launch_count
+FROM (
+    --#5: Rank the fuel counts.
+    SELECT 
+        launch_year, 
+        launch_count, 
+        fuel,
+        ROW_NUMBER() OVER (PARTITION BY launch_year ORDER BY launch_count DESC) AS rownumber
+    FROM (
+        --#4: Count of fuel used per year.
+        SELECT 
+            TO_CHAR(launches.launch_date, 'YYYY') AS launch_year,
+            COUNT(*) AS launch_count,
+            engine_fuels.fuel
+        FROM (
+            --#1: Orbital and deep space launches.
+            SELECT *
+            FROM launch
+            WHERE launch_category IN ('orbital', 'deep space')
+        ) AS launches
+        LEFT JOIN (
+            --#2: Launch Vehicle Engines
+            SELECT launch_vehicle_stage.lv_id, stage.engine_id
+            FROM launch_vehicle_stage
+            LEFT JOIN stage ON launch_vehicle_stage.stage_name = stage.stage_name
+        ) AS lv_engines ON launches.lv_id = lv_engines.lv_id
+        LEFT JOIN (
+            --#3: Engine Fuels
+            SELECT engine.engine_id, propellant_name AS fuel
+            FROM engine
+            LEFT JOIN engine_propellant ON engine.engine_id = engine_propellant.engine_id
+            LEFT JOIN propellant ON engine_propellant.propellant_id = propellant.propellant_id
+            WHERE oxidizer_or_fuel = 'fuel'
+        ) AS engine_fuels ON lv_engines.engine_id = engine_fuels.engine_id
+        GROUP BY TO_CHAR(launches.launch_date, 'YYYY'), engine_fuels.fuel
+        ORDER BY launch_year, launch_count DESC, fuel
+    ) AS subquery
+) AS final_query
+WHERE rownumber <= 3
+ORDER BY launch_year, launch_count DESC;
+```
+
+=== Chapter 7: Query the Database with Advanced SELECT Features
+
+==== Operators, Functions, Expressions, and Conditions
+
+The provided text explains the concepts of operators, functions, expressions, and conditions in Oracle SQL. Operators are symbols that perform an action and return a value, while functions are called with arguments to return a value. An expression is a combination of literals, functions, and operators that yields a value. Conditions are specific types of expressions that return a Boolean value and are often used in clauses like WHERE.
+
+Understanding these elements is crucial because they have different applications and cannot always be used interchangeably. For instance, a WHERE clause requires a condition, not just any expression.
+
+The text also stresses the importance of recognizing when something is missing or overly complex in SQL code. It suggests that excessive type conversions might indicate the need for a simplified approach, such as using the TRUNC function to handle dates without conversion.
+
+Regarding precedence rules, the text advises following conventional mathematical order for operators and understanding that in conditions, AND has higher precedence than OR. However, clarity should be prioritized over strict adherence to precedence rules, and parentheses should be used to make expressions easier to read.
+
+Simplification of syntax can also be achieved through inline views, which can make long, complex expressions more manageable and easier to debug. However, one should balance the use of inline views to avoid unnecessary fragmentation of the code.
+
+Finally, the text mentions that discrete math principles, like De Morgan's laws, can help simplify complex logical conditions. It also suggests creating truth tables for complex scenarios to visualize all possible combinations of conditions and their outcomes, aiding in better understanding and debugging of SQL queries.
+
+==== CASE and DECODE
+
+The text explains the use of CASE and DECODE expressions in SQL for adding conditional logic, similar to IF statements. CASE is generally preferred because it is more readable, available in both SQL and PL/SQL, and handles NULLs predictably. Both expressions utilize short-circuit evaluation, stopping once a condition is met.
+
+An example provided applies CASE and DECODE to the fizz buzz problem, where numbers 1 to 100 are evaluated for divisibility by 3, 5, or both, outputting "fizz", "buzz", or "fizz buzz" accordingly. The CASE expression is shown to be more versatile, allowing different types of conditions, not just equality.
+
+There are two types of CASE expressions: searched and simple. The searched case is more powerful and used in the fizz buzz example, while the simple case is shorter and compares against a list of values.
+
+The text also highlights a peculiarity of DECODE where it treats NULL as equal to NULL, which is not standard behavior in SQL comparisons. An example is given where DECODE returns "A" when comparing two NULLs, which is a special case to remember.
+
+.Version for Postgres
+```sql
+SELECT 
+    launch_id,
+    apogee,
+    CASE
+        WHEN apogee < 10 THEN 'Low'
+        WHEN apogee BETWEEN 10 AND 20 THEN 'Medium'
+        ELSE 'High'
+    END AS apogee_group
+FROM 
+    launch;
+```
+
+==== Joins
+
+The provided text discusses various aspects and types of SQL joins, emphasizing their importance in database operations and their role in evaluating database capabilities. The text then goes on to describe specific join types, their uses, and implications for database performance and query design.
+
+**Summary of Key Points:**
+
+1. **Types of Joins:** Several types of joins are described, including inner, outer (left, right, full), cross, lateral, cross apply, outer apply, semi-join, anti-join, natural join, self-join, and partitioned outer joins. Inner, left, right, full, cross, and ANSI vs. old syntax joins are considered basic and not elaborated upon.
+
+2. **Partitioned Outer Joins:** Useful for data densification, allowing counts per item per time period, even when the counts are zero. It's a complex join that is shown to be useful in the example provided, which demonstrates counting rocket launches per vehicle family per month.
+
+3. **Lateral, Cross Apply, and Outer Apply Joins:** These joins are discouraged, as they allow inline views to access external values, contradicting the purpose of inline views and complicating the query context.
+
+4. **Equijoin vs. Non-equijoin:** Equijoins use the equality operator, while non-equijoins use other operators like `<>` or `BETWEEN`. Equijoins are important for performance because they can be used for hash joins, often the fastest join method.
+
+5. **Semi-join and Anti-join:** These types involve stopping the join process as soon as a matching or non-matching row is found, which can lead to performance optimizations.
+
+6. **Self-Joins:** These occur when a table is joined to itself and can become complex when dealing with hierarchical data that requires recursive queries.
+
+7. **Natural Joins and USING Clause:** The use of natural joins and the USING clause is discouraged due to the potential for unexpected results and limitations in query syntax. Natural joins can cause issues by automatically joining tables based on matching column names, while the USING clause simplifies syntax but introduces restrictions on column referencing.
+
+The text asserts that a deep understanding of joins is essential for database proficiency, and it is crucial to be able to join tables effectively. The specific join types and their appropriate uses are covered in greater detail, along with their implications for query performance and design.

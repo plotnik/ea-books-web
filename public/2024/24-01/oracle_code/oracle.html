@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<meta name="author" content="Jon Heller">
+<title>24-01 Pro Oracle SQL Development</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+/* Uncomment the following line when using as a custom stylesheet */
+/* @import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700"; */
+html{font-family:sans-serif;-webkit-text-size-adjust:100%}
+a{background:none}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+b,strong{font-weight:bold}
+abbr{font-size:.9em}
+abbr[title]{cursor:help;border-bottom:1px dotted #dddddf;text-decoration:none}
+dfn{font-style:italic}
+hr{height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+audio,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type=checkbox],input[type=radio]{padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,::before,::after{box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;line-height:1;position:relative;cursor:auto;-moz-tab-size:4;-o-tab-size:4;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:0}
+p{line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:1px solid #dedede;word-wrap:normal}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt{background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+:not(pre).nobreak{word-wrap:normal}
+:not(pre).nowrap{white-space:nowrap}
+:not(pre).pre-wrap{white-space:pre-wrap}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
+pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
+pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,.2),inset 0 0 0 .1em #fff;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin:0 auto;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border:1px solid #e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:hsla(0,0%,100%,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+details{margin-left:1.25rem}
+details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;outline:none;-webkit-tap-highlight-color:transparent}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";border:solid transparent;border-left:solid;border-width:.3em 0 .3em .5em;position:absolute;top:.5em;left:-1.25rem;transform:translateX(15%)}
+details[open]>summary::before{border:solid transparent;border-top:solid;border-width:.5em .3em 0;transform:translateY(15%)}
+details>summary::after{content:"";width:1.25rem;height:1em;position:absolute;top:.3em;left:-1.25rem}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class=paragraph]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
+.sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
+.literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class=highlight],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
+.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.prettyprint{background:#f7f7f8}
+pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
+pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
+pre.prettyprint li code[data-lang]::before{opacity:1}
+pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
+table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
+table.linenotable td.code{padding-left:.75em}
+table.linenotable td.linenos,pre.pygments .linenos{border-right:1px solid;opacity:.35;padding-right:.5em;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+pre.pygments span.linenos{display:inline-block;margin-right:.75em}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans-serif;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
+td.tableblock>.content>:last-child{margin-bottom:-1.25em}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>*>tr>*{border-width:1px}
+table.grid-cols>*>tr>*{border-width:0 1px}
+table.grid-rows>*>tr>*{border-width:1px 0}
+table.frame-all{border-width:1px}
+table.frame-ends{border-width:1px 0}
+table.frame-sides{border-width:0 1px}
+table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
+table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
+table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
+table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
+table.stripes-all>*>tr,table.stripes-odd>*>tr:nth-of-type(odd),table.stripes-even>*>tr:nth-of-type(even),table.stripes-hover>*>tr:hover{background:#f8f8f7}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+li>p:empty:only-child::before{content:"";display:inline-block}
+ul.checklist>li>p:first-child{margin-left:-1em}
+ul.checklist>li>p:first-child>.fa-square-o:first-child,ul.checklist>li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist>li>p:first-child>input[type=checkbox]:first-child{margin-right:.25em}
+ul.inline{display:flex;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+td.hdlist2{word-wrap:anywhere}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:4px solid #fff;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background:#00fafa}
+.black{color:#000}
+.black-background{background:#000}
+.blue{color:#0000bf}
+.blue-background{background:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background:#fa00fa}
+.gray{color:#606060}
+.gray-background{background:#7d7d7d}
+.green{color:#006000}
+.green-background{background:#007d00}
+.lime{color:#00bf00}
+.lime-background{background:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background:#7d0000}
+.navy{color:#000060}
+.navy-background{background:#00007d}
+.olive{color:#606000}
+.olive-background{background:#7d7d00}
+.purple{color:#600060}
+.purple-background{background:#7d007d}
+.red{color:#bf0000}
+.red-background{background:#fa0000}
+.silver{color:#909090}
+.silver-background{background:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]{border-bottom:1px dotted}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#header,#content,#footnotes,#footer{max-width:none}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media amzn-kf8,print{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+/*! Stylesheet for CodeRay to loosely match GitHub themes | MIT License */
+pre.CodeRay{background:#f7f7f8}
+.CodeRay .line-numbers{border-right:1px solid;opacity:.35;padding:0 .5em 0 0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.75em}
+.CodeRay .line-numbers strong{color:#000}
+table.CodeRay{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.CodeRay td{vertical-align:top;line-height:inherit}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.code{padding:0 0 0 .75em}
+.CodeRay .debug{color:#fff!important;background:navy!important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:navy}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:teal}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:teal}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:teal}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword{color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:teal}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}
+</style>
+</head>
+<body class="article toc2 toc-right">
+<div id="header">
+<h1>24-01 Pro Oracle SQL Development</h1>
+<div class="details">
+<span id="author" class="author">Jon Heller</span><br>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_introduction">Introduction</a></li>
+<li><a href="#_part_i_learn_how_to_learn">Part I: Learn How to Learn</a>
+<ul class="sectlevel2">
+<li><a href="#_chapter_1_understand_relational_databases">Chapter 1: Understand Relational Databases</a>
+<ul class="sectlevel3">
+<li><a href="#_history_of_relational_databases">History of Relational Databases</a></li>
+<li><a href="#_relational_model_and_why_it_matters">Relational Model and Why It Matters</a></li>
+<li><a href="#_relational_model_and_why_it_doesnt_matter">Relational Model and Why It Doesn’t Matter</a></li>
+<li><a href="#_sql_programming_language">SQL Programming Language</a></li>
+<li><a href="#_different_database_types">Different Database Types</a></li>
+<li><a href="#_key_concepts">Key Concepts</a></li>
+</ul>
+</li>
+<li><a href="#_chapter_2_create_anefficient_database_development_process">Chapter 2: Create an Efficient Database Development Process</a>
+<ul class="sectlevel3">
+<li><a href="#_shared_database_vs_private_database">Shared Database vs. Private Database</a></li>
+<li><a href="#_create_aninfinite_number_ofdatabases">Create an Infinite Number of Databases</a></li>
+<li><a href="#_rapidly_drop_and_recreate_schemas">Rapidly Drop and Recreate Schemas</a></li>
+<li><a href="#_control_schemas_withversion_controlled_text_files">Control Schemas with Version-Controlled Text Files</a></li>
+<li><a href="#_empower_everyone">Empower Everyone</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_part_ii_write_powerful_sql_with_sets_and_advanced_features">Part II: Write Powerful SQL with Sets and Advanced Features</a>
+<ul class="sectlevel2">
+<li><a href="#_chapter_6_build_sets_withinline_views_andansi_join_syntax">Chapter 6: Build Sets with Inline Views and ANSI Join Syntax</a>
+<ul class="sectlevel3">
+<li><a href="#_spaghetti_code_fromnonstandard_syntax">Spaghetti Code from Nonstandard Syntax</a></li>
+<li><a href="#_too_much_context">Too Much Context</a></li>
+<li><a href="#_sets_chunking_andfunctional_programming_totherescue">Sets, Chunking, and Functional Programming to the Rescue</a></li>
+<li><a href="#_inline_views">Inline Views</a></li>
+<li><a href="#_ansi_joins_example">ANSI Joins - Example</a></li>
+</ul>
+</li>
+<li><a href="#_chapter_7_query_thedatabase_withadvanced_select_features">Chapter 7: Query the Database with Advanced SELECT Features</a>
+<ul class="sectlevel3">
+<li><a href="#_operators_functions_expressions_andconditions">Operators, Functions, Expressions, and Conditions</a></li>
+<li><a href="#_case_and_decode">CASE and DECODE</a></li>
+<li><a href="#_joins">Joins</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The book is designed to elevate the reader&#8217;s Oracle SQL skills, encouraging them to think differently about writing SQL queries and become experts. It specifically does not focus on syntax trivia or exam preparation. The book highlights Oracle SQL&#8217;s advantages, including its declarative nature, popularity, portability, simplicity, interpretability, power, and speed, while also pointing out that it is often underutilized.</p>
+</div>
+<div class="paragraph">
+<p>The intended audience includes database developers, application/front-end/full-stack developers, data analysts and testers, data scientists, and database administrators, all of whom can benefit from advanced SQL knowledge.</p>
+</div>
+<div class="paragraph">
+<p>The book is structured into five parts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Part I focuses on foundational thinking for advanced Oracle SQL development.</p>
+</li>
+<li>
+<p>Part II discusses powerful SQL through sets and advanced features.</p>
+</li>
+<li>
+<p>Part III covers the art of writing elegant SQL with patterns and styles.</p>
+</li>
+<li>
+<p>Part IV deals with improving SQL performance.</p>
+</li>
+<li>
+<p>Part V teaches how to solve complex problems with Oracle SQL and introduces PL/SQL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The book is not about memorizing syntax but about understanding concepts. It uses a real data set from the JSR Launch Vehicle Database to illustrate examples, which are available on GitHub. The examples should work on any supported platform and version of Oracle, and the book is written with the assumption that the reader is using at least version 12.2. It is recommended to use a graphical IDE for running examples, though running them is not necessary to understand the book&#8217;s content.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_part_i_learn_how_to_learn">Part I: Learn How to Learn</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_chapter_1_understand_relational_databases">Chapter 1: Understand Relational Databases</h3>
+<div class="sect3">
+<h4 id="_history_of_relational_databases">History of Relational Databases</h4>
+<div class="paragraph">
+<p>Relational databases, based on principles described by E. F. Codd in 1970, have been significantly shaped by Oracle Corporation, which released the first commercial SQL database in 1979 under the leadership of co-founder Larry Ellison. Oracle has since maintained a dominant position in the database market.</p>
+</div>
+<div class="paragraph">
+<p>Despite its success, the Oracle database has some outdated and confusing features for developers, such as unconventional join syntax, treating empty strings as null, a 30-byte name limit (now extended to 128 bytes), and quirky behaviors in SQL*Plus. Oracle&#8217;s adherence to standards has been criticized, but it is also acknowledged that many of its early decisions predated the establishment of those standards.</p>
+</div>
+<div class="paragraph">
+<p>Oracle has a history of continuously adding features, sometimes in response to industry trends, which has led to a wide variety of capabilities being integrated into the database over time, including multiversion concurrency control, PL/SQL, object-relational and Java support, and cloud integration, among others. However, not all of these features have been successful or well-received, with some being criticized for moving the database in the wrong direction.</p>
+</div>
+<div class="paragraph">
+<p>Despite this, Oracle&#8217;s comprehensive feature set allows it to function like a Swiss Army knife for database solutions, catering to a broad range of technological trends without requiring a different database for each new innovation. The company is expected to continue introducing important new features, but users should approach these with caution, staying informed through resources like the "New Features" chapter of the Oracle manual, rather than immediately adopting them.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_relational_model_and_why_it_matters">Relational Model and Why It Matters</h4>
+<div class="paragraph">
+<p>The relational model, foundational to the Oracle database, was introduced by E. F. Codd in 1970. It emphasizes simplicity and the use of tables, rows, and columns—referred to in theoretical terms as relations, tuples, and attributes. The model advocates for eliminating redundancy and complexity through normalization and use of primary keys to maintain data integrity and prevent update anomalies. The relational model simplifies database design by focusing on relationships between tables, which are handled through constraints and joins. While tables are a common and seemingly simple data structure, creating more tables rather than complicating existing ones is the recommended approach for handling complex data.</p>
+</div>
+<div class="paragraph">
+<p>Implementing the relational model comes with challenges, as it requires the database to manage the physical data structures and access algorithms. Oracle, as a database management system, does much of this heavy lifting, though users must still make trade-offs regarding performance and storage. Codd acknowledged that some data redundancy is inevitable and suggested the future development of metadata systems to prevent inconsistencies, a solution that is not yet fully automated. For now, database administrators and developers must remain vigilant and disciplined to avoid and manage data inconsistencies.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_relational_model_and_why_it_doesnt_matter">Relational Model and Why It Doesn’t Matter</h4>
+<div class="paragraph">
+<p>The provided text highlights the importance of practicality over purity in the use of relational databases and the SQL language. It addresses common criticisms of the relational model and suggests practical workarounds:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>The NULL Problem</strong>: The text acknowledges the complexity of dealing with NULL values and three-valued logic, but argues that NULLs are necessary to represent unknown data. It suggests that creating separate tables for every nullable column is impractical and unnecessary.</p>
+</li>
+<li>
+<p><strong>Column Order</strong>: The text emphasizes that while the physical order of columns doesn&#8217;t matter in the relational model, the logical order can be important for readability and understanding. It advises against haphazardly adding columns to tables and instead suggests organizing them meaningfully.</p>
+</li>
+<li>
+<p><strong>Denormalization</strong>: The text recognizes that while full normalization is ideal, performance considerations may necessitate denormalization, such as duplicating data for faster read times or using materialized views. It acknowledges that this doesn&#8217;t violate the relational model, as even E. F. Codd accepted that denormalization would happen.</p>
+</li>
+<li>
+<p><strong>All Rows Are Distinct</strong>: The text discusses the principle that all rows should be unique, as the relational model is based on sets. However, it concedes that enforcing uniqueness at all times is impractical due to storage and processing constraints, and living with the potential for duplicates is often preferable.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In summary, the text argues for a balanced approach to using relational databases, where theoretical ideals are tempered with practical solutions to real-world problems. It encourages accepting certain imperfections like NULLs and denormalization as part of effective database design and operation.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_sql_programming_language">SQL Programming Language</h4>
+<div class="paragraph">
+<p>The text discusses the significance of SQL (Structured Query Language) as the predominant language for interacting with relational databases. It touches on the history of SQL, the importance of understanding relational operations, and the enduring relevance of SQL despite the existence of alternative query languages.</p>
+</div>
+<div class="paragraph">
+<p>Key points include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The need for a specialized language to work with relational data was highlighted by E. F. Codd in 1970, leading to SQL&#8217;s development.</p>
+</li>
+<li>
+<p>SQL is rooted in IBM&#8217;s SEQUEL from the 1960s, with a pronunciation that varies across different database systems.</p>
+</li>
+<li>
+<p>The language is designed to be English-like for ease of use, exemplified by Oracle&#8217;s PL/SQL and its syntax.</p>
+</li>
+<li>
+<p>SQL remains highly popular, even though surveys may underrepresent its usage as many non-programmers use it.</p>
+</li>
+<li>
+<p>Alternatives to SQL for querying relational data are mainly of academic interest due to SQL&#8217;s dominance.</p>
+</li>
+<li>
+<p>While visual programming languages like LabVIEW exist, textual SQL is preferred for its shareability and easier management of complex queries.</p>
+</li>
+<li>
+<p>The text argues that SQL is indeed a "real" programming language, despite not being Turing complete, and notes that Oracle SQL has extensions that allow for procedural programming.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In conclusion, SQL is seen as a high-level language that is unlikely to be replaced in the near future for querying relational data. The text emphasizes the language&#8217;s adaptability, its acceptance as a programming language, and the impracticality of visual query builders for complex tasks.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_different_database_types">Different Database Types</h4>
+<div class="paragraph">
+<p>This section discusses the broad array of database technologies available and the capabilities of Oracle databases, emphasizing that Oracle is a robust and versatile database management system (DBMS) that can handle a variety of database workloads, including both online transaction processing (OLTP) and data warehousing (DW).</p>
+</div>
+<div class="paragraph">
+<p>Key points include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>There are numerous types of databases beyond relational databases, such as key-value, object, graph, document, hierarchical, OLAP, in-memory, embedded, streaming, column-oriented, distributed/sharded, and blockchain databases.</p>
+</li>
+<li>
+<p>Oracle is a converged database that supports a wide range of functionalities, countering any claim that "Oracle cannot do X" without considering cost.</p>
+</li>
+<li>
+<p>Oracle databases can be categorized into OLTP, which are designed for managing live transactions with a focus on ACID properties (Atomicity, Consistency, Isolation, Durability), and DW, which are optimized for querying and analyzing large amounts of data from various sources, often with a denormalized schema.</p>
+</li>
+<li>
+<p>While Oracle is set up by default for OLTP, it is also equipped with many features for effective data warehousing, debunking the myth that it&#8217;s not suitable for DW.</p>
+</li>
+<li>
+<p>There is a cultural and operational difference between managing OLTP databases and data warehouses, with the former generally being maintained by application developers and the latter by database programmers, each with different priorities and concerns.</p>
+</li>
+<li>
+<p>Many systems combine elements of OLTP and data warehousing, and while the section provides an overview, there are comprehensive resources like Oracle&#8217;s <em>Data Warehousing Guide</em> for an in-depth understanding.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_concepts">Key Concepts</h4>
+<div class="paragraph">
+<p>The provided text is a summary and guide on writing SQL statements, with a focus on the importance of understanding ANSI join syntax, inline views, nulls, and various types of joins in Oracle SQL. The key points are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ANSI join syntax uses the JOIN keyword, which is preferred over the older comma-separated list of tables.</p>
+</li>
+<li>
+<p>Inline views are subqueries within the FROM clause.</p>
+</li>
+<li>
+<p>Understanding nulls and joins is fundamental for mastering Oracle SQL.</p>
+</li>
+<li>
+<p>Nulls are tricky as they represent an absence of value and don&#8217;t equate to zero or an empty string. They require special handling (<code>IS NULL</code>, <code>IS NOT NULL</code>) since direct comparison (<code>= NULL</code>, <code>&lt;&gt; NULL</code>) doesn&#8217;t work as expected.</p>
+</li>
+<li>
+<p>Joins are essential for relational databases, and there are several types, including inner join, left and right outer joins, full outer join, and cross join.</p>
+</li>
+<li>
+<p>The ANSI join syntax is recommended, while the older methods (using commas and where clauses) are discouraged, though still necessary to understand due to their usage in legacy code.</p>
+</li>
+<li>
+<p>Joins should be thoroughly understood before proceeding with advanced SQL, as they are fundamental to database operations.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This summary omits the visual aids and specific code examples provided for each type of join but captures the main educational points regarding the importance and use of null handling and joins in SQL.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_chapter_2_create_anefficient_database_development_process">Chapter 2: Create an Efficient Database Development Process</h3>
+<div class="sect3">
+<h4 id="_shared_database_vs_private_database">Shared Database vs. Private Database</h4>
+<div class="paragraph">
+<p>The text discusses two approaches to Oracle database development: the common shared database server approach and the less common private database for each developer approach. The author advocates for private database development for most projects due to the increased control it offers developers, despite acknowledging that shared database development may still be suitable for certain situations with small teams or stable applications. Although private database development may initially seem daunting due to concerns about environment, security, and deployment, the author assures that such challenges can be overcome, as demonstrated by many successful organizations. The chapter focuses on private database development and suggests that having full control over an imperfect copy of the production environment is preferable to having little control over a perfect copy.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_create_aninfinite_number_ofdatabases">Create an Infinite Number of Databases</h4>
+<div class="paragraph">
+<p>The text discusses the benefits of using private Oracle databases for development compared to shared databases and outlines methods to set up private databases.</p>
+</div>
+<div class="paragraph">
+<p><strong>Benefits of Private Databases:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Developers can innovate without restrictions, learning and experimenting freely.</p>
+</li>
+<li>
+<p>Work on multiple versions in parallel is possible with unlimited databases.</p>
+</li>
+<li>
+<p>Standardized configuration is achievable through automation.</p>
+</li>
+<li>
+<p>Smaller, more secure, and useful test data sets are preferable over large production data.</p>
+</li>
+<li>
+<p>Better security is achievable as private instances can be more thoroughly locked down.</p>
+</li>
+<li>
+<p>Performance can be better on personal computers than shared servers.</p>
+</li>
+<li>
+<p>Licensing is less complicated and expensive for private databases.</p>
+</li>
+<li>
+<p>Initial setup of private databases is easier due to the standardization and automation.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Setting up Private Databases:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Local Installation:</strong> The simplest method is to install Oracle on personal computers. This does not require fancy technology and allows developers to use a powerful version of Oracle similar to the production environment. Local administration is easier since developers can ignore backups and reinstall if necessary.</p>
+</li>
+<li>
+<p><strong>Other Options:</strong> Alternatives include cloud platforms, virtual machines, containers, and the multitenant option. The cloud offers advantages like not having to manage low-level tasks, and Oracle&#8217;s Always Free tier is good for small, non-commercial databases. Virtual machines allow for the creation of entire environments rapidly and can be shared among a team. Containers offer resource efficiency by sharing the operating system resources among applications. The multitenant option in Oracle allows a single container database to manage several pluggable databases, which are lightweight and easy to clone.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In conclusion, the text advocates for the use of private databases in development environments to enhance productivity, security, and innovation while providing various ways to set up these private databases, from simple local installations to more advanced options like cloud services and containers.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_rapidly_drop_and_recreate_schemas">Rapidly Drop and Recreate Schemas</h4>
+<div class="paragraph">
+<p>The provided text emphasizes the importance of frequent database deployments and the use of simple, disciplined approaches to manage deployment scripts. The key points are:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Frequent Deployments</strong>: Deploying database changes often reduces errors and uncertainties. Frequent practice leads to smoother processes, and it&#8217;s recommended to test build scripts by dropping and recreating schemas immediately after changes are made.</p>
+</li>
+<li>
+<p><strong>Involvement and Pride</strong>: All team members should be involved in creating build scripts, and there should be a sense of pride in the deployment process. A culture that discourages breaking the build is crucial for team efficiency.</p>
+</li>
+<li>
+<p><strong>Simple Tools Over Automation</strong>: Automated deployment tools are often not tailored to specific databases and can force the use of a simplified SQL that doesn&#8217;t leverage the full capabilities of the database, such as Oracle. Hence, using simple tools like text files and SQLPlus is recommended.</p>
+</li>
+<li>
+<p><strong>SQLPlus for Deployment Scripts</strong>: Despite its age, SQLPlus is considered effective for creating database installation scripts. It is free, easy to configure, and platform-independent. However, discipline is necessary for managing the scripts effectively.</p>
+</li>
+<li>
+<p><strong>Structure of Installation Scripts</strong>: Installation scripts should have a clear structure, starting with comments and prerequisites, followed by schema drops, object creation, and grants to roles. They should be modular, with separate scripts for different object types, to improve maintainability and handle dependencies.</p>
+</li>
+<li>
+<p><strong>Validation and Patch Scripts</strong>: Always validate schemas after installation to ensure no errors are missed. Patch scripts are needed for production environments where dropping schemas isn&#8217;t an option. However, manual creation of patch scripts is preferred for quality control.</p>
+</li>
+<li>
+<p><strong>Maintaining Installation Scripts</strong>: Installation scripts serve as documentation for the database&#8217;s creation. Therefore, when creating patch scripts, corresponding changes should be added to the installation scripts to keep the documentation accurate and useful.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>In summary, the text advocates for disciplined, frequent database deployments using simple tools like SQLPlus and manual script creation. This approach ensures reliability, maintainability, and leverages the full features of the database system.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_control_schemas_withversion_controlled_text_files">Control Schemas with Version-Controlled Text Files</h4>
+<div class="paragraph">
+<p>This text emphasizes the importance of using version control for managing database schemas and code, rather than relying on databases for this purpose. It argues that all code should have a single source of truth, which is best maintained through text files in version control systems like Git or Subversion. These systems offer flexibility and tools for branching, merging, and resolving conflicts, which are not provided by databases.</p>
+</div>
+<div class="paragraph">
+<p>The author advises that development should start by cloning a repository or pulling the latest files from the file system, and any modifications should be made from the file system, not directly on the database. Modern Integrated Development Environments (IDEs) support this workflow and can make development more organized.</p>
+</div>
+<div class="paragraph">
+<p>The author also recommends manually creating and saving changes to files, cautioning against relying on automated tools that generate changes based on database states. These tools often produce code that is difficult to maintain and may not align with the developer&#8217;s intent or style. Instead, changes should be carefully crafted by developers themselves.</p>
+</div>
+<div class="paragraph">
+<p>In summary, the text advocates for managing database objects and code within a version-controlled environment, where changes are made manually, to ensure better quality, maintainability, and collaboration among developers.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_empower_everyone">Empower Everyone</h4>
+<div class="paragraph">
+<p>This chapter focuses on ways to democratize Oracle schema development to empower team members, reduce dependency on others for permission, and foster experimentation. It emphasizes the need to address power imbalances between database developers and administrators, improve transparency, and lower barriers to entry in the workplace.</p>
+</div>
+<div class="paragraph">
+<p>Key points include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Power Imbalance</strong>: There is often a power dynamic where database administrators (DBAs) have authority over developers, primarily due to the nonnegotiable requirements of database security, availability, and integrity. However, it&#8217;s important for DBAs to support developers, who are crucial in creating value, and for developers to engage with DBAs to understand their decisions.</p>
+</li>
+<li>
+<p><strong>Transparency</strong>: The chapter encourages openness in sharing code, project plans, and documentation with everyone, despite the risk of making mistakes public. It quotes Linus&#8217;s Law which suggests that more reviewers lead to quicker bug identification and resolution.</p>
+</li>
+<li>
+<p><strong>Lower Barriers to Entry</strong>: It advocates for making systems and knowledge more accessible, such as using wikis for documentation and version control systems that facilitate easy forking of software. This openness can lead to misuse or errors, but it&#8217;s a necessary trade-off for broader participation and innovation.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, the chapter underscores the importance of fostering an inclusive and collaborative environment in Oracle development to enhance efficiency and creativity.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_part_ii_write_powerful_sql_with_sets_and_advanced_features">Part II: Write Powerful SQL with Sets and Advanced Features</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_chapter_6_build_sets_withinline_views_andansi_join_syntax">Chapter 6: Build Sets with Inline Views and ANSI Join Syntax</h3>
+<div class="sect3">
+<h4 id="_spaghetti_code_fromnonstandard_syntax">Spaghetti Code from Nonstandard Syntax</h4>
+<div class="paragraph">
+<p>The provided text discusses the disadvantages of using the old join syntax in SQL compared to the more modern ANSI join syntax. The old syntax separates tables from their join conditions, making code hard to read and debug, and it increases the risk of accidental cross joins (Cartesian products), which can lead to poor performance and incorrect results. It also mentions that the old syntax is nonstandard, as it predates the SQL-92 standardization of join syntax, making code less portable between different database systems.</p>
+</div>
+<div class="paragraph">
+<p>The text suggests embracing the ANSI join syntax, which explicitly specifies the type of join and the join condition together, leading to more readable and maintainable code. While the old syntax is still valid and occasionally useful, it is recommended to be used sparingly, with an acknowledgement that there are rare cases where it may be necessary or perform better. Examples are provided to illustrate the differences between the old and ANSI join syntaxes, and the text emphasizes the importance of writing queries in a way that makes them easier to read, maintain, and debug.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_too_much_context">Too Much Context</h4>
+<div class="paragraph">
+<p>The provided text discusses the importance of minimizing context within SQL queries to improve their understandability and maintainability. It argues that excessive context can lead to complex dependencies that make SQL code harder to debug and work with. The text particularly advises against the overuse of correlated subqueries and common table expressions (CTEs), which can increase the context and complexity of SQL statements.</p>
+</div>
+<div class="paragraph">
+<p>Correlated subqueries, which are subqueries that reference columns from the outer query, can create indirect links that complicate the query structure. While they might not pose a significant issue in smaller queries, in larger ones, they can make it difficult to understand the query in smaller parts.</p>
+</div>
+<div class="paragraph">
+<p>Common table expressions, while useful in certain scenarios, are also criticized for unnecessarily increasing the context of a query. They can make it harder to isolate and test portions of the query independently, as the whole query remains interconnected.</p>
+</div>
+<div class="paragraph">
+<p>The text acknowledges that both correlated subqueries and CTEs have their place and can sometimes lead to performance improvements or cleaner code. However, it emphasizes that if the goal is to create modular and simple SQL code, alternative techniques should be used that minimize intra-query dependencies.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_sets_chunking_andfunctional_programming_totherescue">Sets, Chunking, and Functional Programming to the Rescue</h4>
+<div class="paragraph">
+<p>The section discusses strategies for writing readable and powerful SQL statements by conceptualizing queries as nested sets, using chunking to manage complexity, and applying functional programming principles.</p>
+</div>
+<div class="paragraph">
+<p><strong>Sets</strong>:
+- Visualizing SQL statements as sets helps with both performance and readability.
+- Sets are collections of objects, which can contain other sets, allowing for a nested representation of information.
+- Relational sets in SQL differ from mathematical sets as they are not always distinct and need to be represented as simple rows and columns for practical use.
+- Joins combine multiple sets into tabular data, avoiding storing sets within single columns to facilitate filtering and joining.</p>
+</div>
+<div class="paragraph">
+<p><strong>Chunking</strong>:
+- Chunking involves grouping small pieces of information into meaningful units to manage complex ideas with limited short-term memory (typically 7 ± 2 items).
+- In SQL, chunking can be applied by breaking down a query into smaller, understandable parts and joining these parts together.
+- A modified rule of 3 ± 1 is suggested for SQL due to its interconnected nature.
+- Nesting sets in SQL allows for simplification of code, with each level of a statement containing a manageable number of chunks.</p>
+</div>
+<div class="paragraph">
+<p><strong>Functional Programming</strong>:
+- Functional programming involves writing deterministic functions that always return the same output for the same input without side effects.
+- While SQL is not inherently a functional language, its simplicity allows for the implementation of functional programming concepts.
+- SQL statements should deal with relational data as inputs and outputs, avoiding program state to reduce side effects and bugs.
+- Data in SQL should be passed through nested sets, minimizing dependencies and context by avoiding global variables, bind variables, and correlated subqueries.</p>
+</div>
+<div class="paragraph">
+<p>In summary, to improve SQL readability and manageability, one should think in terms of sets, use chunking to break down complex queries, and adopt functional programming ideas to minimize side effects and dependencies.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_inline_views">Inline Views</h4>
+<div class="paragraph">
+<p>Inline views, or subqueries in the FROM clause, are a method of structuring SQL queries by breaking them into smaller, independent sections, making the code easier to write and understand. They are different from regular subqueries and correlated subqueries, with the latter referencing columns from the outer query. Inline views behave like tables or views, can be nested within each other, and offer the benefits of a functional programming approach by passing and returning sets.</p>
+</div>
+<div class="paragraph">
+<p>Inline views can make the SQL code larger due to the need for additional joins when splitting complex queries into simpler chunks, but they help manage complexity. For instance, joining ten tables at once leads to an overwhelming number of possible combinations, making it hard to visualize and understand, but splitting them into two groups of five reduces the complexity significantly.</p>
+</div>
+<div class="paragraph">
+<p>The use of inline views is exemplified by a query to find the most popular rocket fuels per year, broken down into three separate inline views for launches, launch vehicle engines, and engine fuels. These independent chunks simplify the overall query, despite sometimes being so simple that they only filter data without joining tables. This approach helps to accommodate the cognitive limits of query writers and users, ensuring that queries remain within a manageable scope of understanding. The next steps involve putting these pieces together using ANSI join syntax and considering style and performance implications of building large, nested queries.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ansi_joins_example">ANSI Joins - Example</h4>
+<div class="paragraph">
+<p>The provided SQL query is designed to identify the top three most common rocket fuels used per year. It achieves this by constructing a complex query with several nested inline views that progressively build upon each other:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>It begins by selecting all orbital and deep space launches.</p>
+</li>
+<li>
+<p>It then joins this information with data on launch vehicle engines.</p>
+</li>
+<li>
+<p>Next, it links the engines to their respective fuels, focusing on those marked as 'fuel'.</p>
+</li>
+<li>
+<p>The query counts how many times each fuel is used per year.</p>
+</li>
+<li>
+<p>It ranks these counts within each year.</p>
+</li>
+<li>
+<p>Finally, it selects the top three fuels for each year based on the ranking.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The query uses ANSI join syntax and window functions. It is recommended to explore this query in an IDE to understand how each section contributes to the final result.</p>
+</div>
+<div class="paragraph">
+<p>The initial results show that historically common rocket fuels have been variants of kerosene and UDMH. In more recent years, liquid hydrogen has gained popularity. The data might not be perfect and could require some grouping to refine the results, but it is still considered valid for the purpose of the query.</p>
+</div>
+<div class="paragraph">
+<p>The code and other examples can be found in a GitHub repository, and it is intended for use with Oracle database version 12.2 or higher. The book from which this code is taken suggests that while it&#8217;s not necessary to run every example while reading, this particular complex query is worth experimenting with in an IDE for a better understanding of its structure and debugging process.</p>
+</div>
+<div class="listingblock">
+<div class="title">Version for Postgres</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql"><span class="comment">--Top 3 fuels used per year using ANSI join syntax.</span>
+<span class="comment">--
+--#6: Select only the top N.</span>
+<span class="class">SELECT</span> launch_year, fuel, launch_count
+<span class="keyword">FROM</span> (
+    <span class="comment">--#5: Rank the fuel counts.</span>
+    <span class="class">SELECT</span>
+        launch_year,
+        launch_count,
+        fuel,
+        ROW_NUMBER() <span class="keyword">OVER</span> (PARTITION <span class="keyword">BY</span> launch_year <span class="keyword">ORDER</span> <span class="keyword">BY</span> launch_count <span class="directive">DESC</span>) <span class="keyword">AS</span> rownumber
+    <span class="keyword">FROM</span> (
+        <span class="comment">--#4: Count of fuel used per year.</span>
+        <span class="class">SELECT</span>
+            TO_CHAR(launches.launch_date, <span class="string"><span class="delimiter">'</span><span class="content">YYYY</span><span class="delimiter">'</span></span>) <span class="keyword">AS</span> launch_year,
+            <span class="predefined">COUNT</span>(*) <span class="keyword">AS</span> launch_count,
+            engine_fuels.fuel
+        <span class="keyword">FROM</span> (
+            <span class="comment">--#1: Orbital and deep space launches.</span>
+            <span class="class">SELECT</span> *
+            <span class="keyword">FROM</span> launch
+            <span class="keyword">WHERE</span> launch_category <span class="keyword">IN</span> (<span class="string"><span class="delimiter">'</span><span class="content">orbital</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">deep space</span><span class="delimiter">'</span></span>)
+        ) <span class="keyword">AS</span> launches
+        <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> (
+            <span class="comment">--#2: Launch Vehicle Engines</span>
+            <span class="class">SELECT</span> launch_vehicle_stage.lv_id, stage.engine_id
+            <span class="keyword">FROM</span> launch_vehicle_stage
+            <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> stage <span class="keyword">ON</span> launch_vehicle_stage.stage_name = stage.stage_name
+        ) <span class="keyword">AS</span> lv_engines <span class="keyword">ON</span> launches.lv_id = lv_engines.lv_id
+        <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> (
+            <span class="comment">--#3: Engine Fuels</span>
+            <span class="class">SELECT</span> <span class="directive">engine</span>.engine_id, propellant_name <span class="keyword">AS</span> fuel
+            <span class="keyword">FROM</span> <span class="directive">engine</span>
+            <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> engine_propellant <span class="keyword">ON</span> <span class="directive">engine</span>.engine_id = engine_propellant.engine_id
+            <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> propellant <span class="keyword">ON</span> engine_propellant.propellant_id = propellant.propellant_id
+            <span class="keyword">WHERE</span> oxidizer_or_fuel = <span class="string"><span class="delimiter">'</span><span class="content">fuel</span><span class="delimiter">'</span></span>
+        ) <span class="keyword">AS</span> engine_fuels <span class="keyword">ON</span> lv_engines.engine_id = engine_fuels.engine_id
+        <span class="keyword">GROUP</span> <span class="keyword">BY</span> TO_CHAR(launches.launch_date, <span class="string"><span class="delimiter">'</span><span class="content">YYYY</span><span class="delimiter">'</span></span>), engine_fuels.fuel
+        <span class="keyword">ORDER</span> <span class="keyword">BY</span> launch_year, launch_count <span class="directive">DESC</span>, fuel
+    ) <span class="keyword">AS</span> subquery
+) <span class="keyword">AS</span> final_query
+<span class="keyword">WHERE</span> rownumber &lt;= <span class="integer">3</span>
+<span class="keyword">ORDER</span> <span class="keyword">BY</span> launch_year, launch_count <span class="directive">DESC</span>;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_chapter_7_query_thedatabase_withadvanced_select_features">Chapter 7: Query the Database with Advanced SELECT Features</h3>
+<div class="sect3">
+<h4 id="_operators_functions_expressions_andconditions">Operators, Functions, Expressions, and Conditions</h4>
+<div class="paragraph">
+<p>The provided text explains the concepts of operators, functions, expressions, and conditions in Oracle SQL. Operators are symbols that perform an action and return a value, while functions are called with arguments to return a value. An expression is a combination of literals, functions, and operators that yields a value. Conditions are specific types of expressions that return a Boolean value and are often used in clauses like WHERE.</p>
+</div>
+<div class="paragraph">
+<p>Understanding these elements is crucial because they have different applications and cannot always be used interchangeably. For instance, a WHERE clause requires a condition, not just any expression.</p>
+</div>
+<div class="paragraph">
+<p>The text also stresses the importance of recognizing when something is missing or overly complex in SQL code. It suggests that excessive type conversions might indicate the need for a simplified approach, such as using the TRUNC function to handle dates without conversion.</p>
+</div>
+<div class="paragraph">
+<p>Regarding precedence rules, the text advises following conventional mathematical order for operators and understanding that in conditions, AND has higher precedence than OR. However, clarity should be prioritized over strict adherence to precedence rules, and parentheses should be used to make expressions easier to read.</p>
+</div>
+<div class="paragraph">
+<p>Simplification of syntax can also be achieved through inline views, which can make long, complex expressions more manageable and easier to debug. However, one should balance the use of inline views to avoid unnecessary fragmentation of the code.</p>
+</div>
+<div class="paragraph">
+<p>Finally, the text mentions that discrete math principles, like De Morgan&#8217;s laws, can help simplify complex logical conditions. It also suggests creating truth tables for complex scenarios to visualize all possible combinations of conditions and their outcomes, aiding in better understanding and debugging of SQL queries.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_case_and_decode">CASE and DECODE</h4>
+<div class="paragraph">
+<p>The text explains the use of CASE and DECODE expressions in SQL for adding conditional logic, similar to IF statements. CASE is generally preferred because it is more readable, available in both SQL and PL/SQL, and handles NULLs predictably. Both expressions utilize short-circuit evaluation, stopping once a condition is met.</p>
+</div>
+<div class="paragraph">
+<p>An example provided applies CASE and DECODE to the fizz buzz problem, where numbers 1 to 100 are evaluated for divisibility by 3, 5, or both, outputting "fizz", "buzz", or "fizz buzz" accordingly. The CASE expression is shown to be more versatile, allowing different types of conditions, not just equality.</p>
+</div>
+<div class="paragraph">
+<p>There are two types of CASE expressions: searched and simple. The searched case is more powerful and used in the fizz buzz example, while the simple case is shorter and compares against a list of values.</p>
+</div>
+<div class="paragraph">
+<p>The text also highlights a peculiarity of DECODE where it treats NULL as equal to NULL, which is not standard behavior in SQL comparisons. An example is given where DECODE returns "A" when comparing two NULLs, which is a special case to remember.</p>
+</div>
+<div class="listingblock">
+<div class="title">Version for Postgres</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql"><span class="class">SELECT</span>
+    launch_id,
+    apogee,
+    <span class="keyword">CASE</span>
+        <span class="keyword">WHEN</span> apogee &lt; <span class="integer">10</span> <span class="keyword">THEN</span> <span class="string"><span class="delimiter">'</span><span class="content">Low</span><span class="delimiter">'</span></span>
+        <span class="keyword">WHEN</span> apogee <span class="keyword">BETWEEN</span> <span class="integer">10</span> <span class="keyword">AND</span> <span class="integer">20</span> <span class="keyword">THEN</span> <span class="string"><span class="delimiter">'</span><span class="content">Medium</span><span class="delimiter">'</span></span>
+        <span class="keyword">ELSE</span> <span class="string"><span class="delimiter">'</span><span class="content">High</span><span class="delimiter">'</span></span>
+    <span class="keyword">END</span> <span class="keyword">AS</span> apogee_group
+<span class="keyword">FROM</span>
+    launch;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_joins">Joins</h4>
+<div class="paragraph">
+<p>The provided text discusses various aspects and types of SQL joins, emphasizing their importance in database operations and their role in evaluating database capabilities. The text then goes on to describe specific join types, their uses, and implications for database performance and query design.</p>
+</div>
+<div class="paragraph">
+<p><strong>Summary of Key Points:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Types of Joins:</strong> Several types of joins are described, including inner, outer (left, right, full), cross, lateral, cross apply, outer apply, semi-join, anti-join, natural join, self-join, and partitioned outer joins. Inner, left, right, full, cross, and ANSI vs. old syntax joins are considered basic and not elaborated upon.</p>
+</li>
+<li>
+<p><strong>Partitioned Outer Joins:</strong> Useful for data densification, allowing counts per item per time period, even when the counts are zero. It&#8217;s a complex join that is shown to be useful in the example provided, which demonstrates counting rocket launches per vehicle family per month.</p>
+</li>
+<li>
+<p><strong>Lateral, Cross Apply, and Outer Apply Joins:</strong> These joins are discouraged, as they allow inline views to access external values, contradicting the purpose of inline views and complicating the query context.</p>
+</li>
+<li>
+<p><strong>Equijoin vs. Non-equijoin:</strong> Equijoins use the equality operator, while non-equijoins use other operators like <code>&lt;&gt;</code> or <code>BETWEEN</code>. Equijoins are important for performance because they can be used for hash joins, often the fastest join method.</p>
+</li>
+<li>
+<p><strong>Semi-join and Anti-join:</strong> These types involve stopping the join process as soon as a matching or non-matching row is found, which can lead to performance optimizations.</p>
+</li>
+<li>
+<p><strong>Self-Joins:</strong> These occur when a table is joined to itself and can become complex when dealing with hierarchical data that requires recursive queries.</p>
+</li>
+<li>
+<p><strong>Natural Joins and USING Clause:</strong> The use of natural joins and the USING clause is discouraged due to the potential for unexpected results and limitations in query syntax. Natural joins can cause issues by automatically joining tables based on matching column names, while the USING clause simplifies syntax but introduces restrictions on column referencing.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The text asserts that a deep understanding of joins is essential for database proficiency, and it is crucial to be able to join tables effectively. The specific join types and their appropriate uses are covered in greater detail, along with their implications for query performance and design.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-01-15 15:17:58 +0200
+</div>
+</div>
+</body>
+</html>
