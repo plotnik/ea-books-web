@@ -1,0 +1,145 @@
+= RabbitMQ Tutorials
+:source-highlighter: coderay
+:icons: font
+:toc: right
+:toclevels: 4
+
+https://www.rabbitmq.com/getstarted.html
+
+== Installation
+
+```
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management
+```
+
+== Hello World
+
+> https://www.rabbitmq.com/tutorials/tutorial-one-java.html
+
+RabbitMQ is a message broker that acts like a post office for digital messages instead of paper mail. It helps programs communicate by accepting, storing, and forwarding binary data messages. Key concepts in RabbitMQ include:
+
+- **Producers**: Programs that send messages.
+- **Queues**: Buffers that store messages. Multiple producers can send messages to one queue, and multiple consumers can receive messages from it.
+- **Consumers**: Programs that wait and receive messages.
+
+The tutorial then guides through creating a "Hello World" application using the Java Client for RabbitMQ, which involves writing a producer to send a message and a consumer to receive and print that message. The Java client and SLF4J libraries are required dependencies. The producer publishes a single message to a declared queue and then exits, while the consumer continuously listens for messages from the queue and prints them.
+
+To compile and run the code, the RabbitMQ Java client and its dependencies must be on the classpath. Once the consumer and producer are running, messages sent by the producer via RabbitMQ should be printed by the consumer.
+
+Additionally, the tutorial mentions that the `rabbitmqctl` command-line tool can be used to list queues and see message counts within them. The next part of the tutorial series will explore creating a work queue.
+
+== Work Queues
+
+> https://www.rabbitmq.com/tutorials/tutorial-two-java.html
+
+This content explains how to create a Work Queue using RabbitMQ to distribute time-consuming tasks among multiple workers. The Work Queue is used to schedule tasks to be executed later by workers, rather than executing resource-intensive tasks immediately.
+
+Key points include:
+
+1. **Work Queue Concept**: Avoid immediate execution of intensive tasks by scheduling them as messages to be processed later by worker processes.
+
+2. **Example Task**: A simulated task is represented by strings with dots corresponding to the complexity level, where each dot equals one second of "work".
+
+3. **Code Modifications**: The tutorial provides Java code snippets to modify the sender (`NewTask.java`) and receiver (`Worker.java`) to handle task messages, including simulated processing time.
+
+4. **Round-Robin Dispatching**: RabbitMQ distributes messages evenly across multiple workers using round-robin.
+
+5. **Message Acknowledgment**: To prevent message loss if a worker dies, RabbitMQ supports message acknowledgments, which need to be sent back by the consumer to confirm the message has been processed.
+
+6. **Message Durability**: Both the queue and the messages must be marked as durable to ensure they survive a RabbitMQ restart.
+
+7. **Fair Dispatch**: Using `basicQos` with `prefetchCount` set to 1 ensures that a worker does not receive a new message until it has acknowledged the previous one, allowing for a more even distribution of tasks.
+
+8. **Complete Code**: The tutorial provides the complete Java source code for the `NewTask` and `Worker` classes, incorporating all the features discussed.
+
+9. **Next Steps**: The reader is encouraged to proceed to the next tutorial to learn about delivering messages to multiple consumers.
+
+The tutorial includes instructions and code examples to guide the reader through setting up a robust Work Queue system with durability and fair task distribution.
+
+== Publish-Subscribe
+
+> https://www.rabbitmq.com/tutorials/tutorial-three-java.html
+
+This tutorial explains how to set up a publish/subscribe pattern in RabbitMQ, where messages are broadcasted to multiple consumers. The goal is to build a simple logging system with one program emitting log messages and another receiving and displaying them. All running instances of the receiver program will get the messages, which can be directed to different outputs, like disk or screen.
+
+Key concepts introduced:
+
+- **Exchanges**: Producers send messages to exchanges, which are responsible for routing messages to one or more queues. Exchanges come in different types, such as `direct`, `topic`, `headers`, and `fanout`. This tutorial uses the `fanout` exchange type, which broadcasts messages to all known queues.
+  
+- **Temporary Queues**: For the logging system, the tutorial suggests using non-durable, exclusive, autodelete queues with server-generated names. This ensures that each consumer gets a fresh queue and old messages are not kept.
+
+- **Bindings**: A binding is a link between an exchange and a queue, determining where messages should be routed.
+
+The tutorial includes sample Java code for a producer (`EmitLog.java`) that sends messages to a `fanout` exchange named `logs`, and a consumer (`ReceiveLogs.java`) that creates a temporary queue, binds it to the `logs` exchange, and prints any messages it receives.
+
+To view exchanges and bindings, the `rabbitmqctl list_exchanges` and `rabbitmqctl list_bindings` commands are used.
+
+Finally, the tutorial demonstrates how to run multiple instances of the consumer to see logs on the screen or redirect them to a file and how to emit logs from the producer. The expected outcome is that all log messages are delivered to all active consumers.
+
+== Routing
+
+> https://www.rabbitmq.com/tutorials/tutorial-four-java.html
+
+This tutorial expands on a previously built simple logging system by introducing the ability to subscribe to a specific subset of messages based on severity. This is made possible through the use of a `direct` exchange in RabbitMQ, which replaces the `fanout` exchange used before. 
+
+The `direct` exchange routes messages to queues based on a matching binding key. If the routing key of a message matches the binding key of a queue, the message is delivered to that queue. It's possible to bind multiple queues with the same binding key, making the exchange broadcast messages to all matching queues.
+
+The tutorial demonstrates how to emit logs with various severities (info, warning, error) using the `direct` exchange. It also shows how to subscribe to logs by creating bindings for the desired severities.
+
+The Java code provided sets up the exchange, sends messages with a certain severity as the routing key, and consumes messages by binding to specific severities. To test different scenarios, it gives examples of how to run the Java programs to save only warning and error logs to a file, or to display all logs on the screen. The source code is available on GitHub.
+
+Commands for compiling and running the examples are provided, using an environment variable `$CP` to represent the classpath.
+
+== Topics
+
+> https://www.rabbitmq.com/tutorials/tutorial-five-java.html
+
+The tutorial discusses the use of a `topic` exchange in RabbitMQ to route messages based on multiple criteria. Unlike `fanout` and `direct` exchanges, `topic` exchanges allow messages to be routed with more flexibility using routing keys with a list of words separated by dots. Special characters, `*` (star) to substitute for one word, and `#` (hash) to substitute for zero or more words, can be used in binding keys for complex matching patterns.
+
+An example of a logging system is provided, where messages describe animals with a routing key pattern of `<speed>.<colour>.<species>`. Different queues are set up with bindings to match various patterns of these messages. For example, a message with a routing key "`quick.orange.rabbit`" will be delivered to both queues that match the corresponding bindings.
+
+Java code examples for emitting and receiving topic-based log messages are given. The `EmitLogTopic` program sends messages to a `topic` exchange, while the `ReceiveLogsTopic` program sets up bindings and listens for messages. Instructions are also provided on how to compile and run the examples, with commands to receive logs of different criteria such as all logs, logs from a specific facility, or logs with a specific severity.
+
+The tutorial concludes by encouraging experimentation with the provided programs and the flexibility of routing and binding keys in a `topic` exchange. Links to the full source code for `EmitLogTopic.java` and `ReceiveLogsTopic.java` are also provided.
+
+== RPC
+
+> https://www.rabbitmq.com/tutorials/tutorial-six-java.html
+
+This tutorial explains how to implement a Remote Procedure Call (RPC) system using RabbitMQ in Java. It covers creating a client that can request the calculation of Fibonacci numbers via RPC and wait for the result. The key points include:
+
+- The client interface exposes a `call` method for sending RPC requests and blocking until the response is received.
+- RPC has its drawbacks, such as the potential for confusion between local and remote function calls, which can lead to unpredictable systems and complex debugging.
+- To perform RPC over RabbitMQ, clients send a request message with a 'callback' queue address to which the server will reply.
+- The `correlationId` property is used to match responses with requests, ensuring the correct response is received by the appropriate request.
+- The tutorial suggests creating a single callback queue per client to improve efficiency.
+- The RPC process involves the client sending a message with `replyTo` and `correlationId` properties to an `rpc_queue`, with the RPC server processing the request and replying to the client's callback queue.
+- The client waits on the reply queue and checks the `correlationId` of incoming messages to retrieve the correct response.
+- A basic example of a Fibonacci function is provided, illustrating the task that the RPC server will perform.
+- The server ensures fair distribution of tasks by setting `prefetchCount` and uses `basicConsume` with a `DeliverCallback` to process requests and send responses.
+- The client generates a unique `correlationId` for each request, creates a dedicated exclusive queue for replies, and publishes the request message with the necessary properties.
+- A `CompletableFuture` is used to suspend the main thread while waiting for the response, and the consumer checks the `correlationId` to complete the future when the correct message arrives.
+- Full example source code for the RPC client and server is provided, along with instructions to compile and run the service.
+- The design allows for easy scaling by running additional servers, and the client-side RPC requires only one network round trip per request.
+- The tutorial also mentions more complex problems that are not addressed in the simplistic example, such as server availability, client timeouts, error forwarding, and input validation.
+
+Overall, the tutorial provides a practical guide to implementing a basic RPC system with RabbitMQ in Java, with considerations for efficiency and scalability.
+
+== Publisher Confirms
+
+> https://www.rabbitmq.com/tutorials/tutorial-seven-java.html
+
+This tutorial explains how to use RabbitMQ publisher confirms to ensure that messages are safely received by the broker. It covers three strategies for using publisher confirms, discussing their advantages and disadvantages.
+
+1. **Enabling Publisher Confirms on a Channel**: Publisher confirms are not enabled by default and must be enabled using the `confirmSelect` method on a channel.
+
+2. **Strategy #1: Publishing Messages Individually**: Messages are published one by one, with the publisher waiting synchronously for each confirmation. This is simple but results in low throughput.
+
+3. **Strategy #2: Publishing Messages in Batches**: Messages are sent in batches, and the publisher waits for the entire batch to be confirmed. This increases throughput but doesn't provide detailed error information in case of failure.
+
+4. **Strategy #3: Handling Publisher Confirms Asynchronously**: This approach involves registering a callback to handle confirmations and rejections (nacks) of messages. This strategy provides the best performance and control but is more complex to implement.
+
+The tutorial provides code examples in Java for each strategy and discusses best practices such as correlating sequence numbers with messages and cleaning up confirmations.
+
+In summary, while publisher confirms can be handled synchronously for simplicity, asynchronous handling offers better performance and error control, though it requires a more complex implementation. The provided code examples demonstrate how to use each strategy and a class `PublisherConfirms.java` is available for reference on how to implement these approaches. The tutorial also discusses the impact of network latency on the performance of each strategy.
+

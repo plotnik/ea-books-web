@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.18">
+<meta name="generator" content="Asciidoctor 2.0.20">
 <meta name="author" content="Maximilian Schwarzmüller">
 <title>React - The Complete Guide (incl Hooks, React Router, Redux)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -209,13 +209,10 @@ table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
 .admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
 .exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
-.exampleblock>.content>:first-child{margin-top:0}
-.exampleblock>.content>:last-child{margin-bottom:0}
 .sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
-.sidebarblock>:first-child{margin-top:0}
-.sidebarblock>:last-child{margin-bottom:0}
 .sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
-.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
 .literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
 @media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
 @media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
@@ -394,7 +391,7 @@ b.conum *{color:inherit!important}
 dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
 h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
 p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
-p,blockquote,dt,td.content,span.alt,summary{font-size:1.0625rem}
+p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
 p{margin-bottom:1.25rem}
 .sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
 .exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
@@ -436,22 +433,506 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article">
+<body class="article toc2 toc-right">
 <div id="header">
 <h1>React - The Complete Guide (incl Hooks, React Router, Redux)</h1>
 <div class="details">
 <span id="author" class="author">Maximilian Schwarzmüller</span><br>
 </div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_1_getting_started">1. Getting Started</a>
+<ul class="sectlevel2">
+<li><a href="#_1_welcome_to_the_course">1. Welcome To The Course!</a></li>
+<li><a href="#_2_what_is_react_js">2. What is React.js?</a></li>
+<li><a href="#_3_reactjs_vs_vanilla_javascript_why_use_react">3. ReactJS vs Vanilla JavaScript - Why Use React?</a></li>
+<li><a href="#_4_editing_our_first_react_app">4. Editing Our First React App</a></li>
+<li><a href="#_5_about_this_course_and_course_outline">5. About This Course and Course Outline</a></li>
+<li><a href="#_6_the_two_ways_paths_of_taking_this_course">6. The Two Ways (Paths) Of Taking This Course</a></li>
+<li><a href="#_7_getting_the_most_out_of_this_course">7. Getting The Most Out Of This Course</a></li>
+<li><a href="#_9_creating_react_project_browser_based_vs_local_development">9. Creating React Project - Browser-based vs Local Development</a></li>
+<li><a href="#_10_why_do_you_need_a_special_project_setup">10. Why Do You Need A Special Project Setup</a></li>
+</ul>
+</li>
+<li><a href="#_2_javascript_refresher">2. JavaScript Refresher</a>
+<ul class="sectlevel2">
+<li><a href="#_11_module_introduction">11. Module Introduction</a></li>
+<li><a href="#_12_starting_project">12. Starting Project</a></li>
+<li><a href="#_13_adding_javascript_to_a_page_and_how_react_projects_differ">13. Adding JavaScript To A Page and How React Projects Differ</a></li>
+<li><a href="#_14_react_projects_use_a_build_process">14. React Projects Use a Build Process</a></li>
+<li><a href="#_15_import_and_export">15. import and export</a></li>
+<li><a href="#_16_revisiting_variables_and_values">16. Revisiting Variables and Values</a></li>
+<li><a href="#_17_revisiting_operators">17. Revisiting Operators</a></li>
+<li><a href="#_18_revisiting_functions_and_parameters">18. Revisiting Functions and Parameters</a></li>
+<li><a href="#_19_arrow_functions">19. Arrow Functions</a></li>
+<li><a href="#_20_more_on_the_arrow_function_syntax">20. More on the Arrow Function Syntax</a></li>
+<li><a href="#_21_revisiting_objects_and_classes">21. Revisiting Objects and Classes</a></li>
+<li><a href="#_22_arrays_and_array_methods_like_map">22. Arrays and Array Methods like map()</a></li>
+<li><a href="#_23_destructuring">23. Destructuring</a></li>
+<li><a href="#_24_destructuring_in_function_parameter_lists">24. Destructuring in Function Parameter Lists</a></li>
+<li><a href="#_25_the_spread_operator">25. The Spread Operator</a></li>
+<li><a href="#_26_revisiting_control_structures">26. Revisiting Control Structures</a></li>
+<li><a href="#_27_manipulating_the_dom_not_with_react">27. Manipulating the DOM - Not With React</a></li>
+<li><a href="#_28_using_functions_as_values">28. Using Functions as Values</a></li>
+<li><a href="#_29_defining_functions_inside_of_functions">29. Defining Functions Inside Of Functions</a></li>
+<li><a href="#_30_reference_vs_primitive_values">30. Reference vs Primitive Values</a></li>
+<li><a href="#_31_next_gen_javascript_summary">31. Next-Gen JavaScript - Summary</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 <div id="content">
-<div class="paragraph">
+<div id="preamble">
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Udemy</dt>
+<dd>
 <p><a href="https://www.udemy.com/course/react-the-complete-guide-incl-redux/" class="bare">https://www.udemy.com/course/react-the-complete-guide-incl-redux/</a></p>
+</dd>
+<dt class="hdlist1">GitHub</dt>
+<dd>
+<p><a href="https://github.com/academind/react-complete-guide-course-resources" class="bare">https://github.com/academind/react-complete-guide-course-resources</a></p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_getting_started">1. Getting Started</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_1_welcome_to_the_course">1. Welcome To The Course!</h3>
+<div class="paragraph">
+<p>Maximilian Schwarzmüller will be the instructor for this comprehensive React course, offering step-by-step guidance and hands-on experience through multiple realistic projects. The course aims to teach both fundamental and advanced React concepts, transforming students into React developers by the end of the program. The course promises to go beyond the basics, ensuring a deep understanding of React and its practical application. The introduction sets the stage for the first lessons, which will cover what React is and why it is beneficial to use.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_what_is_react_js">2. What is React.js?</h3>
+<div class="paragraph">
+<p>React is a JavaScript library used for building web and native user interfaces. It allows for the creation of smooth, app-like transitions and interactions on websites, without the need for page reloads, by using JavaScript to update the UI dynamically. This results in a more seamless user experience, similar to that of a mobile app. React makes it easier to build complex interfaces compared to using vanilla JavaScript, which can be more cumbersome and error-prone for developers.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_3_reactjs_vs_vanilla_javascript_why_use_react">3. ReactJS vs Vanilla JavaScript - Why Use React?</h3>
+<div class="paragraph">
+<p>The content discusses the benefits of using React over vanilla JavaScript for building web applications. React provides a simpler mental model and makes it easier to create complex UIs. The speaker describes two basic web applications built both in React and vanilla JavaScript, using CodeSandbox, which allows development in the browser without local software installation. The vanilla JavaScript application uses an <code>index.html</code> file for layout and an <code>index.js</code> file for interactivity, with explicit steps to update the UI. In contrast, the React version has a leaner codebase with an <code>index.html</code> file containing a single root <code>div</code> and an <code>app.js</code> file with JSX (a syntax that allows HTML in JavaScript) to define UI states. React manages UI updates automatically, allowing developers to write declarative code that specifies the desired UI state rather than the steps to achieve it. This makes React more efficient and easier to maintain, especially as applications grow in complexity. The speaker encourages exploring the provided demo websites and suggests a JavaScript refresher for those needing it.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_editing_our_first_react_app">4. Editing Our First React App</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Project</dt>
+<dd>
+<p>rocket-coffee</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>The provided text is a lecture snippet that encourages students to get practical experience with React by updating a demo application before diving deeply into the theory. The instructor has updated the demo app, available through a link, by adding a fourth nested array to a content array. Students are tasked with adding a fourth button to the app, which when clicked, should display the content of the fourth array entry. The lecturer acknowledges this might be challenging since they have not yet taught React in detail, but encourages students to try before providing a solution. The solution involves copying an existing button, adjusting its text, and modifying its logic to handle the new content index (3 for the fourth item due to zero-based indexing). The instructor reassures that it&#8217;s okay if students couldn&#8217;t complete the task on their own at this stage, as React education in the course has just begun.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_about_this_course_and_course_outline">5. About This Course and Course Outline</h3>
+<div class="paragraph">
+<p>This course on React is extensive but modular, allowing learners to follow it sequentially or choose sections that interest them. It starts with an introduction and offers an optional JavaScript refresher for those needing to brush up on JavaScript skills. Following that, there are sections on React essentials, which are crucial for building a strong foundation in React. The course then progresses to more advanced topics, catering to both beginners and those with some experience in React. By the end of the course, students will have gained significant knowledge in React and be capable of developing with the framework.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_6_the_two_ways_paths_of_taking_this_course">6. The Two Ways (Paths) Of Taking This Course</h3>
+<div class="paragraph">
+<p>The course offers a comprehensive study of React with various modules that can be taken sequentially or according to the student’s interest. For beginners, there are two recommended paths:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The <strong>Standard Path</strong>: This is advised for most students and involves starting from the first lecture and progressing through the course content in the order presented. This path is designed to teach React fundamentals thoroughly and in detail.</p>
+</li>
+<li>
+<p>The <strong>Summary Path</strong>: This is a faster option for those with limited time, providing a condensed version of the course that covers the most crucial React concepts in a single section. It lacks the depth of the standard path and skips over some advanced topics and best practices.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Additionally, the <strong>Summary Section</strong> can be used as a refresher after completing the course to reinforce the key concepts learned. The course caters to all levels of React knowledge, ensuring that both beginners and those with prior experience can benefit from the content provided.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_7_getting_the_most_out_of_this_course">7. Getting The Most Out Of This Course</h3>
+<div class="paragraph">
+<p>The course is designed to provide a lot of content and different paths to learn it, but it is important that participants meet the prerequisites, which include basic web development and JavaScript knowledge. An optional JavaScript refresher section is available but is not a substitute for a complete JavaScript course. The course is not suitable for absolute beginners to JavaScript or web development.</p>
+</div>
+<div class="paragraph">
+<p>Participants are encouraged to watch the course videos at their own pace, rewatching or pausing as needed to understand the concepts. Practicing the material by completing coding exercises, building demo projects, and trying out steps independently is crucial for learning React.</p>
+</div>
+<div class="paragraph">
+<p>The course offers code snapshots on GitHub to help when participants get stuck, and there is a Q&amp;A section for asking and answering questions. Contributing to the Q&amp;A not only assists others but also reinforces the participant&#8217;s own learning. Additionally, access to a Discord server is provided to foster a community learning environment.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_9_creating_react_project_browser_based_vs_local_development">9. Creating React Project - Browser-based vs Local Development</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">CodeSandbox</dt>
+<dd>
+<p><a href="https://codesandbox.io" class="bare">https://codesandbox.io</a></p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>The course introduces React and how to create React projects. For a quick start, the instructor suggests using <code>react.new</code> in the browser to set up an in-browser React project workspace with CodeSandbox. This method requires no local installation and is ideal for situations where software installation is not permitted, such as on company computers with restricted permissions.</p>
+</div>
+<div class="paragraph">
+<p>For those who prefer a local development environment, the instructor recommends using Visual Studio Code as a code editor and installing NodeJS from nodejs.org. Tools like Vite or Create React App can be used to create local React projects, and they both rely on NodeJS. Once a local project is set up, <code>npm install</code> must be run to install dependencies, and <code>npm run dev</code> starts a development server for live previews of the project.</p>
+</div>
+<div class="paragraph">
+<p>Throughout the course, the instructor provides both CodeSandbox-based projects and local project zip files, allowing learners to choose their preferred development environment. The necessity for such a setup is to efficiently work on and preview React code with all dependencies and configurations in place.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_10_why_do_you_need_a_special_project_setup">10. Why Do You Need A Special Project Setup</h3>
+<div class="paragraph">
+<p>The provided content explains why developers cannot use simple HTML and JavaScript files for writing React code. The reason is that React code typically uses JSX (JavaScript XML) syntax, which isn&#8217;t recognized by browsers. Therefore, the code must be transformed into browser-compatible code, often with optimizations to improve website performance. Tools like Vite are necessary for this transformation process. CodeSandbox is an online environment that simplifies the setup, allowing developers to focus on writing React code without setting up projects locally. Throughout the course being discussed, the instructor will provide starting projects in both CodeSandbox and local versions to allow learners to concentrate on learning React without worrying about project setup.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_javascript_refresher">2. JavaScript Refresher</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">GitHub</dt>
+<dd>
+<p><a href="https://github.com/academind/react-complete-guide-course-resources/tree/main/code/02%20JS%20Refresher/code/finished" class="bare">https://github.com/academind/react-complete-guide-course-resources/tree/main/code/02%20JS%20Refresher/code/finished</a></p>
+</dd>
+<dt class="hdlist1">CodeSandbox</dt>
+<dd>
+<p><a href="https://codesandbox.io/s/javascript-refresher-start-rytt3j" class="bare">https://codesandbox.io/s/javascript-refresher-start-rytt3j</a></p>
+</dd>
+</dl>
+</div>
+<div class="sect2">
+<h3 id="_11_module_introduction">11. Module Introduction</h3>
+<div class="paragraph">
+<p>This section of the course provides an optional JavaScript refresher aimed at those who haven&#8217;t used JavaScript recently or lack extensive experience. It&#8217;s not a full JavaScript course, but it revisits essential JavaScript concepts and syntax with a focus on modern features necessary for writing React code. The section is recommended for solidifying the JavaScript foundations needed for React development, but it&#8217;s not suitable for complete beginners to JavaScript, who should learn the basics before proceeding with this course.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_12_starting_project">12. Starting Project</h3>
+<div class="paragraph">
+<p>The content discusses setting up a basic web project in CodeSandbox, which includes an HTML file and assets but no JavaScript code yet. It will be used as a practice environment for exploring JavaScript features. The focus will be on writing code that outputs content to the console, which can be accessed in CodeSandbox. The purpose of this project is not to create a fancy JavaScript-based project, but rather to refresh JavaScript knowledge essential for building React applications.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_13_adding_javascript_to_a_page_and_how_react_projects_differ">13. Adding JavaScript To A Page and How React Projects Differ</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Example</dt>
+<dd>
+<p><code>react-complete-guide-course-resources/code/02 JS Refresher/code/finished/index.html</code></p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>This section discusses the versatility of JavaScript, its execution environments, and how it is used in web development, particularly within the context of a React course.</p>
+</div>
+<div class="paragraph">
+<p>Summary:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>JavaScript is a versatile language that can be executed in multiple environments, including browsers, servers (via Node.js and Deno), and mobile devices (using frameworks like Capacitor or React Native).</p>
+</li>
+<li>
+<p>The focus of the discussion is on using JavaScript in the browser since React is a front-end library for building user interfaces.</p>
+</li>
+<li>
+<p>JavaScript code can be added to a website using the <code>&lt;script&gt;</code> tag either inline within HTML files or by linking to external <code>.js</code> files. The latter is preferred for maintainability.</p>
+</li>
+<li>
+<p>JavaScript files can be imported into HTML with the <code>&lt;script&gt;</code> tag&#8217;s <code>src</code> attribute, and the <code>defer</code> attribute is used to ensure scripts execute after the HTML document is fully parsed.</p>
+</li>
+<li>
+<p>Modern JavaScript projects often use the <code>type="module"</code> attribute in <code>&lt;script&gt;</code> tags to enable the use of JavaScript modules, allowing <code>import</code> and <code>export</code> syntax between files.</p>
+</li>
+<li>
+<p>In React projects, script tags are typically injected into the HTML file automatically as part of a build process, which will be covered in subsequent lectures.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_14_react_projects_use_a_build_process">14. React Projects Use a Build Process</h3>
+<div class="paragraph">
+<p>The provided content explains that in a React project, you might not see any script tags directly in the index.html file. Despite this, the React application still runs because it undergoes a build process that transforms the written code into executable code for the browser. This transformation is done by tools listed in the project&#8217;s package.json file, such as React Scripts. These tools convert the code, including JSX (a syntax extension for JavaScript), into standard JavaScript that browsers can execute. The build process also optimizes the code for production by minifying it, making it smaller and more efficient to download. This is why NodeJS is required for React projects, as it supports the background processes and tools necessary for the build. The speaker emphasizes that understanding this build process is crucial, and notes that for the particular vanilla JavaScript project being discussed, JSX and the build process are not applicable, so any JSX code would need to be removed to avoid errors.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_15_import_and_export">15. import and export</h3>
+<div class="paragraph">
+<p>The provided text is an explanation of the import and export syntax in JavaScript, which is important for managing and maintaining code in React applications and other advanced JavaScript projects. Here&#8217;s a summary of the points covered:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Splitting Code:</strong> It&#8217;s a best practice to split code across multiple files using the import and export keywords to keep it manageable in advanced JavaScript projects such as React applications.</p>
+</li>
+<li>
+<p><strong>Exporting:</strong> To make a variable available in other files, you use the <code>export</code> keyword before the variable declaration. For example, exporting an API key variable from a <code>util.js</code> file so it can be used in an <code>app.js</code> file.</p>
+</li>
+<li>
+<p><strong>Importing:</strong> To use an exported variable in another file, you use the <code>import</code> keyword with curly braces containing the name of the exported item, followed by the <code>from</code> keyword and the relative path to the file where the variable is exported.</p>
+</li>
+<li>
+<p><strong>Module Type:</strong> For import and export to work, your script tag needs to include <code>type="module"</code>. However, in React projects with a build process, this attribute is not needed because the build process compiles all imports and exports into fewer files for the browser.</p>
+</li>
+<li>
+<p><strong>Default Exports:</strong> A file can have a single default export using the <code>export default</code> syntax. The default export doesn&#8217;t require a name and can be imported without curly braces, assigning any name you want in the importing file.</p>
+</li>
+<li>
+<p><strong>Named vs Default Exports:</strong> You can have multiple named exports in a file but only one default export. Named exports are imported with their original names inside curly braces, while a default export is imported without curly braces and can be named arbitrarily by the importer.</p>
+</li>
+<li>
+<p><strong>Importing Multiple Exports:</strong> If you have multiple named exports, you can import them all as a comma-separated list inside curly braces or group them together into a JavaScript object using <code>import * as AliasName from 'filePath'</code>.</p>
+</li>
+<li>
+<p><strong>Aliases:</strong> You can rename imports using the <code>as</code> keyword to assign an alias to an imported item, allowing you to refer to it by a different name in the importing file.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The text emphasizes that understanding these import and export concepts is essential for the course and React development in general.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_16_revisiting_variables_and_values">16. Revisiting Variables and Values</h3>
+<div class="paragraph">
+<p>The provided text is a tutorial on foundational JavaScript concepts, focusing on variables, values, and operators. The tutorial emphasizes that JavaScript applications are fundamentally about handling data, such as strings, numbers, booleans, and special values like null, undefined, and objects. The speaker explains how to create and use variables in JavaScript, highlighting the use of the <code>let</code> and <code>const</code> keywords.</p>
+</div>
+<div class="paragraph">
+<p>Variables in JavaScript are data containers with names that follow certain rules, such as camel case notation and restrictions on the use of special characters. <code>let</code> allows for the creation of variables that can be reassigned, whereas <code>const</code> is used for variables that should not be reassigned. The speaker also discusses the benefits of using variables, including code reusability and readability, as well as the ability to change a value in one place and have it update throughout the code.</p>
+</div>
+<div class="paragraph">
+<p>The speaker mentions different philosophies within the JavaScript community regarding the use of <code>let</code> and <code>const</code>, with some developers preferring <code>const</code> to clearly indicate variables that should not be reassigned. The speaker personally advocates for using <code>const</code> when appropriate but acknowledges that developers can choose what works best for them, as long as they understand the differences between <code>let</code> and <code>const</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_17_revisiting_operators">17. Revisiting Operators</h3>
+<div class="paragraph">
+<p>The provided text discusses several fundamental concepts in JavaScript:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>let and const</strong>: The text begins by mentioning the importance of <code>let</code> and <code>const</code> for declaring variables, but does not elaborate on their specifics.</p>
+</li>
+<li>
+<p><strong>Operators</strong>: It highlights that operators are used to perform operations in JavaScript, such as arithmetic with plus (+), minus (-), multiplication (*), and division (/). The plus operator can also concatenate strings, combining them into a longer string.</p>
+</li>
+<li>
+<p><strong>String Concatenation</strong>: The text explains that the plus operator can be used not only with numbers but also with strings (e.g., "hello" + "world" results in "helloworld").</p>
+</li>
+<li>
+<p><strong>Equality and Comparison Operators</strong>: The triple equal sign (===) checks for equality and returns a Boolean value. Other comparison operators include greater than (&gt;), less than (&lt;), greater than or equal to (&gt;=), and less than or equal to (&#8656;).</p>
+</li>
+<li>
+<p><strong>Conditional Execution</strong>: The text mentions that comparison operators are often used with <code>if</code> statements to execute code conditionally. An example is given where 10 is compared to 10, which always returns true, but it notes that in practice, conditions would typically involve dynamic user input.</p>
+</li>
+<li>
+<p><strong>Usage in React</strong>: Finally, it states that in the context of React development, which will be covered in the course, these concepts will be applied to build applications with more meaningful and dynamic conditions.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>In summary, the text introduces the concepts of variable declaration with <code>let</code> and <code>const</code>, arithmetic and string concatenation with operators, equality and comparison operators, and the use of these operators in conjunction with <code>if</code> statements for conditional code execution, particularly within the scope of React applications.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_18_revisiting_functions_and_parameters">18. Revisiting Functions and Parameters</h3>
+<div class="paragraph">
+<p>The content explains the concept of functions in JavaScript. Functions are blocks of code that are defined to execute at a later time, and they can be called multiple times. They are created using the <code>function</code> keyword followed by a name, a set of parentheses for parameters, and curly braces containing the code to be executed. Parameters can be added to functions to accept input values, and default parameter values can also be specified. Functions can return values using the <code>return</code> keyword. Naming of functions (and variables) should be descriptive of their purpose or the actions they perform. The content also introduces the idea that React components can be defined as functions, which will be explored later in the course.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_19_arrow_functions">19. Arrow Functions</h3>
+<div class="paragraph">
+<p>The text discusses two ways to define functions in JavaScript: traditional function declaration and arrow functions. Arrow functions are particularly useful for anonymous functions that do not need a name, such as those passed as callbacks in event listeners (e.g., <code>onClick</code> in React). The arrow function syntax is shorter as it omits the <code>function</code> keyword and uses an arrow (<code>&#8658;</code>) to separate the parameter list from the function body. Both traditional functions and arrow functions can be used to define anonymous functions, and both can include a <code>return</code> statement if needed. The text indicates that both styles will be demonstrated in the course, and while the choice of syntax is ultimately up to the developer, it is important to be familiar with both methods.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_20_more_on_the_arrow_function_syntax">20. More on the Arrow Function Syntax</h3>
+<div class="paragraph">
+<p>Arrow functions in JavaScript allow for shorter syntax in certain cases:</p>
+</div>
+<div class="paragraph">
+<p>1) You can omit parentheses around the parameter if there is exactly one parameter. No parameter or multiple parameters require parentheses.</p>
+</div>
+<div class="paragraph">
+<p>2) You can omit curly braces and the <code>return</code> keyword if the function body consists solely of a return statement.</p>
+</div>
+<div class="paragraph">
+<p>3) When returning an object directly, you must wrap the object literal in parentheses to distinguish it from a function body.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_21_revisiting_objects_and_classes">21. Revisiting Objects and Classes</h3>
+<div class="paragraph">
+<p>This passage explains how objects in JavaScript can be used to group multiple values and functions together, providing examples and demonstrating the syntax for creating and using objects.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Objects consist of key-value pairs where the keys are descriptive strings that follow naming rules and the values can be any data type.</p>
+</li>
+<li>
+<p>Dot notation is used to access the properties or methods of an object (e.g., <code>user.name</code> or <code>user.greet()</code>).</p>
+</li>
+<li>
+<p>Functions within an object are called methods and can be defined without the <code>function</code> keyword. They can be executed using dot notation followed by parentheses.</p>
+</li>
+<li>
+<p>The <code>this</code> keyword can be used within methods to refer to other properties or methods within the same object.</p>
+</li>
+<li>
+<p>Objects can be created by directly defining them or by using a blueprint called a class.</p>
+</li>
+<li>
+<p>Classes start with a capital letter and can have a constructor function for initializing object properties.</p>
+</li>
+<li>
+<p>New instances of a class can be created using the <code>new</code> keyword and will inherit properties and methods defined in the class blueprint.</p>
+</li>
+<li>
+<p>The passage mentions that the <code>this</code> keyword and <code>class</code> keyword will not be heavily used in the course but are important JavaScript concepts to understand.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, the text is an introduction to object creation, property and method access, and the use of the <code>this</code> and <code>class</code> keywords in JavaScript.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_22_arrays_and_array_methods_like_map">22. Arrays and Array Methods like map()</h3>
+<div class="paragraph">
+<p>In JavaScript, arrays are a special type of object used to store ordered lists of values. They are created using square brackets, and elements can be accessed by their index, with the first element at index 0. Arrays can hold various types of values, including other arrays, objects, numbers, and strings.</p>
+</div>
+<div class="paragraph">
+<p>Elements in an array are separated by commas, and the array has built-in methods for manipulation and querying. For example, the <code>push</code> method adds a new element to the array, and the <code>findIndex</code> method locates the index of an element based on a test function provided by the developer. Another common method is <code>map</code>, which creates a new array by transforming each element of the original array according to a given function.</p>
+</div>
+<div class="paragraph">
+<p>The <code>findIndex</code> method requires a function that returns <code>true</code> when the desired element is found. For concise code, arrow functions are often used. Similarly, the <code>map</code> method takes a function and applies it to each element, returning a new array with the transformed elements.</p>
+</div>
+<div class="paragraph">
+<p>Arrays are essential in JavaScript because they allow developers to store and manipulate collections of data efficiently. They are particularly useful in frameworks like React for rendering lists of items on the web page.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_23_destructuring">23. Destructuring</h3>
+<div class="paragraph">
+<p>The provided text discusses two JavaScript features: array destructuring and object destructuring.</p>
+</div>
+<div class="paragraph">
+<p>Array Destructuring:
+- Instead of accessing array elements individually using their indexes (e.g., <code>userNameData[0]</code>), array destructuring allows you to create variables for each element in a single step using square brackets.
+- With array destructuring, you assign the first variable to the first array element, the second variable to the second element, and so on.
+- This syntax is shorter and makes the code more readable.</p>
+</div>
+<div class="paragraph">
+<p>Object Destructuring:
+- Similar to array destructuring, object destructuring allows you to create variables for object properties in a single step but using curly braces.
+- The variable names must match the property names of the object, but you can use an alias by using a colon (e.g., <code>{ name: userName, age }</code> to rename <code>name</code> to <code>userName</code>).
+- Object destructuring is also more concise and improves readability.</p>
+</div>
+<div class="paragraph">
+<p>Both destructuring methods are essential in modern JavaScript, simplifying the code and making it easier to work with arrays and objects. These features will be frequently used throughout the course.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_24_destructuring_in_function_parameter_lists">24. Destructuring in Function Parameter Lists</h3>
+<div class="paragraph">
+<p>The content explains how to apply object destructuring within function parameter lists. Instead of accessing object properties with dot notation inside a function, properties can be directly extracted into locally scoped variables through destructuring. The example given shows a <code>storeOrder</code> function that traditionally would use the object <code>order</code> to access properties (<code>order.id</code>, <code>order.currency</code>). With destructuring, the function signature is modified to directly extract <code>id</code> and <code>currency</code> from the passed object. This approach simplifies the code but does not change the fact that the function still receives a single object as its parameter. The example emphasizes that the function call does not change and still passes one argument, the object, despite the internal use of destructuring.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_25_the_spread_operator">25. The Spread Operator</h3>
+<div class="paragraph">
+<p>The spread operator in JavaScript, denoted by three dots <code>&#8230;&#8203;</code>, allows you to expand the elements of an array or the properties of an object into a new array or object. When merging arrays, using the spread operator will combine the elements of each array into a single, flat array, rather than nesting them. Similarly, when used with objects, the spread operator can be used to combine the properties of one object with another, resulting in a new object containing properties from both. This operator is useful for merging lists or combining objects without creating nested structures.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_26_revisiting_control_structures">26. Revisiting Control Structures</h3>
+<div class="paragraph">
+<p>The content explains control structures in programming, focusing on the use of <code>if</code>, <code>else if</code>, and <code>else</code> statements. It describes how these structures are used to execute code based on certain conditions. The <code>if</code> statement runs code if a condition is true, <code>else if</code> provides additional conditions if the first is not met, and <code>else</code> is for when none of the conditions are true. The explanation includes a practical example where a user input (password) is checked against specific conditions using the <code>prompt</code> function in a browser. The summary also introduces the <code>for</code> loop, particularly the <code>for&#8230;&#8203;of</code> loop, which iterates over an array and executes code for each element. An example is given where a <code>for&#8230;&#8203;of</code> loop is used to log each hobby in a dummy hobbies array. The content highlights the importance of these control structures for directing the flow of a program&#8217;s execution.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_27_manipulating_the_dom_not_with_react">27. Manipulating the DOM - Not With React</h3>
+<div class="paragraph">
+<p>The content explains that in the course being referred to, directly manipulating the Document Object Model (DOM) using JavaScript to select, read, or change elements is not a common practice. This is because React, which is used in the course, handles DOM manipulation for the developer. React allows writing code in a declarative manner, which automates these tasks, unlike the imperative approach of manually selecting elements with methods like <code>querySelector</code>. Therefore, such direct DOM interactions will not be a focus in the course.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_28_using_functions_as_values">28. Using Functions as Values</h3>
+<div class="paragraph">
+<p>The section summarizes the concept of passing functions as values in JavaScript, a common feature in the language. It explains how functions can be passed as arguments to other functions, like the built-in <code>setTimeout</code> function provided by the browser. When passing a function as an argument, parentheses are omitted to prevent immediate execution; instead, the function itself is passed, allowing it to be executed later. This can be done by either defining the function in place or by passing a previously defined function by its name. The section also clarifies that not only built-in functions like <code>setTimeout</code> can accept functions as arguments but custom functions can as well. An example is provided where a custom function, <code>greeter</code>, accepts another function as an argument and executes it. This demonstrates the flexibility and power of functions in JavaScript as first-class objects that can be stored in variables, passed around, and executed within other functions.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_29_defining_functions_inside_of_functions">29. Defining Functions Inside Of Functions</h3>
+<div class="paragraph">
+<p>The content discusses the concept of defining functions within other functions in JavaScript. It explains that while this might not be very common in vanilla JavaScript, it is a pattern that becomes particularly relevant in React. An example is given where a function named <code>init</code> contains another function called <code>greet</code>. The <code>greet</code> function can only be executed within the scope of <code>init</code> and is not accessible outside of it. Conversely, <code>init</code> can be executed because it is not nested within another function and is scoped to the overall file. The passage suggests that while this pattern may not be frequently used in plain JavaScript, it becomes significant in React development, which will be explored further in the course.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_30_reference_vs_primitive_values">30. Reference vs Primitive Values</h3>
+<div class="paragraph">
+<p>The content explains the difference between primitive and reference values in JavaScript. Primitive values such as strings, numbers, and Booleans cannot be edited; instead, new values are created when changes are attempted. For example, using the <code>concat</code> method on a string creates a new string rather than altering the original one.</p>
+</div>
+<div class="paragraph">
+<p>In contrast, objects and arrays are reference values, meaning that variables hold the memory address of where the object is stored rather than the value itself. Because of this, objects and arrays can be directly modified, such as by using the <code>push</code> method to add a new element to an array. Even if an object or array is assigned to a constant (<code>const</code>), it can still be manipulated because what remains constant is the memory address, not the value it points to. The <code>const</code> declaration only prevents reassignment of the variable, not modification of the value it references.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_31_next_gen_javascript_summary">31. Next-Gen JavaScript - Summary</h3>
+<div class="paragraph">
+<p>The module introduces several advanced JavaScript features that are commonly used:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>let &amp; const</strong>: These are replacements for <code>var</code>. <code>let</code> is used for variables that may change, while <code>const</code> is for variables which should not be reassigned.</p>
+</li>
+<li>
+<p><strong>ES6 Arrow Functions</strong>: This modern syntax for functions can be shorter and has benefits concerning the <code>this</code> context. Examples show how to use arrow functions with different numbers of parameters and when simply returning a value.</p>
+</li>
+<li>
+<p><strong>Exports &amp; Imports</strong>: In modular JavaScript code, <code>export</code> is used to make parts of a module available for use elsewhere, while <code>import</code> allows you to access those parts in different files. There are default (unnamed) and named exports, and several ways to import them.</p>
+</li>
+<li>
+<p><strong>Classes</strong>: These are a syntactical sugar over the traditional JavaScript prototype-based inheritance and constructor functions. Classes can have properties and methods, and they support inheritance.</p>
+</li>
+<li>
+<p><strong>Spread &amp; Rest Operator</strong>: The <code>&#8230;&#8203;</code> operator can be used to either spread elements of an array or object into a new array or object, or to gather function arguments into a single array.</p>
+</li>
+<li>
+<p><strong>Destructuring</strong>: This syntax provides a way to unpack values from arrays or properties from objects into distinct variables, which can simplify code, especially when used with function arguments.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-01 21:31:05 +0300
+Last updated 2024-01-17 17:53:17 +0200
 </div>
 </div>
 </body>

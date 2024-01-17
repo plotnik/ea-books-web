@@ -2,6 +2,7 @@
 :icons: font
 :source-highlighter: pygments
 :toc: right
+:example-caption: Note
 :toclevels: 4
 Ken Kousen
 
@@ -13,3 +14,126 @@ https://github.com/kousen/mockitobook
 
 - GitHub Kousen
 https://github.com/kousen
+
+.ChatGPT on Mockito with Spring Boot
+====
+Creating a cheat sheet for Mockito with Spring Boot involves summarizing key concepts and examples in a concise format. Here's a basic outline for a cheat sheet:
+
+1. **Introduction to Mockito and Spring Boot:**
+   - Briefly explain what Mockito is and how it integrates with Spring Boot for testing purposes.
+
+2. **Setting up Mockito in a Spring Boot Project:**
+   - Dependencies: Show the Maven or Gradle configuration to include Mockito.
+   - Annotations: Describe `@Mock`, `@InjectMocks`, `@MockBean`, and `@SpyBean` annotations.
+
+3. **Writing Test Cases:**
+   - Basic Structure: Outline the structure of a typical test class using Mockito with Spring Boot.
+   - Mocking: Explain how to create mock objects and how to use `when().thenReturn()` for stubbing.
+   - Verifying Behavior: Show how to use `verify()` to check if certain methods were called.
+
+4. **Argument Matchers:**
+   - Explain the use of argument matchers like `any()`, `eq()`, etc., with examples.
+
+5. **Exception Handling:**
+   - Demonstrate how to test exception scenarios using `thenThrow()`.
+
+6. **Integration Testing with Mockito and Spring Boot:**
+   - Discuss how to integrate Mockito in Spring Boot tests, with an example using `@SpringBootTest`.
+
+7. **Best Practices:**
+   - Offer tips on writing effective tests with Mockito and Spring Boot (e.g., keeping tests independent, focusing on behavior rather than implementation).
+
+8. **Additional Resources:**
+   - Provide links or references to official documentation or useful tutorials for deeper understanding.
+====
+
+== Preface
+
+This book provides an introduction to the Mockito testing framework, focusing on the underlying concepts rather than exhaustive technical details. It aims to bridge the knowledge gap left by online documentation, which often assumes prior experience with similar tools. The book is part of the Pragmatic Answers series, offering concise, accessible content that readers can quickly understand, ideally over a weekend. It includes examples to help readers grasp the framework's goals, strategies, and tactics, with the expectation that users will consult the online documentation for specific syntax and advanced usage.
+
+The content is relevant for Mockito versions 2 and above, with the book's code written for Mockito 4 but compatible with Java versions ranging from 1.8 to 19. The book also touches on how to set up and run Mockito tests using the JUnit testing framework, with guidance for both JUnit 4 and JUnit 5 and using Gradle or Maven build tools. The ultimate goal of the book is to enable readers to write more effective tests in Java systems, ensuring their code functions as intended.
+
+== Build a Testing Foundation
+
+Mockito is a testing tool used by developers to isolate software components by replacing dependencies with objects that simulate the behavior of those dependencies. This allows developers to test individual components without interference from the rest of the system, ensuring that if an error occurs, its source can be pinpointed accurately. Mockito requires an understanding of testing principles to be used effectively, and it provides different ways to simulate dependencies, such as mocks, stubs, and spies. Utilizing Mockito in a project aids in creating confidence in the code's correctness through unit, integration, and functional testing, and the tool offers a structured approach for testing specific functionalities while bypassing unrelated ones.
+
+=== Saying Hello to Mockito
+
+This text introduces the Mockito framework for Java testing, using the traditional "Hello, World!" example to illustrate how the framework can be used to create unit tests. Mockito is a library that allows developers to create and configure mock objects for testing purposes, especially useful when a class has dependencies that are not part of the test.
+
+The example evolves from a simple `HelloWorld` program with a static `main` method to a `HelloMockito` class that includes a `greet` method returning a `String`. The `HelloMockito` class is then expanded to include dependencies that need to be mocked for testing: a `PersonRepository` for database interactions and a `TranslationService` for language translation.
+
+To test these dependencies, the text explains the need to include Mockito in the project's build file (using Gradle or Maven), highlighting the addition of specific dependencies for Mockito and JUnit 5. This setup allows for the creation of a complete test class that uses annotations like `@ExtendWith(MockitoExtension.class)`, `@Mock`, and `@InjectMocks` to establish expectations on the mocked objects and verify their interactions.
+
+The Mockito test process outlined involves creating stubs for dependencies, setting expectations, injecting the stubs into the class under test, testing the class methods, checking for correct behavior, and verifying the proper invocation of the mocked methods.
+
+Finally, the text teases a larger example involving a program that processes JSON data about astronauts in space, which will be used to demonstrate Mockito's capabilities throughout the remainder of the book.
+
+=== Counting Astronauts by Spaceship
+
+The text describes a Java solution to determine the number of astronauts aboard each spacecraft using a RESTful web service. The solution comprises three components: `AstroGateway` to fetch and convert JSON data to Java POJOs, `AstroService` to process the data into a `Map` with spacecraft names and the number of astronauts, and an application class for testing. The testing uses Mockito, which is compatible with Java 8 and above, but the implementation is based on Java 11. An alternative for Java 8 users is provided using the Retrofit library. Mockito requires adding `mockito-core` and `mockito-junit-jupiter` dependencies to the project. The relevant code is available in the `com.kousenit.astro` package on the book's GitHub repository.
+
+=== Creating the Basic Classes
+
+Open Notify provides a free RESTful web service named People in Space, which requires no registration and works with HTTP GET requests, returning JSON data about astronauts currently in space. The JSON response includes a success message, the total number of astronauts, and a list of astronauts with their names and respective spacecraft.
+
+Two Java classes, Assignment and AstroResponse, are designed to represent the JSON data structure, containing the necessary attributes, getters, setters, and constructors.
+
+A Gateway interface is proposed for accessing the web service, with a single method, getResponse, which allows for easier testing and implementation substitution. The AstroGateway class will implement this interface using either the HttpClient API for Java 11+ or the Retrofit 2 library for Java 8.
+
+An AstroService class is also defined to convert the data retrieved by the AstroGateway into a Map, with spacecraft names as keys and the count of astronauts as values. The service extracts data from a successful gateway response and generates a map of astronaut counts per spacecraft.
+
+Finally, the application will use AstroService to obtain and process this data, resulting in a display of the number of astronauts on each spacecraft. Testing is suggested to ensure the implementation works correctly.
+
+=== Adding Unit and Integration (End-to-End) Tests
+
+The provided content distinguishes between integration tests and unit tests, explaining that integration tests assess the functionality of a system with all its dependencies, while unit tests evaluate individual classes in isolation. An example of an integration test is given for the `AstroService` class, which relies on the `AstroGateway` dependency. The test checks the `getAstroData` method and uses assertions to validate the results.
+
+The text then introduces the concept of mocks and stubs, asserting that integration tests that fail can guide the use of unit tests to pinpoint issues. For unit testing the `AstroService`, a fake object, `FakeGateway`, is created to simulate the gateway's responses independently of its actual implementation.
+
+Mockito is presented as a tool that automates the creation of these fake objects, allowing for mocks that not only return predefined responses like stubs but also track interactions to verify the correct use of stubbed methods. The definitions of mocks, stubs, and spies are based on Martin Fowler's influential article "Mocks Aren't Stubs."
+
+Several reasons are listed for why writing one's own stubs can be problematic, such as requiring implementation of all methods in an interface and maintenance difficulties. Mockito is offered as a solution to these problems, capable of generating mocks and stubs and even handling final classes and static methods.
+
+In summary, the text discusses the roles and differences of integration and unit tests, the use of mocks and stubs for isolated testing, and introduces Mockito as a tool for simplifying the creation of test doubles.
+
+
+== Work with the Mockito API
+
+=== Selecting Our System to Test
+
+The provided content outlines the setup for testing a `PersonService` class in a Java application, using a `PersonRepository` interface as a dependency. The `PersonRepository` interface is part of the persistence layer and is responsible for data access operations such as saving, finding, and deleting `Person` objects.
+
+The `PersonService` class depends on `PersonRepository` and is the subject under test. In the test class `PersonServiceTest`, a list of `Person` objects is used to simulate a database.
+
+A test is written following the Test Driven Development (TDD) approach for a method called `getLastNames` in the `PersonService` class. The test uses a mock `PersonRepository` to provide predefined responses when its methods are called. The test checks that the `getLastNames` method in `PersonService` returns the correct list of last names and verifies that the `findAll` method on the `PersonRepository` mock is called exactly once. The test uses Mockito to automate the creation of the mock `PersonRepository`.
+
+=== Creating Mocks and Stubs
+
+The text describes how to use Mockito for mocking objects in Java testing, as an alternative to writing custom stub implementations like `InMemoryPersonRepository`. There are two ways to create mocks with Mockito: using the `mock` method or using annotations.
+
+1. Using the `mock` method:
+
+    - You create mocks directly with the `mock` method, specifying the class to mock.
+    - By default, mocked methods return null, empty collections, or primitive defaults.
+    - You can set custom behavior for mocks with `when` and `thenReturn`.
+    - Verification of method invocation can be done with `verify`.
+
+2. Using annotations:
+
+    - Annotations such as `@Mock` for mocks and `@InjectMocks` for the class under test simplify mock creation and injection.
+    - The Mockito JUnit 5 Extension (`@ExtendWith(MockitoExtension.class)`) processes these annotations.
+    - Restrictions apply with this approach, as Mockito is not a full dependency injection framework.
+
+Mockito attempts to inject mocks by trying constructors, setters, or direct field injection. The text also mentions that Mockito works well with the Spring framework, which has more sophisticated dependency injection capabilities. Regardless of the method used to create mocks, you can set expectations on them to define how they should behave during tests.
+
+=== Using Mocks and Stubs in the Astro Project
+
+The provided text outlines how to use Mockito to mock a `Gateway<T>` interface for testing an `AstroService` class, which retrieves astronaut data from a gateway. It highlights the creation of a test class using JUnit 5 and Mockito annotations to inject a mocked `Gateway<AstroResponse>` into `AstroService`. The text provides an example test case where the `gateway`'s `getResponse` method is stubbed to return a mock `AstroResponse`, and the results are verified for correctness. Additionally, it shows how to test for failures by using Mockito's `thenThrow` method to simulate a `RuntimeException` caused by network issues, enabling testing without actual network failure and ensuring safer testing conditions. The summary concludes that Mockito has been successfully used to mock the `Gateway`, demonstrating its utility in isolation testing.
+
+== 5. Use Mockito in Special Cases
+
+=== Working with the Spring Framework
+
+The content describes how Mockito can be integrated with the Spring Framework for testing. While Mockito is not a full dependency injection framework, Spring is, and it includes Mockito by default. In Spring, to mock dependencies, developers use the `@MockBean` annotation instead of the standard Mockito annotations `@Mock` and `@InjectMocks`. `@MockBean` creates a mock and replaces the actual bean in the Spring ApplicationContext, allowing autowiring in the class under test. An example shows how to use `@MockBean` in test code for a `PersonService` that depends on a `PersonRepository`, illustrating the replacement of the repository with a mock for testing purposes. Additionally, Spring provides the `@SpyBean` annotation to create a Mockito spy around an existing bean instance, which is useful for testing with real instances while still being able to verify interactions.
+
