@@ -1,0 +1,133 @@
+= Python Cheat Sheet
+:icons: font
+:source-highlighter: coderay
+:toc: right
+:toclevels: 4
+
+== Variables and Data Types
+
+```python
+x = 10          # Integer
+y = 3.14        # Float
+name = "Alice"  # String
+is_valid = True # Boolean
+
+# Basic Arithmetic
+a = 5 + 3
+b = 7 - 2
+c = 4 * 6
+d = 8 / 2
+e = 10 % 3  # Modulus (remainder)
+
+# Strings
+string1 = "Hello"
+string2 = "World"
+concatenated_string = string1 + " " + string2
+string_length = len(concatenated_string)
+
+# Lists (Ordered, Mutable)
+my_list = [1, 2, 3, 4, 5]
+list_length = len(my_list)
+first_element = my_list[0]
+my_list.append(6)
+my_list.remove(3)
+
+# Tuples (Ordered, Immutable)
+my_tuple = (1, 2, 3)
+element_2 = my_tuple[1]
+
+# Dictionaries (Key-Value Pairs)
+my_dict = {"name": "Alice", "age": 30}
+name_value = my_dict["name"]
+my_dict["city"] = "New York"
+del my_dict["age"]
+```
+
+== Conditional Statements
+
+```python
+if x > y:
+    print("x is greater than y")
+elif x < y:
+    print("x is less than y")
+else:
+    print("x is equal to y")
+
+# Loops
+for i in range(5):
+    print(i)
+
+while condition:
+    # code
+
+# List Comprehensions
+squares = [x**2 for x in range(5)]
+```
+
+== Functions
+
+```python
+def greet(name):
+    return "Hello, " + name
+
+result = greet("Bob")
+
+# Lambda Functions
+add = lambda x, y: x + y
+result = add(3, 4)
+
+# Importing Modules
+import math
+sqrt = math.sqrt(16)
+```
+
+== File I/O
+
+```python
+with open("file.txt", "r") as file:
+    data = file.read()
+
+# Exception Handling
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("Division by zero is not allowed.")
+```
+
+== Classes and Objects
+
+```python
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def say_hello(self):
+        return f"My name is {self.name} and I am {self.age} years old."
+
+alice = Person("Alice", 30)
+greeting = alice.say_hello()
+```
+
+== Argparse Tutorial
+
+> https://docs.python.org/3/howto/argparse.html
+
+This tutorial provides an introduction to `argparse`, the command-line parsing module in Python. Here are the key points covered:
+
+- `argparse` is used to handle command-line arguments and options, similar to the `ls` command in Unix.
+- Basic usage of `argparse` involves creating an `ArgumentParser` object and using the `parse_args()` method.
+- Positional arguments are required and their position matters, while optional arguments are not required and are usually preceded by `-` or `--`.
+- The `--help` or `-h` option is built-in and provides a help message.
+- Adding arguments is done with the `add_argument()` method, where you can specify the argument name, help text, and data type.
+- Optional arguments can be made to act as flags using `action="store_true"`, which doesn't require a value and defaults to `False` if not provided.
+- Short options can be specified alongside long options by passing them as additional arguments to `add_argument()`.
+- Arguments can be combined, with optional arguments modifying the behavior or output format of the program.
+- Mutual exclusivity can be enforced using `add_mutually_exclusive_group()`, which ensures that conflicting options are not used together.
+- Verbosity levels can be handled by counting occurrences of an option using the `action="count"` argument.
+- The `default` keyword ensures a default value is set for optional arguments that are not provided.
+- More advanced use cases allow for the calculation of powers, not just squares, and adjusting program verbosity.
+- Ambiguities can be resolved with `--`, indicating that everything following is a positional argument.
+- Help messages and error texts from `argparse` are translatable using the `gettext` module for internationalization.
+- The tutorial concludes by emphasizing that there is much more to `argparse` than covered, and the official documentation contains detailed explanations and examples.
+

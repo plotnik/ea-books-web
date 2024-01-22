@@ -3,7 +3,8 @@
 :toc: right
 :toclevels: 4
 
-https://learn.deeplearning.ai/langchain-chat-with-your-data/lesson/1/introduction
+Course::
+https://learn.deeplearning.ai/langchain-chat-with-your-data/
 
 == Introduction
 
@@ -21,4 +22,64 @@ The guide walks through the process of using several types of document loaders, 
 4. A Notion directory loader to convert Notion database exports into a workable markdown format for chat-based interaction.
 
 The guide also hints at the next steps, which involve breaking down the loaded documents into smaller chunks to facilitate retrieval-augmented generation where only the most relevant content is retrieved for interaction. Additionally, the readers are encouraged to explore the creation of new document loaders for sources not currently covered by LangChain.
+
+== Document Splitting
+
+This passage explains the process and importance of splitting documents into smaller, semantically meaningful chunks after loading them into a document format and before storing them in a vector store. The process is not as simple as it may appear due to the nuances that can impact the outcome significantly. For instance, splitting a sentence in the wrong place can result in chunks of text that do not contain all the information needed to answer a question correctly.
+
+The method for splitting involves setting a chunk size and a chunk overlap, which may be based on character count or tokens. The Lang Chain library provides a variety of text splitter tools, such as recursive character text splitters and character text splitters, which handle the process differently based on the specified parameters like separators and length functions.
+
+The discussion includes examples of splitting text using different splitters and settings, highlighting the effects of different separators such as newline characters and spaces. It also touches on maintaining metadata across chunks and the possibility of adding new metadata when relevant, which is crucial when working with different types of documents, like code.
+
+Real-world examples demonstrate how to apply these splitters to various types of documents, including PDFs and databases from Notion. The passage also introduces the concept of token-based splitting, which aligns more closely with the way language models perceive text, and the markdown header text splitter, which can add header information to the metadata of chunks.
+
+In conclusion, the passage emphasizes the critical role of proper document splitting in ensuring chunks are semantically coherent and maintain or enhance metadata, setting the stage for the next step, which involves moving these chunks into a vector store.
+
+== Vectorstores and Embedding
+
+This section discusses the process of indexing data chunks using embeddings and vector stores to facilitate the retrieval of relevant information when answering questions about a corpus of data. Embeddings are numerical representations of text that allow for the comparison of text similarity. A vector store is a database where these vectors can be easily looked up. The workflow includes creating document splits, generating embeddings, and storing them in a vector store.
+
+The example uses OpenAI to create embeddings for text chunks from the CS229 lecture notes and stores them in Chroma, an in-memory vector store. It demonstrates how to use embeddings to find similar text by comparing dot products of vectors, where a higher score indicates greater similarity.
+
+However, the method is not without issues. Edge cases can lead to failures, such as retrieving duplicate information or failing to capture structured information (e.g., specific lecture numbers) in semantic queries. The lesson suggests experimenting with different queries and adjusting the number of documents retrieved to understand the limitations of semantic search better and prepare for addressing these issues in subsequent lessons.
+
+== Retrieval
+
+This lesson focuses on advanced retrieval methods to improve the results of semantic searches, particularly in overcoming edge cases. The instructor introduces several techniques:
+
+1. Maximum Marginal Relevance (MMR): This method aims to provide diverse documents in search results, rather than just the ones most semantically similar to the query. It retrieves a set of documents based on semantic similarity and then selects the final set with consideration for both relevance and diversity.
+
+2. Self-Query: This approach handles queries that contain both semantic content and metadata. It uses a language model to split the original question into a semantic search term and a metadata filter, enabling the search to return results that match both criteria.
+
+3. Compression: This technique involves extracting only the most relevant parts of documents to focus the final answer on the essential information. It uses more language model calls but provides a more concise response.
+
+The lesson includes practical examples of how to implement these techniques using Python code and discusses the importance of metadata for more complex filtering. The instructor also touches on traditional NLP retrieval methods like SVM and TF-IDF as alternatives to vector-based retrieval. Finally, the lesson encourages experimentation with these techniques to handle a variety of queries and metadata structures.
+
+== Question Answering
+
+This lesson covers the process of answering questions using documents retrieved from a database by employing a language model. After retrieving the relevant documents, they are combined with the original query and passed to a language model, such as GPT-3.5, which is set with a low temperature for factual consistency. The process involves loading a vector database, initializing the language model, and using a retrieval QA chain that includes the language model and the database.
+
+Different methods are discussed to handle situations where the context window is too small to fit all documents. These methods include MapReduce, Refine, and MapRerank. MapReduce sends individual documents to the language model and then combines the answers, while Refine improves answers sequentially with additional context.
+
+The lesson emphasizes the importance of the system prompt that guides the language model and the use of prompt templates. Adjusting the prompt template can alter the results, and students are encouraged to experiment with this.
+
+A limitation of the default 'stuff' technique is addressed; it can only handle a limited number of documents in the context window. The MapReduce technique is slower and may provide worse results since it handles documents individually. The Refine technique, however, allows for better answers by sequentially combining information from multiple documents.
+
+The lesson demonstrates the use of the LangChain platform to analyze the processes under the hood, and it also introduces the concept of memory for handling follow-up questions, which will be covered in the next section.
+
+== Chat
+
+This lesson focuses on creating a chatbot capable of handling follow-up questions by incorporating chat history into the conversation. The chatbot is built on the work done in previous lessons, such as document loading, vector store creation, and question answering. However, the addition of conversation buffer memory allows the chatbot to consider previous interactions for context when answering new questions.
+
+The conversational retrieval chain is introduced, which not only utilizes memory but also condenses the chat history and new question into a standalone question. This standalone question is then used to retrieve relevant documents to provide an accurate answer.
+
+The process involves various steps, detailed in the UI walkthrough, including loading documents, creating embeddings, setting up a vector store retriever, and a conversational retrieval chain. Memory is managed externally for GUI convenience.
+
+Finally, the lesson wraps up by encouraging users to interact with the chatbot through a user interface, ask questions, upload documents, and explore the end-to-end capabilities of this question-answering system.
+
+Throughout the class, various aspects such as document splitting, semantic search, retrieval algorithms, and integration with language models were covered. The course ends with an appreciation for the contributions from the open-source community and an invitation to the learners to share their discoveries and improvements on platforms like Twitter or through pull requests on LangChain.
+
+== Conclusion
+
+This class on LangChain, titled "Chat with Your Data," has concluded. It covered the use of LangChain's document loaders to import data, the process of splitting documents into chunks, and the creation of embeddings for semantic search, while also highlighting its limitations. The course discussed advanced retrieval algorithms to address semantic search's edge cases and integrated large language models (LLMs) to generate answers from retrieved documents. The final topic was building a conversational chatbot over the data. The instructor expressed gratitude for the contributions from the open-source community and encouraged students to share their discoveries and contribute back to LangChain, emphasizing the rapid development and excitement within the field.
 
