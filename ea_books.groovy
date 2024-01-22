@@ -94,7 +94,8 @@ class EABooks implements Callable<Integer> {
 			for (File nf in book.notes) {
 				assert nf.name.endsWith('.adoc')
 				String name = nf.name.substring(0, nf.name.length()-5)
-				f.println "- link:${ystamp}/${mstamp}/${code}_code/${name}.html[${name}]" 
+				String title = book.titles[nf.name]
+				f.println "- link:${ystamp}/${mstamp}/${code}_code/${name}.html[${name}]: ${title}" 
 			}		
 		}
 	}
@@ -103,7 +104,23 @@ class EABooks implements Callable<Integer> {
 		assert adocName.endsWith('.adoc')
 		return adocName.substring(0,adocName.length()-5) + '.html'
 	}
-		
+	
+	/**
+	 * Extract title from the text of AsciiDoc file.
+	 */
+	String extractAsciiDocTitle(String atext) {
+	    String notFound = "..."
+	    def lines = atext.trim().split('\n')
+	    if (lines.size() == 0) {
+	        return notFound
+	    }
+	    String line = lines[0]
+	    if (!line.startsWith("=")) {
+	        return notFound
+	    }
+	    return line.substring(1).trim()
+	}
+	
 	Integer call() throws Exception {
 	    printStatus("Generate book index for Netlify")
 		
@@ -135,8 +152,10 @@ class EABooks implements Callable<Integer> {
 					
 					/* Для указанного месяца найдем папки с заметками
 					 * и сохраним имена файлов заметок в `noteList`.
+					 * В `titleMap` сохраним маппинг файла на название заметки-.
 					 */
 					List<File> noteList = []
+					Map<String, String> titleMap = [:]
 					File[] afiles = subdir.listFiles()
 					boolean quotes = false
 					for (afile in afiles) {
@@ -144,6 +163,7 @@ class EABooks implements Callable<Integer> {
 						//if (afile.name.equals('quotes.html')) quotes = true;
 						if (!afile.name.endsWith('.adoc')) continue;
 						noteList << afile
+						titleMap[afile.name] = extractAsciiDocTitle(afile.text)
 					}
 					if (noteList.size()>0) {
 						/* Отсортировать документы в папке по дате, более новые сверху.
@@ -173,7 +193,8 @@ class EABooks implements Callable<Integer> {
 						if (showDebugInfo) {
 							println "-------------------^ tstamp result: " + tstr(tstamp)
 						}
-						bookList << [ tstamp: tstamp, notes: noteList, mdir: dir.name, quotes: quotes ]
+						bookList << [ tstamp: tstamp, notes: noteList, mdir: dir.name, 
+						              quotes: quotes, titles: titleMap ]
 					}
 				}
 			}
