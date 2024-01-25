@@ -1,7 +1,7 @@
 = React - The Complete Guide (incl Hooks, React Router, Redux)
 :source-highlighter: coderay
 :icons: font
-:toc: right
+:toc: left
 :toclevels: 4
 Maximilian Schwarzmüller
 
@@ -260,4 +260,138 @@ The module introduces several advanced JavaScript features that are commonly use
 === 32. JS Array Functions
 
 The provided content emphasizes the importance of JavaScript array functions such as `map()`, `filter()`, `reduce()`, and others, which are commonly used in React and other JavaScript-based technologies. These functions are crucial for manipulating arrays in an immutable manner. The text suggests visiting the Mozilla Developer Network (MDN) web docs for a comprehensive guide on these array methods. It highlights several key array methods that are particularly important in the context of the course, providing direct links to their documentation on MDN, including `map()`, `find()`, `findIndex()`, `filter()`, `reduce()`, `concat()`, `slice()`, and `splice()`.
+
+== 3. React Basics and Working With Components
+
+=== 34. Module Introduction
+
+This section of the React Essentials Course will guide students through the creation of a demo web application using React, starting from scratch. It will cover vital React concepts such as components, JSX, props, and state. The course will teach students how to display data and make apps interactive by handling user events. By the end of the section, students will be able to build both static and dynamic interactive React applications, with no prior React knowledge required, although a basic understanding of JavaScript is necessary.
+
+=== 35. It's All About Components! (Core Concept)
+
+The core concept of React and its ecosystem is the use of Components. Components are reusable building blocks used to construct the user interface (UI) of React applications, regardless of their complexity. A well-designed React app is made by combining these Components, which encapsulate HTML, CSS, and JavaScript logic to define and control parts of the UI. This approach allows for easy management of complex UIs, enables code reuse, and ensures that related code is kept together, which simplifies development and reduces the likelihood of errors. Components also promote a separation of concerns, where different components handle different aspects of the UI. This pattern is beneficial not only in React but also in other front-end frameworks such as Angular, Vue, and Svelte, and extends beyond web development into areas like mobile development with frameworks like Flutter. The course will explore the creation and use of React Components in depth.
+
+=== 36. Setting Up The Starting Project
+
+The content explains how to get started with React components by using a prepared React project. There are two options for working on the project: using a provided CodeSandbox link for a browser-based environment or downloading an alternative zip file for local development.
+
+For local development:
+
+1. Open the extracted project folder with a code editor like Visual Studio Code.
+2. Run `npm install` in the terminal within the project folder to install necessary third-party packages.
+3. After installation, start the development server with `npm run dev` to see a live preview of the React app.
+4. The development server should be kept running while working on the project as it automatically reloads the preview website upon code changes.
+5. To visit the preview website, follow the address shown after executing `npm run dev`.
+6. Terminate the server with `Ctrl + C` when done, and restart it with `npm run dev` when resuming work.
+
+For CodeSandbox users:
+
+- There is no need to run `npm install` or `npm run dev`, as these processes are managed automatically by CodeSandbox.
+
+In summary, the user is provided with a starting React project and guided on how to set up the development environment either locally or online using CodeSandbox to begin coding with React components.
+
+=== 37. JSX and React Components (Core Concept)
+
+The provided text talks about the initial setup of a React project. It mentions that the `index.html` file in the project is quite bare because React is responsible for rendering the content on the screen. This rendering is done through JavaScript files with `.jsx` extensions, which include `index.jsx` and `App.jsx`. The `.jsx` extension indicates that these files contain JSX (JavaScript Syntax Extension), which allows developers to write HTML within JavaScript files for creating user interfaces.
+
+The `index.jsx` file doesn't contain the actual content like images or titles, but it imports from the `App.jsx` file, which does contain the markup for what's displayed on the website. However, the text highlights that JSX is not natively supported by browsers, so the code written by developers is transformed by the development server into browser-compatible code.
+
+The `App.jsx` file is described as a React Component, which in React is essentially a JavaScript function with two key rules: the function name must start with an uppercase character, and it must return a renderable value, usually the HTML markup to be rendered, written in JSX. The author then suggests moving on to create a custom React Component following these principles.
+
+=== 38. Creating and Using a First Custom Component
+
+When building React applications, you are encouraged to create your own components, potentially many of them, to structure your app. You can create a custom component by defining a new JavaScript function in the same JSX file as your main app component, though later you might place components in separate files. This function should be named with an uppercase first letter and will return JSX code that represents the component's UI. The JSX code block should be wrapped in parentheses, especially if it spans multiple lines, and most code editors like VS Code or CodeSandbox will automatically format this for you.
+
+To use the custom component within your app, you should reference it as a JSX tag (e.g., `<Header />`) in your app component's JSX code. This tag can be self-closing but must include a forward slash before the closing bracket (e.g., `<Header />`). The creation and use of custom components are fundamental skills for a React developer, and while more complex features and concepts exist, this describes the basic process of building and integrating custom components in React.
+
+=== 40. How React Handles Components and How It Builds A "Component Tree"
+
+This text explains how a React component gets rendered onto a website. When inspecting the source code of a website that uses React, you will not find the actual content like images or titles, but rather metadata and JavaScript files. The JavaScript file, typically named `index.jsx`, is where the transformed React code resides. This file imports the `App` component from `App.jsx` using standard JavaScript import/export syntax.
+
+The `App` component is then passed as JSX code to the `render` method of the `ReactDOM` library, which is responsible for outputting the component's content on the screen. This rendering process begins with the `createRoot` method that takes an existing HTML element as input (like a div with the id `root`) and sets it as the root for the React app. React then injects the `App` component into this element, which may contain nested components, forming a hierarchy or tree of components that gets rendered to the screen.
+
+The rendered DOM, however, only shows default HTML elements and not the custom React components. React analyzes the component tree and generates the overall DOM from the JSX code, allowing developers to work with individual building blocks rather than a single large file. Custom component names must start with an uppercase letter to differentiate them from built-in elements, which start with lowercase letters. Custom components are executed as functions by React, and their returned JSX code is analyzed until React ends up with only built-in elements that are rendered to the screen. This process illustrates how React works with components and renders them onto the screen.
+
+=== 41. Using and Outputting Dynamic Values
+
+The content explains how to incorporate dynamic content into a React component. Specifically, it demonstrates how to randomly switch between different phrases—'Fundamental React concepts', 'Crucial React concepts', and 'Core React concepts'—within a Header component. The approach involves using JavaScript expressions inside curly braces within the JSX code to dynamically generate content. The provided code snippet introduces an array of possible phrases and a function to generate a random index, which is used to select a random phrase from the array each time the component is rendered. This dynamic expression can be placed directly in the JSX or extracted into a variable for cleaner code and is evaluated whenever the component is rendered, such as when the page is reloaded.
+
+=== 42. Setting HTML Attributes Dynamically and Loading Image Files
+
+The provided text explains the correct way to include images in a React project for optimal loading and to ensure they are included during the deployment process. Instead of directly setting the source attribute with a path to the image file, it is recommended to import the image using an import statement, which allows the build process to handle the image as part of the code transformation and optimization. This import creates a JavaScript variable that holds the path to the image, which can then be used as the value for the `src` attribute inside the JSX code using curly braces without quotes. This method ensures images are bundled correctly and can benefit from additional optimization steps during deployment.
+
+=== 43. Making Components Reusable with Props (Core Concept)
+
+The text explains how to use and reuse components in React. Components are reusable pieces of UI, and while some may only be used once, others are designed to be used multiple times with different data. React introduces the concept of 'props', which allows passing data into components to render them with specific information.
+
+A new React component called `CoreConcept` is created to display items with an image, title, and description. The `App` component is then modified to include a section for `CoreConcept` items, where each item receives different data via props.
+
+Props are passed to components by adding custom attributes, and the values for these attributes can be strings, numbers, objects, or arrays. In the component function, a single parameter, typically named `props`, is used to access these values. React automatically fills this `props` object with all the key-value pairs specified by the custom attributes.
+
+By using props, the `CoreConcept` component can be reused multiple times with different data for each instance. This way, dynamic and reusable UI elements are created in a React application. The remaining items and use of props will be further discussed in the following lecture.
+
+=== 44. Alternative Props Syntaxes
+
+The content explains how to dynamically import and use data in a React component. Specifically, it discusses how to use an array of objects containing properties like `image`, `title`, and `description` from a `data.js` file in an `App.jsx` file. The steps include importing the `CORE CONCEPTS` array using named imports with curly braces, accessing array items by index to set component props, and using the spread operator to pass all properties of an object as props to a component for cleaner code. Additionally, it covers object destructuring in the component's parameter list to directly use the properties as variables, which results in less verbose and more readable code. The overall message is to illustrate different ways to pass data to components and how to simplify the code while maintaining functionality.
+
+=== 45. More Prop Syntaxes
+
+The content explains different ways to handle properties (props) in React components:
+
+1. **Passing a Single Prop Object**: Instead of passing multiple props individually, you can pass an entire object as a single prop to a component. The object can then be accessed and destructured within the component.
+
+2. **Grouping Received Props Into a Single Object**: When a component receives multiple props, they can be grouped into a single object using JavaScript's rest property syntax inside the component function.
+
+3. **Default Prop Values**: Components can have optional props that may not always be provided. In such cases, default values for props can be specified using JavaScript's default parameter syntax within the destructuring of props.
+
+The text assures the reader that these concepts will be illustrated with concrete examples throughout the course.
+
+=== 46. Best Practice - Storing Components in Files and Using a Good Project Structure
+
+The content discusses the organization of React components in a project. Initially, all the components (Header, CoreConcept, and App) are in a single App.jsx file. The text points out that while this setup technically works, it is not recommended for larger projects due to maintainability issues. The suggested approach is to create separate files for each component, typically within a Components subfolder inside the SRC directory.
+
+Here's a summary of the steps and best practices mentioned:
+
+- Create a Components folder in the SRC directory to store individual component files.
+- Name each component file after the component it contains (e.g., Header.jsx for the Header component).
+- Move the component function and any related code (e.g., helper functions, constants) from the App.jsx to the new component file.
+- Export the component from its new file using either named or default export, with default export being the more common practice in React projects.
+- Import the component back into the App.jsx file where it is used, adjusting the import path to reflect the new file location.
+- Move any related imports (e.g., images) to the new component file and adjust the path if necessary, considering the new file structure.
+
+By following these steps, each component is now in its own file, which aligns with common best practices and improves the project's structure and maintainability as it grows.
+
+=== 47. Storing Component Style Files Next To Components
+
+The content discusses organizing CSS styles for a React project by splitting them into separate files specific to individual components. It suggests moving the CSS rules related to the header component from the main `index.css` file to a new `header.css` file placed next to the `header.jsx` file. To apply these styles, the `header.css` file must be imported into the `header.jsx` component file using an import statement. The author points out that importing CSS in this way doesn't scope the styles to just that component; the styles would affect any similar elements on the page. As a solution to this limitation, the author hints at a future discussion on style scoping.
+
+The author also recommends creating a subfolder within the `Components` folder for each component, like the header, to keep related files organized. After this structural change, the import paths in the affected JSX files must be updated to reflect the new folder locations. The summary of this content is:
+
+- CSS styles can be split into separate files corresponding to specific components.
+- The `header.css` file is created and imported into the `header.jsx` file to apply styles to the header component.
+- CSS imports do not scope styles to the components, affecting similar elements elsewhere on the page.
+- The author suggests creating subfolders for better organization and demonstrates adjusting import paths after such a restructure.
+- Style scoping will be discussed later in the course.
+
+=== 48. Component Composition - The special children Prop (Core Concept)
+
+The provided text discusses the process of developing an interactive section for a website application within the `app.jsx` file. The author aims to create a new component for tab buttons and outlines the following steps:
+
+1. A new section with an ID of `examples` is added to the `app.jsx` file, which includes an `<h2>` tag with the title "Examples" and a built-in HTML `<menu>` element for creating a list of buttons.
+
+2. Instead of manually adding list items and buttons, a new component file named `TabButton.jsx` is created next to the `CoreConcept.jsx` file. This component is a function that returns a list item with a button.
+
+3. The author wants to use the `TabButton` component within the `app.jsx` file, where button text such as "Components" is passed as children between the opening and closing tags of the `TabButton` component.
+
+4. For the `TabButton` component to work as intended, props are accepted in the component, which includes a special built-in prop called `children`. This prop represents the content placed between the opening and closing tags of the component.
+
+5. The text content passed as children to the `TabButton` component can be displayed using `props.children` or by extracting the `children` prop through object destructuring.
+
+6. The author explains that this method of creating components, where components can wrap other content, is known as component composition. This approach may be more convenient or recognizable compared to using props like `label` for configuration.
+
+7. Both the `children` prop method and the `label` prop method are valid for passing content to components, and the choice between them depends on personal preference or the specific use case.
+
+8. Finally, the author decides to use the component composition approach with the `children` prop and adds more buttons for JSX, props, and state examples to the interactive section.
+
+In summary, the text explains how to create a `TabButton` component in React that utilizes the `children` prop for component composition to display an interactive tab button section on a website. The author emphasizes the flexibility of React components, allowing developers to choose between different methods of content delivery based on preference and use case.
 

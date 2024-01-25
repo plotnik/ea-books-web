@@ -66,7 +66,7 @@ class EABooks implements Callable<Integer> {
 	}
 	
 	void writeToFile(BufferedWriter f) {
-		f.println "= Чтение по программированию"
+		f.println "= Reading Books on Programming"
 		f.println ":icons: font"
 		f.println ":toc: right"
 		f.println ""
@@ -90,7 +90,7 @@ class EABooks implements Callable<Integer> {
 				quotes = "icon:bookmark[]"
 			}
 			f.println "\n== ${quotes} ${code}\n"
-			f.println "${mstamp}, изменение: ${tstamp}\n"  
+			f.println "${mstamp}, changed: ${tstamp}\n"  
 			for (File nf in book.notes) {
 				assert nf.name.endsWith('.adoc')
 				String name = nf.name.substring(0, nf.name.length()-5)
