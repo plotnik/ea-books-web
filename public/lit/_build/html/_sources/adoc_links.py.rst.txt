@@ -51,29 +51,46 @@ Read YAML file:
 
   with open(args.input_yaml, 'r') as file:
       data = yaml.safe_load(file)
+      
+Remove newlines from the note.
 
+::
+
+  def format_note(note):
+      lines = note.strip().split("\n")
+      note = " - ".join(lines)
+      return note
 
 Process YAML records:
 
 ::
 
-  text = ""
+  text = """
+  [cols="1,1,1"]
+  |===
+  """
+
   for d in data:
       icon = d['icon']
       link = d['link']
       name = d['name']
       note = d['note']
-      note = note[0].lower() + note[1:]
+      note = format_note(note)
 
       text += f"""
+  a|    
   ====
-  icon:{icon}[role={{c}}flag] &nbsp;
+  icon:{icon}[2x,role={{c}}flag] &nbsp;
   link:{link}[
   *{name}*] +
   &nbsp;&nbsp;&nbsp;
   _{note}_
   ====
   """    
+
+  text += """
+  |===
+  """
 
 Write output file:
 
