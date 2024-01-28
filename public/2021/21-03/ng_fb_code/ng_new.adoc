@@ -1,0 +1,106 @@
+= New Angular Docs
+:source-highlighter: pygments
+:icons: font
+:toc: left
+:toclevels: 4
+
+== In-depth Guides
+
+=== Signals
+
+> https://angular.dev/guide/signals
+
+Angular signals are a reactive programming primitive introduced in Angular 16. They provide a way to track and notify consumers of changes to a value. This makes them a more efficient way to manage state in Angular applications than using traditional variables.
+
+**Key Features of Angular Signals:**
+
+* **Reactive:** Signals are reactive, which means that they automatically notify consumers of changes. This can help to improve the performance of your applications, as it can prevent unnecessary re-renders.
+
+* **Granular:** Signals allow you to track changes to a value at a granular level. This means that you can only notify consumers of changes to the specific parts of the value that they are interested in. This can further improve the performance of your applications.
+
+* **Efficient:** Signals are a more efficient way to manage state than using traditional variables. This is because signals do not require Angular to perform a full change detection cycle every time a value changes. Instead, Angular can only notify the consumers of the value that is interested in the change.
+
+**Creating a Signal:**
+
+To create a signal, you can use the `signal()` function. The `signal()` function takes an optional initial value as an argument. For example, the following code creates a signal with an initial value of 0:
+
+```typescript
+const mySignal = signal(0);
+```
+
+**Accessing the Value of a Signal:**
+
+To access the value of a signal, you can simply call the signal function. The signal function will return the current value of the signal. For example, the following code will log the current value of the `mySignal` signal:
+
+```typescript
+console.log(mySignal());
+```
+
+**Changing the Value of a Signal:**
+
+To change the value of a signal, you can call the `next()` method on the signal. The `next()` method takes the new value of the signal as an argument. For example, the following code changes the value of the `mySignal` signal to 1:
+
+```typescript
+mySignal.next(1);
+```
+
+**Using Signals in Templates:**
+
+You can use signals in Angular templates to bind data to components. To do this, you can use the `&=` operator. For example, the following template binds the value of the `mySignal` signal to the `value` property of an input element:
+
+```html+ng2
+<input type="text" [(ngModel)]="mySignal" />
+```
+
+**Using Signals with OnPush Components:**
+
+OnPush components only re-render when their input properties change. This can improve the performance of your applications, especially for large applications. To use signals with OnPush components, you need to use the `observeOn()` method. The `observeOn()` method tells Angular to track changes to the signal and only re-render the component when it detects a change. For example, the following code uses the `observeOn()` method to make an OnPush component reactive to changes in the `mySignal` signal:
+
+```typescript
+@Component({
+  selector: 'app-my-component',
+  template: `
+    <input type="text" [(ngModel)]="mySignal" />
+  `,
+})
+export class MyComponent {
+  mySignal = signal(0);
+
+  constructor() {
+    this.mySignal.observeOn(this.changeDetectorRef);
+  }
+}
+```
+
+**Using Signals for Effects:**
+
+Angular effects are a way to perform side effects in Angular applications. They are a more efficient way to perform side effects than using traditional promises. Signals can be used with effects to track the dependencies of an effect. For example, the following code creates an effect that logs the current value of the `mySignal` signal every second:
+
+```typescript
+@Component({
+  selector: 'app-my-component',
+  template: `
+    <p>Current signal value: {{ mySignal }}</p>
+  `,
+})
+export class MyComponent {
+  mySignal = signal(0);
+
+  constructor(private effects: Effects<MyComponent>) {}
+
+  @Effect()
+  myEffect() {
+    return this.interval(1000).pipe(
+      tap(() => {
+        console.log('Current signal value:', this.mySignal());
+      })
+    );
+  }
+}
+```
+
+Signals are a powerful tool for managing state in Angular applications. They can help to improve the performance of your applications, make your code more reactive, and make it easier to write clean and maintainable code.
+
+=== Http Client
+
+> https://angular.dev/guide/http
