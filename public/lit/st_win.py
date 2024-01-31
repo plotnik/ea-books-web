@@ -6,6 +6,13 @@
 import streamlit as st
 from openai import OpenAI
 import yaml
+import tiktoken
+
+# Select OpenAI LLM.
+#
+# ::
+
+openai_model = "gpt-4-0125-preview"
 
 # Load LLM prompts.
 #
@@ -35,15 +42,29 @@ prompt_name = st.selectbox(
 prompt = get_prompt(prompt_name)
 st.write(prompt)
 
+
+client = OpenAI()
+
+# Count tokens.
+# 
+# ::
+
+def count_tokens(text):
+    encoding = tiktoken.encoding_for_model(openai_model)
+    tokens = encoding.encode(text)
+    st.write(f'Tokens: `{len(tokens)}`')
+    
+st.write('---')
+if st.button('Count tokens'):
+    count_tokens(text)
+
 # Call OpenAI API.
 # 
 # ::
 
-client = OpenAI()
-
 def call_openai(text, prompt):
     response = client.chat.completions.create(
-            model="gpt-4-1106-preview",
+            model=openai_model,
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": text},
@@ -65,6 +86,7 @@ def call_openai(text, prompt):
     with open(out_file, 'w') as file:
         file.write(out_text)
     st.write(f'Response saved: `{out_file}`')
-
+    
+st.write('---')
 if st.button('Call OpenAI'):
     call_openai(text, prompt)
