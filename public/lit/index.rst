@@ -10,9 +10,8 @@ Literate Programs
    :maxdepth: 2
    :caption: Contents:
 
-   st_note.py
-   st_python.py
-   st_openai.py
+   ai_note.py
+   ai_obsidian.py
    cmp_folders.py
    adoc_links.py
 

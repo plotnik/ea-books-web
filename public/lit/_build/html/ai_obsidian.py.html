@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Call OpenAI API &#8212; lit  documentation</title>
+    <title>Obsidian-AI &#8212; lit  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Сравнение папок" href="cmp_folders.py.html" />
-    <link rel="prev" title="Write Python code" href="st_python.py.html" />
+    <link rel="prev" title="Notepad-AI" href="ai_note.py.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -31,8 +31,8 @@
 
           <div class="body" role="main">
             
-  <section id="call-openai-api">
-<h1>Call OpenAI API<a class="headerlink" href="#call-openai-api" title="Link to this heading">¶</a></h1>
+  <section id="obsidian-ai">
+<h1>Obsidian-AI<a class="headerlink" href="#obsidian-ai" title="Link to this heading">¶</a></h1>
 <table class="docutils align-default" id="id1">
 <caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
 <colgroup>
@@ -45,15 +45,30 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>How to count tokens with tiktoken</p></td>
+<tr class="row-even"><td><p>Obsidian</p></td>
+<td><p><a class="reference external" href="https://obsidian.md/">https://obsidian.md/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>OpenAI API Examples</p></td>
+<td><p><a class="reference external" href="https://platform.openai.com/examples">https://platform.openai.com/examples</a></p></td>
+</tr>
+<tr class="row-even"><td><p>OpenAI Models</p></td>
+<td><p><a class="reference external" href="https://platform.openai.com/docs/models">https://platform.openai.com/docs/models</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>How to count tokens with tiktoken</p></td>
 <td><p><a class="reference external" href="https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken">https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken</a></p></td>
+</tr>
+<tr class="row-even"><td><p>reStructuredText Primer</p></td>
+<td><p><a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>PyLit Tutorial</p></td>
+<td><p><a class="reference external" href="https://slott56.github.io/PyLit-3/_build/html/tutorial/index.html">https://slott56.github.io/PyLit-3/_build/html/tutorial/index.html</a></p></td>
 </tr>
 </tbody>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
 <span class="kn">import</span> <span class="nn">tiktoken</span>
 <span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
 </pre></div>
@@ -63,9 +78,25 @@
 <span class="n">openai_temperature</span> <span class="o">=</span> <span class="mf">0.7</span>
 </pre></div>
 </div>
-<p>Get Obsidian folder from <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">load_dotenv</span><span class="p">()</span>
-<span class="n">note_home</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OBSIDIAN_HOME&quot;</span><span class="p">)</span>
+<p>Select Obsidian folder from recent vaults.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">home_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
+<span class="n">obsidian_json_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">home_folder</span><span class="si">}</span><span class="s2">/Library/Application Support/obsidian/obsidian.json&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">obsidian_json_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+    <span class="n">obsidian_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+
+<span class="n">obsidian_vaults</span> <span class="o">=</span> <span class="n">obsidian_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;vaults&#39;</span><span class="p">)</span>
+
+<span class="c1"># Extract the values from the dictionary and sort them based on the &#39;ts&#39; key</span>
+<span class="n">sorted_vaults</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">obsidian_vaults</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;ts&#39;</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Extract the &#39;path&#39; from each sorted entry</span>
+<span class="n">obsidian_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">vault</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">vault</span> <span class="ow">in</span> <span class="n">sorted_vaults</span><span class="p">]</span>
+
+<span class="n">note_home</span> <span class="o">=</span> <span class="s1">&#39;/Users/eabramovich/Documents/books/2022/22-02/ml_code/ML Book&#39;</span>
+<span class="n">note_home</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
+   <span class="s2">&quot;Obsidian folder&quot;</span><span class="p">,</span>
+   <span class="n">obsidian_folders</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p>Load LLM prompts.</p>
@@ -122,20 +153,24 @@
 </pre></div>
 </div>
 <p>Select the prompt.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">]</span>
-<span class="n">prompt_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-   <span class="s2">&quot;Prompt&quot;</span><span class="p">,</span>
-   <span class="n">prompt_names</span><span class="p">,</span>
-<span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="n">prompt_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">]</span>
+    <span class="n">prompt_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
+       <span class="s2">&quot;Prompt&quot;</span><span class="p">,</span>
+       <span class="n">prompt_names</span><span class="p">,</span>
+    <span class="p">)</span>
 
-<span class="n">prompt</span> <span class="o">=</span> <span class="n">get_prompt</span><span class="p">(</span><span class="n">prompt_name</span><span class="p">)</span>
-<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">get_prompt</span><span class="p">(</span><span class="n">prompt_name</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+
+<span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
+<span class="s2">and your task is to summarize the content you are provided.&quot;&quot;&quot;</span>
 </pre></div>
 </div>
 <p>Call OpenAI API.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
 
-<span class="k">def</span> <span class="nf">call_openai</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Summarize&#39;</span><span class="p">):</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">model</span><span class="o">=</span><span class="n">openai_model</span><span class="p">,</span>
             <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
@@ -147,6 +182,7 @@
 
     <span class="n">choice</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">out_text</span> <span class="o">=</span> <span class="n">choice</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span> <span class="o">=</span> <span class="n">out_text</span>
 
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_text</span><span class="p">)</span>
@@ -155,13 +191,13 @@
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">usage</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Choices: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-    <span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;st_openai.txt&#39;</span>
+    <span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;ai_obsidian.txt&#39;</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_text</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Response saved: `</span><span class="si">{</span><span class="n">out_file</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result saved: `</span><span class="si">{</span><span class="n">out_file</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Call OpenAI&#39;</span><span class="p">):</span>
-    <span class="n">call_openai</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+<span class="k">if</span> <span class="s1">&#39;openai_result&#39;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;Result&quot;</span><span class="p">,</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -185,9 +221,8 @@
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="st_note.py.html">Notebook with OpenAI prompts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="st_python.py.html">Write Python code</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Call OpenAI API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Notepad-AI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Obsidian-AI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
 </ul>
@@ -196,7 +231,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="st_python.py.html" title="previous chapter">Write Python code</a></li>
+      <li>Previous: <a href="ai_note.py.html" title="previous chapter">Notepad-AI</a></li>
       <li>Next: <a href="cmp_folders.py.html" title="next chapter">Сравнение папок</a></li>
   </ul></li>
 </ul>
@@ -231,7 +266,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
-      <a href="_sources/st_openai.py.rst.txt"
+      <a href="_sources/ai_obsidian.py.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

@@ -1,5 +1,5 @@
-Notebook with OpenAI prompts
-============================
+Notepad-AI
+==========
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
@@ -96,6 +96,7 @@ Call OpenAI API.
 
       choice = response.choices[0]
       st.session_state.openai_result = choice.message.content
+      st.write(st.session_state.openai_result)
 
       st.write('---')
       st.write(f'finish_reason: `{choice.finish_reason}`')
@@ -123,7 +124,7 @@ Save note.
             </answer>
           </note>
       """).strip()
-      out_file = f"st_note/{note_name}.xml"
+      out_file = f"ai_note/{note_name}.xml"
       with open(out_file, 'w') as file:
           file.write(xml)
       st.write(f'Note saved: `{out_file}`')
