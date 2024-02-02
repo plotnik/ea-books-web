@@ -59,7 +59,8 @@
 </pre></div>
 </div>
 <p>Select OpenAI LLM.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4-1106-preview&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4-0125-preview&quot;</span>
+<span class="n">openai_temperature</span> <span class="o">=</span> <span class="mf">0.7</span>
 </pre></div>
 </div>
 <p>Get Obsidian folder from <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p>
@@ -136,12 +137,12 @@
 
 <span class="k">def</span> <span class="nf">call_openai</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4-1106-preview&quot;</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">openai_model</span><span class="p">,</span>
             <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
                 <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
                 <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">},</span>
             <span class="p">],</span>
-            <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">openai_temperature</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">choice</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -184,7 +185,7 @@
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="st_win.py.html">Window for OpenAI prompts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="st_note.py.html">Notebook with OpenAI prompts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="st_python.py.html">Write Python code</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Call OpenAI API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>

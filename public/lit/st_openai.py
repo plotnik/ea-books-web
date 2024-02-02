@@ -20,7 +20,8 @@ from openai import OpenAI
 #
 # ::
 
-openai_model = "gpt-4-1106-preview"
+openai_model = "gpt-4-0125-preview"
+openai_temperature = 0.7
 
 # Get Obsidian folder from ``.env`` file.
 #
@@ -111,12 +112,12 @@ client = OpenAI()
 
 def call_openai(text, prompt):
     response = client.chat.completions.create(
-            model="gpt-4-1106-preview",
+            model=openai_model,
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": text},
             ],
-            temperature=0.7,
+            temperature=openai_temperature,
         )
 
     choice = response.choices[0]

@@ -10,7 +10,7 @@ Literate Programs
    :maxdepth: 2
    :caption: Contents:
 
-   st_win.py
+   st_note.py
    st_python.py
    st_openai.py
    cmp_folders.py
