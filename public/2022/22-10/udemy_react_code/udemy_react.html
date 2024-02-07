@@ -501,6 +501,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_48_component_composition_the_special_children_prop_core_concept">48. Component Composition - The special children Prop (Core Concept)</a></li>
 <li><a href="#_49_reacting_to_events_core_concept">49. Reacting to Events (Core Concept)</a></li>
 <li><a href="#_50_passing_functions_as_values_to_props">50. Passing Functions as Values to Props</a></li>
+<li><a href="#_51_passing_custom_arguments_to_event_functions">51. Passing Custom Arguments to Event Functions</a></li>
+<li><a href="#_52_how_not_to_update_the_ui_a_look_behind_the_scenes_of_react_core_concept">52. How NOT to Update the UI - A Look Behind The Scenes of React (Core Concept)</a></li>
+<li><a href="#_53_managing_state_using_hooks_core_concept">53. Managing State &amp; Using Hooks (Core Concept)</a></li>
 </ul>
 </li>
 </ul>
@@ -1214,12 +1217,73 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>The text explains how to update dynamic content in a React application based on button clicks using custom button components. The process involves passing a function as a prop (named <code>onSelect</code> or similar) from the parent <code>App</code> component to a custom button component. This function is designed to be triggered when the button is clicked. Inside the custom button component, this <code>onSelect</code> prop is then used to set the value for the native <code>onClick</code> event handler of the HTML button element. The result is that clicking the button activates the <code>handleSelect</code> function in the <code>App</code> component, which can then be used to update the dynamic content in the application. This pattern of passing event handler functions as props to child components is common in React projects and allows for the dynamic manipulation of content based on user interactions.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_51_passing_custom_arguments_to_event_functions">51. Passing Custom Arguments to Event Functions</h3>
+<div class="paragraph">
+<p>The text describes a process for handling button clicks in a React application. The main points are:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>A <code>handleSelect</code> function is introduced to determine which button is clicked by accepting a parameter, <code>selectedButton</code>, which can be one of four values: <code>Components</code>, <code>JSX</code>, <code>Props</code>, or <code>State</code>.</p>
+</li>
+<li>
+<p>An <code>if</code> check is suggested to replace dynamic content based on the value of <code>selectedButton</code>.</p>
+</li>
+<li>
+<p>To pass the appropriate identifier to the <code>handleSelect</code> function, an arrow function is used in place of directly assigning <code>handleSelect</code> to the <code>onSelect</code> property.</p>
+</li>
+<li>
+<p>This arrow function is passed as the value to <code>onSelect</code>, which is eventually passed to the <code>onClick</code> property of a button, allowing custom execution of <code>handleSelect</code> with the correct identifier when a button is clicked.</p>
+</li>
+<li>
+<p>It&#8217;s mentioned that this approach of passing an arrow function is a common pattern in React when you want to control the execution and arguments of an event handler function.</p>
+</li>
+<li>
+<p>Finally, the <code>handleSelect</code> function is tested by logging the received parameter to the console, confirming that different values are logged when different buttons are pressed.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>In summary, the text outlines a method for updating dynamic content in a React application based on button clicks, utilizing a function that takes an identifier parameter and arrow functions to correctly handle events with custom arguments.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_52_how_not_to_update_the_ui_a_look_behind_the_scenes_of_react_core_concept">52. How NOT to Update the UI - A Look Behind The Scenes of React (Core Concept)</h3>
+<div class="paragraph">
+<p>The provided text describes an issue encountered while working with a React application. The author explains that they&#8217;ve attempted to update the displayed content based on which tab button is pressed using a variable called <code>tabContent</code>. Initially, the variable is set to prompt the user to click a button. However, despite updating <code>tabContent</code> when a button is pressed, the UI does not reflect any changes.</p>
+</div>
+<div class="paragraph">
+<p>The reason for this behavior is that React components re-render only when their state changes. Since <code>tabContent</code> is a regular variable and not part of the component&#8217;s state, React does not recognize the need to re-render the component. As a result, the UI remains unchanged even when <code>tabContent</code> is updated.</p>
+</div>
+<div class="paragraph">
+<p>The author demonstrates this by adding <code>console.log</code> statements, showing that while the <code>handleSelect</code> function executes and updates <code>tabContent</code>, the main component function does not re-execute, and therefore the UI is not updated.</p>
+</div>
+<div class="paragraph">
+<p>The issue highlights the need for using state in React components to ensure the UI updates when data changes. The author suggests that they will explore the concept of state next as a solution to this problem.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_53_managing_state_using_hooks_core_concept">53. Managing State &amp; Using Hooks (Core Concept)</h3>
+<div class="paragraph">
+<p>React components do not re-execute when regular variables change, so they cannot be used to update the UI. Instead, React provides a concept called state, which allows components to re-render when the state changes. State in React is managed using the <code>useState</code> hook, which is imported from the React library. When using <code>useState</code>, you initialize it with a default value and it returns an array with two elements: the current state value and a function to update that state. This function, when called, will also signal React to re-render the component.</p>
+</div>
+<div class="paragraph">
+<p>The state-related variables and updater functions must be called at the top level of a React component function, not inside loops, conditions, or nested functions. This is a rule of React Hooks. The first element of the array returned by <code>useState</code> is the managed state value, and the second is the function to update that state.</p>
+</div>
+<div class="paragraph">
+<p>When the state update function is called, React schedules the update and re-executes the component function to reflect the new state. However, the updated state value is only available after the component function re-executes, not immediately after the state update function is called.</p>
+</div>
+<div class="paragraph">
+<p>In summary, <code>useState</code> allows developers to create stateful components in React, enabling interactive and dynamic user interfaces where the UI can respond to user actions and state changes.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-02 22:15:31 +0200
+Last updated 2024-02-06 17:53:29 +0200
 </div>
 </div>
 </body>

@@ -403,3 +403,36 @@ The provided text discusses how to make the `TabButton` component in a React app
 
 The text explains how to update dynamic content in a React application based on button clicks using custom button components. The process involves passing a function as a prop (named `onSelect` or similar) from the parent `App` component to a custom button component. This function is designed to be triggered when the button is clicked. Inside the custom button component, this `onSelect` prop is then used to set the value for the native `onClick` event handler of the HTML button element. The result is that clicking the button activates the `handleSelect` function in the `App` component, which can then be used to update the dynamic content in the application. This pattern of passing event handler functions as props to child components is common in React projects and allows for the dynamic manipulation of content based on user interactions.
 
+=== 51. Passing Custom Arguments to Event Functions
+
+The text describes a process for handling button clicks in a React application. The main points are:
+
+1. A `handleSelect` function is introduced to determine which button is clicked by accepting a parameter, `selectedButton`, which can be one of four values: `Components`, `JSX`, `Props`, or `State`.
+2. An `if` check is suggested to replace dynamic content based on the value of `selectedButton`.
+3. To pass the appropriate identifier to the `handleSelect` function, an arrow function is used in place of directly assigning `handleSelect` to the `onSelect` property.
+4. This arrow function is passed as the value to `onSelect`, which is eventually passed to the `onClick` property of a button, allowing custom execution of `handleSelect` with the correct identifier when a button is clicked.
+5. It's mentioned that this approach of passing an arrow function is a common pattern in React when you want to control the execution and arguments of an event handler function.
+6. Finally, the `handleSelect` function is tested by logging the received parameter to the console, confirming that different values are logged when different buttons are pressed.
+
+In summary, the text outlines a method for updating dynamic content in a React application based on button clicks, utilizing a function that takes an identifier parameter and arrow functions to correctly handle events with custom arguments.
+
+=== 52. How NOT to Update the UI - A Look Behind The Scenes of React (Core Concept)
+
+The provided text describes an issue encountered while working with a React application. The author explains that they've attempted to update the displayed content based on which tab button is pressed using a variable called `tabContent`. Initially, the variable is set to prompt the user to click a button. However, despite updating `tabContent` when a button is pressed, the UI does not reflect any changes.
+
+The reason for this behavior is that React components re-render only when their state changes. Since `tabContent` is a regular variable and not part of the component's state, React does not recognize the need to re-render the component. As a result, the UI remains unchanged even when `tabContent` is updated.
+
+The author demonstrates this by adding `console.log` statements, showing that while the `handleSelect` function executes and updates `tabContent`, the main component function does not re-execute, and therefore the UI is not updated.
+
+The issue highlights the need for using state in React components to ensure the UI updates when data changes. The author suggests that they will explore the concept of state next as a solution to this problem.
+
+=== 53. Managing State & Using Hooks (Core Concept)
+
+React components do not re-execute when regular variables change, so they cannot be used to update the UI. Instead, React provides a concept called state, which allows components to re-render when the state changes. State in React is managed using the `useState` hook, which is imported from the React library. When using `useState`, you initialize it with a default value and it returns an array with two elements: the current state value and a function to update that state. This function, when called, will also signal React to re-render the component.
+
+The state-related variables and updater functions must be called at the top level of a React component function, not inside loops, conditions, or nested functions. This is a rule of React Hooks. The first element of the array returned by `useState` is the managed state value, and the second is the function to update that state.
+
+When the state update function is called, React schedules the update and re-executes the component function to reflect the new state. However, the updated state value is only available after the component function re-executes, not immediately after the state update function is called.
+
+In summary, `useState` allows developers to create stateful components in React, enabling interactive and dynamic user interfaces where the UI can respond to user actions and state changes.
+

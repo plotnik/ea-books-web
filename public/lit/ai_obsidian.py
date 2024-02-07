@@ -45,7 +45,6 @@ sorted_vaults = sorted(obsidian_vaults.values(), key=lambda x: x['ts'], reverse=
 # Extract the 'path' from each sorted entry
 obsidian_folders = [vault['path'] for vault in sorted_vaults]
 
-note_home = '/Users/eabramovich/Documents/books/2022/22-02/ml_code/ML Book'
 note_home = st.selectbox(
    "Obsidian folder",
    obsidian_folders,
