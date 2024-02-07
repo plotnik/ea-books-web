@@ -504,6 +504,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_51_passing_custom_arguments_to_event_functions">51. Passing Custom Arguments to Event Functions</a></li>
 <li><a href="#_52_how_not_to_update_the_ui_a_look_behind_the_scenes_of_react_core_concept">52. How NOT to Update the UI - A Look Behind The Scenes of React (Core Concept)</a></li>
 <li><a href="#_53_managing_state_using_hooks_core_concept">53. Managing State &amp; Using Hooks (Core Concept)</a></li>
+<li><a href="#_54_deriving_outputting_data_based_on_state">54. Deriving &amp; Outputting Data Based on State</a></li>
+<li><a href="#_55_rendering_content_conditionally">55. Rendering Content Conditionally</a></li>
 </ul>
 </li>
 </ul>
@@ -1278,12 +1280,52 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>In summary, <code>useState</code> allows developers to create stateful components in React, enabling interactive and dynamic user interfaces where the UI can respond to user actions and state changes.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_54_deriving_outputting_data_based_on_state">54. Deriving &amp; Outputting Data Based on State</h3>
+<div class="paragraph">
+<p>The provided text discusses the implementation of a feature that displays content based on button clicks in a React application. The application has been updated to include a data file that exports an <code>examples</code> object containing keys that match button identifiers (state, props, JSX, components). Each key has an object with a <code>title</code>, <code>description</code>, and <code>code</code> to be displayed.</p>
+</div>
+<div class="paragraph">
+<p>To implement this, a <code>div</code> with the ID <code>tab-content</code> is added to the <code>app.jsx</code> file, containing an <code>H3</code> element for the title, a <code>paragraph</code> for the description, and a <code>pre</code> tag with a <code>code</code> element to showcase the code example. The <code>examples</code> object is imported into the <code>app.jsx</code> file, and the content is dynamically rendered based on the state that stores the selected button identifier.</p>
+</div>
+<div class="paragraph">
+<p>Initially, there was an error because the default state did not match any of the keys in the <code>examples</code> object. To fix this, the initial state is set to "components," which is a valid key, eliminating the error and allowing the correct information to display upon initial page load. Now, when different buttons are clicked, the content changes to display the relevant information for each topic.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_55_rendering_content_conditionally">55. Rendering Content Conditionally</h3>
+<div class="paragraph">
+<p>The content discusses different methods of conditionally rendering content in a React application, specifically when dealing with a situation where you want to display different data based on the button pressed on a webpage.</p>
+</div>
+<div class="paragraph">
+<p>Initially, the page is set to display "Components" data, but the preference is to show a message like "please select a topic" before any selection is made. To implement this behavior, the initial state is set to an undefined value to indicate no topic is selected.</p>
+</div>
+<div class="paragraph">
+<p>Several approaches to conditionally render content in React are described:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Using a Ternary Expression</strong>: This involves using a ternary operator within JSX to check if the <code>selectedTopic</code> state is truthy. If it is not, a paragraph with a fallback text is displayed; otherwise, nothing is rendered.</p>
+</li>
+<li>
+<p><strong>Using Logical AND (&amp;&amp;) Operator</strong>: This method utilizes JavaScript&#8217;s logical AND operator, which will render the content after the operator if the condition before it evaluates to true. This can result in more concise code.</p>
+</li>
+<li>
+<p><strong>Using a Variable to Store JSX</strong>: Instead of inline conditional rendering, a variable is created to store JSX code. This variable is adjusted based on the condition of whether a topic is selected. If a topic is selected, the variable is overwritten with the appropriate content. This approach leads to cleaner JSX code where the variable is then inserted into the return statement.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The content emphasizes that as a React developer, it&#8217;s essential to understand these different approaches, as they will be encountered in real-world projects. It&#8217;s up to the developer to choose the method they find most readable and understandable.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-06 17:53:29 +0200
+Last updated 2024-02-07 23:09:20 +0200
 </div>
 </div>
 </body>
