@@ -506,6 +506,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_53_managing_state_using_hooks_core_concept">53. Managing State &amp; Using Hooks (Core Concept)</a></li>
 <li><a href="#_54_deriving_outputting_data_based_on_state">54. Deriving &amp; Outputting Data Based on State</a></li>
 <li><a href="#_55_rendering_content_conditionally">55. Rendering Content Conditionally</a></li>
+<li><a href="#_56_css_styling_dynamic_styling">56. CSS Styling &amp; Dynamic Styling</a></li>
+<li><a href="#_57_outputting_list_data_dynamically">57. Outputting List Data Dynamically</a></li>
+<li><a href="#_58_module_summary">58. Module Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -1320,12 +1323,70 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>The content emphasizes that as a React developer, it&#8217;s essential to understand these different approaches, as they will be encountered in real-world projects. It&#8217;s up to the developer to choose the method they find most readable and understandable.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_56_css_styling_dynamic_styling">56. CSS Styling &amp; Dynamic Styling</h3>
+<div class="paragraph">
+<p>The text discusses how to dynamically style HTML elements in React, specifically how to indicate which tab is active in a tabbed interface. It explains that in React, you should use the <code>className</code> prop instead of <code>class</code> to set CSS classes, which is JSX-specific. The example provided involves adding an "active" class to a button to highlight it when it&#8217;s selected. To do this dynamically, a new <code>isSelected</code> boolean prop is introduced for the TabButton component, which determines if the button is active. This prop is used with a ternary expression inside curly braces to set the <code>className</code> to "active" when the button is selected and to an empty string or <code>undefined</code> when it is not. This dynamic styling is based on the component&#8217;s state (<code>selectedTopic</code>), which changes when different tabs are clicked. The App component passes a true or false value to the <code>isSelected</code> prop of each TabButton based on whether its <code>selectedTopic</code> state matches the button&#8217;s corresponding identifier. This results in the selected tab being visually indicated to the user.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_57_outputting_list_data_dynamically">57. Outputting List Data Dynamically</h3>
+<div class="paragraph">
+<p>The demo application is functionally complete, but the code can be improved, particularly in the way the core concept components are rendered. Currently, the components are manually repeated, which creates two issues: unnecessary typing and potential breaks if the data source changes (e.g., if an array element is removed but the code still tries to output four components).</p>
+</div>
+<div class="paragraph">
+<p>The suggested improvement is to dynamically generate the core concept components based on the number of items in the core concepts array. This can be done using JSX&#8217;s ability to render arrays of renderable data, including arrays of JSX elements. The transformation of the array of JavaScript objects (which JSX cannot directly render) into an array of JSX elements is achieved using the JavaScript <code>map</code> method. This method allows for iterating over each item in the array and converting it into the desired JSX code.</p>
+</div>
+<div class="paragraph">
+<p>When implementing this, developers must be aware of the React warning regarding unique <code>key</code> props for list items. This warning can be resolved by adding a unique <code>key</code> prop to each list item component, which helps React to efficiently render and update the list. A unique identifier, such as the title of the item, can be used for the <code>key</code> prop.</p>
+</div>
+<div class="paragraph">
+<p>In summary, the app&#8217;s code can be optimized by using the <code>map</code> method to dynamically render list items based on data, which also resolves issues with manual repetition and potential data source changes. Adding unique <code>key</code> props to each list item is essential for efficient rendering and to prevent React warnings.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_58_module_summary">58. Module Summary</h3>
+<div class="paragraph">
+<p>This section of the course covered the essentials of creating an interactive demo web app using React. Key concepts included:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Components</strong>: Understanding that React is based on components which are functions with an uppercase starting letter, returning JSX code.</p>
+</li>
+<li>
+<p><strong>JSX</strong>: Learning to use component functions like custom HTML elements within JSX.</p>
+</li>
+<li>
+<p><strong>Props</strong>: Configuring components with properties (props) to pass data and functions, and receiving them as parameters within the component function.</p>
+</li>
+<li>
+<p><strong>Dynamic Content</strong>: Using curly braces to output dynamic content between tags or as attribute values, and understanding the special 'children' prop.</p>
+</li>
+<li>
+<p><strong>Events</strong>: Handling events with special 'on' props and creating custom event handlers for components.</p>
+</li>
+<li>
+<p><strong>useState Hook</strong>: Managing and updating state with <code>useState</code> to re-render components with new data.</p>
+</li>
+<li>
+<p><strong>Conditional Rendering</strong>: Outputting conditional content using variables with if statements, ternary expressions, or the logical 'and' operator.</p>
+</li>
+<li>
+<p><strong>Lists and Keys</strong>: Dynamically rendering lists by mapping data to JSX elements and using the 'key' prop for efficient rendering and updates.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The section prepared learners to start building basic React apps and set the foundation for diving deeper into React&#8217;s essentials and advanced features in the course.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-07 23:09:20 +0200
+Last updated 2024-02-11 23:09:04 +0200
 </div>
 </div>
 </body>
