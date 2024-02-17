@@ -93,12 +93,12 @@ We can use emojis in buttons
 ::
     
   if st.sidebar.button(':thermometer: &nbsp; Count Tokens'):
-  
+
       encoding = tiktoken.encoding_for_model(openai_model)
       tokens = encoding.encode(text)
       st.write('---')
       st.write(f'Tokens: `{len(tokens)}`')
-  
+
 
 Call OpenAI API
 ---------------
@@ -109,10 +109,10 @@ Call OpenAI API
 
   if "openai_result" not in st.session_state:
       st.session_state.openai_result = ''
-  
+
   st.write('---')
   st.write(st.session_state.openai_result)
-  
+
   st.sidebar.write('---')
   if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
 
@@ -134,12 +134,12 @@ Call OpenAI API
       print(f'finish_reason: `{choice.finish_reason}`')
       print(response.usage)
       print(f'Choices: {len(response.choices)}')
-    
+  
       # Calculate and print execution time
       end_time = time.time()
       execution_time = end_time - start_time
       print(f'Execution time: `{execution_time:.1f}` seconds')
-  
+
       if platform.system() == 'Darwin':
           os.system("afplay /System/Library/Sounds/Glass.aiff")
       st.rerun()
@@ -153,7 +153,7 @@ Notes will be saved to ``ai_note`` folder which is expected to exist.
 
   def save_note_disabled():
       return len(note_name.strip())==0
-  
+
   st.write('---')
   note_name = st.text_input("Note Name")
   if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
