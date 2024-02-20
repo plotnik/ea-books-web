@@ -1,0 +1,50 @@
+= 23-08 Amazon Web Services in Action
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+Andreas Wittig, Michael Wittig
+
+== Part 1. Getting started
+
+=== 1 What is Amazon Web Services?
+
+==== 1.6 Exploring AWS services
+
+The text provides an introduction to the range of services offered by AWS and explains how to interact with these services. AWS's infrastructure is based on hardware for computing, storing, and networking, on top of which AWS runs various services. These services can be managed through an API, web-based GUI (Management Console), CLI, or SDKs. Virtual machines (VMs) allow for direct SSH access for software installation, whereas other services like NoSQL databases are managed solely through APIs. The document illustrates how a custom PHP web application hosted on a VM interacts with AWS services like NoSQL databases, file storage, and email services through API calls.
+
+AWS offers around 200 services categorized into 25 areas, including analytics, application integration, computing, databases, machine learning, security, and storage, among others. However, the text acknowledges that covering all AWS services in one book is impractical. Instead, it highlights key services that are essential for building, maintaining, and growing a dependable system. These include *EC2* (virtual machines), *ECS* and *Fargate* (container management), *Lambda* (function execution), *S3* and *Glacier* (storage solutions), *EBS* and *EFS* (block and network file storage), *RDS* and *DynamoDB* (SQL and NoSQL databases), *ElastiCache* (in-memory store), *VPC* (virtual network), *ELB* (load balancers), *Simple Queue Service* (distributed queues), *CodeDeploy* (code deployments), *CloudWatch* (monitoring and logging), *CloudFormation* (infrastructure automation), and *IAM* (access management).
+
+The document mentions that topics like continuous delivery, machine learning, and analytics are significant enough for separate discussions and recommends a specific book for machine learning and analytics on AWS. Finally, it previews that the following sections will detail how to interact with AWS services using the web interface, CLI, and SDKs.
+
+=== 2 A simple example: WordPress in 15 minutes
+
+==== 2.1 Creating your infrastructure
+
+The provided content outlines the process of setting up a WordPress-based blogging infrastructure on AWS using various services including Elastic Load Balancing (*ELB*), Elastic Compute Cloud (*EC2*), Relational Database Service (*RDS*) for MySQL, Elastic File System (*EFS*), and security groups. It details how AWS CloudFormation can be used to automate the creation of this infrastructure, making the process straightforward and efficient. The steps involve creating a CloudFormation stack using a prepared template, configuring settings such as the WordPress admin password, specifying tags for resource management, acknowledging IAM resource creation, and finally launching the stack. Once the stack creation process is complete, the URL to access the WordPress installation is provided. The content emphasizes the power of automation in AWS for setting up complex infrastructures efficiently.
+
+== Part 2. Building virtual infrastructure consisting of computers and networking
+
+=== 3 Using virtual machines - EC2
+
+==== 3.1 Exploring a virtual machine
+
+===== 3.1.1 Launching a virtual machine
+
+The provided text is a detailed guide on launching a virtual machine (VM) on Amazon Web Services (AWS) using an EC2 instance to run LinkChecker for identifying broken links on a website. The process enhances a website's usability and SEO score. The guide outlines several steps:
+
+1. **Starting an EC2 Instance**: Instructions include accessing the AWS Management Console, ensuring you're in the "N. Virginia (US East)" region, navigating to the EC2 service, and initiating the instance launch wizard.
+
+2. **Configuring the EC2 Instance**: The configuration involves naming the VM for easier identification, selecting an operating system through an Amazon Machine Image (AMI), and choosing the VM's size based on computing power needs. It emphasizes the importance of selecting an instance type that meets the application's requirements without overestimating resources.
+
+3. **Instance Types and Families**: A breakdown of various AWS instance types and families is provided, catering to different use cases like general-purpose applications, memory-intensive applications, and computing-optimized tasks. The guide suggests starting with a smaller instance type and scaling up as necessary.
+
+4. **AMI and Virtual Appliances**: The text explains that an AMI includes a read-only filesystem with an OS, additional software, and configurations, excluding the OS kernel. It also introduces AWS's Nitro virtualization and hardware-assisted virtualization with hardware virtual machines (HVM).
+
+5. **Configurations for Launch**: Steps include choosing an instance type eligible for the Free Tier, configuring a key pair for login (or proceeding without one for a single user setup), defining network and firewall settings, attaching storage, and setting advanced details like an IAM role for enabling access to other AWS services.
+
+6. **Creating an IAM Role**: Detailed instructions are provided for creating an IAM role that allows the VM to interact with AWS services, emphasizing the role's importance for security and functionality.
+
+7. **Finalizing and Launching the EC2 Instance**: The final step involves reviewing all configurations, selecting the previously created IAM role, and launching the EC2 instance.
+
+This guide is comprehensive, covering from the initial steps of accessing AWS to configuring and launching an EC2 instance, demonstrating the process's ease and flexibility.

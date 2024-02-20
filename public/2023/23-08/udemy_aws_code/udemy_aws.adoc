@@ -101,13 +101,13 @@ The tutorial aims to equip viewers with the skills to effectively manage AWS cos
 
 === 5.2. EC2 Basics
 
-The content provides an introduction to Amazon EC2 (Elastic Compute Cloud), highlighting its significance as a core component of AWS (Amazon Web Services) for providing Infrastructure as a Service (IaaS). EC2 allows users to rent virtual machines (instances), store data on virtual drives (EBS volumes), distribute load using Elastic Load Balancer, and scale services through auto-scaling groups. The discussion also covers the customization options for EC2 instances, including the choice of operating systems (Linux, Windows, macOS), compute power, RAM, storage type (network-attached or hardware-attached), network specifications, and security settings through security groups. It introduces the concept of bootstrapping instances using EC2 User Data for automating tasks at launch, and emphasizes the importance of selecting the appropriate instance type based on the application's needs, showcasing examples ranging from t2.micro to more powerful instances like c5d.4xlarge. The t2.micro instance, as part of the AWS free tier offering, is highlighted for practical exercises in the course. The introduction promises hands-on learning to deepen understanding of EC2 and its role in cloud computing.
+The content provides an introduction to Amazon EC2 (Elastic Compute Cloud), highlighting its significance as a core component of AWS (Amazon Web Services) for providing Infrastructure as a Service (IaaS). EC2 allows users to rent virtual machines (instances), store data on virtual drives (EBS volumes), distribute load using Elastic Load Balancer, and scale services through auto-scaling groups. The discussion also covers the customization options for EC2 instances, including the choice of operating systems (Linux, Windows, macOS), compute power, RAM, storage type (network-attached or hardware-attached), network specifications, and security settings through security groups. It introduces the concept of bootstrapping instances using EC2 User Data for automating tasks at launch, and emphasizes the importance of selecting the appropriate instance type based on the application's needs, showcasing examples ranging from `t2.micro` to more powerful instances like `c5d.4xlarge`. The `t2.micro` instance, as part of the AWS free tier offering, is highlighted for practical exercises in the course. The introduction promises hands-on learning to deepen understanding of EC2 and its role in cloud computing.
 
 === 5.3. Create an EC2 Instance with EC2 User Data to have a Website Hands On
 
 In this lecture, the instructor guides students through the process of launching their first Amazon EC2 instance running Amazon Linux. Key steps include:
 
-1. **Launching an EC2 Instance**: Using the AWS Management Console, the instructor demonstrates how to launch an EC2 instance, emphasizing the importance of setting a name and tags, choosing Amazon Linux 2 AMI as the base image, and selecting a t2.micro instance type for its eligibility in the AWS Free Tier.
+1. **Launching an EC2 Instance**: Using the AWS Management Console, the instructor demonstrates how to launch an EC2 instance, emphasizing the importance of setting a name and tags, choosing Amazon Linux 2 AMI as the base image, and selecting a `t2.micro` instance type for its eligibility in the AWS Free Tier.
 
 2. **Setting Up Key Pair for SSH Access**: The creation of a key pair (EC2 Tutorial) is covered, explaining the necessity of this step for secure SSH access to the instance. Different formats for the key pair are discussed based on the operating system used by the student.
 
@@ -123,3 +123,53 @@ In this lecture, the instructor guides students through the process of launching
 
 The lecture serves as a comprehensive introduction to setting up and managing an Amazon EC2 instance, including deploying a simple web server, with emphasis on practical steps and AWS best practices.
 
+=== 5.5. Security Groups & Classic Ports Overview
+
+The content discusses the importance and functionality of security groups in AWS as a fundamental aspect of network security for EC2 instances. Security groups act as firewalls, controlling inbound and outbound traffic based on rules that specify allowed connections. These rules can reference IP addresses or other security groups, allowing for flexible configuration. By default, security groups block all inbound traffic and allow all outbound traffic. The content also highlights the ability to attach multiple security groups to an EC2 instance and the necessity of creating new security groups when switching regions or VPCs. An advanced feature of security groups is their ability to reference each other, facilitating communication between EC2 instances without relying on IP addresses. The content concludes with an overview of essential ports for the exam, including SSH (port 22) for Linux instances, FTP and SFTP (port 21 and 22 respectively) for file transfers, HTTP (port 80) and HTTPS (port 443) for web access, and RDP (port 3389) for Windows instances.
+
+=== 5.6. Security Groups Hands On
+
+The content explains the concept and practical application of security groups in AWS EC2 instances. It begins by navigating to the security groups section via the AWS console to show how they are associated with EC2 instances, highlighting the presence of default and custom security groups created during the launch of an EC2 instance. Security groups serve as a virtual firewall for instances to control inbound and outbound traffic.
+
+The tutorial specifically delves into inbound rules, demonstrating how they permit external connections to the instance. It shows an example where SSH (port 22) and HTTP (port 80) rules are set up to allow access from any IP address, emphasizing the role of the HTTP rule in enabling web server access. The consequences of removing an HTTP rule are illustrated by a failure to access the web server, showcasing the importance of correct security group configurations to avoid timeouts during connections.
+
+To address connection issues, it's advised to review and correct security group rules. The process of adding back a rule for HTTP on port 80 is shown, restoring access to the web server. The flexibility in defining inbound rules for different ports and protocols, like HTTPS (port 443), is discussed, along with options for specifying allowed IP ranges or specific IPs for security purposes. However, it warns against potential access issues if the user's IP changes.
+
+The tutorial also touches upon outbound rules, which by default allow all traffic, ensuring the instance can connect to the internet. It concludes with insights on attaching multiple security groups to a single EC2 instance and the possibility of using a single security group across multiple instances, showcasing the versatility and critical role of security groups in managing EC2 instance accessibility and security.
+
+== 8. AWS Fundamentals: RDS + Aurora + ElastiCache
+
+=== 8.1. Amazon RDS Overview
+
+The overview provided discusses AWS RDS (Relational Database Service), a managed database service that supports SQL query language for various database engines including PostgreSQL, MySQL, MariaDB, Oracle, Microsoft SQL Server, IBM DB2, and AWS's proprietary Aurora. The advantages of using RDS over self-managed databases on EC2 instances include automated provisioning, OS patching, continuous backups with point-in-time restore, performance monitoring dashboards, read replicas for enhanced performance, Multi AZ setups for disaster recovery, maintenance windows, scalable storage backed by EBS, and vertical and horizontal scaling options. However, users cannot SSH into RDS instances due to its managed nature. A key feature highlighted is RDS Storage Auto Scaling, which automatically increases storage based on usage, avoiding manual scaling operations. This feature is particularly useful for applications with unpredictable workloads and supports all RDS database engines.
+
+=== 8.2. - RDS Read Replicas vs Multi AZ
+
+This lecture is focused on explaining the differences between Amazon RDS Read Replicas and Multi-AZ deployments to prepare for an exam. It emphasizes the importance of understanding both concepts and their use cases.
+
+**Read Replicas:**
+
+- Designed to scale out the read operations of a database.
+- Up to 15 Read Replicas can be created within the same availability zone, across availability zones, or across regions.
+- They use asynchronous replication from the main database instance, leading to eventually consistent reads.
+- Read Replicas can be promoted to become standalone databases.
+- They are particularly useful for offloading read operations, like analytics and reporting, from the primary database to maintain performance.
+- Networking costs for replication within the same region are typically waived, but cross-region replication incurs fees.
+
+**Multi-AZ:**
+
+- Primarily used for disaster recovery.
+- Involves synchronous replication to a standby instance in a different availability zone.
+- Offers high availability through automatic failover to the standby instance in case of issues with the primary.
+- Not used for scaling; the standby instance cannot serve read or write operations until it is promoted during failover.
+- Read Replicas can also be configured with Multi-AZ for added disaster recovery capability.
+
+**Exam Tips:**
+
+- Switching an RDS database from Single AZ to Multi-AZ is a zero-downtime operation that involves enabling Multi-AZ in the RDS settings. This process involves taking a snapshot of the primary database and restoring it to a new standby database, which then synchronizes with the primary to establish the Multi-AZ setup.
+
+Understanding these concepts is crucial for making informed decisions about scaling and ensuring high availability and disaster recovery for Amazon RDS deployments.
+
+=== 8.3. - Amazon RDS Hands On
+
+The content provides a detailed walkthrough on how to create a MySQL database instance on Amazon RDS, including setting up the instance, configuring it for the free tier, and managing different settings such as availability, security, and backups. It covers selecting the database engine, choosing an instance size within the free tier limits, setting up storage and connectivity options, and configuring security and database access settings. The tutorial also demonstrates how to connect to the newly created database using SQL Electron, a SQL client, and perform basic SQL operations like creating a table and inserting data. Additionally, it touches on monitoring, creating read replicas, taking snapshots, and the process to delete the database instance, emphasizing the managed service benefits of RDS for scalability, availability, and maintenance.
