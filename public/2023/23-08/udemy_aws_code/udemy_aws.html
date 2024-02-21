@@ -478,6 +478,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_8_1_amazon_rds_overview">8.1. Amazon RDS Overview</a></li>
 <li><a href="#_8_2_rds_read_replicas_vs_multi_az">8.2. - RDS Read Replicas vs Multi AZ</a></li>
 <li><a href="#_8_3_amazon_rds_hands_on">8.3. - Amazon RDS Hands On</a></li>
+<li><a href="#_8_4_amazon_aurora">8.4. - Amazon Aurora</a></li>
+<li><a href="#_8_5_amazon_aurora_hands_on">8.5. Amazon Aurora - Hands On</a></li>
+<li><a href="#_8_7_rds_proxy">8.7. RDS Proxy</a></li>
+<li><a href="#_8_8_elasticache_overview">8.8. ElastiCache Overview</a></li>
+<li><a href="#_8_9_elasticache_hands_on">8.9. ElastiCache Hands On</a></li>
+<li><a href="#_8_10_elasticache_strategies">8.10. ElastiCache Strategies</a></li>
+<li><a href="#_8_11_amazon_memorydb_for_redis_overview">8.11. Amazon MemoryDB for Redis - Overview</a></li>
 </ul>
 </li>
 </ul>
@@ -811,12 +818,82 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>The content provides a detailed walkthrough on how to create a MySQL database instance on Amazon RDS, including setting up the instance, configuring it for the free tier, and managing different settings such as availability, security, and backups. It covers selecting the database engine, choosing an instance size within the free tier limits, setting up storage and connectivity options, and configuring security and database access settings. The tutorial also demonstrates how to connect to the newly created database using SQL Electron, a SQL client, and perform basic SQL operations like creating a table and inserting data. Additionally, it touches on monitoring, creating read replicas, taking snapshots, and the process to delete the database instance, emphasizing the managed service benefits of RDS for scalability, availability, and maintenance.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_8_4_amazon_aurora">8.4. - Amazon Aurora</h3>
+<div class="paragraph">
+<p>Amazon Aurora is a proprietary database technology from AWS designed to be fully compatible with Postgres and MySQL, offering significant performance improvements (5x for MySQL and 3x for Postgres compared to their RDS equivalents). Key features include automatic storage scaling from 10GB to 128TB, up to 15 read replicas with sub 10 ms lag, and instantaneous failover for high availability. Aurora stores six copies of data across three Availability Zones (AZs) for resilience, requiring only four copies for writes and three for reads, allowing it to handle AZ outages gracefully. It also features self-healing capabilities and relies on hundreds of volumes for data storage, reducing risks significantly.</p>
+</div>
+<div class="paragraph">
+<p>Aurora clusters have a single master instance for writes and can have up to 15 read replicas for handling read workloads, with automatic failover to a new master in under 30 seconds. Aurora supports cross-region replication and offers both writer and reader endpoints to manage connections efficiently, including auto-scaling for read replicas to adjust the number of replicas based on demand.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, Aurora handles many operational tasks automatically, such as backup and recovery, patching with zero downtime, and advanced monitoring. It also introduces a unique "backtrack" feature, allowing users to restore data to any point in time without relying on backups. Overall, Aurora is positioned as a more efficient, scalable, and high-availability solution compared to traditional RDS, albeit at a roughly 20% higher cost, justified by its performance and scaling capabilities.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_8_5_amazon_aurora_hands_on">8.5. Amazon Aurora - Hands On</h3>
+<div class="paragraph">
+<p>The provided text is a detailed guide on creating an Amazon Aurora database, highlighting its cost implications and step-by-step instructions for setting it up. The guide covers selecting a database engine (MySQL-compatible in this case), choosing a version, and configuring the database with options like instance type, storage configuration, and availability features. It also discusses enabling public access, setting up security groups, and configuring additional features like backup retention and encryption. The text explains the use of Aurora&#8217;s scalability features, like read replicas and auto-scaling, and introduces advanced functionalities such as cross-region replication and global databases. Finally, it outlines the process for safely deleting the database to avoid unnecessary costs. This guide serves as a comprehensive tutorial for users looking to deploy and manage an Amazon Aurora database, emphasizing the platform&#8217;s flexibility, scalability, and cost considerations.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_8_7_rds_proxy">8.7. RDS Proxy</h3>
+<div class="paragraph">
+<p>Amazon RDS Proxy is a fully managed, serverless, and highly available database proxy for Amazon RDS that allows applications to pool and share database connections. This setup reduces the number of direct connections to the RDS database instance, thereby improving database efficiency by lessening the load on database resources such as CPU and RAM, and minimizing connection timeouts. The RDS Proxy is capable of auto-scaling, supports multiple database engines including MySQL, PostgreSQL, MariaDB, Microsoft SQL Server, and Aurora for MySQL and PostgreSQL, and requires no code changes in applications to implement. It also enhances security by enforcing IAM authentication, with credentials that can be securely stored in AWS Secrets Manager, and is designed to be accessible only from within a VPC, not publicly over the internet. Additionally, RDS Proxy significantly reduces failover times by up to 66% for RDS and Aurora databases, making it particularly beneficial for AWS Lambda functions, which can rapidly scale and might otherwise overwhelm database connections. This tool is crucial for optimizing database access, security, and reliability, without necessitating direct internet connectivity.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_8_8_elasticache_overview">8.8. ElastiCache Overview</h3>
+<div class="paragraph">
+<p>Amazon ElastiCache is a managed service that provides Redis or Memcached as in-memory databases for high-performance and low-latency caching solutions. It helps reduce database load by caching common queries, making applications more efficient and potentially stateless by storing application state in the cache. AWS handles maintenance tasks like patching and backups. However, integrating ElastiCache into an application requires significant code changes to query the cache effectively. The architecture involves checking the cache before querying the database to save on database load, implementing cache invalidation strategies to ensure data freshness, and possibly storing user session data to make applications stateless. Redis offers features like Multi-AZ with Auto-Failover, read replicas, data durability, and backup and restore capabilities, making it suitable for situations requiring high availability and data persistence. Memcached, on the other hand, focuses on being a straightforward, distributed cache with no high availability or data persistence features, using a multi-threaded architecture for data partitioning or sharding. The choice between Redis and Memcached depends on specific application needs regarding high availability, data durability, and the nature of the caching requirements.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_8_9_elasticache_hands_on">8.9. ElastiCache Hands On</h3>
+<div class="paragraph">
+<p>This passage provides a step-by-step guide on creating and configuring a Redis cache cluster using AWS ElastiCache. It starts by introducing the options to create a Redis cache, emphasizing the choice between a serverless offering for automatic scaling without server management and designing a cache manually for a more hands-on approach to learning AWS caching architecture. The guide opts for a manual design approach, explaining various configuration options like choosing between restoring from a backup or using recommended configurations for different environments (production, dev/test, demo), enabling cluster mode, and setting up a cluster with a single shard and up to five read replicas for simplicity and cost-effectiveness.</p>
+</div>
+<div class="paragraph">
+<p>The tutorial continues with more detailed settings, including the choice of instance type (highlighting free tier options), deciding on multi-AZ deployment for high availability, encryption options for both data at rest and in transit, backup and maintenance preferences, and logging and tagging for monitoring and management purposes. It also touches on network security through security groups and user access control.</p>
+</div>
+<div class="paragraph">
+<p>Finally, the guide concludes with the process of deploying the cache, noting the inability to demonstrate connecting to the Redis cache due to the complexity and code requirements. It compares ElastiCache&#8217;s management interface and features to RDS, highlighting their similarities and the specific focus on Redis and Memcached for ElastiCache. The passage ends with instructions on deleting the Redis cluster once the user is done with the hands-on exercise, emphasizing the educational purpose of the setup.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_8_10_elasticache_strategies">8.10. ElastiCache Strategies</h3>
+<div class="paragraph">
+<p>The lecture provides an overview of caching strategies, emphasizing the importance of determining whether data is suitable for caching based on its update frequency and structure. It introduces three main caching strategies:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Lazy Loading (Cache-Aside or Lazy Population):</strong> This strategy involves checking the cache first and, if the data isn&#8217;t present (cache miss), fetching it from the database, then storing it in the cache for future requests. This approach is efficient because only requested data is cached, but it can lead to increased latency due to cache misses and the potential for stale data if the database updates are not reflected in the cache.</p>
+</li>
+<li>
+<p><strong>Write Through:</strong> In this strategy, data is added to the cache simultaneously as it is updated in the database, ensuring cache data is never stale. However, this requires a write penalty, as both the database and cache need to be updated, potentially leading to missing data until the database update occurs. Combining Write Through with Lazy Loading can mitigate some downsides, like cache churn from too much data being added to the cache.</p>
+</li>
+<li>
+<p><strong>Cache Evictions and Time-to-Live (TTL):</strong> This strategy involves automatically removing data from the cache based on certain rules, like least recently used (LRU) data or after a set time period (TTL), to make room for new data. TTL can be highly effective even if set to just a few seconds for frequently requested data.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The lecture emphasizes that caching can significantly improve read performance and reduce latency but requires careful consideration of data update frequency, structure, and the appropriate caching strategy. It also mentions the complexity of caching, highlighting it as a challenging aspect of computer science.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_8_11_amazon_memorydb_for_redis_overview">8.11. Amazon MemoryDB for Redis - Overview</h3>
+<div class="paragraph">
+<p>Amazon MemoryDB for Redis is a durable, Redis-compatible, in-memory database service designed to offer ultra-fast performance, capable of handling over 160 million requests per second. Unlike Redis, which is primarily used as a cache with some durability features, MemoryDB serves as a full-fledged database with a Redis-compatible API, focusing on data durability with Multi-AZ transaction logs for enhanced data recovery and durability. It can scale from tens of gigabytes to hundreds of terabytes, making it suitable for web and mobile applications, online gaming, media streaming, and more, particularly beneficial for microservices requiring fast, in-memory database access with reliable data storage across multiple availability zones.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-19 11:57:33 +0200
+Last updated 2024-02-21 20:03:21 +0200
 </div>
 </div>
 </body>
