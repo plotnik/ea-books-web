@@ -1,7 +1,7 @@
 = Mockito Made Clear
 :icons: font
 :source-highlighter: pygments
-:toc: right
+:toc: left
 :example-caption: Note
 :toclevels: 4
 Ken Kousen
@@ -77,13 +77,13 @@ The text describes a Java solution to determine the number of astronauts aboard 
 
 Open Notify provides a free RESTful web service named People in Space, which requires no registration and works with HTTP GET requests, returning JSON data about astronauts currently in space. The JSON response includes a success message, the total number of astronauts, and a list of astronauts with their names and respective spacecraft.
 
-Two Java classes, Assignment and AstroResponse, are designed to represent the JSON data structure, containing the necessary attributes, getters, setters, and constructors.
+Two Java classes, `Assignment` and `AstroResponse`, are designed to represent the JSON data structure, containing the necessary attributes, getters, setters, and constructors.
 
 A Gateway interface is proposed for accessing the web service, with a single method, getResponse, which allows for easier testing and implementation substitution. The AstroGateway class will implement this interface using either the HttpClient API for Java 11+ or the Retrofit 2 library for Java 8.
 
-An AstroService class is also defined to convert the data retrieved by the AstroGateway into a Map, with spacecraft names as keys and the count of astronauts as values. The service extracts data from a successful gateway response and generates a map of astronaut counts per spacecraft.
+An AstroService class is also defined to convert the data retrieved by the `AstroGateway` into a `Map`, with spacecraft names as keys and the count of astronauts as values. The service extracts data from a successful gateway response and generates a map of astronaut counts per spacecraft.
 
-Finally, the application will use AstroService to obtain and process this data, resulting in a display of the number of astronauts on each spacecraft. Testing is suggested to ensure the implementation works correctly.
+Finally, the application will use `AstroService` to obtain and process this data, resulting in a display of the number of astronauts on each spacecraft. Testing is suggested to ensure the implementation works correctly.
 
 === Adding Unit and Integration (End-to-End) Tests
 
