@@ -159,13 +159,9 @@ note_name = st.text_input("Note Name")
 if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
     xml = textwrap.dedent(f"""
         <note>
-          <question>
-            {text}
-          </question>
-          <prompt>{prompt_name}<prompt>
-          <answer>
-            {st.session_state.openai_result}
-          </answer>
+          <question><![CDATA[{text}]]></question>
+          <prompt>{prompt_name}</prompt>
+          <answer><![CDATA[{st.session_state.openai_result}]]></answer>
         </note>
     """).strip()
     out_file = f"ai_note/{note_name}.xml"

@@ -159,13 +159,9 @@ Notes will be saved to ``ai_note`` folder which is expected to exist.
   if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
       xml = textwrap.dedent(f"""
           <note>
-            <question>
-              {text}
-            </question>
+            <question><![CDATA[{text}]]></question>
             <prompt>{prompt_name}<prompt>
-            <answer>
-              {st.session_state.openai_result}
-            </answer>
+            <answer><![CDATA[{st.session_state.openai_result}]]></answer>
           </note>
       """).strip()
       out_file = f"ai_note/{note_name}.xml"

@@ -224,13 +224,9 @@ For details see <a class="reference internal" href="#environment-setup">Environm
 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:spiral_note_pad: Save&#39;</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="n">save_note_disabled</span><span class="p">()):</span>
     <span class="n">xml</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        &lt;note&gt;</span>
-<span class="s2">          &lt;question&gt;</span>
-<span class="s2">            </span><span class="si">{</span><span class="n">text</span><span class="si">}</span>
-<span class="s2">          &lt;/question&gt;</span>
+<span class="s2">          &lt;question&gt;&lt;![CDATA[</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">]]&gt;&lt;/question&gt;</span>
 <span class="s2">          &lt;prompt&gt;</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">&lt;prompt&gt;</span>
-<span class="s2">          &lt;answer&gt;</span>
-<span class="s2">            </span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="si">}</span>
-<span class="s2">          &lt;/answer&gt;</span>
+<span class="s2">          &lt;answer&gt;&lt;![CDATA[</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="si">}</span><span class="s2">]]&gt;&lt;/answer&gt;</span>
 <span class="s2">        &lt;/note&gt;</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="n">out_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ai_note/</span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s2">.xml&quot;</span>
