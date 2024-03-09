@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
-<meta name="author" content="Ken Kousen">
-<title>Mockito Made Clear</title>
+<title>HelloMockito.java</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -434,339 +433,297 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+/*! Stylesheet for CodeRay to loosely match GitHub themes | MIT License */
+pre.CodeRay{background:#f7f7f8}
+.CodeRay .line-numbers{border-right:1px solid;opacity:.35;padding:0 .5em 0 0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.75em}
+.CodeRay .line-numbers strong{color:#000}
+table.CodeRay{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.CodeRay td{vertical-align:top;line-height:inherit}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.code{padding:0 0 0 .75em}
+.CodeRay .debug{color:#fff!important;background:navy!important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:navy}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:teal}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:teal}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:teal}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword{color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:teal}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}
+</style>
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<h1>Mockito Made Clear</h1>
-<div class="details">
-<span id="author" class="author">Ken Kousen</span><br>
-</div>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_preface">Preface</a></li>
-<li><a href="#_build_a_testing_foundation">Build a Testing Foundation</a>
-<ul class="sectlevel2">
-<li><a href="#_saying_hello_to_mockito">Saying Hello to Mockito</a></li>
-<li><a href="#_counting_astronauts_by_spaceship">Counting Astronauts by Spaceship</a></li>
-<li><a href="#_creating_the_basic_classes">Creating the Basic Classes</a></li>
-<li><a href="#_adding_unit_and_integration_end_to_end_tests">Adding Unit and Integration (End-to-End) Tests</a></li>
-</ul>
-</li>
-<li><a href="#_work_with_the_mockito_api">Work with the Mockito API</a>
-<ul class="sectlevel2">
-<li><a href="#_selecting_our_system_to_test">Selecting Our System to Test</a></li>
-<li><a href="#_creating_mocks_and_stubs">Creating Mocks and Stubs</a></li>
-<li><a href="#_using_mocks_and_stubs_in_the_astro_project">Using Mocks and Stubs in the Astro Project</a></li>
-</ul>
-</li>
-<li><a href="#_5_use_mockito_in_special_cases">5. Use Mockito in Special Cases</a>
-<ul class="sectlevel2">
-<li><a href="#_working_with_the_spring_framework">Working with the Spring Framework</a></li>
-</ul>
-</li>
-<li><a href="#_appendix_chatgpt_on_mockito_with_spring_boot">Appendix. ChatGPT on Mockito with Spring Boot</a></li>
-</ul>
-</div>
+<h1>HelloMockito.java</h1>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://github.com/kousen/mockitobook/blob/main/src/main/java/com/kousenit/hr/HelloMockito.java" class="bare">https://github.com/kousen/mockitobook/blob/main/src/main/java/com/kousenit/hr/HelloMockito.java</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">com.kousenit.hr</span>;
+
+<span class="keyword">import</span> <span class="include">java.util.Optional</span>;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">HelloMockito</span> {
+    <span class="directive">private</span> <span class="predefined-type">String</span> greeting = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello, %s, from Mockito!</span><span class="delimiter">&quot;</span></span>;
+    <span class="directive">private</span> <span class="directive">final</span> PersonRepository personRepository;
+    <span class="directive">private</span> <span class="directive">final</span> TranslationService translationService;
+
+    <span class="directive">public</span> HelloMockito(PersonRepository personRepository, TranslationService translationService) {
+        <span class="local-variable">this</span>.personRepository = personRepository;
+        <span class="local-variable">this</span>.translationService = translationService;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> greet(<span class="type">int</span> id, <span class="predefined-type">String</span> sourceLanguage, <span class="predefined-type">String</span> targetLanguage) {
+        Optional&lt;Person&gt; person = personRepository.findById(id);
+        <span class="predefined-type">String</span> name = person.map(Person::getFirst).orElse(<span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>);
+        <span class="keyword">return</span> translationService.translate(
+                <span class="predefined-type">String</span>.format(greeting, name), sourceLanguage, targetLanguage);
+    }
+
+
+    <span class="directive">public</span> HelloMockito(PersonRepository personRepository) {
+        <span class="local-variable">this</span>(personRepository, <span class="keyword">new</span> DefaultTranslationService());
+    }
+
+    <span class="directive">public</span> HelloMockito(TranslationService service) {
+        <span class="local-variable">this</span>(<span class="keyword">new</span> InMemoryPersonRepository(), service);
+    }
+
+    <span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">unused</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> <span class="predefined-type">String</span> greet(<span class="type">int</span> id) {
+        Optional&lt;Person&gt; person = personRepository.findById(id);
+        <span class="predefined-type">String</span> name = person.map(Person::getFirst).orElse(<span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>);
+        <span class="keyword">return</span> translationService.translate(<span class="predefined-type">String</span>.format(greeting, name));
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> greet(Person person, <span class="predefined-type">String</span> sourceLanguage, <span class="predefined-type">String</span> targetLanguage) {
+        <span class="keyword">return</span> translationService.translate(
+                <span class="predefined-type">String</span>.format(greeting, person.getFirst()), sourceLanguage, targetLanguage);
+    }
+
+    <span class="directive">public</span> <span class="type">void</span> setGreeting(<span class="predefined-type">String</span> greeting) {
+        <span class="local-variable">this</span>.greeting = greeting;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getGreeting() {
+        <span class="keyword">return</span> greeting;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>HelloMockito</code> class in the provided Java code is designed to offer
+greeting services, potentially in different languages, and demonstrates
+dependency injection, use of interfaces, and optional handling. It’s
+structured to work within a hypothetical system where <code>Person</code> objects
+are stored and retrieved, and translations are performed by a
+translation service. Below is an explanation of its components and
+functionalities:</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_dependencies">Dependencies</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>Mockito
-<a href="https://site.mockito.org/" class="bare">https://site.mockito.org/</a></p>
+<p><strong><code>PersonRepository</code></strong>: An interface (assumed from the context) for
+managing <code>Person</code> objects, including retrieving them by ID.</p>
 </li>
 <li>
-<p>GitHub mockitobook
-<a href="https://github.com/kousen/mockitobook" class="bare">https://github.com/kousen/mockitobook</a></p>
+<p><strong><code>TranslationService</code></strong>: An interface for translating text from one
+language to another.</p>
 </li>
 <li>
-<p>GitHub Kousen
-<a href="https://github.com/kousen" class="bare">https://github.com/kousen</a></p>
+<p><strong><code>DefaultTranslationService</code></strong>: A concrete implementation of
+<code>TranslationService</code>, used as a default if no translation service is
+explicitly provided.</p>
+</li>
+<li>
+<p><strong><code>InMemoryPersonRepository</code></strong>: A concrete implementation of
+<code>PersonRepository</code>, presumably storing <code>Person</code> objects in memory.</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_preface">Preface</h2>
+<h2 id="_constructors">Constructors</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This book provides an introduction to the Mockito testing framework, focusing on the underlying concepts rather than exhaustive technical details. It aims to bridge the knowledge gap left by online documentation, which often assumes prior experience with similar tools. The book is part of the Pragmatic Answers series, offering concise, accessible content that readers can quickly understand, ideally over a weekend. It includes examples to help readers grasp the framework&#8217;s goals, strategies, and tactics, with the expectation that users will consult the online documentation for specific syntax and advanced usage.</p>
-</div>
-<div class="paragraph">
-<p>The content is relevant for Mockito versions 2 and above, with the book&#8217;s code written for Mockito 4 but compatible with Java versions ranging from 1.8 to 19. The book also touches on how to set up and run Mockito tests using the JUnit testing framework, with guidance for both JUnit 4 and JUnit 5 and using Gradle or Maven build tools. The ultimate goal of the book is to enable readers to write more effective tests in Java systems, ensuring their code functions as intended.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_build_a_testing_foundation">Build a Testing Foundation</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Mockito is a testing tool used by developers to isolate software components by replacing dependencies with objects that simulate the behavior of those dependencies. This allows developers to test individual components without interference from the rest of the system, ensuring that if an error occurs, its source can be pinpointed accurately. Mockito requires an understanding of testing principles to be used effectively, and it provides different ways to simulate dependencies, such as mocks, stubs, and spies. Utilizing Mockito in a project aids in creating confidence in the code&#8217;s correctness through unit, integration, and functional testing, and the tool offers a structured approach for testing specific functionalities while bypassing unrelated ones.</p>
-</div>
-<div class="sect2">
-<h3 id="_saying_hello_to_mockito">Saying Hello to Mockito</h3>
-<div class="paragraph">
-<p>This text introduces the Mockito framework for Java testing, using the traditional "Hello, World!" example to illustrate how the framework can be used to create unit tests. Mockito is a library that allows developers to create and configure mock objects for testing purposes, especially useful when a class has dependencies that are not part of the test.</p>
-</div>
-<div class="paragraph">
-<p>The example evolves from a simple <code>HelloWorld</code> program with a static <code>main</code> method to a <code>HelloMockito</code> class that includes a <code>greet</code> method returning a <code>String</code>. The <code>HelloMockito</code> class is then expanded to include dependencies that need to be mocked for testing: a <code>PersonRepository</code> for database interactions and a <code>TranslationService</code> for language translation.</p>
-</div>
-<div class="paragraph">
-<p>To test these dependencies, the text explains the need to include Mockito in the project&#8217;s build file (using Gradle or Maven), highlighting the addition of specific dependencies for Mockito and JUnit 5. This setup allows for the creation of a complete test class that uses annotations like <code>@ExtendWith(MockitoExtension.class)</code>, <code>@Mock</code>, and <code>@InjectMocks</code> to establish expectations on the mocked objects and verify their interactions.</p>
-</div>
-<div class="paragraph">
-<p>The Mockito test process outlined involves creating stubs for dependencies, setting expectations, injecting the stubs into the class under test, testing the class methods, checking for correct behavior, and verifying the proper invocation of the mocked methods.</p>
-</div>
-<div class="paragraph">
-<p>Finally, the text teases a larger example involving a program that processes JSON data about astronauts in space, which will be used to demonstrate Mockito&#8217;s capabilities throughout the remainder of the book.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="HelloMockito.java.html">HelloMockito.java</a></p>
-</li>
-<li>
-<p><a href="HelloMockitoTest.java.html">HelloMockitoTest.java</a></p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_counting_astronauts_by_spaceship">Counting Astronauts by Spaceship</h3>
-<div class="paragraph">
-<p>The text describes a Java solution to determine the number of astronauts aboard each spacecraft using a RESTful web service. The solution comprises three components: <code>AstroGateway</code> to fetch and convert JSON data to Java POJOs, <code>AstroService</code> to process the data into a <code>Map</code> with spacecraft names and the number of astronauts, and an application class for testing. The testing uses Mockito, which is compatible with Java 8 and above, but the implementation is based on Java 11. An alternative for Java 8 users is provided using the Retrofit library. Mockito requires adding <code>mockito-core</code> and <code>mockito-junit-jupiter</code> dependencies to the project. The relevant code is available in the <code>com.kousenit.astro</code> package on the book&#8217;s GitHub repository.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_creating_the_basic_classes">Creating the Basic Classes</h3>
-<div class="paragraph">
-<p>Open Notify provides a free RESTful web service named People in Space, which requires no registration and works with HTTP GET requests, returning JSON data about astronauts currently in space. The JSON response includes a success message, the total number of astronauts, and a list of astronauts with their names and respective spacecraft.</p>
-</div>
-<div class="paragraph">
-<p>Two Java classes, <code>Assignment</code> and <code>AstroResponse</code>, are designed to represent the JSON data structure, containing the necessary attributes, getters, setters, and constructors.</p>
-</div>
-<div class="paragraph">
-<p>A Gateway interface is proposed for accessing the web service, with a single method, getResponse, which allows for easier testing and implementation substitution. The AstroGateway class will implement this interface using either the HttpClient API for Java 11+ or the Retrofit 2 library for Java 8.</p>
-</div>
-<div class="paragraph">
-<p>An AstroService class is also defined to convert the data retrieved by the <code>AstroGateway</code> into a <code>Map</code>, with spacecraft names as keys and the count of astronauts as values. The service extracts data from a successful gateway response and generates a map of astronaut counts per spacecraft.</p>
-</div>
-<div class="paragraph">
-<p>Finally, the application will use <code>AstroService</code> to obtain and process this data, resulting in a display of the number of astronauts on each spacecraft. Testing is suggested to ensure the implementation works correctly.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_adding_unit_and_integration_end_to_end_tests">Adding Unit and Integration (End-to-End) Tests</h3>
-<div class="paragraph">
-<p>The provided content distinguishes between integration tests and unit tests, explaining that integration tests assess the functionality of a system with all its dependencies, while unit tests evaluate individual classes in isolation. An example of an integration test is given for the <code>AstroService</code> class, which relies on the <code>AstroGateway</code> dependency. The test checks the <code>getAstroData</code> method and uses assertions to validate the results.</p>
-</div>
-<div class="paragraph">
-<p>The text then introduces the concept of mocks and stubs, asserting that integration tests that fail can guide the use of unit tests to pinpoint issues. For unit testing the <code>AstroService</code>, a fake object, <code>FakeGateway</code>, is created to simulate the gateway&#8217;s responses independently of its actual implementation.</p>
-</div>
-<div class="paragraph">
-<p>Mockito is presented as a tool that automates the creation of these fake objects, allowing for mocks that not only return predefined responses like stubs but also track interactions to verify the correct use of stubbed methods. The definitions of mocks, stubs, and spies are based on Martin Fowler&#8217;s influential article "Mocks Aren&#8217;t Stubs."</p>
-</div>
-<div class="paragraph">
-<p>Several reasons are listed for why writing one&#8217;s own stubs can be problematic, such as requiring implementation of all methods in an interface and maintenance difficulties. Mockito is offered as a solution to these problems, capable of generating mocks and stubs and even handling final classes and static methods.</p>
-</div>
-<div class="paragraph">
-<p>In summary, the text discusses the roles and differences of integration and unit tests, the use of mocks and stubs for isolated testing, and introduces Mockito as a tool for simplifying the creation of test doubles.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_work_with_the_mockito_api">Work with the Mockito API</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_selecting_our_system_to_test">Selecting Our System to Test</h3>
-<div class="paragraph">
-<p>The provided content outlines the setup for testing a <code>PersonService</code> class in a Java application, using a <code>PersonRepository</code> interface as a dependency. The <code>PersonRepository</code> interface is part of the persistence layer and is responsible for data access operations such as saving, finding, and deleting <code>Person</code> objects.</p>
-</div>
-<div class="paragraph">
-<p>The <code>PersonService</code> class depends on <code>PersonRepository</code> and is the subject under test. In the test class <code>PersonServiceTest</code>, a list of <code>Person</code> objects is used to simulate a database.</p>
-</div>
-<div class="paragraph">
-<p>A test is written following the Test Driven Development (TDD) approach for a method called <code>getLastNames</code> in the <code>PersonService</code> class. The test uses a mock <code>PersonRepository</code> to provide predefined responses when its methods are called. The test checks that the <code>getLastNames</code> method in <code>PersonService</code> returns the correct list of last names and verifies that the <code>findAll</code> method on the <code>PersonRepository</code> mock is called exactly once. The test uses Mockito to automate the creation of the mock <code>PersonRepository</code>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_creating_mocks_and_stubs">Creating Mocks and Stubs</h3>
-<div class="paragraph">
-<p>The text describes how to use Mockito for mocking objects in Java testing, as an alternative to writing custom stub implementations like <code>InMemoryPersonRepository</code>. There are two ways to create mocks with Mockito: using the <code>mock</code> method or using annotations.</p>
+<p>The class includes multiple constructors, demonstrating overloading and
+the use of <code>this</code> to chain them for dependency injection:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Using the <code>mock</code> method:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>You create mocks directly with the <code>mock</code> method, specifying the class to mock.</p>
+<p><strong>Primary Constructor</strong>: Accepts both a <code>PersonRepository</code> and a
+<code>TranslationService</code>, allowing external configuration of these
+dependencies.</p>
 </li>
 <li>
-<p>By default, mocked methods return null, empty collections, or primitive defaults.</p>
+<p><strong>Convenience Constructor for PersonRepository</strong>: Accepts only a
+<code>PersonRepository</code> and uses a default <code>TranslationService</code>.</p>
 </li>
 <li>
-<p>You can set custom behavior for mocks with <code>when</code> and <code>thenReturn</code>.</p>
-</li>
-<li>
-<p>Verification of method invocation can be done with <code>verify</code>.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Using annotations:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Annotations such as <code>@Mock</code> for mocks and <code>@InjectMocks</code> for the class under test simplify mock creation and injection.</p>
-</li>
-<li>
-<p>The Mockito JUnit 5 Extension (<code>@ExtendWith(MockitoExtension.class)</code>) processes these annotations.</p>
-</li>
-<li>
-<p>Restrictions apply with this approach, as Mockito is not a full dependency injection framework.</p>
-</li>
-</ul>
-</div>
+<p><strong>Convenience Constructor for TranslationService</strong>: Accepts only a
+<code>TranslationService</code> and uses an in-memory person repository.</p>
 </li>
 </ol>
-</div>
-<div class="paragraph">
-<p>Mockito attempts to inject mocks by trying constructors, setters, or direct field injection. The text also mentions that Mockito works well with the Spring framework, which has more sophisticated dependency injection capabilities. Regardless of the method used to create mocks, you can set expectations on them to define how they should behave during tests.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_using_mocks_and_stubs_in_the_astro_project">Using Mocks and Stubs in the Astro Project</h3>
-<div class="paragraph">
-<p>The provided text outlines how to use Mockito to mock a <code>Gateway&lt;T&gt;</code> interface for testing an <code>AstroService</code> class, which retrieves astronaut data from a gateway. It highlights the creation of a test class using JUnit 5 and Mockito annotations to inject a mocked <code>Gateway&lt;AstroResponse&gt;</code> into <code>AstroService</code>. The text provides an example test case where the <code>gateway&#8217;s `getResponse</code> method is stubbed to return a mock <code>AstroResponse</code>, and the results are verified for correctness. Additionally, it shows how to test for failures by using Mockito&#8217;s <code>thenThrow</code> method to simulate a <code>RuntimeException</code> caused by network issues, enabling testing without actual network failure and ensuring safer testing conditions. The summary concludes that Mockito has been successfully used to mock the <code>Gateway</code>, demonstrating its utility in isolation testing.</p>
-</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_5_use_mockito_in_special_cases">5. Use Mockito in Special Cases</h2>
+<h2 id="_methods">Methods</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_working_with_the_spring_framework">Working with the Spring Framework</h3>
-<div class="paragraph">
-<p>The content describes how Mockito can be integrated with the Spring Framework for testing. While Mockito is not a full dependency injection framework, Spring is, and it includes Mockito by default. In Spring, to mock dependencies, developers use the <code>@MockBean</code> annotation instead of the standard Mockito annotations <code>@Mock</code> and <code>@InjectMocks</code>. <code>@MockBean</code> creates a mock and replaces the actual bean in the Spring ApplicationContext, allowing autowiring in the class under test. An example shows how to use <code>@MockBean</code> in test code for a <code>PersonService</code> that depends on a <code>PersonRepository</code>, illustrating the replacement of the repository with a mock for testing purposes. Additionally, Spring provides the <code>@SpyBean</code> annotation to create a Mockito spy around an existing bean instance, which is useful for testing with real instances while still being able to verify interactions.</p>
-</div>
-<hr>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>greet(int id, String sourceLanguage, String targetLanguage)</code></strong>: This
+method attempts to find a <code>Person</code> by ID using the <code>PersonRepository</code>.
+If found, it uses the person’s first name in the greeting; otherwise, it
+defaults to <code>`World''. The greeting is then translated using the
+provided languages and the `TranslationService</code>.</p>
+</li>
+<li>
+<p><strong><code>greet(int id)</code></strong>: An overloaded version of the <code>greet</code> method that
+likely translates the greeting to a default language, as it doesn’t
+accept language parameters. It’s marked as unused, suggesting it might
+be for demonstration or future use.</p>
+</li>
+<li>
+<p><strong><code>greet(Person person, String sourceLanguage, String targetLanguage)</code></strong>:
+Directly greets the provided <code>Person</code> object, translating the greeting
+into the specified languages.</p>
+</li>
+<li>
+<p><strong><code>setGreeting(String greeting)</code></strong> and <strong><code>getGreeting()</code></strong>: Methods to
+update and retrieve the greeting template. This allows for customization
+of the greeting message.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_appendix_chatgpt_on_mockito_with_spring_boot">Appendix. ChatGPT on Mockito with Spring Boot</h2>
+<h2 id="_key_concepts_demonstrated">Key Concepts Demonstrated</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Dependency Injection</strong>: The class demonstrates dependency injection
+both through its constructors and by allowing the injection of a custom
+greeting message. This design principle helps in making the code more
+modular, testable, and flexible.</p>
+</li>
+<li>
+<p><strong>Optional Handling</strong>: The use of <code>Optional</code> for handling the
+possibility of a <code>Person</code> not being found is a good practice for
+avoiding <code>NullPointerException</code>.</p>
+</li>
+<li>
+<p><strong>Interface-based Design</strong>: By depending on interfaces
+(<code>PersonRepository</code> and <code>TranslationService</code>) rather than concrete
+implementations, the class is more adaptable to changes in the way
+persons are stored or translations are performed.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_usage_scenario">Usage Scenario</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Creating a cheat sheet for Mockito with Spring Boot involves summarizing key concepts and examples in a concise format. Here&#8217;s a basic outline for a cheat sheet:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Introduction to Mockito and Spring Boot:</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Briefly explain what Mockito is and how it integrates with Spring Boot for testing purposes.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Setting up Mockito in a Spring Boot Project:</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Dependencies: Show the Maven or Gradle configuration to include Mockito.</p>
-</li>
-<li>
-<p>Annotations: Describe <code>@Mock</code>, <code>@InjectMocks</code>, <code>@MockBean</code>, and <code>@SpyBean</code> annotations.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Writing Test Cases:</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Basic Structure: Outline the structure of a typical test class using Mockito with Spring Boot.</p>
-</li>
-<li>
-<p>Mocking: Explain how to create mock objects and how to use <code>when().thenReturn()</code> for stubbing.</p>
-</li>
-<li>
-<p>Verifying Behavior: Show how to use <code>verify()</code> to check if certain methods were called.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Argument Matchers:</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Explain the use of argument matchers like <code>any()</code>, <code>eq()</code>, etc., with examples.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Exception Handling:</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Demonstrate how to test exception scenarios using <code>thenThrow()</code>.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Integration Testing with Mockito and Spring Boot:</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Discuss how to integrate Mockito in Spring Boot tests, with an example using <code>@SpringBootTest</code>.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Best Practices:</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Offer tips on writing effective tests with Mockito and Spring Boot (e.g., keeping tests independent, focusing on behavior rather than implementation).</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Additional Resources:</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Provide links or references to official documentation or useful tutorials for deeper understanding.</p>
-</li>
-</ul>
-</div>
-</li>
-</ol>
+<p>This class could be used in an application that requires greeting users
+in different languages, possibly based on user preferences or settings.
+The flexibility in specifying different repositories and translation
+services makes it suitable for various contexts, including web
+applications, desktop applications, or even command-line tools.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-03-09 16:12:36 +0200
+Last updated 2024-03-09 16:03:48 +0200
 </div>
 </div>
 </body>

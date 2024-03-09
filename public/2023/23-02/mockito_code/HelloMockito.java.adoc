@@ -1,0 +1,133 @@
+= HelloMockito.java
+:icons: font
+:source-highlighter: coderay
+
+https://github.com/kousen/mockitobook/blob/main/src/main/java/com/kousenit/hr/HelloMockito.java
+
+[source,java]
+----
+package com.kousenit.hr;
+
+import java.util.Optional;
+
+public class HelloMockito {
+    private String greeting = "Hello, %s, from Mockito!";
+    private final PersonRepository personRepository;
+    private final TranslationService translationService;
+
+    public HelloMockito(PersonRepository personRepository, TranslationService translationService) {
+        this.personRepository = personRepository;
+        this.translationService = translationService;
+    }
+
+    public String greet(int id, String sourceLanguage, String targetLanguage) {
+        Optional<Person> person = personRepository.findById(id);
+        String name = person.map(Person::getFirst).orElse("World");
+        return translationService.translate(
+                String.format(greeting, name), sourceLanguage, targetLanguage);
+    }
+
+
+    public HelloMockito(PersonRepository personRepository) {
+        this(personRepository, new DefaultTranslationService());
+    }
+
+    public HelloMockito(TranslationService service) {
+        this(new InMemoryPersonRepository(), service);
+    }
+
+    @SuppressWarnings("unused")
+    public String greet(int id) {
+        Optional<Person> person = personRepository.findById(id);
+        String name = person.map(Person::getFirst).orElse("World");
+        return translationService.translate(String.format(greeting, name));
+    }
+
+    public String greet(Person person, String sourceLanguage, String targetLanguage) {
+        return translationService.translate(
+                String.format(greeting, person.getFirst()), sourceLanguage, targetLanguage);
+    }
+
+    public void setGreeting(String greeting) {
+        this.greeting = greeting;
+    }
+
+    public String getGreeting() {
+        return greeting;
+    }
+}
+----
+
+The `HelloMockito` class in the provided Java code is designed to offer
+greeting services, potentially in different languages, and demonstrates
+dependency injection, use of interfaces, and optional handling. It’s
+structured to work within a hypothetical system where `Person` objects
+are stored and retrieved, and translations are performed by a
+translation service. Below is an explanation of its components and
+functionalities:
+
+== Dependencies
+
+* *`PersonRepository`*: An interface (assumed from the context) for
+managing `Person` objects, including retrieving them by ID.
+* *`TranslationService`*: An interface for translating text from one
+language to another.
+* *`DefaultTranslationService`*: A concrete implementation of
+`TranslationService`, used as a default if no translation service is
+explicitly provided.
+* *`InMemoryPersonRepository`*: A concrete implementation of
+`PersonRepository`, presumably storing `Person` objects in memory.
+
+== Constructors
+
+The class includes multiple constructors, demonstrating overloading and
+the use of `this` to chain them for dependency injection:
+
+[arabic]
+. *Primary Constructor*: Accepts both a `PersonRepository` and a
+`TranslationService`, allowing external configuration of these
+dependencies.
+. *Convenience Constructor for PersonRepository*: Accepts only a
+`PersonRepository` and uses a default `TranslationService`.
+. *Convenience Constructor for TranslationService*: Accepts only a
+`TranslationService` and uses an in-memory person repository.
+
+== Methods
+
+* *`greet(int id, String sourceLanguage, String targetLanguage)`*: This
+method attempts to find a `Person` by ID using the `PersonRepository`.
+If found, it uses the person’s first name in the greeting; otherwise, it
+defaults to ``World''. The greeting is then translated using the
+provided languages and the `TranslationService`.
+* *`greet(int id)`*: An overloaded version of the `greet` method that
+likely translates the greeting to a default language, as it doesn’t
+accept language parameters. It’s marked as unused, suggesting it might
+be for demonstration or future use.
+* *`greet(Person person, String sourceLanguage, String targetLanguage)`*:
+Directly greets the provided `Person` object, translating the greeting
+into the specified languages.
+* *`setGreeting(String greeting)`* and *`getGreeting()`*: Methods to
+update and retrieve the greeting template. This allows for customization
+of the greeting message.
+
+== Key Concepts Demonstrated
+
+* *Dependency Injection*: The class demonstrates dependency injection
+both through its constructors and by allowing the injection of a custom
+greeting message. This design principle helps in making the code more
+modular, testable, and flexible.
+* *Optional Handling*: The use of `Optional` for handling the
+possibility of a `Person` not being found is a good practice for
+avoiding `NullPointerException`.
+* *Interface-based Design*: By depending on interfaces
+(`PersonRepository` and `TranslationService`) rather than concrete
+implementations, the class is more adaptable to changes in the way
+persons are stored or translations are performed.
+
+== Usage Scenario
+
+This class could be used in an application that requires greeting users
+in different languages, possibly based on user preferences or settings.
+The flexibility in specifying different repositories and translation
+services makes it suitable for various contexts, including web
+applications, desktop applications, or even command-line tools.

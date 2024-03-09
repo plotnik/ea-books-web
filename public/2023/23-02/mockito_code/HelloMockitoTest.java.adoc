@@ -1,0 +1,275 @@
+= HelloMockitoTest.java
+:icons: font
+:source-highlighter: coderay
+
+https://github.com/kousen/mockitobook/blob/main/src/test/java/com/kousenit/hr/HelloMockitoTest.java
+
+[source,java]
+----
+package com.kousenit.hr;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedConstruction;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+
+@ExtendWith(MockitoExtension.class)
+class HelloMockitoTest {
+    @Mock
+    private PersonRepository repository;
+
+    @Mock
+    private TranslationService translationService;
+
+    @InjectMocks
+    private HelloMockito helloMockito;
+
+    @Test
+    @DisplayName("Greet Admiral Hopper")
+    void greetForPersonThatExists() {
+        // Set the expectations on the dependencies
+        when(repository.findById(anyInt()))
+                .thenReturn(Optional.of(new Person(1, "Grace", "Hopper", LocalDate.now())));
+        when(translationService.translate(
+                "Hello, Grace, from Mockito!", "en", "en"))
+                .thenReturn("Hello, Grace, from Mockito!");
+
+        // Test the greet method
+        String greeting = helloMockito.greet(1, "en", "en");
+        assertEquals("Hello, Grace, from Mockito!", greeting);
+
+        // Verify that the dependencies were called as expected
+        InOrder inOrder = inOrder(repository, translationService);
+        inOrder.verify(repository)
+                .findById(anyInt());
+        inOrder.verify(translationService)
+                .translate(anyString(), eq("en"), eq("en"));
+    }
+
+    @Test
+    @DisplayName("Greet a person not in the database")
+    void greetForPersonThatDoesNotExist() {
+        when(repository.findById(anyInt()))
+                .thenReturn(Optional.empty());
+        when(translationService.translate(
+                "Hello, World, from Mockito!", "en", "en"))
+                .thenReturn("Hello, World, from Mockito!");
+
+        String greeting = helloMockito.greet(100, "en", "en");
+        assertEquals("Hello, World, from Mockito!", greeting);
+
+        InOrder inOrder = inOrder(repository, translationService);
+        inOrder.verify(repository)
+                .findById(anyInt());
+        inOrder.verify(translationService)
+                .translate(anyString(), eq("en"), eq("en"));
+    }
+
+    @Test
+    void greetWithDefaultTranslator() {
+        PersonRepository mockRepo = mock(PersonRepository.class);
+        when(mockRepo.findById(anyInt()))
+                .thenReturn(Optional.of(new Person(1, "Grace", "Hopper", LocalDate.now())));
+        HelloMockito helloMockito = new HelloMockito(mockRepo);
+        String greeting = helloMockito.greet(1, "en", "en");
+        assertThat(greeting).isEqualTo("Hello, Grace, from Mockito!");
+    }
+
+    @Test
+    void greetWithMockedConstructor() {
+        // Mock for repo (needed for HelloMockito constructor)
+        PersonRepository mockRepo = mock(PersonRepository.class);
+        when(mockRepo.findById(anyInt()))
+                .thenReturn(Optional.of(new Person(1, "Grace", "Hopper", LocalDate.now())));
+
+        // Mock for translator (instantiated inside HelloMockito constructor)
+        try (MockedConstruction<DefaultTranslationService> ignored =
+                     mockConstruction(DefaultTranslationService.class,
+                             (mock, context) -> when(mock.translate(anyString(), anyString(), anyString()))
+                                     .thenAnswer(invocation -> invocation.getArgument(0) + " (translated)"))) {
+
+            // Instantiate HelloMockito with mocked repo and locally instantiated translator
+            HelloMockito hello = new HelloMockito(mockRepo);
+            String greeting = hello.greet(1, "en", "en");
+            assertThat(greeting).isEqualTo("Hello, Grace, from Mockito! (translated)");
+
+            // Any instantiation of DefaultTranslationService will return the mocked instance
+            DefaultTranslationService translator = new DefaultTranslationService();
+            String translate = translator.translate("What up?", "en", "en");
+            assertThat(translate).isEqualTo("What up? (translated)");
+        }
+    }
+
+    @Test
+    void greetWithMockedConstructorWithAnswer() {
+        // Mock for repo (needed for HelloMockito constructor)
+        PersonRepository mockRepo = mock(PersonRepository.class);
+        when(mockRepo.findById(anyInt()))
+                .thenReturn(Optional.of(new Person(1, "Grace", "Hopper", LocalDate.now())));
+
+        // Mock for translator (instantiated inside HelloMockito constructor)
+        try (MockedConstruction<DefaultTranslationService> ignored =
+                     mockConstructionWithAnswer(DefaultTranslationService.class,
+                             invocation -> invocation.getArgument(0) + " (translated)",
+                             invocation -> invocation.getArgument(0) + " (translated again)")) {
+
+            // Instantiate HelloMockito with mocked repo and locally instantiated translator
+            HelloMockito hello = new HelloMockito(mockRepo);
+            String greeting = hello.greet(1, "en", "en");
+            assertThat(greeting).isEqualTo("Hello, Grace, from Mockito! (translated)");
+        }
+    }
+
+    @Test
+    void testGetterAndSetter() {
+        assertThat(helloMockito.getGreeting()).isNotNull();
+        assertThat(helloMockito.getGreeting()).isEqualTo("Hello, %s, from Mockito!");
+
+        helloMockito.setGreeting("Hi there, %s, from Mockito!");
+        assertThat(helloMockito.getGreeting()).isEqualTo("Hi there, %s, from Mockito!");
+    }
+
+    @Test
+    @DisplayName("Integration test without mocks")
+    void helloMockitoWithExplicitStubs() {
+        PersonRepository personRepo = new InMemoryPersonRepository();
+
+        helloMockito = new HelloMockito(
+                personRepo,
+                new DefaultTranslationService()
+        );
+
+        // Save a person
+        Person person = new Person(1, "Grace", "Hopper", LocalDate.now());
+        personRepo.save(person);
+
+        // Greet a user that exists
+        String greeting = helloMockito.greet(1, "en", "en");
+        assertThat(greeting).isEqualTo("Hello, Grace, from Mockito!");
+
+        // Greet a user that does not exist
+        greeting = helloMockito.greet(100, "en", "en");
+        assertThat(greeting).isEqualTo("Hello, World, from Mockito!");
+    }
+
+    @Test
+    @DisplayName("Greet Admiral Hopper")
+    void greetAPersonUsingAnswers() {
+        // Set the expectations on the dependencies
+        when(repository.findById(anyInt()))
+                .thenReturn(Optional.of(new Person(1, "Grace", "Hopper", LocalDate.now())));
+        when(translationService.translate(
+                anyString(), eq("en"), eq("en")))
+                .thenAnswer(returnsFirstArg());
+
+        // Test the greet method
+        String greeting = helloMockito.greet(1, "en", "en");
+        assertEquals("Hello, Grace, from Mockito!", greeting);
+
+        // Verify that the dependencies were called as expected
+        verify(repository)
+                .findById(anyInt());
+        verify(translationService)
+                // gives an error: if one arg is an argument matcher, they all have to be
+                // .translate(anyString(), "en", "en");
+                .translate(anyString(), eq("en"), eq("en"));
+    }
+
+    @Test
+    void greetPersonWithSpecifiedLanguages() {
+        Person hopper = new Person(1, "Grace", "Hopper",
+                LocalDate.of(1906, 12, 9));
+
+        TranslationService mockTranslator = mock(TranslationService.class);
+        when(mockTranslator.translate(anyString(), anyString(), anyString()))
+                .thenReturn(String.format("Hello, %s, from Mockito", hopper.getFirst())
+                        + " (translated)");
+
+        HelloMockito helloMockito = new HelloMockito(mockTranslator);
+        String greeting = helloMockito.greet(hopper, "en", "en");
+        assertThat(greeting).isEqualTo("Hello, Grace, from Mockito (translated)");
+    }
+}
+----
+
+This Java code is a set of unit tests for a class named `HelloMockito`
+within a hypothetical application, possibly related to greeting users.
+The tests are written using JUnit 5 (indicated by the use of `@Test` and
+`@DisplayName` annotations) and Mockito for mocking dependencies. The
+`@ExtendWith(MockitoExtension.class)` annotation at the class level
+integrates Mockito with JUnit 5, enabling the use of annotations like
+`@Mock` and `@InjectMocks` for dependency injection in test cases.
+
+== Breakdown of Key Components:
+
+* *Dependencies Mocked:*
+** `PersonRepository`: Likely used to fetch `Person` objects from a data
+source.
+** `TranslationService`: Likely provides functionality to translate text
+between languages.
+* *`@InjectMocks`:*
+** `HelloMockito helloMockito;`: An instance of the class under test,
+with its dependencies (`PersonRepository` and `TranslationService`)
+automatically injected by Mockito.
+
+== Test Case Summaries:
+
+[arabic]
+. *`greetForPersonThatExists`:* Tests greeting functionality for a
+person that exists in the repository. It mocks the behavior of the
+`repository` and `translationService`, simulates a greeting, and asserts
+the expected outcome.
+. *`greetForPersonThatDoesNotExist`:* Similar to the first test but
+handles the case where the person does not exist in the repository.
+. *`greetWithDefaultTranslator`:* Tests greeting functionality using a
+mock `PersonRepository` but with the default implementation of the
+translation service.
+. *`greetWithMockedConstructor`:* Demonstrates how to mock the
+construction of an object (`DefaultTranslationService` in this case)
+using `mockConstruction`. It asserts that the translation service is
+mocked as expected.
+. *`greetWithMockedConstructorWithAnswer`:* Similar to the previous test
+but uses `mockConstructionWithAnswer` to dynamically respond to method
+calls on the mocked object.
+. *`testGetterAndSetter`:* Tests the getter and setter of the greeting
+message in the `HelloMockito` class.
+. *`helloMockitoWithExplicitStubs`:* An integration test that uses
+actual implementations of `PersonRepository`
+(`InMemoryPersonRepository`) and `DefaultTranslationService` instead of
+mocks.
+. *`greetAPersonUsingAnswers`:* Demonstrates the use of `thenAnswer` for
+stubbing, allowing for dynamic responses based on the input arguments.
+. *`greetPersonWithSpecifiedLanguages`:* Tests the greeting
+functionality with specified languages, mocking the `TranslationService`
+to return a custom greeting message.
+
+== Key Concepts Illustrated:
+
+* *Mocking and Stubbing:* The tests demonstrate how to mock dependencies
+and stub their methods to return specific outcomes, facilitating
+isolated testing of the `HelloMockito` class functionality.
+* *Order Verification:* The `greetForPersonThatExists` and
+`greetForPersonThatDoesNotExist` tests use `InOrder` to verify that
+methods on mocks are called in a specific order.
+* *Dynamic Responses:* The use of `thenAnswer` and
+`mockConstructionWithAnswer` showcases how to provide dynamic responses
+based on the input to the mocked methods.
+* *Integration Testing:* The `helloMockitoWithExplicitStubs` test case
+shows an example of an integration test where actual implementations,
+instead of mocks, are used.
+
+This suite of tests is a comprehensive demonstration of various Mockito
+features for mocking dependencies, verifying interactions, and testing
+class behavior in isolation from its dependencies.
