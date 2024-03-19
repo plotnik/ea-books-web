@@ -68,18 +68,23 @@
 <p>Read YAML file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_yaml</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Remove newlines from the note.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">format_note</span><span class="p">(</span><span class="n">note</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">format_note</span><span class="p">(</span><span class="n">note</span><span class="p">):</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">note</span> <span class="o">=</span> <span class="s2">&quot; - &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">note</span>
 </pre></div>
 </div>
-<p>Process YAML records:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">[cols=&quot;1,1,1&quot;]</span>
+<p>Output YAML records as a table with <code class="docutils literal notranslate"><span class="pre">n_cols</span></code> columns.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n_cols</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Specify <code class="docutils literal notranslate"><span class="pre">n_cols</span></code> headers of <code class="docutils literal notranslate"><span class="pre">1</span></code> width.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">repeat_string_n_times</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">[cols=&quot;</span><span class="si">{</span><span class="n">repeat_string_n_times</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="n">n_cols</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;]</span>
 <span class="s2">|===</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
@@ -90,18 +95,34 @@
     <span class="n">note</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;note&#39;</span><span class="p">]</span>
     <span class="n">note</span> <span class="o">=</span> <span class="n">format_note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 
-    <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">a|</span>
-<span class="s2">====</span>
-<span class="s2">icon:</span><span class="si">{</span><span class="n">icon</span><span class="si">}</span><span class="s2">[2x,role=</span><span class="se">{{</span><span class="s2">c</span><span class="se">}}</span><span class="s2">flag] &amp;nbsp;</span>
-<span class="s2">link:</span><span class="si">{</span><span class="n">link</span><span class="si">}</span><span class="s2">[</span>
-<span class="s2">*</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">*] +</span>
-<span class="s2">&amp;nbsp;&amp;nbsp;&amp;nbsp;</span>
-<span class="s2">_</span><span class="si">{</span><span class="n">note</span><span class="si">}</span><span class="s2">_</span>
-<span class="s2">====</span>
-<span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">+=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        a|</span>
+<span class="s2">        ====</span>
+<span class="s2">        icon:</span><span class="si">{</span><span class="n">icon</span><span class="si">}</span><span class="s2">[2x,role=</span><span class="se">{{</span><span class="s2">c</span><span class="se">}}</span><span class="s2">flag] &amp;nbsp;</span>
+<span class="s2">        link:</span><span class="si">{</span><span class="n">link</span><span class="si">}</span><span class="s2">[*</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">*] +</span>
+<span class="s2">        &amp;nbsp;&amp;nbsp;&amp;nbsp;</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">note</span><span class="si">}</span><span class="s2">_</span><span class="se">\n</span><span class="s2">====</span><span class="se">\n</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Fill the remaining columns with blanks:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calculate_empty_elements</span><span class="p">(</span><span class="n">len_data</span><span class="p">,</span> <span class="n">n_col</span><span class="p">):</span>
+    <span class="c1"># Calculate the number of elements in the last row</span>
+    <span class="n">elements_in_last_row</span> <span class="o">=</span> <span class="n">len_data</span> <span class="o">%</span> <span class="n">n_col</span>
 
-<span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+    <span class="c1"># If the last row is completely filled, there are no empty elements</span>
+    <span class="k">if</span> <span class="n">elements_in_last_row</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="c1"># Return the number of empty elements in the last row</span>
+    <span class="k">return</span> <span class="n">n_col</span> <span class="o">-</span> <span class="n">elements_in_last_row</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">calculate_empty_elements</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">n_cols</span><span class="p">)):</span>
+    <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;a|</span><span class="se">\n</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Close the table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">|===</span>
 <span class="s2">&quot;&quot;&quot;</span>
 </pre></div>

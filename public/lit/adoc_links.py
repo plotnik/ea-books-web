@@ -1,5 +1,6 @@
 import yaml
 import argparse
+import textwrap
 
 # AsciiDoc links
 # ==============
@@ -51,22 +52,27 @@ args = parser.parse_args()
 
 with open(args.input_yaml, 'r') as file:
     data = yaml.safe_load(file)
-    
-# Remove newlines from the note.
-#
-# ::
 
 def format_note(note):
     lines = note.strip().split("\n")
     note = " - ".join(lines)
     return note
 
-# Process YAML records:
+# Output YAML records as a table with ``n_cols`` columns.
 #
 # ::
 
-text = """
-[cols="1,1,1"]
+n_cols = 3
+
+# Specify ``n_cols`` headers of ``1`` width.
+#
+# ::
+
+def repeat_string_n_times(s, n):
+    return ",".join(s for _ in range(n))
+
+text = f"""
+[cols="{repeat_string_n_times('1',n_cols)}"]
 |===
 """
 
@@ -77,16 +83,36 @@ for d in data:
     note = d['note']
     note = format_note(note)
 
-    text += f"""
-a|    
-====
-icon:{icon}[2x,role={{c}}flag] &nbsp;
-link:{link}[
-*{name}*] +
-&nbsp;&nbsp;&nbsp;
-_{note}_
-====
-"""    
+    text += textwrap.dedent(f"""
+        a|    
+        ====
+        icon:{icon}[2x,role={{c}}flag] &nbsp;
+        link:{link}[*{name}*] +
+        &nbsp;&nbsp;&nbsp;
+        """)
+    text += f"_{note}_\n====\n"  
+
+# Fill the remaining columns with blanks:
+#
+# ::
+
+def calculate_empty_elements(len_data, n_col):
+    # Calculate the number of elements in the last row
+    elements_in_last_row = len_data % n_col
+
+    # If the last row is completely filled, there are no empty elements
+    if elements_in_last_row == 0:
+        return 0
+
+    # Return the number of empty elements in the last row
+    return n_col - elements_in_last_row
+    
+for _ in range(calculate_empty_elements(len(data), n_cols)):
+    text += f"a|\n" 
+    
+# Close the table:
+#
+# ::
 
 text += """
 |===
