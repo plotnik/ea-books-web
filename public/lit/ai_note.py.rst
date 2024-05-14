@@ -39,7 +39,7 @@ Select OpenAI LLM.
 
 ::
 
-  openai_model = "gpt-4-0125-preview"
+  openai_model = "gpt-4o"
   openai_temperature = 0.7
 
 Create OpenAI client.
@@ -76,7 +76,7 @@ Select the prompt.
   )
   prompt = get_prompt(prompt_name)
   st.write(prompt)
-  print(f"Prompt: {prompt_name}")
+  print(f"Prompt: {prompt_name} for {openai_model}")
 
 Count tokens
 ------------
