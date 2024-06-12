@@ -216,23 +216,32 @@ For details see <a class="reference internal" href="#environment-setup">Environm
 <section id="save-note">
 <h2><a class="toc-backref" href="#id8" role="doc-backlink">Save note</a><a class="headerlink" href="#save-note" title="Link to this heading">¶</a></h2>
 <p>Notes will be saved to <code class="docutils literal notranslate"><span class="pre">ai_note</span></code> folder which is expected to exist.</p>
+<p>Output format can be XML with request, response and prompt name, or just response markdown.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save_note_disabled</span><span class="p">():</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">note_name</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span><span class="o">==</span><span class="mi">0</span>
 
-<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
-<span class="n">note_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Note Name&quot;</span><span class="p">)</span>
+<span class="n">note_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Note Name:&quot;</span><span class="p">)</span>
+
+<span class="n">out_format</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Output Format:&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;XML&quot;</span><span class="p">,</span> <span class="s2">&quot;Markdown&quot;</span><span class="p">],</span> <span class="n">horizontal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:spiral_note_pad: Save&#39;</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="n">save_note_disabled</span><span class="p">()):</span>
-    <span class="n">xml</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        &lt;note&gt;</span>
-<span class="s2">          &lt;question&gt;&lt;![CDATA[</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">]]&gt;&lt;/question&gt;</span>
-<span class="s2">          &lt;prompt&gt;</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">&lt;/prompt&gt;</span>
-<span class="s2">          &lt;answer&gt;&lt;![CDATA[</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="si">}</span><span class="s2">]]&gt;&lt;/answer&gt;</span>
-<span class="s2">        &lt;/note&gt;</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="n">out_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ai_note/</span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s2">.xml&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Note saved: `</span><span class="si">{</span><span class="n">out_file</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">out_format</span> <span class="o">==</span> <span class="s2">&quot;XML&quot;</span><span class="p">:</span>
+        <span class="n">xml</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            &lt;note&gt;</span>
+<span class="s2">              &lt;question&gt;&lt;![CDATA[</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">]]&gt;&lt;/question&gt;</span>
+<span class="s2">              &lt;prompt&gt;</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">&lt;/prompt&gt;</span>
+<span class="s2">              &lt;answer&gt;&lt;![CDATA[</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="si">}</span><span class="s2">]]&gt;&lt;/answer&gt;</span>
+<span class="s2">            &lt;/note&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">out_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ai_note/</span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s2">.xml&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Note saved: `</span><span class="si">{</span><span class="n">out_file</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ai_note/</span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s2">.md&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Note saved: `</span><span class="si">{</span><span class="n">out_file</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

@@ -134,7 +134,7 @@ if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
     print(f'finish_reason: `{choice.finish_reason}`')
     print(response.usage)
     print(f'Choices: {len(response.choices)}')
-  
+
     # Calculate and print execution time
     end_time = time.time()
     execution_time = end_time - start_time
@@ -149,26 +149,36 @@ if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
 #
 # Notes will be saved to ``ai_note`` folder which is expected to exist.
 #
+# Output format can be XML with request, response and prompt name, or just response markdown.
+#
 # ::
 
 def save_note_disabled():
     return len(note_name.strip())==0
 
-st.write('---')
-note_name = st.text_input("Note Name")
-if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
-    xml = textwrap.dedent(f"""
-        <note>
-          <question><![CDATA[{text}]]></question>
-          <prompt>{prompt_name}</prompt>
-          <answer><![CDATA[{st.session_state.openai_result}]]></answer>
-        </note>
-    """).strip()
-    out_file = f"ai_note/{note_name}.xml"
-    with open(out_file, 'w') as file:
-        file.write(xml)
-    st.write(f'Note saved: `{out_file}`')
+note_name = st.text_input("Note Name:")
 
+out_format = st.radio("Output Format:", ["XML", "Markdown"], horizontal=True)
+
+if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
+    if out_format == "XML":
+        xml = textwrap.dedent(f"""
+            <note>
+              <question><![CDATA[{text}]]></question>
+              <prompt>{prompt_name}</prompt>
+              <answer><![CDATA[{st.session_state.openai_result}]]></answer>
+            </note>
+        """).strip()
+        out_file = f"ai_note/{note_name}.xml"
+        with open(out_file, 'w') as file:
+            file.write(xml)
+        st.write(f'Note saved: `{out_file}`')
+    else:    
+        out_file = f"ai_note/{note_name}.md"
+        with open(out_file, 'w') as file:
+            file.write(st.session_state.openai_result)
+        st.write(f'Note saved: `{out_file}`')
+      
 # Environment Setup
 # -----------------
 #

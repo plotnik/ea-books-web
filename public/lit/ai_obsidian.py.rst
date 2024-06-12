@@ -25,7 +25,7 @@ Select OpenAI LLM.
 
 ::
 
-  openai_model = "gpt-4-0125-preview"
+  openai_model = "gpt-4o"
   openai_temperature = 0.7
 
 Select Obsidian folder from recent vaults.
