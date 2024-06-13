@@ -1,0 +1,196 @@
+= 2. JavaScript Refresher - Udemy React Course
+:icons: font
+:toc: left
+
+link:udemy_react.html[<Contents>]
+
+GitHub:: https://github.com/academind/react-complete-guide-course-resources/tree/main/code/02%20JS%20Refresher/code/finished
+
+CodeSandbox:: https://codesandbox.io/s/javascript-refresher-start-rytt3j
+
+=== 11. Module Introduction
+
+This section of the course provides an optional JavaScript refresher aimed at those who haven't used JavaScript recently or lack extensive experience. It's not a full JavaScript course, but it revisits essential JavaScript concepts and syntax with a focus on modern features necessary for writing React code. The section is recommended for solidifying the JavaScript foundations needed for React development, but it's not suitable for complete beginners to JavaScript, who should learn the basics before proceeding with this course.
+
+=== 12. Starting Project
+
+The content discusses setting up a basic web project in CodeSandbox, which includes an HTML file and assets but no JavaScript code yet. It will be used as a practice environment for exploring JavaScript features. The focus will be on writing code that outputs content to the console, which can be accessed in CodeSandbox. The purpose of this project is not to create a fancy JavaScript-based project, but rather to refresh JavaScript knowledge essential for building React applications.
+
+=== 13. Adding JavaScript To A Page and How React Projects Differ
+
+Example::
+`react-complete-guide-course-resources/code/02 JS Refresher/code/finished/index.html`
+
+This section discusses the versatility of JavaScript, its execution environments, and how it is used in web development, particularly within the context of a React course.
+
+Summary:
+
+- JavaScript is a versatile language that can be executed in multiple environments, including browsers, servers (via Node.js and Deno), and mobile devices (using frameworks like Capacitor or React Native).
+- The focus of the discussion is on using JavaScript in the browser since React is a front-end library for building user interfaces.
+- JavaScript code can be added to a website using the `<script>` tag either inline within HTML files or by linking to external `.js` files. The latter is preferred for maintainability.
+- JavaScript files can be imported into HTML with the `<script>` tag's `src` attribute, and the `defer` attribute is used to ensure scripts execute after the HTML document is fully parsed.
+- Modern JavaScript projects often use the `type="module"` attribute in `<script>` tags to enable the use of JavaScript modules, allowing `import` and `export` syntax between files.
+- In React projects, script tags are typically injected into the HTML file automatically as part of a build process, which will be covered in subsequent lectures.
+
+=== 14. React Projects Use a Build Process
+
+The provided content explains that in a React project, you might not see any script tags directly in the index.html file. Despite this, the React application still runs because it undergoes a build process that transforms the written code into executable code for the browser. This transformation is done by tools listed in the project's package.json file, such as React Scripts. These tools convert the code, including JSX (a syntax extension for JavaScript), into standard JavaScript that browsers can execute. The build process also optimizes the code for production by minifying it, making it smaller and more efficient to download. This is why NodeJS is required for React projects, as it supports the background processes and tools necessary for the build. The speaker emphasizes that understanding this build process is crucial, and notes that for the particular vanilla JavaScript project being discussed, JSX and the build process are not applicable, so any JSX code would need to be removed to avoid errors.
+
+=== 15. import and export
+
+The provided text is an explanation of the import and export syntax in JavaScript, which is important for managing and maintaining code in React applications and other advanced JavaScript projects. Here's a summary of the points covered:
+
+1. **Splitting Code:** It's a best practice to split code across multiple files using the import and export keywords to keep it manageable in advanced JavaScript projects such as React applications.
+
+2. **Exporting:** To make a variable available in other files, you use the `export` keyword before the variable declaration. For example, exporting an API key variable from a `util.js` file so it can be used in an `app.js` file.
+
+3. **Importing:** To use an exported variable in another file, you use the `import` keyword with curly braces containing the name of the exported item, followed by the `from` keyword and the relative path to the file where the variable is exported.
+
+4. **Module Type:** For import and export to work, your script tag needs to include `type="module"`. However, in React projects with a build process, this attribute is not needed because the build process compiles all imports and exports into fewer files for the browser.
+
+5. **Default Exports:** A file can have a single default export using the `export default` syntax. The default export doesn't require a name and can be imported without curly braces, assigning any name you want in the importing file.
+
+6. **Named vs Default Exports:** You can have multiple named exports in a file but only one default export. Named exports are imported with their original names inside curly braces, while a default export is imported without curly braces and can be named arbitrarily by the importer.
+
+7. **Importing Multiple Exports:** If you have multiple named exports, you can import them all as a comma-separated list inside curly braces or group them together into a JavaScript object using `import * as AliasName from 'filePath'`.
+
+8. **Aliases:** You can rename imports using the `as` keyword to assign an alias to an imported item, allowing you to refer to it by a different name in the importing file.
+
+The text emphasizes that understanding these import and export concepts is essential for the course and React development in general.
+
+=== 16. Revisiting Variables and Values
+
+The provided text is a tutorial on foundational JavaScript concepts, focusing on variables, values, and operators. The tutorial emphasizes that JavaScript applications are fundamentally about handling data, such as strings, numbers, booleans, and special values like null, undefined, and objects. The speaker explains how to create and use variables in JavaScript, highlighting the use of the `let` and `const` keywords.
+
+Variables in JavaScript are data containers with names that follow certain rules, such as camel case notation and restrictions on the use of special characters. `let` allows for the creation of variables that can be reassigned, whereas `const` is used for variables that should not be reassigned. The speaker also discusses the benefits of using variables, including code reusability and readability, as well as the ability to change a value in one place and have it update throughout the code.
+
+The speaker mentions different philosophies within the JavaScript community regarding the use of `let` and `const`, with some developers preferring `const` to clearly indicate variables that should not be reassigned. The speaker personally advocates for using `const` when appropriate but acknowledges that developers can choose what works best for them, as long as they understand the differences between `let` and `const`.
+
+=== 17. Revisiting Operators
+
+The provided text discusses several fundamental concepts in JavaScript:
+
+1. **let and const**: The text begins by mentioning the importance of `let` and `const` for declaring variables, but does not elaborate on their specifics.
+
+2. **Operators**: It highlights that operators are used to perform operations in JavaScript, such as arithmetic with plus (+), minus (-), multiplication (*), and division (/). The plus operator can also concatenate strings, combining them into a longer string.
+
+3. **String Concatenation**: The text explains that the plus operator can be used not only with numbers but also with strings (e.g., "hello" + "world" results in "helloworld").
+
+4. **Equality and Comparison Operators**: The triple equal sign (===) checks for equality and returns a Boolean value. Other comparison operators include greater than (>), less than (<), greater than or equal to (>=), and less than or equal to (<=).
+
+5. **Conditional Execution**: The text mentions that comparison operators are often used with `if` statements to execute code conditionally. An example is given where 10 is compared to 10, which always returns true, but it notes that in practice, conditions would typically involve dynamic user input.
+
+6. **Usage in React**: Finally, it states that in the context of React development, which will be covered in the course, these concepts will be applied to build applications with more meaningful and dynamic conditions.
+
+In summary, the text introduces the concepts of variable declaration with `let` and `const`, arithmetic and string concatenation with operators, equality and comparison operators, and the use of these operators in conjunction with `if` statements for conditional code execution, particularly within the scope of React applications.
+
+=== 18. Revisiting Functions and Parameters
+
+The content explains the concept of functions in JavaScript. Functions are blocks of code that are defined to execute at a later time, and they can be called multiple times. They are created using the `function` keyword followed by a name, a set of parentheses for parameters, and curly braces containing the code to be executed. Parameters can be added to functions to accept input values, and default parameter values can also be specified. Functions can return values using the `return` keyword. Naming of functions (and variables) should be descriptive of their purpose or the actions they perform. The content also introduces the idea that React components can be defined as functions, which will be explored later in the course.
+
+=== 19. Arrow Functions
+
+The text discusses two ways to define functions in JavaScript: traditional function declaration and arrow functions. Arrow functions are particularly useful for anonymous functions that do not need a name, such as those passed as callbacks in event listeners (e.g., `onClick` in React). The arrow function syntax is shorter as it omits the `function` keyword and uses an arrow (`=>`) to separate the parameter list from the function body. Both traditional functions and arrow functions can be used to define anonymous functions, and both can include a `return` statement if needed. The text indicates that both styles will be demonstrated in the course, and while the choice of syntax is ultimately up to the developer, it is important to be familiar with both methods.
+
+=== 20. More on the Arrow Function Syntax
+
+Arrow functions in JavaScript allow for shorter syntax in certain cases:
+
+1) You can omit parentheses around the parameter if there is exactly one parameter. No parameter or multiple parameters require parentheses.
+
+2) You can omit curly braces and the `return` keyword if the function body consists solely of a return statement.
+
+3) When returning an object directly, you must wrap the object literal in parentheses to distinguish it from a function body.
+
+=== 21. Revisiting Objects and Classes
+
+This passage explains how objects in JavaScript can be used to group multiple values and functions together, providing examples and demonstrating the syntax for creating and using objects.
+
+- Objects consist of key-value pairs where the keys are descriptive strings that follow naming rules and the values can be any data type.
+- Dot notation is used to access the properties or methods of an object (e.g., `user.name` or `user.greet()`).
+- Functions within an object are called methods and can be defined without the `function` keyword. They can be executed using dot notation followed by parentheses.
+- The `this` keyword can be used within methods to refer to other properties or methods within the same object.
+- Objects can be created by directly defining them or by using a blueprint called a class.
+- Classes start with a capital letter and can have a constructor function for initializing object properties.
+- New instances of a class can be created using the `new` keyword and will inherit properties and methods defined in the class blueprint.
+- The passage mentions that the `this` keyword and `class` keyword will not be heavily used in the course but are important JavaScript concepts to understand.
+
+Overall, the text is an introduction to object creation, property and method access, and the use of the `this` and `class` keywords in JavaScript.
+
+=== 22. Arrays and Array Methods like map()
+
+In JavaScript, arrays are a special type of object used to store ordered lists of values. They are created using square brackets, and elements can be accessed by their index, with the first element at index 0. Arrays can hold various types of values, including other arrays, objects, numbers, and strings.
+
+Elements in an array are separated by commas, and the array has built-in methods for manipulation and querying. For example, the `push` method adds a new element to the array, and the `findIndex` method locates the index of an element based on a test function provided by the developer. Another common method is `map`, which creates a new array by transforming each element of the original array according to a given function.
+
+The `findIndex` method requires a function that returns `true` when the desired element is found. For concise code, arrow functions are often used. Similarly, the `map` method takes a function and applies it to each element, returning a new array with the transformed elements.
+
+Arrays are essential in JavaScript because they allow developers to store and manipulate collections of data efficiently. They are particularly useful in frameworks like React for rendering lists of items on the web page.
+
+=== 23. Destructuring
+
+The provided text discusses two JavaScript features: array destructuring and object destructuring.
+
+Array Destructuring:
+- Instead of accessing array elements individually using their indexes (e.g., `userNameData[0]`), array destructuring allows you to create variables for each element in a single step using square brackets.
+- With array destructuring, you assign the first variable to the first array element, the second variable to the second element, and so on.
+- This syntax is shorter and makes the code more readable.
+
+Object Destructuring:
+- Similar to array destructuring, object destructuring allows you to create variables for object properties in a single step but using curly braces.
+- The variable names must match the property names of the object, but you can use an alias by using a colon (e.g., `{ name: userName, age }` to rename `name` to `userName`).
+- Object destructuring is also more concise and improves readability.
+
+Both destructuring methods are essential in modern JavaScript, simplifying the code and making it easier to work with arrays and objects. These features will be frequently used throughout the course.
+
+
+=== 24. Destructuring in Function Parameter Lists
+
+The content explains how to apply object destructuring within function parameter lists. Instead of accessing object properties with dot notation inside a function, properties can be directly extracted into locally scoped variables through destructuring. The example given shows a `storeOrder` function that traditionally would use the object `order` to access properties (`order.id`, `order.currency`). With destructuring, the function signature is modified to directly extract `id` and `currency` from the passed object. This approach simplifies the code but does not change the fact that the function still receives a single object as its parameter. The example emphasizes that the function call does not change and still passes one argument, the object, despite the internal use of destructuring.
+
+=== 25. The Spread Operator
+
+The spread operator in JavaScript, denoted by three dots `...`, allows you to expand the elements of an array or the properties of an object into a new array or object. When merging arrays, using the spread operator will combine the elements of each array into a single, flat array, rather than nesting them. Similarly, when used with objects, the spread operator can be used to combine the properties of one object with another, resulting in a new object containing properties from both. This operator is useful for merging lists or combining objects without creating nested structures.
+
+=== 26. Revisiting Control Structures
+
+The content explains control structures in programming, focusing on the use of `if`, `else if`, and `else` statements. It describes how these structures are used to execute code based on certain conditions. The `if` statement runs code if a condition is true, `else if` provides additional conditions if the first is not met, and `else` is for when none of the conditions are true. The explanation includes a practical example where a user input (password) is checked against specific conditions using the `prompt` function in a browser. The summary also introduces the `for` loop, particularly the `for...of` loop, which iterates over an array and executes code for each element. An example is given where a `for...of` loop is used to log each hobby in a dummy hobbies array. The content highlights the importance of these control structures for directing the flow of a program's execution.
+
+
+=== 27. Manipulating the DOM - Not With React
+
+The content explains that in the course being referred to, directly manipulating the Document Object Model (DOM) using JavaScript to select, read, or change elements is not a common practice. This is because React, which is used in the course, handles DOM manipulation for the developer. React allows writing code in a declarative manner, which automates these tasks, unlike the imperative approach of manually selecting elements with methods like `querySelector`. Therefore, such direct DOM interactions will not be a focus in the course.
+
+=== 28. Using Functions as Values
+
+The section summarizes the concept of passing functions as values in JavaScript, a common feature in the language. It explains how functions can be passed as arguments to other functions, like the built-in `setTimeout` function provided by the browser. When passing a function as an argument, parentheses are omitted to prevent immediate execution; instead, the function itself is passed, allowing it to be executed later. This can be done by either defining the function in place or by passing a previously defined function by its name. The section also clarifies that not only built-in functions like `setTimeout` can accept functions as arguments but custom functions can as well. An example is provided where a custom function, `greeter`, accepts another function as an argument and executes it. This demonstrates the flexibility and power of functions in JavaScript as first-class objects that can be stored in variables, passed around, and executed within other functions.
+
+=== 29. Defining Functions Inside Of Functions
+
+The content discusses the concept of defining functions within other functions in JavaScript. It explains that while this might not be very common in vanilla JavaScript, it is a pattern that becomes particularly relevant in React. An example is given where a function named `init` contains another function called `greet`. The `greet` function can only be executed within the scope of `init` and is not accessible outside of it. Conversely, `init` can be executed because it is not nested within another function and is scoped to the overall file. The passage suggests that while this pattern may not be frequently used in plain JavaScript, it becomes significant in React development, which will be explored further in the course.
+
+=== 30. Reference vs Primitive Values
+
+The content explains the difference between primitive and reference values in JavaScript. Primitive values such as strings, numbers, and Booleans cannot be edited; instead, new values are created when changes are attempted. For example, using the `concat` method on a string creates a new string rather than altering the original one.
+
+In contrast, objects and arrays are reference values, meaning that variables hold the memory address of where the object is stored rather than the value itself. Because of this, objects and arrays can be directly modified, such as by using the `push` method to add a new element to an array. Even if an object or array is assigned to a constant (`const`), it can still be manipulated because what remains constant is the memory address, not the value it points to. The `const` declaration only prevents reassignment of the variable, not modification of the value it references.
+
+=== 31. Next-Gen JavaScript - Summary
+
+The module introduces several advanced JavaScript features that are commonly used:
+
+- **let & const**: These are replacements for `var`. `let` is used for variables that may change, while `const` is for variables which should not be reassigned.
+
+- **ES6 Arrow Functions**: This modern syntax for functions can be shorter and has benefits concerning the `this` context. Examples show how to use arrow functions with different numbers of parameters and when simply returning a value.
+
+- **Exports & Imports**: In modular JavaScript code, `export` is used to make parts of a module available for use elsewhere, while `import` allows you to access those parts in different files. There are default (unnamed) and named exports, and several ways to import them.
+
+- **Classes**: These are a syntactical sugar over the traditional JavaScript prototype-based inheritance and constructor functions. Classes can have properties and methods, and they support inheritance.
+
+- **Spread & Rest Operator**: The `...` operator can be used to either spread elements of an array or object into a new array or object, or to gather function arguments into a single array.
+
+- **Destructuring**: This syntax provides a way to unpack values from arrays or properties from objects into distinct variables, which can simplify code, especially when used with function arguments.
+
+=== 32. JS Array Functions
+
+The provided content emphasizes the importance of JavaScript array functions such as `map()`, `filter()`, `reduce()`, and others, which are commonly used in React and other JavaScript-based technologies. These functions are crucial for manipulating arrays in an immutable manner. The text suggests visiting the Mozilla Developer Network (MDN) web docs for a comprehensive guide on these array methods. It highlights several key array methods that are particularly important in the context of the course, providing direct links to their documentation on MDN, including `map()`, `find()`, `findIndex()`, `filter()`, `reduce()`, `concat()`, `slice()`, and `splice()`.
