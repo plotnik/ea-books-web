@@ -99,11 +99,11 @@ Props:: 03 React Essentials/05-cmp-props
 
 === 44. Alternative Props Syntaxes
 
-The content explains how to dynamically import and use data in a React component. Specifically, it discusses how to use an array of objects containing properties like `image`, `title`, and `description` from a `data.js` file in an `App.jsx` file. The steps include importing the `CORE CONCEPTS` array using named imports with curly braces, accessing array items by index to set component props, and using the spread operator to pass all properties of an object as props to a component for cleaner code. Additionally, it covers object destructuring in the component's parameter list to directly use the properties as variables, which results in less verbose and more readable code. The overall message is to illustrate different ways to pass data to components and how to simplify the code while maintaining functionality.
+The content explains how to <<alternative-props-syntax, dynamically import and use data>> in a React component. Specifically, it discusses how to use an array of objects containing properties like `image`, `title`, and `description` from a `data.js` file in an `App.jsx` file. The steps include importing the `CORE CONCEPTS` array using named imports with curly braces, accessing array items by index to set component props, and using the spread operator to pass all properties of an object as props to a component for cleaner code. Additionally, it covers object destructuring in the component's parameter list to directly use the properties as variables, which results in less verbose and more readable code. The overall message is to illustrate different ways to pass data to components and how to simplify the code while maintaining functionality.
 
 === 45. More Prop Syntaxes
 
-The content explains different ways to handle properties (props) in React components:
+The content explains <<alternative-props-syntax, different ways to handle properties>> (props) in React components:
 
 1. **Passing a Single Prop Object**: Instead of passing multiple props individually, you can pass an entire object as a single prop to a component. The object can then be accessed and destructured within the component.
 
@@ -113,13 +113,19 @@ The content explains different ways to handle properties (props) in React compon
 
 The text assures the reader that these concepts will be illustrated with concrete examples throughout the course.
 
+====
+[[alternative-props-syntax]]
+Alternative Props Syntaxes::
+03 React Essentials/06-alternative-props-syntax
+====
+
 === 46. Best Practice - Storing Components in Files and Using a Good Project Structure
 
-The content discusses the organization of React components in a project. Initially, all the components (Header, CoreConcept, and App) are in a single App.jsx file. The text points out that while this setup technically works, it is not recommended for larger projects due to maintainability issues. The suggested approach is to create separate files for each component, typically within a Components subfolder inside the SRC directory.
+The content <<storing-cmp-in-files, discusses the organization>> of React components in a project. Initially, all the components (Header, CoreConcept, and App) are in a single App.jsx file. The text points out that while this setup technically works, it is not recommended for larger projects due to maintainability issues. The suggested approach is to create separate files for each component, typically within a Components subfolder inside the SRC directory.
 
 Here's a summary of the steps and best practices mentioned:
 
-- Create a Components folder in the SRC directory to store individual component files.
+- Create a `components` folder in the SRC directory to store individual component files.
 - Name each component file after the component it contains (e.g., Header.jsx for the Header component).
 - Move the component function and any related code (e.g., helper functions, constants) from the App.jsx to the new component file.
 - Export the component from its new file using either named or default export, with default export being the more common practice in React projects.
@@ -128,9 +134,15 @@ Here's a summary of the steps and best practices mentioned:
 
 By following these steps, each component is now in its own file, which aligns with common best practices and improves the project's structure and maintainability as it grows.
 
+====
+[[storing-cmp-in-files]]
+Storing Components in Files::
+03 React Essentials/07-storing-cmp-in-files
+====
+
 === 47. Storing Component Style Files Next To Components
 
-The content discusses organizing CSS styles for a React project by splitting them into separate files specific to individual components. It suggests moving the CSS rules related to the header component from the main `index.css` file to a new `header.css` file placed next to the `header.jsx` file. To apply these styles, the `header.css` file must be imported into the `header.jsx` component file using an import statement. The author points out that importing CSS in this way doesn't scope the styles to just that component; the styles would affect any similar elements on the page. As a solution to this limitation, the author hints at a future discussion on style scoping.
+The content discusses <<styles-next-to-cmp, organizing CSS styles>> for a React project by splitting them into separate files specific to individual components. It suggests moving the CSS rules related to the header component from the main `index.css` file to a new `header.css` file placed next to the `header.jsx` file. To apply these styles, the `header.css` file must be imported into the `header.jsx` component file using an import statement. The author points out that importing CSS in this way doesn't scope the styles to just that component; the styles would affect any similar elements on the page. As a solution to this limitation, the author hints at a future discussion on style scoping.
 
 The author also recommends creating a subfolder within the `Components` folder for each component, like the header, to keep related files organized. After this structural change, the import paths in the affected JSX files must be updated to reflect the new folder locations. The summary of this content is:
 
@@ -140,17 +152,23 @@ The author also recommends creating a subfolder within the `Components` folder f
 - The author suggests creating subfolders for better organization and demonstrates adjusting import paths after such a restructure.
 - Style scoping will be discussed later in the course.
 
+====
+[[styles-next-to-cmp]]
+Style Files Next To Components::
+03 React Essentials/08-styles-next-to-cmp
+====
+
 === 48. Component Composition - The special children Prop (Core Concept)
 
-The provided text discusses the process of developing an interactive section for a website application within the `app.jsx` file. The author aims to create a new component for tab buttons and outlines the following steps:
+The provided text discusses the process of developing an interactive section for a website application within the `App.jsx` file. The author aims to create a new component for tab buttons and outlines the following steps:
 
-1. A new section with an ID of `examples` is added to the `app.jsx` file, which includes an `<h2>` tag with the title "Examples" and a built-in HTML `<menu>` element for creating a list of buttons.
+1. A new section with an ID of `examples` is added to the `App.jsx` file, which includes an `<h2>` tag with the title "Examples" and a built-in HTML `<menu>` element for creating a list of buttons.
 
 2. Instead of manually adding list items and buttons, a new component file named `TabButton.jsx` is created next to the `CoreConcept.jsx` file. This component is a function that returns a list item with a button.
 
-3. The author wants to use the `TabButton` component within the `app.jsx` file, where button text such as "Components" is passed as children between the opening and closing tags of the `TabButton` component.
+3. The author wants to use the `TabButton` component within the `App.jsx` file, where button text such as "Components" is passed as children between the opening and closing tags of the `TabButton` component.
 
-4. For the `TabButton` component to work as intended, props are accepted in the component, which includes a special built-in prop called `children`. This prop represents the content placed between the opening and closing tags of the component.
+4. For the `TabButton` component to work as intended, props are accepted in the component, which includes a <<built-in-prop-children, special built-in prop>> called `children`. This prop represents the content placed between the opening and closing tags of the component.
 
 5. The text content passed as children to the `TabButton` component can be displayed using `props.children` or by extracting the `children` prop through object destructuring.
 
@@ -161,6 +179,12 @@ The provided text discusses the process of developing an interactive section for
 8. Finally, the author decides to use the component composition approach with the `children` prop and adds more buttons for JSX, props, and state examples to the interactive section.
 
 In summary, the text explains how to create a `TabButton` component in React that utilizes the `children` prop for component composition to display an interactive tab button section on a website. The author emphasizes the flexibility of React components, allowing developers to choose between different methods of content delivery based on preference and use case.
+
+====
+[[built-in-prop-children]]
+The special children Prop::
+Component Composition/09-composition-children-prop
+====
 
 === 49. Reacting to Events (Core Concept)
 
