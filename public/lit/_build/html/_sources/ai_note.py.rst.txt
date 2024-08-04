@@ -39,7 +39,7 @@ Select OpenAI LLM.
 
 ::
 
-  openai_model = "gpt-4o"
+  openai_model = "gpt-4o-mini"
   openai_temperature = 0.7
 
 Create OpenAI client.
@@ -134,7 +134,7 @@ Call OpenAI API
       print(f'finish_reason: `{choice.finish_reason}`')
       print(response.usage)
       print(f'Choices: {len(response.choices)}')
-  
+
       # Calculate and print execution time
       end_time = time.time()
       execution_time = end_time - start_time
@@ -178,7 +178,7 @@ Output format can be XML with request, response and prompt name, or just respons
           with open(out_file, 'w') as file:
               file.write(st.session_state.openai_result)
           st.write(f'Note saved: `{out_file}`')
-        
+      
 Environment Setup
 -----------------
 

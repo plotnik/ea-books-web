@@ -25,7 +25,7 @@ from openai import OpenAI
 #
 # ::
 
-openai_model = "gpt-4o"
+openai_model = "gpt-4o-mini"
 openai_temperature = 0.7
 
 # Select Obsidian folder from recent vaults.
