@@ -40,3 +40,61 @@ Working with Fragments::
 04 Essentials Deep Dive/02-fragments</a>
 ++++
 ====
+
+=== 63. When Should You Split Components
+
+The discussion focuses on the challenges of managing a large React component, specifically the `App` component, which has multiple responsibilities such as rendering core concepts, managing tap buttons, and handling interactive states. The current structure leads to inefficiencies, as state updates cause unnecessary re-executions of the header component, resulting in unintended behavior like generating a new random number each time. This indicates the need to split the app component into smaller, more focused sub-components to better manage responsibilities and improve performance, a crucial skill for React developers.
+
+=== 64. Splitting Components By Feature & State
+
+The text discusses breaking down a large React App Component into smaller, more manageable components, which is a common best practice in React development. The process involves creating two new components: `CoreConcepts` and `Examples`. 
+
+1. **Core Concepts Component**: 
+   - The relevant section of the App Component is cut out and pasted into a new `CoreConcepts.jsx` file.
+   - The component imports necessary data and exports a function that returns the JSX for Core Concepts.
+
+2. **Examples Component**: 
+   - Similarly, the section for examples, including tab buttons and content, is transferred to a new `Examples.jsx` file.
+   - This component also handles its own state and imports necessary data and React hooks.
+
+3. **App Component Adjustments**: 
+   - The App Component is cleaned up by removing imports related to the now-extracted features and importing the new components instead.
+   - The state management for the tab content is moved to the Examples Component, which affects how the application behaves when tabs are clicked.
+
+The overall goal is to create a leaner App Component by distributing features across smaller components, making the codebase easier to manage, especially in larger projects. After these changes, the application should function identically to before, without errors, while now having a more organized structure.
+
+====
+Splitting Components::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/03-splitting-components/src/App.jsx" target="_blank">
+04 Essentials Deep Dive/03-splitting-components</a>
+++++
+====
+
+=== 65. Problem - Props Are Not Forwarded To Inner Elements
+
+In this section, the focus is on enhancing an existing React application by creating a reusable `Section` component. The idea is to maintain a consistent structure for sections in the application, which typically includes a title and content. The `Section` component will accept `props`, specifically a `title` and `children`, allowing for dynamic content rendering.
+
+The process involves:
+
+1. Creating a `section.jsx` file in the components folder.
+2. Defining the `Section` component to return a section element with an `h2` title and the content passed through `children`.
+3. Importing and using the `Section` component in the `examples.jsx` file, replacing existing section markup with the new component.
+
+However, an issue arises with styling because when props are set on a custom component, they are not automatically forwarded to the underlying HTML elements. This results in lost styling, as the `ID` prop set on the `Section` component was not passed to the actual section element.
+
+To resolve this, it's suggested to destructure and manually pass props like `ID` and `className` to the built-in section element. However, this approach can become cumbersome with multiple attributes. A more scalable solution involves using a pattern known as "forwarding props," which allows for easier management of attributes without needing to manually destructure each one.
+
+=== 66. Forwarding Props To Wrapped Elements
+
+The passage explains how to use JavaScript's destructuring and spread syntax when creating custom components in React. By using the spread operator (three dots), developers can collect all additional props passed to a component and merge them into a `props` object. This allows for forwarding those props to built-in elements, maintaining flexibility in the component's usage without manually extracting each prop.
+
+The example specifically discusses a `Section` component that utilizes this pattern to forward various props like ID and class name to a built-in `Section` element. It highlights the benefits of this approach in creating wrapper components, ensuring they remain functional and flexible. The same technique can be applied to other components, such as `TabButton`, by spreading any remaining props onto a built-in button and replacing custom props with standard ones (e.g., replacing `onSelect` with `onClick`). This maintains the original functionality while simplifying prop management in the components.
+
+====
+Forwarding Props::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/04-forwarding-props/src/components/Section.jsx" target="_blank">
+04 Essentials Deep Dive/04-forwarding-props</a>
+++++
+====

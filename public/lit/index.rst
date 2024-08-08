@@ -10,6 +10,7 @@ Literate Programs
    :maxdepth: 2
    :caption: Contents:
 
+   o_source.py
    exc_yaml.py
    ai_note.py
    ai_obsidian.py
