@@ -98,3 +98,63 @@ Forwarding Props::
 04 Essentials Deep Dive/04-forwarding-props</a>
 ++++
 ====
+
+=== 67. Working with Multiple JSX Slots
+
+The section discusses the creation of a reusable tabs component in a React project, emphasizing the props forwarding pattern. The current setup for tabs consists of a menu bar with buttons and content displayed below, which may work for simple applications but could become cumbersome in larger ones. 
+
+To improve reusability, a new `Tabs` component is proposed, allowing the use of prop destructuring to manage dynamic tab content. The author suggests managing tab button clicks and content outside the `Tabs` component to maintain its status as a "dumb" wrapper. 
+
+To accomplish this, an additional prop (e.g., `buttons`) is introduced to allow passing tab buttons as JSX, alongside a `children` prop for content. This enables the `Tabs` component to have a clear structure: buttons inside a menu element and content below it. The example demonstrates how to implement this pattern, which, although seemingly redundant for simple applications, is essential for scalable React development.
+
+====
+Multiple JSX Slots::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/05-multiple-jsx-slots/src/components/Tabs.jsx" target="_blank">
+04 Essentials Deep Dive/05-multiple-jsx-slots</a>
+++++
+====
+
+=== 68. Setting Component Types Dynamically
+
+The discussion focuses on enhancing a Tabs component by allowing it to accept a `buttonsContainer` prop that determines the wrapper element for buttons within the component. This approach aims to improve flexibility, enabling developers to choose different wrapper elements (like `menu`, `ul`, `div`, or custom components) when using the Tabs component in various parts of an application.
+
+To implement this, the idea is to create a variable that starts with a capital letter (e.g., `ButtonsContainer`) to reference the `buttonsContainer` prop within the component. This allows React to treat the prop's value correctly, whether it's a built-in HTML element or a custom component. 
+
+Key points to remember include:
+
+- Built-in elements should be passed as string identifiers (e.g., "menu").
+- Custom components should be passed as identifiers without angle brackets, and they must start with an uppercase character to be recognized as components.
+
+This pattern enhances the reusability of the Tabs component while maintaining a clean separation between buttons and content.
+
+====
+Setting Component Types Dynamically::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/06-dynamic-component-types/src/components/Tabs.jsx" target="_blank">
+04 Essentials Deep Dive/06-dynamic-component-types</a>
+++++
+====
+
+=== 69. Setting Default Prop Values
+
+The discussion focuses on the concept of default prop values in React, specifically using the Tabs component. The ButtonsContainer prop, which designates a wrapper for buttons, is highlighted as an example where a default value can enhance usability. By utilizing destructuring syntax in the component definition, a default value (such as "menu") can be assigned to the `ButtonsContainer` prop. This allows the Tabs component to function without explicitly setting the ButtonsContainer, thereby simplifying its usage while maintaining the same functionality. The example demonstrates that even without specifying the prop, the Tabs component defaults to using the menu element as the wrapper.
+
+=== Coding Exercise 15: Creating Flexible Components
+
+```
+export default function Button({ children, mode="filled", Icon, ...props }) {
+    const noIconClass = `button ${mode}-button`;
+    const withIconClass = noIconClass + " icon-button";
+    return (
+        <button className={Icon ? withIconClass : noIconClass} {...props}>
+            {
+                Icon ?
+                <span className="button-icon"><Icon /></span> :
+                ''
+            }
+            <span>{children}</span>
+        </button>
+    )
+}
+```
