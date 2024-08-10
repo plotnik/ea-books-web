@@ -158,3 +158,115 @@ export default function Button({ children, mode="filled", Icon, ...props }) {
     )
 }
 ```
+
+=== 70. Onwards To The Next Project & Advanced Concepts
+
+The section discusses the initial setup for a tic-tac-toe game using React. It begins by explaining the intention to create a header with an image and title. Instead of adding this directly to the app component in `App.jsx`, the author decides to place a simple "coming soon" paragraph there and moves the header markup to the `index.html` file, which is served to visitors. This approach is justified because the header is static and does not rely on React's props or state. The author highlights that static content can be directly added to `index.html`, while dynamic content should be managed within React components. Additionally, the project includes a public folder for images, and the author demonstrates how to reference an image from this folder in `index.html`. The alt text for the image is specified, and the section concludes by indicating readiness to proceed with developing the game logic in the React components.
+
+=== 71. Not All Content Must Go Into Components
+
+The discussion focuses on building a tic-tac-toe game and highlights the importance of understanding various patterns and concepts during development. The initial step involves adding a header to the application that consists of an image and a title. Instead of placing this header directly into the main React component (`App.jsx`), the author suggests adding static markup directly into the index.html file, which serves the initial HTML to website visitors. This is emphasized as a valid approach for static content that doesn't depend on React's state or props.
+
+The author explains how to reference images stored in the public folder without needing to define a path, as these files are served alongside the index.html. The example given refers to an image named "game-logo.png" with appropriate alt text. After implementing these changes, the header should display correctly when the application is reloaded. Finally, the author indicates a transition to working on the React components to develop the game logic.
+
+====
+Static Content::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/07-tic-tac-toe-starting-project/index.html" target="_blank">
+04 Essentials Deep Dive/07-tic-tac-toe-starting-project</a>
+++++
+====
+
+=== 72. Closer Look - public vs assets for Image Storage
+
+The document explains the use of two folders in a web development project: `public/` and `src/assets/`.
+
+- **public/ Folder**: Files stored here, such as images, are publicly accessible and can be directly referenced in `index.html` or `index.css`. They can be accessed via a browser, for example, through `localhost:5173/some-image.jpg`.
+
+- **src/assets/ Folder**: Files in this folder are not publicly accessible and cannot be directly loaded by website visitors. Instead, they are used in code files, where they are processed and optimized by the build system before being made available in the `public/` folder.
+
+**Usage Guidelines**:
+
+- Use the `public/` folder for files that should be publicly available and not processed by the build system (e.g., favicons).
+- Use the `src/` folder for images needed within components, as these will be handled by the build process.
+
+=== 73. New Project - First Steps Towards Our Tic-Tac-Toe Game
+
+The task involves developing a main game component for a tic-tac-toe web application. The component will include three primary building blocks: a player name display and editing area, a game board, and a log for tracking player turns. 
+
+To start, the developer will create a main wrapper element and a "game container" div for organizing the layout. Inside the container, an ordered list will be used to display the players' names and symbols (X for player one and O for player two). Each player's name will be wrapped in a span with the class "player name," while their symbol will be in another span with the class "player symbol." 
+
+Currently, the player names are hard-coded, but the developer plans to make them dynamic and add functionality for editing the names in the future. Once the basic structure is set up, the next step will be to implement the editing feature.
+
+=== 74. Concept Repetition - Splitting Components & Building Reusable Components
+
+The passage discusses the process of enhancing a React application by adding an "Edit" button next to player names and symbols. It highlights the need to avoid repeating markup for players in the App component, suggesting the creation of a separate Player component to encapsulate the repeated structure. This involves creating a components folder and a Player.jsx file, where the Player component accepts props for the player’s name and symbol. The existing repeated markup is moved to this new component, streamlining the code by allowing for the use of props to render player-specific data. The final step involves importing and utilizing the Player component in the App component, thereby improving code organization while setting the stage for future functionality of the Edit button.
+
+=== 75. Concept Repetition - Working with State
+
+The task involves implementing an edit feature for a player's name in a React component. When the "Edit" button is clicked, it should display an input field for the user to update the player's name, replacing the displayed name. The button should also change its label to "Save" while in edit mode. 
+
+To achieve this, you'll need to manage a state using `useState` to track whether the component is in editing mode (a Boolean value). Initially, the state is set to `false`. A function named `handleEditClick` is created to set the editing state to `true` when the button is clicked. 
+
+Next, conditional rendering is implemented: if the editing state is `false`, the player's name is displayed; if `true`, an input field appears. The input field should be set to accept text and will be enhanced further later to allow saving the changes and pre-populating it with the current player's name. Overall, this implementation allows for basic interactivity in the player component.
+
+====
+Working with State::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/08-working-with-state/src/components/Player.jsx" target="_blank">
+04 Essentials Deep Dive/08-working-with-state</a>
+++++
+====
+
+=== 76. Component Instances Work In Isolation!
+
+The speaker emphasizes an important feature of React: component isolation. When reusing components, such as the player component in the application, each instance functions independently. Changes in one instance do not affect others, allowing for complex, reusable components that do not interfere with each other. This isolation is crucial for maintaining the integrity of individual components, ensuring that actions like editing only impact the intended instance.
+
+=== 77. Conditional Content & A Suboptimal Way Of Updating State
+
+The task involves modifying a user interface to toggle between an editable input field and displaying the player's name. The edit button's label should change between "Edit" and "Save" based on whether the input field is active or not. 
+
+To implement this:
+
+1. **Button Caption**: Introduce a dynamic value for the button caption using a variable (`btnCaption`) or a ternary expression based on the `isEditing` state. Default to "Edit" and change to "Save" when editing.
+  
+2. **Pre-Populate Input**: Set the value of the input field to the current player's name using the `name` prop to ensure it reflects the correct player's name.
+
+3. **Toggle Edit Mode**: Modify the `handleEditClick` function to toggle the `isEditing` state. Instead of using a ternary expression to switch the state, a simpler approach is to use the negation operator (`!`), which inverts the current state.
+
+By implementing these changes, the interface will allow users to edit player names and toggle between edit and display modes effectively.
+
+=== 78. Best Practice - Updating State Based On Old State Correctly
+
+In React, when updating state based on its previous value, it is recommended to use a functional approach by passing a function to the state updater (e.g., `setIsEditing`). This method ensures that React provides the most current state value when executing the update, preventing potential issues with asynchronous state updates. 
+
+Using the functional approach guarantees that each state update reflects the latest state, as opposed to using the current state directly, which may lead to unexpected behavior when multiple updates are scheduled in quick succession. It is essential for React developers to adopt this best practice to ensure reliable and accurate state management in their components.
+
+====
+Updating State Based On Old State::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/09-updating-state-based-on-old-state/src/components/Player.jsx" target="_blank">
+04 Essentials Deep Dive/09-updating-state-based-on-old-state</a>
+++++
+====
+
+=== 79. User Input & Two-Way-Binding
+
+The passage discusses how to enable editing of a player name in a React component. Initially, the input field does not allow editing because the value prop is set, which prevents user input from being reflected. The author suggests using a default value prop instead, but this doesn't save changes. Instead, a better approach is to use the `useState` hook to manage the player name as a piece of state, allowing the component to update and reflect changes.
+
+The following steps are outlined:
+
+1. Introduce a new state variable for the player name.
+2. Rename the variable to avoid conflicts and set its initial value from a prop.
+3. Create a `handleChange` function to update the state when the user types in the input field.
+4. Attach the `handleChange` function to the input's `onChange` event to capture user input.
+
+By doing this, both the input field and the displayed player name will update correctly, allowing for two-way binding where the input reflects changes made by the user. The author concludes by explaining that this method allows the component to manage user input effectively, ensuring updated values are saved and displayed correctly.
+
+====
+Two-Way-Binding::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/10-two-way-binding/src/components/Player.jsx" target="_blank">
+04 Essentials Deep Dive/10-two-way-binding</a>
+++++
+====
