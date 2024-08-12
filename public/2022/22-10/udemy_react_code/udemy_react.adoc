@@ -270,3 +270,64 @@ Two-Way-Binding::
 04 Essentials Deep Dive/10-two-way-binding</a>
 ++++
 ====
+
+=== 80. Rendering Multi-Dimensional Lists
+
+The player functionality for a tic-tac-toe game has been completed, allowing for name editing, and the next step is to create the game board. This involves developing a `GameBoard` component that displays a three-by-three grid using a list structure populated with buttons. Instead of hardcoding the grid, an `initialGameBoard` constant is defined as an array of arrays, initially filled with `null` values. This setup allows for dynamic updates when players click on squares.
+
+The grid is rendered using the `map` method to iterate over the rows and columns, creating list items for each square. Each button will either display an 'X', an 'O', or nothing based on player interactions, though the logic for updating the state on clicks is not yet implemented. The `GameBoard` component is then integrated into the main app component, resulting in a visible grid with clickable buttons, setting the stage for the next phase of adding game logic.
+
+====
+Multi-Dimensional Lists::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/11-multi-dimensional-lists/src/components/GameBoard.jsx" target="_blank">
+04 Essentials Deep Dive/11-multi-dimensional-lists</a>
+++++
+====
+
+=== 81. Best Practice - Updating Object State Immutably
+
+The text describes the process of implementing state management in a React component for a game board, specifically for a Tic-Tac-Toe game. 
+
+1. **Component Setup**: The `GameBoard` component is set up to dynamically render a grid with buttons representing game squares.
+
+2. **State Management**: The `useState` hook is utilized to manage the game board state, which is initialized with a multidimensional array called `initialGameBoard`.
+
+3. **Handling Button Clicks**: A function named `handleSelectSquare` is created to update the game board when a button is clicked. This function uses the `setGameBoard` to replace the corresponding square's value (from `null` to either 'X' or 'O') based on the player's turn.
+
+4. **Immutable State Update**: It is emphasized that state updates for objects or arrays should be done immutably to avoid bugs. This involves creating a new array and copying the existing elements before making any updates.
+
+5. **Event Handling with Parameters**: To pass the necessary row and column indices to `handleSelectSquare`, an anonymous function is created for the `onClick` event of the buttons.
+
+6. **Final Implementation**: After implementing the above logic, clicking the buttons updates the game board correctly. However, the current implementation does not handle turn switching or win conditions.
+
+Overall, the focus is on correctly managing and updating the game board state in a React component, while adhering to best practices for state management in JavaScript.
+
+====
+Updating Object State Immutably::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/12-updating-state-immutably/src/components/GameBoard.jsx" target="_blank">
+4 Essentials Deep Dive/12-updating-state-immutably</a>
+++++
+====
+
+=== 82. Lifting State Up (Core Concept)
+
+The text discusses the implementation of a two-player game board in React, focusing on player turn management and UI feedback. It outlines the need to switch between players, highlight the active player using CSS classes, and manage the active player state in a common ancestor component (the App component). 
+
+Key steps include:
+
+1. **State Management**: The active player state is lifted to the App component to allow both Player and GameBoard components to access it.
+2. **Functionality**: A function (`handleSelectSquare`) is created to handle turn switching when a square is clicked, updating the active player.
+3. **Props and Component Interaction**: The GameBoard component receives a prop to execute the turn-switching function, while the Player component receives an `isActive` prop to conditionally apply a CSS class for highlighting.
+4. **Dynamic UI Updates**: The UI dynamically reflects the current active player and their symbols on the game board, providing visual feedback during gameplay.
+
+The concept of "lifting state up" is emphasized as a crucial technique in React for managing shared state across components. The implementation allows for player interaction but notes that additional features like win conditions and preventing multiple clicks on the same button still need to be addressed.
+
+====
+Lifting State Up::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/13-lifiting-state-up/src/App.jsx" target="_blank">
+4 Essentials Deep Dive/13-lifiting-state-up</a>
+++++
+====
