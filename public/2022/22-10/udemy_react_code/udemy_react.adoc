@@ -331,3 +331,46 @@ Lifting State Up::
 4 Essentials Deep Dive/13-lifiting-state-up</a>
 ++++
 ====
+
+=== 83. Avoid Intersecting States
+
+The focus is on improving a React application by implementing a log component that tracks the turns taken in a game. The log will display an ordered list of player turns, necessitating the management of a dynamic array of turns. To achieve this, state management needs to be lifted from the game board component to the app component, which has access to both the game board and the log. This approach will prevent redundancy in storing turn data, as the game board already reflects which buttons were clicked, albeit without the order of clicks. Instead of duplicating state, the application will manage a single array of game turns, allowing both the log and the game board to derive necessary information from it. The existing game board state that lacks ordering will be commented out, emphasizing the need for a more efficient state management strategy.
+
+====
+Avoid Intersecting States::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/14-avoid-intersecting-state/src/App.jsx" target="_blank">
+4 Essentials Deep Dive/14-avoid-intersecting-state</a>
+++++
+====
+
+=== 84. Prefer Computed Values & Avoid Unnecessary State Management
+
+The GameBoard component is being modified to remove the `activePlayerSymbol` prop and instead use the `onSelectSquare` prop for handling clicks on the squares. The game state is being lifted to the App component. The `handleSelectSquare` function will now update the turns array, ensuring that the state is updated immutably. Each turn will be represented as an object containing the player's symbol and the row and column indices of the clicked square.
+
+The implementation ensures that the current player's symbol is determined without merging different state values, using a `currentPlayer` variable that checks the latest turn to switch between players X and O. This structure allows for a clear representation of the game's state and enables future development for displaying the game log and updating the GameBoard accordingly.
+
+====
+Prefer Computed Values::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/15-prefer-computed-values/src/components/GameBoard.jsx" target="_blank">
+4 Essentials Deep Dive/15-prefer-computed-values</a>
+++++
+====
+
+=== 85. Deriving State From Props
+
+The passage outlines the implementation details of a game board component in a React application. The goal is to derive the game board's state from an array of game turns. Key steps include:
+
+1. **Passing Props**: A new `turns` prop is passed to the `Gameboard` component, which contains the array of turns.
+   
+2. **State Derivation**: The game board is initialized with its default structure. A loop iterates through the `turns` array to extract relevant information (square and player) from each turn's object. This information is used to update the corresponding cell in the game board.
+
+3. **Object Destructuring**: The code employs object destructuring to efficiently extract properties from the turn objects and their nested square objects.
+
+4. **Error Handling**: An error occurs due to missing row and column indices in the `handleSelectSquare` function's implementation, which is tied to the button's `onClick` event. 
+
+5. **Fixing the Error**: The solution involves using an anonymous function in the `onClick` event to pass the row and column indices, ensuring the correct data is provided to `handleSelectSquare`.
+
+6. **Outcome**: After implementing these changes, the game board updates correctly upon button clicks and can reflect the current game state derived from the `turns` array. Additionally, there's a plan to log the game turns for better debugging and oversight in future lectures.
+
