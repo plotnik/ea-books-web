@@ -374,3 +374,154 @@ The passage outlines the implementation details of a game board component in a R
 
 6. **Outcome**: After implementing these changes, the game board updates correctly upon button clicks and can reflect the current game state derived from the `turns` array. Additionally, there's a plan to log the game turns for better debugging and oversight in future lectures.
 
+=== 86. Sharing State Across Components
+
+The discussion focuses on implementing a Log component in a React application to display game turns. The Log component will receive a `turns` prop from the App component, which contains the game turn data. Each turn will be mapped to a list item showing which player selected which field, identified by its row and column indices. The player information is represented by a symbol, while the unique key for each list item is generated using a combination of the row and column indices. The template literal syntax in JavaScript will be used to create a string for the key and log message. Finally, the `turns` prop must be set in the App component to pass the game turns state, enabling the Log component to update and display the log messages correctly when fields are selected.
+
+====
+Sharing State::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/16-disabling-buttons/src/components/Log.jsx" target="_blank">
+4 Essentials Deep Dive/16-disabling-buttons</a>
+++++
+====
+
+=== 87. Reducing State Management & Identifying Unnecessary State
+
+In the recent lectures, the focus was on improving the management of game state in a React application by eliminating unnecessary state variables. The activePlayer state, which was previously managed separately, can be derived from the existing gameTurns state. This is because the active player changes with each turn, and this information can be obtained directly from gameTurns instead of maintaining an additional state.
+
+To achieve this, a helper function called `deriveActivePlayer` is proposed, which calculates the current active player based on the gameTurns state. This function is defined outside of the component to avoid unnecessary re-creation on re-renders. By using this helper function, the code becomes cleaner, reducing duplication and managing less state. The component can then call this function to set the active player both in the main component and when updating game turns.
+
+The discussion concludes with the next steps, which include preventing players from clicking the same button multiple times and implementing game-over checks.
+
+====
+Reducing State Management::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/16-disabling-buttons/src/App.jsx" target="_blank">
+4 Essentials Deep Dive/16-disabling-buttons</a>
+++++
+====
+
+=== 88. Disabling Buttons Conditionally
+
+The discussion focuses on preventing multiple clicks on a button in a game, which is essential for proper gameplay and log management. To achieve this, the button in the GameBoard component can be dynamically disabled based on whether it has already been selected. This is done by using a `disabled` prop that checks if the `player symbol` is either 'X' or 'O' (indicating the button has been clicked) or `null` (indicating it can still be clicked). If the player symbol is not `null`, the button is disabled; otherwise, it remains enabled. As a result, once a button is clicked, it cannot be clicked again, ensuring each button is only selectable once and the game's functionality is maintained.
+
+====
+Disabling Buttons::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/16-disabling-buttons/src/components/GameBoard.jsx" target="_blank">
+4 Essentials Deep Dive/16-disabling-buttons</a>
+++++
+====
+
+=== 89. Outsourcing Data Into A Separate File
+
+The text discusses implementing a feature to check for a player's victory in a game. It highlights that the check for winning combinations should occur after every turn to determine if the game has ended. The author suggests placing this logic in the app component, where game-over information is needed. They plan to create a constant that holds all possible winning combinations as an array of arrays, with each inner array representing a specific combination that leads to a win. The explanation includes how to define these combinations using row and column indices, following JavaScript's zero-based indexing. The author also mentions that a file named `winning_combinations.js` is provided, which contains the necessary winning combinations, and instructs on how to import this file into the app's JSX.
+
+====
+Outsourcing Data Into A Separate File::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/17-game-over-checking-for-draw/src/winning-combinations.js" target="_blank">
+4 Essentials Deep Dive/17-game-over-checking-for-draw</a>
+++++
+====
+
+=== 90. Lifting Computed Values Up
+
+The text explains how to dynamically check for winning combinations in a game after each turn in a React application. The main steps discussed include:
+
+1. **State Management**: Introduce a state variable (`hasWinner`) to track if there is a winner. While initially suggested, it is deemed redundant since the winner can be derived from the `gameTurns` array.
+
+2. **Winning Combination Check**: Instead of checking for a winner in the `handleSelectSquare` function, the component will re-evaluate winning combinations every time it re-renders after a turn. This involves iterating through predefined winning combinations and checking the symbols in the game board.
+
+3. **Game Board Access**: The game board's data is initially in a separate component. The solution involves moving the logic to derive the game board into the main app component, allowing access to the game board's symbols for winner evaluation.
+
+4. **Component Structure**: The game board component will receive the derived game board as a prop instead of computing it internally, simplifying its code and improving structure.
+
+Overall, the approach emphasizes deriving state from existing data and structuring components effectively in React.
+
+=== 91. Deriving Computed Values From Other Computed Values
+
+The content discusses a method to check for a winning combination in a game, likely a tic-tac-toe scenario. It explains how to access a multidimensional game board array to retrieve symbols stored in specific squares that make up a winning combination. The process involves iterating through possible winning combinations, checking if the symbols in the squares are equal, and confirming that they are truthy (not null). If all conditions are met, it identifies a winner and sets a variable to represent the winning symbol. The text also mentions displaying a message when a player wins, such as "You won X" or "You won O." However, it notes that after a win, players can continue playing, which is not the desired behavior, indicating the need for a more refined game over screen.
+
+====
+Deriving Computed Values::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/17-game-over-checking-for-draw/src/App.jsx" target="_blank">
+4 Essentials Deep Dive/17-game-over-checking-for-draw</a>
+++++
+====
+
+=== 92. Tic-Tac-Toe Game - The Game Over Screen & Checking for a Draw
+
+The task is to add a GameOver component to an app, which will display when the game concludes. This component will show the winner's name or indicate a draw, and include a button to restart the game. The GameOver component will receive the winner's name as a prop. 
+
+The logic in the app component will be adjusted to check for both a winner and a draw. A draw will be determined if all nine game turns have been played without a winner. The GameOver component will be displayed if there is a winner or if a draw occurs, handling the rendering accordingly based on whether a winner is present. 
+
+Lastly, while the basic functionality is set up and the GameOver screen displays correctly for both winning and drawing scenarios, the button to restart the game still needs to be implemented.
+
+====
+Checking for a Draw::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/04%20Essentials%20Deep%20Dive/17-game-over-checking-for-draw/src/components/GameOver.jsx" target="_blank">
+4 Essentials Deep Dive/17-game-over-checking-for-draw</a>
+++++
+====
+
+=== 93. Why Immutability Matters - Always!
+
+The task involves implementing a rematch feature in a game by resetting the `gameTurns` state, which serves as the central data source for the game's logic. To achieve this, a `handleRestart` function is created in the App component to set `gameTurns` to an empty array. This function is then passed as a prop to the GameOver component, where it is linked to a button's onClick event.
+
+However, a bug was identified related to how the game board is updated. When the board is modified, it directly alters the original array in memory due to JavaScript's reference value behavior with arrays. This leads to issues when the game is restarted, as the modified game board persists instead of resetting.
+
+The solution involves creating a deep copy of the `initialGameBoard` to ensure that changes in the game board do not affect the original array. By using `map` to copy inner arrays, a new game board is generated each time. After implementing these changes, the rematch feature works correctly, allowing the game to restart with a cleared log and no errors.
+
+====
+Why Immutability Matters::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/72695a085f0c98ba0ce44d59a8212efd09bb9d30/code/04%20Essentials%20Deep%20Dive/18-finished/src/App.jsx#L31" target="_blank">
+4 Essentials Deep Dive/18-finished</a>
+++++
+====
+
+=== 94. When NOT To Lift State Up
+
+The discussion revolves around enhancing a game application by displaying the names of players instead of just indicating which symbol won (X or O). Currently, player names are stored in the player component, but to display them in the app component, the names need to be lifted to the app's state. However, lifting the state could cause unnecessary re-renders of the entire app on every keystroke, which is inefficient.
+
+Instead, the solution is to maintain the player name state in the app component as an object mapping symbols (X and O) to player names (Player One and Player Two). This allows the app to update player names only when a save button is clicked, rather than on every keystroke. A new function, `handlePlayerNameChange`, is proposed to handle the name changes by updating the state based on the previous player names, ensuring that only the changed name is updated while preserving the other player's name. This approach efficiently manages player data without unnecessary re-renders.
+
+====
+When NOT To Lift State Up::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/72695a085f0c98ba0ce44d59a8212efd09bb9d30/code/04%20Essentials%20Deep%20Dive/18-finished/src/App.jsx#L92" target="_blank">
+4 Essentials Deep Dive/18-finished</a>
+++++
+====
+
+=== 95. An Alternative To Lifting State Up
+
+The process described outlines how to update player data in a game application. It involves triggering a function, `handlePlayerNameChange`, whenever the player component is interacted with, specifically when the "Save" button is clicked. The function is passed as a prop, `onChangeName`, to the player components. Inside the player component, this prop is destructured and used in the `handleEditClick` function to update the player's name based on the current state and the editing status.
+
+Additionally, the application uses the players' state to display the correct player name when the game concludes. It dynamically accesses the winner's name based on the winning symbol (either X or O) and updates the display accordingly. After implementing these changes, the game can show the winner's name and allow for name changes, completing the game's functionality.
+
+====
+An Alternative To Lifting State Up::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/72695a085f0c98ba0ce44d59a8212efd09bb9d30/code/04%20Essentials%20Deep%20Dive/18-finished/src/components/Player.jsx#L16" target="_blank">
+4 Essentials Deep Dive/18-finished</a>
+++++
+====
+
+=== 96. Final Polishing & Improving Components
+
+The game development process is complete, but the code for the app component needs improvement for better readability and organization. The plan involves refactoring by outsourcing logic into separate functions. Specifically, a new function called `deriveWinner` will handle the determination of the winner, taking the game board and player data as parameters and returning the winner. Similarly, the logic for deriving the game board will be moved to another function called `deriveGameBoard`, accepting game turns as input.
+
+Additionally, a new constant named `players` will be introduced to store player names, making the code more maintainable by avoiding hard-coded values. The naming conventions for constants will also be standardized for clarity. After these changes, the app component will become leaner and more readable, while functionality remains intact. The developer will gain valuable experience with components and state management, along with important React patterns and concepts.
+
+====
+Improving Components::
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/72695a085f0c98ba0ce44d59a8212efd09bb9d30/code/04%20Essentials%20Deep%20Dive/18-finished/src/App.jsx#L30" target="_blank">
+4 Essentials Deep Dive/18-finished</a>
+++++
+====
