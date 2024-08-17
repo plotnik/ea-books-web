@@ -1,0 +1,465 @@
+= AI Code Generation Test - XML to HTML
+:toc: right
+:icons: font
+:source-highlighter: pygments
+
+Each request to a large language model (LLM) can be viewed as consisting of two components: a static part known as the **"prompt"** and a dynamic part referred to as the **"query."**
+
+We will use the same prompt and query with three different language models to generate Python code that will transform XML into a more user-friendly HTML format.
+
+== Query
+
+Here is our **query** in reStructuredText format:
+
+```rst
+List of Raspberry Pi Hotkeys
+----------------------------
+
+Keyboard shortcuts can be found in ``/etc/xdg/openbox/lxde-pi-rc.xml`` file on
+Raspberry Pi. We need to extract list of ``keybind`` records at ``/openbox_config/keyboard`` xpath.
+Each record looks like this:
+
+.. code:: xml
+
+    <keybind key="C-S-Escape">
+      <action name="Execute">
+        <command>lxtask</command>
+      </action>
+    </keybind>
+
+Create HTML file with an output that contains HTML file with 2 columns: ``key`` and ``action name``.
+```
+
+== Prompt
+
+Here is our **prompt**.
+
+```
+Generate Python code based on the provided reStructuredText (reST) description. The code should precisely implement the functionality or requirements described in the reST, adhering to best practices in Python programming. Ensure that the code is efficient, readable, and well-structured, including appropriate comments and docstrings where necessary. The implementation should handle edge cases and input validation as described or implied by the reST. If applicable, include example usage or test cases.
+```
+
+== Claude Sonnet 3.5 using web UI
+
+Here is the result from **Claude Sonnet 3.5**:
+
+```python
+import xml.etree.ElementTree as ET
+import os
+
+def extract_hotkeys(file_path):
+    """
+    Extract hotkey information from the given XML file.
+
+    Args:
+        file_path (str): Path to the XML file.
+
+    Returns:
+        list: List of dictionaries containing key and action information.
+    """
+    try:
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+
+        # Find all keybind elements
+        keybinds = root.findall(".//keyboard/keybind")  <1>
+
+        hotkeys = []
+        for keybind in keybinds:
+            key = keybind.get('key')
+            action = keybind.find(".//action")
+            if action is not None:
+                action_name = action.get('name')
+                hotkeys.append({'key': key, 'action': action_name})
+
+        return hotkeys
+    except ET.ParseError:
+        print(f"Error parsing XML file: {file_path}")
+        return []
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+        return []
+
+def generate_html(hotkeys):
+    """
+    Generate HTML content from the extracted hotkey information.
+
+    Args:
+        hotkeys (list): List of dictionaries containing key and action information.
+
+    Returns:
+        str: HTML content as a string.
+    """
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Raspberry Pi Hotkeys</title>
+        <style>
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Raspberry Pi Hotkeys</h1>
+        <table>
+            <tr>
+                <th>Key</th>
+                <th>Action Name</th>
+            </tr>
+    """
+
+    for hotkey in hotkeys:
+        html_content += f"""
+            <tr>
+                <td>{hotkey['key']}</td>
+                <td>{hotkey['action']}</td>
+            </tr>
+        """
+
+    html_content += """
+        </table>
+    </body>
+    </html>
+    """
+
+    return html_content
+
+def main():
+    file_path = "/etc/xdg/openbox/lxde-pi-rc.xml"
+    output_file = "raspberry_pi_hotkeys.html"
+
+    hotkeys = extract_hotkeys(file_path)
+
+    if hotkeys:
+        html_content = generate_html(hotkeys)
+
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+
+        print(f"HTML file '{output_file}' has been generated successfully.")
+    else:
+        print("No hotkeys were extracted. Please check the input file and its permissions.")
+
+if __name__ == "__main__":
+    main()
+```
+
+<1> Unexpectedly, `keybinds` was empty here, due to namespace declared in XML file. 
+
+== Gemini 1.5 Flash using web UI
+
+Here is the result from **Gemini 1.5 Flash**:
+
+```python
+import xml.etree.ElementTree as ET
+import os
+
+def extract_hotkeys(xml_file):
+  """Extracts hotkey information from an XML file.
+
+  Args:
+    xml_file: Path to the XML file.
+
+  Returns:
+    A list of tuples, where each tuple contains (key, action_name).
+  """
+
+  tree = ET.parse(xml_file)
+  root = tree.getroot()
+
+  hotkeys = []
+  for keybind in root.findall('./openbox_config/keyboard/keybind'):  <2>
+    key = keybind.get('key')
+    action_name = keybind.find('action').get('name')
+    hotkeys.append((key, action_name))
+
+  return hotkeys
+
+def generate_html(hotkeys):
+  """Generates an HTML table from the extracted hotkey data.
+
+  Args:
+    hotkeys: A list of tuples, where each tuple contains (key, action_name).
+  """
+
+  html = """
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Raspberry Pi Hotkeys</title>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <th>Key</th>
+        <th>Action</th>
+      </tr>
+  """
+
+  for key, action in hotkeys:
+    html += f"<tr><td>{key}</td><td>{action}</td></tr>"
+
+  html += """
+    </table>
+  </body>
+  </html>
+  """
+
+  with open('hotkeys.html', 'w') as f:
+    f.write(html)
+
+if __name__ == '__main__':
+  xml_file = '/etc/xdg/openbox/lxde-pi-rc.xml'
+  hotkeys = extract_hotkeys(xml_file)
+  generate_html(hotkeys)
+```
+
+<2> XML namespace is not expected here as well. 
+
+== OpenAI gpt-4o using web UI
+
+Here is the result from **OpenAI gpt-4o**:
+
+```python
+import xml.etree.ElementTree as ET
+import os
+
+def parse_keybinds(xml_file):
+    """
+    Parses the keybind records from the specified XML file and returns a list of tuples.
+    Each tuple contains the key and the corresponding action name.
+
+    Args:
+        xml_file (str): Path to the XML file to parse.
+
+    Returns:
+        list: List of tuples containing key and action name.
+    """
+    if not os.path.exists(xml_file):
+        raise FileNotFoundError(f"The file {xml_file} does not exist.")
+
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+
+    # Find the namespace (if any) in the XML
+    namespace = ''                                  <3>
+    if root.tag.startswith('{'):
+        namespace = root.tag.split('}')[0] + '}'
+
+    keybinds = []
+    for keybind in root.findall(f".//{namespace}keybind"):
+        key = keybind.attrib.get('key')
+        action = keybind.find(f"./{namespace}action").attrib.get('name')
+        keybinds.append((key, action))
+
+    return keybinds
+
+def generate_html(keybinds, output_file):
+    """
+    Generates an HTML file with two columns: key and action name.
+
+    Args:
+        keybinds (list): List of tuples containing key and action name.
+        output_file (str): Path to the HTML file to generate.
+    """
+    html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Hotkeys</title>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Raspberry Pi Hotkeys</h1>
+    <table>
+        <tr>
+            <th>Key</th>
+            <th>Action Name</th>
+        </tr>
+"""
+
+    for key, action in keybinds:
+        html_content += f"        <tr><td>{key}</td><td>{action}</td></tr>\n"
+
+    html_content += """    </table>
+</body>
+</html>"""
+
+    with open(output_file, 'w') as file:
+        file.write(html_content)
+    print(f"HTML file '{output_file}' has been created successfully.")
+
+def main():
+    xml_file = '/etc/xdg/openbox/lxde-pi-rc.xml'
+    output_file = 'raspberry_pi_hotkeys.html'
+
+    # Parse keybinds from the XML file
+    keybinds = parse_keybinds(xml_file)
+
+    # Generate the HTML file
+    generate_html(keybinds, output_file)
+
+if __name__ == "__main__":
+    main()
+```
+
+<3> Namespace support is provided, and the generated code works seamlessly right from the start.
+
+== OpenAI gpt-4o-mini using API
+
+Here is the result from **OpenAI gpt-4o-mini**:
+
+```python
+import xml.etree.ElementTree as ET
+import html
+
+def extract_keybinds(xml_file):
+    """
+    Extracts keybind records from the specified XML file.
+
+    Args:
+        xml_file (str): The path to the XML file containing keybinds.
+
+    Returns:
+        list of tuples: A list of tuples where each tuple contains the key and action name.
+    """
+    try:
+        tree = ET.parse(xml_file)
+        root = tree.getroot()
+
+        # Define the namespace if needed (not necessary in this case)
+        # namespaces = {'openbox_config': 'http://openbox.org/3.4/config'}
+
+        keybinds = []
+
+        # Find all keybind elements
+        for keybind in root.findall('.//keybind'):   <4>
+            key = keybind.get('key')
+            action = keybind.find('action')
+            if action is not None:
+                action_name = action.get('name')
+                keybinds.append((key, action_name))
+
+        return keybinds
+
+    except ET.ParseError:
+        print("Error parsing the XML file. Please check the file format.")
+        return []
+    except FileNotFoundError:
+        print(f"The file {xml_file} was not found.")
+        return []
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return []
+
+def generate_html(keybinds, output_file):
+    """
+    Generates an HTML file from the list of keybinds.
+
+    Args:
+        keybinds (list of tuples): List of tuples containing keybinds.
+        output_file (str): The path to the output HTML file.
+    """
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Raspberry Pi Hotkeys</title>
+        <style>
+            table {
+                width: 50%;
+                border-collapse: collapse;
+                margin: 20px auto;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+        </style>
+    </head>
+    <body>
+        <h2 style="text-align:center;">Raspberry Pi Hotkeys</h2>
+        <table>
+            <tr>
+                <th>Key</th>
+                <th>Action Name</th>
+            </tr>
+    """
+
+    # Populate the table with keybinds
+    for key, action_name in keybinds:
+        key = html.escape(key)  # Escape HTML special characters
+        action_name = html.escape(action_name)  # Escape HTML special characters
+        html_content += f"""
+            <tr>
+                <td>{key}</td>
+                <td>{action_name}</td>
+            </tr>
+        """
+
+    html_content += """
+        </table>
+    </body>
+    </html>
+    """
+
+    # Write the HTML content to the output file
+    with open(output_file, 'w') as file:
+        file.write(html_content)
+
+def main():
+    xml_file = '/etc/xdg/openbox/lxde-pi-rc.xml'  # Update this path based on your environment
+    output_file = 'raspberry_pi_hotkeys.html'
+
+    keybinds = extract_keybinds(xml_file)
+    if keybinds:
+        generate_html(keybinds, output_file)
+        print(f"HTML file generated successfully: {output_file}")
+    else:
+        print("No keybinds found or an error occurred.")
+
+if __name__ == "__main__":
+    main()
+```
+
+<4> No support for XML namespaces in this code as well.
+
+== Summary
+
+All evaluated LLMs proved to be quite useful, and namespace was not mentioned in our query, but `gpt-4o` stands out slightly due to its ability to anticipate namespaces when parsing XML files.
+
+Final script version can be found link:/lit/_build/html/pi_keys.py[here].

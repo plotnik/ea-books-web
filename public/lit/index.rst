@@ -10,10 +10,11 @@ Literate Programs
    :maxdepth: 2
    :caption: Contents:
 
-   o_source.py
-   exc_yaml.py
-   ai_note.py
+   o_ed.py
    ai_obsidian.py
+   ai_note.py
+   pi_keys.py
+   exc_yaml.py
    cmp_folders.py
    adoc_links.py
 

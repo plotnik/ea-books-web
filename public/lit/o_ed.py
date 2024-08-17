@@ -1,8 +1,8 @@
-# --------------------
-# Obsidian Page Source
-# --------------------
+# -------------------
+# Obsidian Web Editor
+# -------------------
 #
-# Provide markdown source for Obsidian page in ``textarea``
+# Edit markdown source for Obsidian page in ``textarea``
 #
 # ::
 
@@ -10,7 +10,7 @@ import streamlit as st
 import json
 import os
 
-# Select Obsidian folder from recent vaults.
+# Get the list of Obsidian recent vaults from JSON.
 #
 # ::
 
@@ -29,12 +29,32 @@ obsidian_folders = [vault['path'] for vault in sorted_vaults]
 
 obsidian_names = [os.path.basename(folder) for folder in obsidian_folders]
 
-obsidian_name = st.selectbox(
-   "Obsidian folder",
+
+# Select Obsidian vault as ``note_home`` from the list of recent vaults.  
+#
+# ::
+    
+obsidian_name = st.sidebar.selectbox(
+   "Obsidian",
    obsidian_names,
 )
 
 note_home = obsidian_folders[obsidian_names.index(obsidian_name)]
+
+# Get subfolders of Obsidian folder.
+#
+# ::
+    
+all_dir_items = os.listdir(note_home)
+subfolders = [item for item in all_dir_items if os.path.isdir(os.path.join(note_home, item)) and item != ".obsidian"]
+subfolders.insert(0, ".")
+      
+subfolder = st.sidebar.selectbox(
+   "Folder",
+   subfolders,
+)
+
+note_folder = os.path.join(note_home, subfolder)
 
 # Get ``num_files`` newest files from the provided directory.
 #
@@ -64,9 +84,9 @@ def get_newest_files(directory, num_files):
 #
 # ::
 
-newest_files = get_newest_files(note_home, 5)
-note_name = st.selectbox(
-   "Note",
+newest_files = get_newest_files(note_folder, 5)
+note_name = st.sidebar.selectbox(
+   "Page",
    newest_files,
 )
 
@@ -74,10 +94,24 @@ note_name = st.selectbox(
 #
 # ::
 
-file_path = os.path.join(note_home, note_name)
+file_path = os.path.join(note_folder, note_name)
 with open(file_path, 'r', encoding='utf-8') as file:
     note_text = file.read()
+ 
+# Add Streamlit widgets for editing.
+#
+# ::  
 
-st.code(note_name)
+st.header(note_name, divider=True)
 
-st.code(note_text)
+note_text = st.text_area("Note", note_text, height=400)    
+
+# Save updates.
+#
+# ::
+    
+if st.button('Save'):
+    with open(file_path, 'w') as file:
+        file.write(note_text)  
+      
+    st.write(f'Page saved: `{note_name}`')    
