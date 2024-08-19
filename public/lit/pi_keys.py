@@ -13,7 +13,8 @@
 #       </action>
 #     </keybind>
 #
-# Create HTML file with an output that contains HTML file with 2 columns: ``key`` and ``action name``.
+# Create HTML file with an output that contains HTML file with 3 columns: 
+# ``key``, ``action name`` and ``command``.
 #
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
@@ -25,6 +26,7 @@
 
 import xml.etree.ElementTree as ET
 import os
+import html
 
 # Print banner.
 #
@@ -40,14 +42,15 @@ print("""
                                               888              
 """)
 
-# Parses the keybind records from the specified XML file and returns a list of tuples.
-# Each tuple contains the key and the corresponding action name.
+# .. function:: parse_keybinds(xml_file)
 #
-# Args:
-#   xml_file (str): Path to the XML file to parse.
+#     Parses the keybind records from the specified XML file and returns a list of tuples.
+#     Each tuple contains the key and the corresponding action name.
+#    
+#     :param xml_file: Path to the XML file to parse.
+#     :type xml_file: str
 #
-# Returns:
-#   list: List of tuples containing key and action name.
+#     :return: List of tuples containing key and action name.
 #
 # ::
     
@@ -66,20 +69,28 @@ def parse_keybinds(xml_file):
     keybinds = []
     for keybind in root.findall(f".//{namespace}keybind"):
         key = keybind.attrib.get('key')
-        action_el = keybind.find(f"./{namespace}action")
-        action = action_el.attrib.get('name', '') if action_el is not None else ''
-        command_el = action_el.find(f"./{namespace}command") if action_el is not None else None
-        command = command_el.text if command_el is not None else ''
-        keybinds.append((key, action, command))
+        action_els = keybind.findall(f"./{namespace}action")
+        actions = []
+        if len(action_els) > 0:
+            for action_el in action_els:
+                action = action_el.attrib.get('name', '')
+                command_el = action_el.find(f"./{namespace}command")
+                command = command_el.text if command_el is not None else ''
+                actions.append((action, command))
+            keybinds.append((key, actions))
 
     return keybinds
-
-# Generates an HTML file with two columns: key and action name.
+    
+# .. function:: generate_html(keybinds, output_file)
 #
-# Args:
-#   keybinds (list): List of tuples containing key and action name.
-#   output_file (str): Path to the HTML file to generate.      
-# 
+#     Generates an HTML file with two columns: key and action name.
+#    
+#     :param keybinds: List of tuples containing key and action name.
+#     :type keybinds: list
+#    
+#     :param output_file: Path to the HTML file to generate. 
+#     :type output_file: str
+#
 # ::      
 
 def generate_html(keybinds, output_file):
@@ -111,13 +122,26 @@ def generate_html(keybinds, output_file):
     <table>
         <tr>
             <th>Key</th>
-            <th>Action Name</th>
-            <th>Command</th>
+            <th>Actions</th>
         </tr>
 """
 
-    for key, action, command in keybinds:
-        html_content += f"        <tr><td>{key}</td><td>{action}</td><td>{command}</td></tr>\n"
+    # Populate the table with keybinds
+    for key, actions in keybinds:
+        key = html.escape(key)  
+        
+        actions_content = ""
+        for action, command in actions:         
+            action = html.escape(action) 
+            command = html.escape(command) 
+            actions_content += f"<li>{action} <code>{command}</code></li>"
+            
+        html_content += f"""
+            <tr>
+                <td>{key}</td>
+                <td><ul>{actions_content}</ul></td>
+            </tr>
+        """    
 
     html_content += """    </table>
 </body>
@@ -127,7 +151,8 @@ def generate_html(keybinds, output_file):
         file.write(html_content)
     print(f"HTML file '{output_file}' has been created successfully.")
 
-# Main
+    
+# .. function:: main()
 #
 # ::
 
