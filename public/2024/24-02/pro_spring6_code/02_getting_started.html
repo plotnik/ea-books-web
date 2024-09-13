@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
-<title>MyBatis Notes</title>
+<title>Chapter 2: Getting Started</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,116 +436,93 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>MyBatis Notes</h1>
+<h1>Chapter 2: Getting Started</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_baeldung_on_mybatis">Baeldung on MyBatis</a></li>
-<li><a href="#_mybatis_getting_started">MyBatis - Getting Started</a></li>
-<li><a href="#_mybatis_spring_boot_starter">MyBatis-Spring-Boot-Starter</a></li>
-<li><a href="#_baeldung_on_mybatis_with_spring">Baeldung on MyBatis with Spring</a></li>
+<li><a href="#_prepare_your_development_environment">Prepare Your Development Environment</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_baeldung_on_mybatis">Baeldung on MyBatis</h2>
+<h2 id="_prepare_your_development_environment">Prepare Your Development Environment</h2>
 <div class="sectionbody">
-<div class="quoteblock">
-<blockquote>
 <div class="paragraph">
-<p><a href="https://www.baeldung.com/mybatis" class="bare">https://www.baeldung.com/mybatis</a></p>
-</div>
-</blockquote>
-</div>
-<div class="paragraph">
-<p>This article provides an overview of MyBatis, an open-source persistence framework for Java that simplifies database access and offers an alternative to JDBC and Hibernate. It guides through adding MyBatis to a project using Maven dependencies, explains core concepts like <code>SQLSessionFactory</code> and <code>SQLSession</code>, and introduces the concept of Mappers, which are Java interfaces that map methods to SQL statements. The article also details various annotations provided by MyBatis for defining SQL operations, result mappings, and dynamic SQL generation for complex queries. Additionally, it covers executing stored procedures using the <code>@Select</code> annotation. The tutorial emphasizes MyBatis&#8217;s ability to ease the development of database-facing applications through its features and annotations.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_mybatis_getting_started">MyBatis - Getting Started</h2>
-<div class="sectionbody">
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p><a href="https://mybatis.org/mybatis-3/getting-started.html" class="bare">https://mybatis.org/mybatis-3/getting-started.html</a></p>
-</div>
-</blockquote>
-</div>
-<div class="paragraph">
-<p>The provided text is a guide on getting started with MyBatis, a persistence framework that facilitates the use of SQL with Java applications. It covers several key aspects:</p>
+<p>To start running the code from the book, follow these steps:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong>Installation</strong>: To use MyBatis, one needs to include the <code>mybatis-x.x.x.jar</code> file in their classpath. For Maven users, a specific dependency can be added to the <code>pom.xml</code> file.</p>
+<p><strong>Environment Setup</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Ensure you are seated comfortably at your computer.</p>
 </li>
 <li>
-<p><strong>Building SqlSessionFactory from XML</strong>: MyBatis applications require an instance of <code>SqlSessionFactory</code>, which can be built using an XML configuration file or a custom instance of the <code>Configuration</code> class. A utility class <code>Resources</code> simplifies loading resources, including the configuration XML, which specifies database connection and transaction management settings.</p>
+<p>Install JDK 17 and verify it is set as the default by running <code>java -version</code> in your terminal; the output should indicate Java version 17.</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
-<p><strong>Building SqlSessionFactory without XML</strong>: Alternatively, MyBatis allows building <code>SqlSessionFactory</code> directly from Java code using the <code>Configuration</code> class. This approach also supports adding mapper classes, which can contain SQL Mapping Annotations, though XML mapping might still be needed for complex mappings.</p>
+<p><strong>Project Setup</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the project repository or download and unzip the sources from Apress. You should have a directory named <code>pro-spring-6</code>, which contains various modules.</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
-<p><strong>Acquiring a SqlSession from SqlSessionFactory</strong>: With a <code>SqlSessionFactory</code> instance, one can acquire <code>SqlSession</code> instances to execute SQL commands. MyBatis supports executing commands through both direct <code>SqlSession</code> calls and cleaner, type-safe Mapper interfaces.</p>
+<p><strong>IDE Configuration</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Open IntelliJ IDEA, select File ➤ Open, and choose the <code>pro-spring-6</code> directory. You will see the project and its modules in the Project View, along with Gradle and Maven configurations.</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
-<p><strong>Exploring Mapped SQL Statements</strong>: Mapped SQL statements can be defined using XML or Java Annotations. XML allows for comprehensive feature utilization, while annotations offer simplicity for straightforward statements. MyBatis supports both methods, and projects can choose based on their needs.</p>
+<p><strong>Project Details</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The project consists of multiple modules, each representing a chapter. Modules ending in "-boot" are Spring Boot projects, while others are classic Spring projects, which can be used independently of Spring Boot.</p>
 </li>
 <li>
-<p><strong>Scope and Lifecycle</strong>: Understanding the scope and lifecycle of MyBatis components like <code>SqlSessionFactoryBuilder</code>, <code>SqlSessionFactory</code>, and <code>SqlSession</code> is crucial to avoid concurrency issues. It&#8217;s recommended to use <code>SqlSessionFactoryBuilder</code> at method scope, maintain <code>SqlSessionFactory</code> at application scope, and keep <code>SqlSession</code> and Mapper instances at the request or method scope for thread safety.</p>
+<p>The project includes configurations for both Gradle (version 7.4) and Maven (version 3.8.4), and these are set up to use wrappers, so you don’t need to install them locally.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Building the Project</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>You can build the project following the instructions in the <code>README.adoc</code> file. IntelliJ IDEA recognizes the wrapper configurations for building.</p>
+</li>
+<li>
+<p>If you encounter issues with missing dependencies, try building from the command line or use options like <strong>Invalidate Caches</strong> or <strong>Reload All from Disk</strong> in the File menu.</p>
+</li>
+</ul>
+</div>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>Additionally, the text emphasizes the importance of using namespaces in MyBatis configurations to avoid ambiguity and improve code usability. It also notes the compatibility of MyBatis with Dependency Injection frameworks, which can manage the lifecycle of <code>SqlSessions</code> and mappers, integrating seamlessly into larger applications.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_mybatis_spring_boot_starter">MyBatis-Spring-Boot-Starter</h2>
-<div class="sectionbody">
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p><a href="https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/" class="bare">https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/</a></p>
-</div>
-</blockquote>
-</div>
-<div class="paragraph">
-<p>The MyBatis-Spring-Boot-Starter is a module designed to simplify the integration of MyBatis into Spring Boot applications, facilitating quick application development with less configuration. This module automates tasks such as detecting a <code>DataSource</code>, creating and registering an <code>SqlSessionFactory</code> and a <code>SqlSessionTemplate</code>, and auto-scanning mapper interfaces for registration in the Spring context. Installation is straightforward using Maven or Gradle by adding the specified dependency. The module supports auto-configuration, but also allows for advanced configuration through properties set in <code>application.properties</code> or <code>application.yml</code> files, and customizations via <code>ConfigurationCustomizer</code> and <code>SqlSessionFactoryBeanCustomizer</code> interfaces. Additionally, it introduces the <code>SpringBootVFS</code> for classpath scanning in Spring Boot packaged applications and detects MyBatis components like <code>Interceptor</code>, <code>TypeHandler</code>, and <code>LanguageDriver</code>. Custom language drivers for Thymeleaf, FreeMarker, and Velocity can be configured, and the project provides various samples to demonstrate its usage in different scenarios including web environments and with JVM languages like Kotlin and Groovy.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_baeldung_on_mybatis_with_spring">Baeldung on MyBatis with Spring</h2>
-<div class="sectionbody">
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p><a href="https://www.baeldung.com/spring-mybatis" class="bare">https://www.baeldung.com/spring-mybatis</a></p>
-</div>
-</blockquote>
-</div>
-<div class="paragraph">
-<p>This article provides a guide on how to integrate MyBatis, an open-source framework for implementing SQL database access, with Spring and Spring Boot. It begins by defining a model and corresponding SQL schema and data insertion files. It then details the necessary dependencies for integrating MyBatis with Spring, including setting up an embedded H2 database for simplicity.</p>
-</div>
-<div class="paragraph">
-<p>The article explains two approaches for configuring MyBatis with Spring: annotation-based and XML-based configurations. In the annotation-based approach, it outlines how to use <code>@Configuration</code> and <code>@MapperScan</code> annotations to configure data sources and SQL session factories, and how to create mapper interfaces for database operations. For the XML-based configuration, it specifies how to define bean configurations in an XML file to achieve similar setup and functionality.</p>
-</div>
-<div class="paragraph">
-<p>Furthermore, the article covers integrating MyBatis with Spring Boot, emphasizing how Spring Boot simplifies the configuration by automatically detecting dependencies and configuring the data source and SQL session factory. It mentions the need for adding the <code>mybatis-spring-boot-starter</code> dependency and how to use the <code>@Mapper</code> annotation for mapper interfaces in Spring Boot projects.</p>
-</div>
-<div class="paragraph">
-<p>Finally, it concludes by summarizing the different configurations explored for integrating MyBatis with Spring and Spring Boot, and it mentions that the complete code used in the article is available on GitHub.</p>
+<p>After successfully loading and building the project, further details about Spring internals and the project configurations will be provided.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-14 14:15:14 +0200
+Last updated 2024-09-13 09:37:54 +0300
 </div>
 </div>
 </body>

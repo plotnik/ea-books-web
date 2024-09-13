@@ -21,6 +21,31 @@ import os
 import tiktoken
 from openai import OpenAI
 
+# Print banner.
+#
+# ::
+
+@st.cache_data
+def print_banner():
+    print("""
+        .-'''-.                                  
+       '   _    \\                               
+     /   /` '.   \\                       .--.   
+    .   |     \\  '                       |__|   
+    |   '      |  '                      .--.    
+    \\    \\     / /,.----------.     __   |  |  
+     `.   ` ..' ///            \\ .:--.'. |  |   
+        '-...-'` \\\\            // |   \\ ||  | 
+                  `'----------' `\" __ | ||  |   
+                                 .'.''| ||__|    
+                                / /   | |_       
+                                \\ \\._,\\ '/    
+                                 `--'  `\"       
+    """)
+    return 1
+
+print_banner()
+
 # Select OpenAI LLM.
 #
 # ::

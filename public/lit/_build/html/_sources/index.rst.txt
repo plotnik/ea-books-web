@@ -13,8 +13,12 @@ Literate Programs
    o_ed.py
    ai_obsidian.py
    ai_note.py
+   doc_note.py
+   up_file.py
+   cmp_props.py
    pi_keys.py
    exc_yaml.py
+   exc_ui.py
    cmp_folders.py
    adoc_links.py
 

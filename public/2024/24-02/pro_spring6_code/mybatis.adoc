@@ -10,3 +10,40 @@
 
 This article provides an overview of MyBatis, an open-source persistence framework for Java that simplifies database access and offers an alternative to JDBC and Hibernate. It guides through adding MyBatis to a project using Maven dependencies, explains core concepts like `SQLSessionFactory` and `SQLSession`, and introduces the concept of Mappers, which are Java interfaces that map methods to SQL statements. The article also details various annotations provided by MyBatis for defining SQL operations, result mappings, and dynamic SQL generation for complex queries. Additionally, it covers executing stored procedures using the `@Select` annotation. The tutorial emphasizes MyBatis's ability to ease the development of database-facing applications through its features and annotations.
 
+== MyBatis - Getting Started
+
+> https://mybatis.org/mybatis-3/getting-started.html
+
+The provided text is a guide on getting started with MyBatis, a persistence framework that facilitates the use of SQL with Java applications. It covers several key aspects:
+
+1. **Installation**: To use MyBatis, one needs to include the `mybatis-x.x.x.jar` file in their classpath. For Maven users, a specific dependency can be added to the `pom.xml` file.
+
+2. **Building SqlSessionFactory from XML**: MyBatis applications require an instance of `SqlSessionFactory`, which can be built using an XML configuration file or a custom instance of the `Configuration` class. A utility class `Resources` simplifies loading resources, including the configuration XML, which specifies database connection and transaction management settings.
+
+3. **Building SqlSessionFactory without XML**: Alternatively, MyBatis allows building `SqlSessionFactory` directly from Java code using the `Configuration` class. This approach also supports adding mapper classes, which can contain SQL Mapping Annotations, though XML mapping might still be needed for complex mappings.
+
+4. **Acquiring a SqlSession from SqlSessionFactory**: With a `SqlSessionFactory` instance, one can acquire `SqlSession` instances to execute SQL commands. MyBatis supports executing commands through both direct `SqlSession` calls and cleaner, type-safe Mapper interfaces.
+
+5. **Exploring Mapped SQL Statements**: Mapped SQL statements can be defined using XML or Java Annotations. XML allows for comprehensive feature utilization, while annotations offer simplicity for straightforward statements. MyBatis supports both methods, and projects can choose based on their needs.
+
+6. **Scope and Lifecycle**: Understanding the scope and lifecycle of MyBatis components like `SqlSessionFactoryBuilder`, `SqlSessionFactory`, and `SqlSession` is crucial to avoid concurrency issues. It's recommended to use `SqlSessionFactoryBuilder` at method scope, maintain `SqlSessionFactory` at application scope, and keep `SqlSession` and Mapper instances at the request or method scope for thread safety.
+
+Additionally, the text emphasizes the importance of using namespaces in MyBatis configurations to avoid ambiguity and improve code usability. It also notes the compatibility of MyBatis with Dependency Injection frameworks, which can manage the lifecycle of `SqlSessions` and mappers, integrating seamlessly into larger applications.
+
+== MyBatis-Spring-Boot-Starter
+
+> https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/
+
+The MyBatis-Spring-Boot-Starter is a module designed to simplify the integration of MyBatis into Spring Boot applications, facilitating quick application development with less configuration. This module automates tasks such as detecting a `DataSource`, creating and registering an `SqlSessionFactory` and a `SqlSessionTemplate`, and auto-scanning mapper interfaces for registration in the Spring context. Installation is straightforward using Maven or Gradle by adding the specified dependency. The module supports auto-configuration, but also allows for advanced configuration through properties set in `application.properties` or `application.yml` files, and customizations via `ConfigurationCustomizer` and `SqlSessionFactoryBeanCustomizer` interfaces. Additionally, it introduces the `SpringBootVFS` for classpath scanning in Spring Boot packaged applications and detects MyBatis components like `Interceptor`, `TypeHandler`, and `LanguageDriver`. Custom language drivers for Thymeleaf, FreeMarker, and Velocity can be configured, and the project provides various samples to demonstrate its usage in different scenarios including web environments and with JVM languages like Kotlin and Groovy.
+
+== Baeldung on MyBatis with Spring
+
+> https://www.baeldung.com/spring-mybatis
+
+This article provides a guide on how to integrate MyBatis, an open-source framework for implementing SQL database access, with Spring and Spring Boot. It begins by defining a model and corresponding SQL schema and data insertion files. It then details the necessary dependencies for integrating MyBatis with Spring, including setting up an embedded H2 database for simplicity.
+
+The article explains two approaches for configuring MyBatis with Spring: annotation-based and XML-based configurations. In the annotation-based approach, it outlines how to use `@Configuration` and `@MapperScan` annotations to configure data sources and SQL session factories, and how to create mapper interfaces for database operations. For the XML-based configuration, it specifies how to define bean configurations in an XML file to achieve similar setup and functionality.
+
+Furthermore, the article covers integrating MyBatis with Spring Boot, emphasizing how Spring Boot simplifies the configuration by automatically detecting dependencies and configuring the data source and SQL session factory. It mentions the need for adding the `mybatis-spring-boot-starter` dependency and how to use the `@Mapper` annotation for mapper interfaces in Spring Boot projects.
+
+Finally, it concludes by summarizing the different configurations explored for integrating MyBatis with Spring and Spring Boot, and it mentions that the complete code used in the article is available on GitHub.

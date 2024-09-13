@@ -1,6 +1,6 @@
-# ==========
-# Notepad-AI
-# ==========
+# =======
+# Note-AI
+# =======
 #
 # Running OpenAI prompts.
 #
@@ -28,6 +28,22 @@ import platform
 import time
 import os
 
+# Print banner.
+# 
+# ::
+
+@st.cache_data
+def print_banner():
+    print("""
+        _   __      __             ___    ____
+       / | / /___  / /____        /   |  /  _/
+      /  |/ / __ \/ __/ _ \______/ /| |  / /  
+     / /|  / /_/ / /_/  __/_____/ ___ |_/ /   
+    /_/ |_/\____/\__/\___/     /_/  |_/___/                                                        
+    """)
+    return 1
+
+print_banner()
 
 # Select OpenAI LLM.
 #
@@ -76,7 +92,7 @@ prompt_name = st.sidebar.selectbox(
 )
 prompt = get_prompt(prompt_name)
 st.write(prompt)
-print(f"Prompt: {prompt_name} for {openai_model}")
+# print(f"Prompt: {prompt_name} for {openai_model}")
 
 # Count tokens
 # ------------
@@ -130,15 +146,15 @@ if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
     st.session_state.openai_result = choice.message.content
     st.write(st.session_state.openai_result)
 
-    print('---')
-    print(f'finish_reason: `{choice.finish_reason}`')
-    print(response.usage)
-    print(f'Choices: {len(response.choices)}')
+    # print('---')
+    # print(f'finish_reason: `{choice.finish_reason}`')
+    # print(response.usage)
+    # print(f'Choices: {len(response.choices)}')
 
     # Calculate and print execution time
     end_time = time.time()
     execution_time = end_time - start_time
-    print(f'Execution time: `{execution_time:.1f}` seconds')
+    # print(f'Execution time: `{execution_time:.1f}` seconds')
 
     if platform.system() == 'Darwin':
         os.system("afplay /System/Library/Sounds/Glass.aiff")

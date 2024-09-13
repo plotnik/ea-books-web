@@ -10,6 +10,27 @@ import streamlit as st
 import json
 import os
 
+# Print banner.
+# 
+# ::
+
+@st.cache_data
+def print_banner():
+    print("""                                                    
+                                               o       
+                                              <|>      
+                                              < \\     
+      o__ __o               o__  __o     o__ __o/      
+     /v     v\\   _\\__o__   /v      |>   /v     |     
+    />       <\\       \\   />      //   />     / \\   
+    \\         /           \\o    o/     \\      \\o/  
+     o       o             v\\  /v __o   o      |      
+     <\\__ __/>              <\\/> __/>   <\\__  / \\                                                                                               
+    """)
+    return 1
+
+print_banner()
+
 # Get the list of Obsidian recent vaults from JSON.
 #
 # ::
