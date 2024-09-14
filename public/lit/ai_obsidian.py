@@ -28,19 +28,18 @@ from openai import OpenAI
 @st.cache_data
 def print_banner():
     print("""
-        .-'''-.                                  
-       '   _    \\                               
-     /   /` '.   \\                       .--.   
-    .   |     \\  '                       |__|   
-    |   '      |  '                      .--.    
-    \\    \\     / /,.----------.     __   |  |  
-     `.   ` ..' ///            \\ .:--.'. |  |   
-        '-...-'` \\\\            // |   \\ ||  | 
-                  `'----------' `\" __ | ||  |   
-                                 .'.''| ||__|    
-                                / /   | |_       
-                                \\ \\._,\\ '/    
-                                 `--'  `\"       
+             _                    _                    _        
+            /\\ \\                 / /\\                 /\\ \\      
+           /  \\ \\               / /  \\                \\ \\ \\     
+          / /\\ \\ \\             / / /\\ \\               /\\ \\_\\    
+         / / /\\ \\ \\   ____    / / /\\ \\ \\             / /\\/_/    
+        / / /  \\ \\_\\/\\____/\\ / / /  \\ \\ \\           / / /       
+       / / /   / / /\\/____\\// / /___/ /\\ \\         / / /        
+      / / /   / / /        / / /_____/ /\\ \\       / / /         
+     / / /___/ / /        / /_________/\\ \\ \\  ___/ / /__        
+    / / /____\\/ /        / / /_       __\\ \\_\\/\\__\\/_/___\\       
+    \\/_________/         \\_\\___\\     /____/_/\\/_________/       
+                                                            
     """)
     return 1
 
@@ -52,6 +51,13 @@ print_banner()
 
 openai_model = "gpt-4o-mini"
 openai_temperature = 0.7
+
+# Certain models are not compatible with ``tiktoken 0.7.0``, 
+# so we have added a separate configuration for them.
+# 
+# ::
+
+openai_model_tiktoken = openai_model # "gpt-4o-mini"
 
 # Select Obsidian folder from recent vaults.
 #
@@ -124,16 +130,17 @@ note_name = st.selectbox(
 )
 
 # Get the number of tokens.
-#
+# 
 # ::
 
 file_path = os.path.join(note_home, note_name)
 with open(file_path, 'r', encoding='utf-8') as file:
     text = file.read()
 
-encoding = tiktoken.encoding_for_model(openai_model)
+encoding = tiktoken.encoding_for_model(openai_model_tiktoken)
 tokens = encoding.encode(text)
 
+st.write(f'Model: `{openai_model}`') 
 st.write(f'Tokens: `{len(tokens)}`')  
 
 # Select the prompt.
