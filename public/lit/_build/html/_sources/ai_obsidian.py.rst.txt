@@ -49,7 +49,7 @@ Select OpenAI LLM.
 
 ::
 
-  openai_model = "gpt-4o"
+  openai_model = "gpt-4o-mini"
   openai_temperature = 0.7
 
 Certain models are not compatible with ``tiktoken 0.7.0``, 
