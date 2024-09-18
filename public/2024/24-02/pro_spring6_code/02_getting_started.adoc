@@ -74,3 +74,101 @@ https://docs.spring.io/spring-framework/docs/current/javadoc-api
 
 Spring Reference::
 https://docs.spring.io/spring-framework/docs/current/reference/html
+
+== Putting a Spring into Hello World
+
+===  Building the Sample Hello World Application
+
+The provided content discusses the evolution of a simple "Hello World" Java application, illustrating how to enhance its design for flexibility and extensibility. 
+
+1. **Basic Example**: The initial example is a straightforward Java application that prints "Hello World!" to the console. However, changing the message or output method requires modifying and recompiling the code.
+
+2. **Command-Line Arguments**: The next iteration allows the message to be provided via command-line arguments, improving flexibility but still coupling the message retrieval with the rendering logic.
+
+3. **Decoupling Components**: To further enhance the application, the author introduces two interfaces: `MessageProvider`, which retrieves messages, and `MessageRenderer`, which handles output. This separation allows for greater flexibility and easier testing.
+
+4. **Implementing Interfaces**: Concrete implementations of these interfaces, such as `HelloWorldMessageProvider` and `StandardOutMessageRenderer`, are created, allowing for different message retrieval and rendering strategies without changing the main application logic.
+
+5. **Factory Pattern**: A `MessageSupportFactory` class is introduced to manage the creation of `MessageProvider` and `MessageRenderer` instances, enabling configuration through a properties file.
+
+6. **ServiceLoader**: An alternative to the factory approach is presented using Java's `ServiceLoader` mechanism, which simplifies the instantiation of interface implementations by allowing configurations to be specified through files in the `META-INF/services` directory.
+
+7. **Recap**: The document concludes by summarizing the key enhancements made to the application: introducing interfaces for decoupling, using a factory for instantiation, and leveraging `ServiceLoader` for dynamic service discovery.
+
+Overall, the content illustrates a transition from a basic application to a more robust and flexible design, setting the stage for further integration with Spring frameworks in future discussions.
+
+[cols="1,1"]
+|===
+
+a| **Classic Hello World Java Project:**
+a|
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/HelloWorld.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/HelloWorld.java</a>
+++++
+
+
+a| **Classic Hello World Java Project with Arguments:**
+a|
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/HelloWorldWithCommandLine.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/HelloWorldWithCommandLine.java</a>
+++++
+
+a| **MessageProvider Interface:**
+a|
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageProvider.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageProvider.java</a>
+++++
+
+a| **MessageRenderer Interface:**
+a|
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageRenderer.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageRenderer.java</a>
+++++
+
+a| **MessageProvider Implementation:**
+a|
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldMessageProvider.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldMessageProvider.java</a>
+++++
+
+a| **MessageRenderer Implementation:**
+a|
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/StandardOutMessageRenderer.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/StandardOutMessageRenderer.java</a>
+++++
+
+a| **New main(..) Method:**
+a|
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupled.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupled.java</a>
+++++
+
+a| **Instance Factory Class Tasked with Retrieving the Two Implementation Types and Instantiating Them:**
+a|
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageSupportFactory.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageSupportFactory.java</a>
+++++
+
+a| **HelloWorld Version Using MessageSupportFactory:**
+a|
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupledWithFactory.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupledWithFactory.java</a>
+++++
+
+a| **HelloWorld Version Using ServiceLoader:**
+a|
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldWithServiceLoader.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldWithServiceLoader.java</a>
+++++
+
+|===

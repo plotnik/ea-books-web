@@ -450,6 +450,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_using_spring_documentation">Using Spring Documentation</a></li>
+<li><a href="#_putting_aspring_into_hello_world">Putting a Spring into Hello World</a>
+<ul class="sectlevel2">
+<li><a href="#_building_thesample_hello_world_application">Building the Sample Hello World Application</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -616,10 +621,127 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_putting_aspring_into_hello_world">Putting a Spring into Hello World</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_building_thesample_hello_world_application">Building the Sample Hello World Application</h3>
+<div class="paragraph">
+<p>The provided content discusses the evolution of a simple "Hello World" Java application, illustrating how to enhance its design for flexibility and extensibility.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Basic Example</strong>: The initial example is a straightforward Java application that prints "Hello World!" to the console. However, changing the message or output method requires modifying and recompiling the code.</p>
+</li>
+<li>
+<p><strong>Command-Line Arguments</strong>: The next iteration allows the message to be provided via command-line arguments, improving flexibility but still coupling the message retrieval with the rendering logic.</p>
+</li>
+<li>
+<p><strong>Decoupling Components</strong>: To further enhance the application, the author introduces two interfaces: <code>MessageProvider</code>, which retrieves messages, and <code>MessageRenderer</code>, which handles output. This separation allows for greater flexibility and easier testing.</p>
+</li>
+<li>
+<p><strong>Implementing Interfaces</strong>: Concrete implementations of these interfaces, such as <code>HelloWorldMessageProvider</code> and <code>StandardOutMessageRenderer</code>, are created, allowing for different message retrieval and rendering strategies without changing the main application logic.</p>
+</li>
+<li>
+<p><strong>Factory Pattern</strong>: A <code>MessageSupportFactory</code> class is introduced to manage the creation of <code>MessageProvider</code> and <code>MessageRenderer</code> instances, enabling configuration through a properties file.</p>
+</li>
+<li>
+<p><strong>ServiceLoader</strong>: An alternative to the factory approach is presented using Java&#8217;s <code>ServiceLoader</code> mechanism, which simplifies the instantiation of interface implementations by allowing configurations to be specified through files in the <code>META-INF/services</code> directory.</p>
+</li>
+<li>
+<p><strong>Recap</strong>: The document concludes by summarizing the key enhancements made to the application: introducing interfaces for decoupling, using a factory for instantiation, and leveraging <code>ServiceLoader</code> for dynamic service discovery.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Overall, the content illustrates a transition from a basic application to a more robust and flexible design, setting the stage for further integration with Spring frameworks in future discussions.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Classic Hello World Java Project:</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/HelloWorld.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/HelloWorld.java</a></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Classic Hello World Java Project with Arguments:</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/HelloWorldWithCommandLine.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/HelloWorldWithCommandLine.java</a></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>MessageProvider Interface:</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageProvider.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageProvider.java</a></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>MessageRenderer Interface:</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageRenderer.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageRenderer.java</a></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>MessageProvider Implementation:</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldMessageProvider.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldMessageProvider.java</a></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>MessageRenderer Implementation:</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/StandardOutMessageRenderer.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/StandardOutMessageRenderer.java</a></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>New main(..) Method:</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupled.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupled.java</a></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>Instance Factory Class Tasked with Retrieving the Two Implementation Types and Instantiating Them:</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageSupportFactory.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageSupportFactory.java</a></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>HelloWorld Version Using MessageSupportFactory:</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupledWithFactory.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupledWithFactory.java</a></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>HelloWorld Version Using ServiceLoader:</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldWithServiceLoader.java" target="_blank">
+chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldWithServiceLoader.java</a></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-09-17 10:13:25 +0300
+Last updated 2024-09-18 11:21:24 +0300
 </div>
 </div>
 </body>
