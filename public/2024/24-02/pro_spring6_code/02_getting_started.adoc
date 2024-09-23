@@ -172,3 +172,42 @@ chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldWithServic
 ++++
 
 |===
+
+=== Refactoring with Spring
+
+==== Using Spring XML Configuration
+
+The content explains the transition from using `SpringLoader` to `ApplicationContext` in Spring. The `ApplicationContext` interface is crucial for managing the environment of a Spring application, extending `ListableBeanFactory` for managing Spring beans. 
+
+A code snippet demonstrates a simple Spring application (`HelloWorldSpringDI`), where the `main` method initializes the application context from an XML configuration file (`app-context.xml`). This file defines two beans: `provider` and `renderer`, with the `renderer` bean depending on the `provider` for message retrieval.
+
+The XML configuration specifies bean relationships and dependency injection using the `p` namespace. Spring automatically resolves and injects dependencies, allowing the `MessageRenderer` bean to access the `MessageProvider` without direct references to Spring in the classes.
+
+The document also outlines how to build and run the project using Gradle or Maven, resulting in an executable JAR file. It notes that Spring 5 has deprecated XML configurations, emphasizing the evolution of Spring configuration practices, while still acknowledging their use in legacy projects.
+
+Listing 2-19. HelloWorld Version Using Spring::
+link:https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/HelloWorldSpringDI.java[
+`chapter02/src/main/java/com/apress/prospring6/two/HelloWorldSpringDI.java`]
+
+
+Listing 2-20. Spring XML Configuration File::
+link:https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/resources/spring/app-context.xml[
+`chapter02/src/main/resources/spring/app-context.xml`]
+
+
+==== Spring Configuration Using Annotations
+
+Starting with Spring 3.0, XML configuration files are no longer required for Spring applications, as they can now be substituted with annotations and Java configuration classes. These configuration classes, annotated with `@Configuration`, define beans using methods annotated with `@Bean` or through component scanning with `@ComponentScanning`.
+
+An example provided illustrates a Java configuration class, `HelloWorldConfiguration`, which defines two beans: a `MessageProvider` and a `MessageRenderer`. In the `main(..)` method, the `ClassPathXmlApplicationContext` is replaced with `AnnotationConfigApplicationContext` to read bean definitions from these configuration classes.
+
+This shift towards Java configuration and annotations enhances flexibility in Spring configuration. Future chapters of the book will delve further into this topic, presenting examples and code in a more concise format while maintaining code reusability across modules.
+
+Listing 2-23. Spring Java Configuration Class::
+link:https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/annotated/HelloWorldConfiguration.java[
+`chapter02/src/main/java/com/apress/prospring6/two/annotated/HelloWorldConfiguration.java`]
+
+Listing 2-24. main(..) Method to Start a Spring Application Configured Using Java Configuration::
+link:https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/annotated/HelloWorldSpringAnnotated.java[
+`chapter02/src/main/java/com/apress/prospring6/two/annotated/HelloWorldSpringAnnotated.java`]
+

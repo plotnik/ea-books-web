@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
-<title>Chapter 2: Getting Started</title>
+<title>Chapter 3. Introducing IoC and DI in Spring</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -434,373 +434,37 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<h1>Chapter 2: Getting Started</h1>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_prepare_your_development_environment">Prepare Your Development Environment</a></li>
-<li><a href="#_understanding_spring_packaging">Understanding Spring Packaging</a></li>
-<li><a href="#_choosing_modules_foryour_application">Choosing Modules for Your Application</a>
-<ul class="sectlevel2">
-<li><a href="#_accessing_spring_modules_onthemaven_repository">Accessing Spring Modules on the Maven Repository</a></li>
-<li><a href="#_accessing_spring_modules_using_gradle">Accessing Spring Modules Using Gradle</a></li>
-<li><a href="#_using_spring_boot_dependency_management">Using Spring Boot Dependency Management</a></li>
-</ul>
-</li>
-<li><a href="#_using_spring_documentation">Using Spring Documentation</a></li>
-<li><a href="#_putting_aspring_into_hello_world">Putting a Spring into Hello World</a>
-<ul class="sectlevel2">
-<li><a href="#_building_thesample_hello_world_application">Building the Sample Hello World Application</a></li>
-<li><a href="#_refactoring_withspring">Refactoring with Spring</a></li>
-</ul>
-</li>
-</ul>
-</div>
+<h1>Chapter 3. Introducing IoC and DI in Spring</h1>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_prepare_your_development_environment">Prepare Your Development Environment</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>To start running the code from the book, follow these steps:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Environment Setup</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Ensure you are seated comfortably at your computer.</p>
-</li>
-<li>
-<p>Install JDK 17 and verify it is set as the default by running <code>java -version</code> in your terminal; the output should indicate Java version 17.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Project Setup</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Clone the project repository or download and unzip the sources from Apress. You should have a directory named <code>pro-spring-6</code>, which contains various modules.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>IDE Configuration</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Open IntelliJ IDEA, select File ➤ Open, and choose the <code>pro-spring-6</code> directory. You will see the project and its modules in the Project View, along with Gradle and Maven configurations.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Project Details</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>The project consists of multiple modules, each representing a chapter. Modules ending in "-boot" are Spring Boot projects, while others are classic Spring projects, which can be used independently of Spring Boot.</p>
-</li>
-<li>
-<p>The project includes configurations for both Gradle (version 7.4) and Maven (version 3.8.4), and these are set up to use wrappers, so you don’t need to install them locally.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Building the Project</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>You can build the project following the instructions in the <code>README.adoc</code> file. IntelliJ IDEA recognizes the wrapper configurations for building.</p>
-</li>
-<li>
-<p>If you encounter issues with missing dependencies, try building from the command line or use options like <strong>Invalidate Caches</strong> or <strong>Reload All from Disk</strong> in the File menu.</p>
-</li>
-</ul>
-</div>
-</li>
-</ol>
+<p>Chapters 1 and 2 introduce the Spring framework, emphasizing its role in simplifying dependency injection (DI) through the principle of inversion of control (IoC), where components rely on an external service to provide their dependencies. This design pattern allows for a cleaner separation of concerns. The chapter outlines various IoC concepts, differentiating between dependency injection and dependency lookup, and discusses their respective advantages and disadvantages.</p>
 </div>
 <div class="paragraph">
-<p>After successfully loading and building the project, further details about Spring internals and the project configurations will be provided.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_understanding_spring_packaging">Understanding Spring Packaging</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The Spring framework offers a modular packaging system, allowing developers to select only the necessary components for their applications. Each component is packaged in a JAR file, which includes compiled code, Javadoc, and source files. IntelliJ IDEA facilitates this by scanning project dependencies and enabling users to download sources and Javadocs for better code visibility.</p>
-</div>
-<div class="paragraph">
-<p>The framework consists of 22 modules, each serving specific functionalities, such as AOP, JDBC, transaction management, and web application support. Notable modules include:</p>
+<p>Key features covered include:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>aop</strong>: For Spring&#8217;s AOP features.</p>
+<p><strong>IoC Concepts</strong>: An overview of different IoC types, including their pros and cons.</p>
 </li>
 <li>
-<p><strong>jdbc</strong>: For JDBC support and database access.</p>
+<p><strong>IoC in Spring</strong>: An explanation of Spring&#8217;s IoC capabilities and the types of dependency injection it supports, such as setter, constructor, and method injection.</p>
 </li>
 <li>
-<p><strong>webmvc</strong>: For Spring&#8217;s MVC framework.</p>
+<p><strong>Spring&#8217;s DI Implementation</strong>: A focus on the IoC container, particularly the <code>BeanFactory</code> and the more advanced <code>ApplicationContext</code>, which offers enhanced functionalities.</p>
+</li>
+<li>
+<p><strong>Configuring Spring Context</strong>: Guidance on using annotations for configuring the ApplicationContext, with a preview of Groovy and Java configurations to be explored in Chapter 4. The discussion includes DI configuration and additional services from <code>BeanFactory</code>, like bean inheritance and lifecycle management.</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>For Spring Boot users, module selection is automatic through starter dependencies that simplify the setup process for common application types. These starters encapsulate necessary dependencies and configurations, such as <code>spring-boot-starter-web</code> for web applications and <code>spring-boot-starter-data-*</code> for data handling, thus streamlining the development process.</p>
-</div>
-<div class="paragraph">
-<p>Overall, Spring&#8217;s modular architecture and the convenience of Spring Boot starters provide a flexible and efficient way to build applications tailored to specific needs.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_choosing_modules_foryour_application">Choosing Modules for Your Application</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_accessing_spring_modules_onthemaven_repository">Accessing Spring Modules on the Maven Repository</h3>
-<div class="paragraph">
-<p>Maven, developed by the Apache Software Foundation, is a widely-used tool for managing dependencies, building, packaging, and handling the entire build cycle of Java applications. It offers numerous plugins for various tasks and facilitates access to the Maven Central repository, which hosts many open source libraries. Users can also access additional repositories (like JBoss and Spring) by configuring their Maven settings or project POM files.</p>
-</div>
-<div class="paragraph">
-<p>Each Maven artifact is identified by a group ID, artifact ID, packaging type, and version. The configuration for a project is specified in an XML file named <code>pom.xml</code>. Maven enforces a standard project structure, organizing application code and configuration files into designated directories.</p>
-</div>
-<div class="paragraph">
-<p>Furthermore, Spring Boot enhances dependency management by ensuring compatibility of transitive dependencies, even for non-Spring Boot projects. The text concludes with a mention of Gradle, which will be introduced next.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_accessing_spring_modules_using_gradle">Accessing Spring Modules Using Gradle</h3>
-<div class="paragraph">
-<p>The Maven project structure and artifact organization are crucial because Gradle adheres to similar conventions and utilizes the Maven central repository for artifact retrieval. Gradle, a versatile build tool, has replaced complex XML configurations with Groovy for easier and more flexible setup, although excessive creativity in configuration can lead to challenges. As of now, the latest Gradle version is 7.3.3, and since version 4.x, the Spring team has adopted Gradle for all Spring product configurations. The standard Gradle configuration file is named <code>build.gradle</code>, which serves a similar purpose to Maven&#8217;s <code>pom.xml</code>. A sample <code>build.gradle</code> snippet demonstrates the readability and structure of Gradle configurations, using properties like <em>group</em>, <em>artifact</em>, and <em>version</em> to identify artifacts, albeit with different naming conventions compared to Maven. Gradle&#8217;s role will be referenced throughout the book, although it is not the primary focus.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_using_spring_boot_dependency_management">Using Spring Boot Dependency Management</h3>
-<div class="paragraph">
-<p>The content discusses the use of Spring Boot&#8217;s dependency management in Maven and Gradle projects. It explains how utilizing the <code>spring-boot-starter-parent</code> in a Maven configuration provides a simplified way to manage dependencies and their versions, allowing developers to focus on their project without specifying versions for Spring dependencies. An example <code>pom.xml</code> file is provided to illustrate this setup, along with a depiction of the Maven dependencies.</p>
-</div>
-<div class="paragraph">
-<p>The text also highlights that if the <code>spring-boot-starter-parent</code> is not suitable for a project’s structure, developers can switch to using <code>&lt;dependencyManagement&gt;</code> to manage dependencies while still leveraging Spring Boot&#8217;s versioning benefits. An example of this alternative configuration is shown.</p>
-</div>
-<div class="paragraph">
-<p>For Gradle, since it lacks a parent project concept, the <code>io.spring.dependency-management</code> plug-in is suggested to achieve similar dependency management. A corresponding Gradle configuration is provided, demonstrating how to implement and override dependencies effectively.</p>
-</div>
-<div class="paragraph">
-<p>Lastly, the document contrasts the readability and flexibility of Gradle with the consistency and ease of learning offered by Maven&#8217;s XML schema, particularly in larger projects that may require shared configurations across multiple modules.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_using_spring_documentation">Using Spring Documentation</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The Spring Framework is highly valued for its comprehensive and well-organized documentation, which includes both Javadoc and a reference manual. The documentation team ensures that all features are thoroughly documented with each release. This summary emphasizes the importance of familiarizing oneself with these resources and mentions that the provided book serves as a complementary guide for building Spring-based applications. Additionally, it offers URLs for accessing the Spring Javadoc and the official reference documentation for further study.</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Spring Javadoc</dt>
-<dd>
-<p><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api" class="bare">https://docs.spring.io/spring-framework/docs/current/javadoc-api</a></p>
-</dd>
-<dt class="hdlist1">Spring Reference</dt>
-<dd>
-<p><a href="https://docs.spring.io/spring-framework/docs/current/reference/html" class="bare">https://docs.spring.io/spring-framework/docs/current/reference/html</a></p>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_putting_aspring_into_hello_world">Putting a Spring into Hello World</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_building_thesample_hello_world_application">Building the Sample Hello World Application</h3>
-<div class="paragraph">
-<p>The provided content discusses the evolution of a simple "Hello World" Java application, illustrating how to enhance its design for flexibility and extensibility.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Basic Example</strong>: The initial example is a straightforward Java application that prints "Hello World!" to the console. However, changing the message or output method requires modifying and recompiling the code.</p>
-</li>
-<li>
-<p><strong>Command-Line Arguments</strong>: The next iteration allows the message to be provided via command-line arguments, improving flexibility but still coupling the message retrieval with the rendering logic.</p>
-</li>
-<li>
-<p><strong>Decoupling Components</strong>: To further enhance the application, the author introduces two interfaces: <code>MessageProvider</code>, which retrieves messages, and <code>MessageRenderer</code>, which handles output. This separation allows for greater flexibility and easier testing.</p>
-</li>
-<li>
-<p><strong>Implementing Interfaces</strong>: Concrete implementations of these interfaces, such as <code>HelloWorldMessageProvider</code> and <code>StandardOutMessageRenderer</code>, are created, allowing for different message retrieval and rendering strategies without changing the main application logic.</p>
-</li>
-<li>
-<p><strong>Factory Pattern</strong>: A <code>MessageSupportFactory</code> class is introduced to manage the creation of <code>MessageProvider</code> and <code>MessageRenderer</code> instances, enabling configuration through a properties file.</p>
-</li>
-<li>
-<p><strong>ServiceLoader</strong>: An alternative to the factory approach is presented using Java&#8217;s <code>ServiceLoader</code> mechanism, which simplifies the instantiation of interface implementations by allowing configurations to be specified through files in the <code>META-INF/services</code> directory.</p>
-</li>
-<li>
-<p><strong>Recap</strong>: The document concludes by summarizing the key enhancements made to the application: introducing interfaces for decoupling, using a factory for instantiation, and leveraging <code>ServiceLoader</code> for dynamic service discovery.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>Overall, the content illustrates a transition from a basic application to a more robust and flexible design, setting the stage for further integration with Spring frameworks in future discussions.</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Classic Hello World Java Project:</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/HelloWorld.java" target="_blank">
-chapter02/src/main/java/com/apress/prospring6/two/HelloWorld.java</a></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Classic Hello World Java Project with Arguments:</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/HelloWorldWithCommandLine.java" target="_blank">
-chapter02/src/main/java/com/apress/prospring6/two/HelloWorldWithCommandLine.java</a></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>MessageProvider Interface:</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageProvider.java" target="_blank">
-chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageProvider.java</a></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>MessageRenderer Interface:</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageRenderer.java" target="_blank">
-chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageRenderer.java</a></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>MessageProvider Implementation:</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldMessageProvider.java" target="_blank">
-chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldMessageProvider.java</a></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>MessageRenderer Implementation:</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/StandardOutMessageRenderer.java" target="_blank">
-chapter02/src/main/java/com/apress/prospring6/two/decoupled/StandardOutMessageRenderer.java</a></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>New main(..) Method:</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupled.java" target="_blank">
-chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupled.java</a></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>Instance Factory Class Tasked with Retrieving the Two Implementation Types and Instantiating Them:</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageSupportFactory.java" target="_blank">
-chapter02/src/main/java/com/apress/prospring6/two/decoupled/MessageSupportFactory.java</a></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>HelloWorld Version Using MessageSupportFactory:</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupledWithFactory.java" target="_blank">
-chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldDecoupledWithFactory.java</a></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><strong>HelloWorld Version Using ServiceLoader:</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldWithServiceLoader.java" target="_blank">
-chapter02/src/main/java/com/apress/prospring6/two/decoupled/HelloWorldWithServiceLoader.java</a></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_refactoring_withspring">Refactoring with Spring</h3>
-<div class="sect3">
-<h4 id="_using_spring_xml_configuration">Using Spring XML Configuration</h4>
-<div class="paragraph">
-<p>The content explains the transition from using <code>SpringLoader</code> to <code>ApplicationContext</code> in Spring. The <code>ApplicationContext</code> interface is crucial for managing the environment of a Spring application, extending <code>ListableBeanFactory</code> for managing Spring beans.</p>
-</div>
-<div class="paragraph">
-<p>A code snippet demonstrates a simple Spring application (<code>HelloWorldSpringDI</code>), where the <code>main</code> method initializes the application context from an XML configuration file (<code>app-context.xml</code>). This file defines two beans: <code>provider</code> and <code>renderer</code>, with the <code>renderer</code> bean depending on the <code>provider</code> for message retrieval.</p>
-</div>
-<div class="paragraph">
-<p>The XML configuration specifies bean relationships and dependency injection using the <code>p</code> namespace. Spring automatically resolves and injects dependencies, allowing the <code>MessageRenderer</code> bean to access the <code>MessageProvider</code> without direct references to Spring in the classes.</p>
-</div>
-<div class="paragraph">
-<p>The document also outlines how to build and run the project using Gradle or Maven, resulting in an executable JAR file. It notes that Spring 5 has deprecated XML configurations, emphasizing the evolution of Spring configuration practices, while still acknowledging their use in legacy projects.</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Listing 2-19. HelloWorld Version Using Spring</dt>
-<dd>
-<p><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/HelloWorldSpringDI.java">
-<code>chapter02/src/main/java/com/apress/prospring6/two/HelloWorldSpringDI.java</code></a></p>
-</dd>
-<dt class="hdlist1">Listing 2-20. Spring XML Configuration File</dt>
-<dd>
-<p><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/resources/spring/app-context.xml">
-<code>chapter02/src/main/resources/spring/app-context.xml</code></a></p>
-</dd>
-</dl>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_spring_configuration_using_annotations">Spring Configuration Using Annotations</h4>
-<div class="paragraph">
-<p>Starting with Spring 3.0, XML configuration files are no longer required for Spring applications, as they can now be substituted with annotations and Java configuration classes. These configuration classes, annotated with <code>@Configuration</code>, define beans using methods annotated with <code>@Bean</code> or through component scanning with <code>@ComponentScanning</code>.</p>
-</div>
-<div class="paragraph">
-<p>An example provided illustrates a Java configuration class, <code>HelloWorldConfiguration</code>, which defines two beans: a <code>MessageProvider</code> and a <code>MessageRenderer</code>. In the <code>main(..)</code> method, the <code>ClassPathXmlApplicationContext</code> is replaced with <code>AnnotationConfigApplicationContext</code> to read bean definitions from these configuration classes.</p>
-</div>
-<div class="paragraph">
-<p>This shift towards Java configuration and annotations enhances flexibility in Spring configuration. Future chapters of the book will delve further into this topic, presenting examples and code in a more concise format while maintaining code reusability across modules.</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Listing 2-23. Spring Java Configuration Class</dt>
-<dd>
-<p><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/annotated/HelloWorldConfiguration.java">
-<code>chapter02/src/main/java/com/apress/prospring6/two/annotated/HelloWorldConfiguration.java</code></a></p>
-</dd>
-<dt class="hdlist1">Listing 2-24. main(..) Method to Start a Spring Application Configured Using Java Configuration</dt>
-<dd>
-<p><a href="https://github.com/Apress/pro-spring-6/blob/main/chapter02/src/main/java/com/apress/prospring6/two/annotated/HelloWorldSpringAnnotated.java">
-<code>chapter02/src/main/java/com/apress/prospring6/two/annotated/HelloWorldSpringAnnotated.java</code></a></p>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-09-20 13:01:17 +0300
+Last updated 2024-09-23 10:20:15 +0300
 </div>
 </div>
 </body>
