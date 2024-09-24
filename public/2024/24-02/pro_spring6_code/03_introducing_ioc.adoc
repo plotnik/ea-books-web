@@ -2,6 +2,8 @@
 :icons: font
 :toc: left
 
+link:pro_spring_6.html[<Contents>]
+
 Chapters 1 and 2 introduce the Spring framework, emphasizing its role in simplifying dependency injection (DI) through the principle of inversion of control (IoC), where components rely on an external service to provide their dependencies. This design pattern allows for a cleaner separation of concerns. The chapter outlines various IoC concepts, differentiating between dependency injection and dependency lookup, and discusses their respective advantages and disadvantages.
 
 Key features covered include:
@@ -10,3 +12,76 @@ Key features covered include:
 - **IoC in Spring**: An explanation of Spring's IoC capabilities and the types of dependency injection it supports, such as setter, constructor, and method injection.
 - **Spring's DI Implementation**: A focus on the IoC container, particularly the `BeanFactory` and the more advanced `ApplicationContext`, which offers enhanced functionalities.
 - **Configuring Spring Context**: Guidance on using annotations for configuring the ApplicationContext, with a preview of Groovy and Java configurations to be explored in Chapter 4. The discussion includes DI configuration and additional services from `BeanFactory`, like bean inheritance and lifecycle management.
+
+== Types of Inversion of Control
+
+The content discusses the two types of Inversion of Control (IoC) in software development: Dependency Lookup and Dependency Injection, along with their respective implementations.
+
+1. **Dependency Lookup**: This traditional approach allows components to acquire dependencies from a registry. It includes:
+   - **Dependency Pull**: Components fetch dependencies as needed, familiar to Java developers (e.g., using JNDI in EJB).
+   - **Contextualized Dependency Lookup (CDL)**: Components request dependencies from the container managing them, typically via a defined interface.
+
+2. **Dependency Injection**: A more flexible approach where the IoC container automatically provides dependencies to components, enhancing usability. It includes:
+   - **Constructor Dependency Injection**: Dependencies are injected through a constructor, making them required for the component's instantiation.
+
+The document provides code examples illustrating these concepts, particularly in the context of the Spring framework, highlighting how IoC mechanisms work in practice.
+
+---
+**Contextualized Dependency Lookup Example**
+link:https://github.com/Apress/pro-spring-6/blob/main/chapter03/src/main/java/com/apress/prospring6/three/CDLDemo.java[
+`chapter03/src/main/java/com/apress/prospring6/three/CDLDemo.java`]
+
+---
+++++
+<div class="mermaid">
+classDiagram
+    %% Interfaces
+    class Container {
+        +Object getDependency(String key)
+    }
+
+    class ManagedComponent {
+        +void performLookup(Container container)
+    }
+
+    class MessageProvider {
+        +String getMessage()
+    }
+
+    class MessageRenderer {
+        +void render()
+    }
+
+    %% Classes implementing interfaces
+    Container <|.. DefaultContainer
+    MessageProvider <|.. HelloWorldMessageProvider
+    MessageRenderer <|.. StandardOutMessageRenderer
+    MessageRenderer <|-- ManagedComponent
+
+    %% Class Definitions
+    class DefaultContainer {
+        +Object getDependency(String key)
+    }
+
+    class HelloWorldMessageProvider {
+        +String getMessage()
+    }
+
+    class StandardOutMessageRenderer {
+        -MessageProvider messageProvider
+        +void performLookup(Container container)
+        +void render()
+    }
+
+    %% Relationships
+    StandardOutMessageRenderer --> MessageProvider : uses
+    StandardOutMessageRenderer ..> Container : performs lookup
+    DefaultContainer o-- HelloWorldMessageProvider : creates
+    CDLDemo --> DefaultContainer : uses
+    CDLDemo --> StandardOutMessageRenderer : uses
+
+</div>
+
+<script src="http://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+++++

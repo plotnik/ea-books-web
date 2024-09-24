@@ -5,7 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
-<title>Chapter 3. Introducing IoC and DI in Spring</title>
+<meta name="author" content="Iuliana Cosmina">
+<title>Pro Spring 6</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,144 +437,35 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Chapter 3. Introducing IoC and DI in Spring</h1>
+<h1>Pro Spring 6</h1>
+<div class="details">
+<span id="author" class="author">Iuliana Cosmina</span><br>
+</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_types_of_inversion_of_control">Types of Inversion of Control</a></li>
+<li><a href="#_chapter_2_getting_started">Chapter 2. Getting Started</a></li>
+<li><a href="#_chapter_3_introducing_ioc_and_di_in_spring">Chapter 3. Introducing IoC and DI in Spring</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div id="preamble">
+<div class="sect1">
+<h2 id="_chapter_2_getting_started"><a href="02_getting_started.html">Chapter 2. Getting Started</a></h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p><a href="pro_spring_6.html">&lt;Contents&gt;</a></p>
-</div>
-<div class="paragraph">
-<p>Chapters 1 and 2 introduce the Spring framework, emphasizing its role in simplifying dependency injection (DI) through the principle of inversion of control (IoC), where components rely on an external service to provide their dependencies. This design pattern allows for a cleaner separation of concerns. The chapter outlines various IoC concepts, differentiating between dependency injection and dependency lookup, and discusses their respective advantages and disadvantages.</p>
-</div>
-<div class="paragraph">
-<p>Key features covered include:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>IoC Concepts</strong>: An overview of different IoC types, including their pros and cons.</p>
-</li>
-<li>
-<p><strong>IoC in Spring</strong>: An explanation of Spring&#8217;s IoC capabilities and the types of dependency injection it supports, such as setter, constructor, and method injection.</p>
-</li>
-<li>
-<p><strong>Spring&#8217;s DI Implementation</strong>: A focus on the IoC container, particularly the <code>BeanFactory</code> and the more advanced <code>ApplicationContext</code>, which offers enhanced functionalities.</p>
-</li>
-<li>
-<p><strong>Configuring Spring Context</strong>: Guidance on using annotations for configuring the ApplicationContext, with a preview of Groovy and Java configurations to be explored in Chapter 4. The discussion includes DI configuration and additional services from <code>BeanFactory</code>, like bean inheritance and lifecycle management.</p>
-</li>
-</ul>
-</div>
+
 </div>
 </div>
 <div class="sect1">
-<h2 id="_types_of_inversion_of_control">Types of Inversion of Control</h2>
+<h2 id="_chapter_3_introducing_ioc_and_di_in_spring"><a href="03_introducing_ioc.html">Chapter 3. Introducing IoC and DI in Spring</a></h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>The content discusses the two types of Inversion of Control (IoC) in software development: Dependency Lookup and Dependency Injection, along with their respective implementations.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Dependency Lookup</strong>: This traditional approach allows components to acquire dependencies from a registry. It includes:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Dependency Pull</strong>: Components fetch dependencies as needed, familiar to Java developers (e.g., using JNDI in EJB).</p>
-</li>
-<li>
-<p><strong>Contextualized Dependency Lookup (CDL)</strong>: Components request dependencies from the container managing them, typically via a defined interface.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Dependency Injection</strong>: A more flexible approach where the IoC container automatically provides dependencies to components, enhancing usability. It includes:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Constructor Dependency Injection</strong>: Dependencies are injected through a constructor, making them required for the component&#8217;s instantiation.</p>
-</li>
-</ul>
-</div>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>The document provides code examples illustrating these concepts, particularly in the context of the Spring framework, highlighting how IoC mechanisms work in practice.</p>
-</div>
-<hr>
-<div class="paragraph">
-<p><strong>Contextualized Dependency Lookup Example</strong>
-<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter03/src/main/java/com/apress/prospring6/three/CDLDemo.java">
-<code>chapter03/src/main/java/com/apress/prospring6/three/CDLDemo.java</code></a></p>
-</div>
-<hr>
-<div class="mermaid">
-classDiagram
-    %% Interfaces
-    class Container {
-        +Object getDependency(String key)
-    }
 
-    class ManagedComponent {
-        +void performLookup(Container container)
-    }
-
-    class MessageProvider {
-        +String getMessage()
-    }
-
-    class MessageRenderer {
-        +void render()
-    }
-
-    %% Classes implementing interfaces
-    Container <|.. DefaultContainer
-    MessageProvider <|.. HelloWorldMessageProvider
-    MessageRenderer <|.. StandardOutMessageRenderer
-    MessageRenderer <|-- ManagedComponent
-
-    %% Class Definitions
-    class DefaultContainer {
-        +Object getDependency(String key)
-    }
-
-    class HelloWorldMessageProvider {
-        +String getMessage()
-    }
-
-    class StandardOutMessageRenderer {
-        -MessageProvider messageProvider
-        +void performLookup(Container container)
-        +void render()
-    }
-
-    %% Relationships
-    StandardOutMessageRenderer --> MessageProvider : uses
-    StandardOutMessageRenderer ..> Container : performs lookup
-    DefaultContainer o-- HelloWorldMessageProvider : creates
-    CDLDemo --> DefaultContainer : uses
-    CDLDemo --> StandardOutMessageRenderer : uses
-
-</div>
-
-<script src="http://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true});</script>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-09-24 10:09:53 +0300
+Last updated 2024-09-23 10:31:46 +0300
 </div>
 </div>
 </body>
