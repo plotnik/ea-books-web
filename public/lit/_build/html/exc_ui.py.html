@@ -44,20 +44,25 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.log&#39;</span><span class="p">)]</span>
 </pre></div>
 </div>
-<p>Step 2: Sort the log files alphabetically</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log_files_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">log_files</span><span class="p">)</span>
+<p>Step 2: Sort log files based on their modification time</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log_files</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Step 3: Create radio buttons to select a file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">selected_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Select a log file to process:&quot;</span><span class="p">,</span> <span class="n">log_files_sorted</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">selected_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Select a log file to process:&quot;</span><span class="p">,</span> <span class="n">log_files</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Step 4: Button to process the selected file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Process&quot;</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;:rocket: Process&quot;</span><span class="p">):</span>
     <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;exc&quot;</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">,</span> <span class="s1">&#39;--html&#39;</span><span class="p">,</span> <span class="s1">&#39;--skip=20&#39;</span><span class="p">,</span> <span class="s1">&#39;--tformat=yyyy/MM/dd HH:mm:ss&#39;</span><span class="p">,</span> <span class="s1">&#39;--restart=wrapper.tanukisoftware.org&#39;</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;exc_yaml&quot;</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processed: `</span><span class="si">{</span><span class="n">selected_file</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can open log file in <a class="reference external" href="https://www.jedit.org">jEdit</a> editor</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;:pencil: jEdit&quot;</span><span class="p">):</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;/Applications/jEdit.app/Contents/MacOS/jedit&quot;</span><span class="p">,</span> <span class="s2">&quot;-reuseview&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">selected_file</span><span class="p">)],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
