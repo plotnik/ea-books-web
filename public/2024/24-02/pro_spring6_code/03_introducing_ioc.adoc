@@ -13,7 +13,9 @@ Key features covered include:
 - **Spring's DI Implementation**: A focus on the IoC container, particularly the `BeanFactory` and the more advanced `ApplicationContext`, which offers enhanced functionalities.
 - **Configuring Spring Context**: Guidance on using annotations for configuring the ApplicationContext, with a preview of Groovy and Java configurations to be explored in Chapter 4. The discussion includes DI configuration and additional services from `BeanFactory`, like bean inheritance and lifecycle management.
 
-== Types of Inversion of Control
+== Inversion of Control and Dependency Injection
+
+=== Types of Inversion of Control
 
 The content discusses the two types of Inversion of Control (IoC) in software development: Dependency Lookup and Dependency Injection, along with their respective implementations.
 
@@ -31,6 +33,29 @@ Contextualized Dependency Lookup Example::
 link:https://github.com/Apress/pro-spring-6/blob/main/chapter03/src/main/java/com/apress/prospring6/three/CDLDemo.java[
 `chapter03/src/main/java/com/apress/prospring6/three/CDLDemo.java`]
 
+---
+
+++++
+<div class="mermaid">
+sequenceDiagram
+    participant CDLDemo
+    participant DefaultContainer
+    participant StandardOutMessageRenderer
+    participant HelloWorldMessageProvider
+
+    CDLDemo->>DefaultContainer: new DefaultContainer()
+    CDLDemo->>StandardOutMessageRenderer: new StandardOutMessageRenderer()
+    CDLDemo->>StandardOutMessageRenderer: performLookup(container)
+    StandardOutMessageRenderer->>DefaultContainer: getDependency("provider")
+    DefaultContainer->>StandardOutMessageRenderer: return HelloWorldMessageProvider
+    StandardOutMessageRenderer->>HelloWorldMessageProvider: new HelloWorldMessageProvider()
+    CDLDemo->>StandardOutMessageRenderer: render()
+    StandardOutMessageRenderer->>HelloWorldMessageProvider: getMessage()
+    HelloWorldMessageProvider-->>StandardOutMessageRenderer: "Hello World!"
+    StandardOutMessageRenderer->>CDLDemo: Output "Hello World!"
+
+</div>
+++++
 ---
 ++++
 <div class="mermaid">
@@ -86,10 +111,27 @@ classDiagram
 <script>mermaid.initialize({startOnLoad:true});</script>
 ++++
 
-== Setter Dependency Injection
+=== Setter Dependency Injection
 
 The text discusses **setter dependency injection**, a method where an IoC (Inversion of Control) container injects dependencies into a component using setter methods, exemplified by the `StandardOutMessageRenderer`. This approach allows for the creation of objects without their dependencies, which can be set later. Setter injection is favored for its simplicity and is the most commonly used method in IoC.
 
 The document contrasts **injection** with **lookup** style IoC. While lookup requires explicit retrieval of dependencies from an IoC container (which can complicate testing), injection allows for easier testing and decouples components from the IoC container. It emphasizes that using injection simplifies code maintenance and reduces the likelihood of errors, as the dependencies are provided directly without additional retrieval logic.
 
 Ultimately, the text advocates for the use of dependency injection over lookup due to its straightforwardness and ease of use, suggesting that it leads to cleaner, less error-prone code.
+
+=== Setter Injection vs. Constructor Injection
+
+
+The text discusses two primary methods of dependency injection: **constructor injection** and **setter injection**. 
+
+- **Constructor Injection**: This method is preferred when a dependency is essential for a component’s functionality. It ensures that required dependencies are explicitly defined, promoting immutability (e.g., declaring fields as final). This approach is also container-agnostic, meaning it can be applied without being tied to a specific framework.
+
+- **Setter Injection**: This method allows for more flexibility, enabling components to expose their dependencies while providing default values. It can be beneficial for configuration parameters, which differ from typical dependencies in that they are passive, often simple values, and provide necessary information rather than being active components. 
+
+The text emphasizes the importance of distinguishing between configuration parameters and actual dependencies. Configuration parameters can be defined in business interfaces if they are applicable to all implementations. The example of a `NewsletterSender` interface illustrates this, where configuration parameters like SMTP server details are included.
+
+Ultimately, the choice between constructor and setter injection should depend on the specific use case: constructor injection is best for enforcing essential dependencies and creating immutable objects, while setter injection is more flexible, allowing for dynamic dependency changes and default values.
+
+== Inversion of Control in Spring
+
+The text discusses the concept of Inversion of Control (IoC) in the Spring framework, emphasizing the importance of dependency injection as its core implementation. It highlights that dependency injection is the preferred method for connecting dependent objects and their collaborators, while dependency lookup is necessary in scenarios where automatic wiring is not possible, such as in standalone Java applications. In web applications using Spring MVC, Spring can automatically manage component connections. The document also mentions that Spring's IoC container can adapt to external dependency lookup containers and supports both constructor and setter injection. The chapter will cover the fundamentals of Spring's Dependency Injection (DI) container with numerous examples.
