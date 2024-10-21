@@ -135,3 +135,14 @@ Ultimately, the choice between constructor and setter injection should depend on
 == Inversion of Control in Spring
 
 The text discusses the concept of Inversion of Control (IoC) in the Spring framework, emphasizing the importance of dependency injection as its core implementation. It highlights that dependency injection is the preferred method for connecting dependent objects and their collaborators, while dependency lookup is necessary in scenarios where automatic wiring is not possible, such as in standalone Java applications. In web applications using Spring MVC, Spring can automatically manage component connections. The document also mentions that Spring's IoC container can adapt to external dependency lookup containers and supports both constructor and setter injection. The chapter will cover the fundamentals of Spring's Dependency Injection (DI) container with numerous examples.
+
+
+==  Dependency Injection in Spring
+
+===  Beans and BeanFactory
+
+The Spring Framework's IoC (Inversion of Control) container is primarily built on the `org.springframework.beans` and `org.springframework.context` packages, with the `BeanFactory` interface at its core. This interface manages components, their dependencies, and life cycles, allowing for the creation and configuration of beans, which are objects managed by the IoC container. While beans typically follow the JavaBeans specification, this is not mandatory, especially with constructor injection.
+
+Applications that require dependency injection (DI) can use the `BeanFactory` interface, which necessitates creating an instance of a class that implements it and configuring it with bean information. Although setups can often be automated (e.g., in web applications), manual configuration is common in examples.
+
+The `ApplicationContext` interface extends `BeanFactory`, offering additional services such as integration with AOP, internationalization, event handling, and application-specific contexts. It is recommended to use `ApplicationContext` for developing Spring applications, which can be bootstrapped manually or via web containers using `ContextLoaderListener`. Subsequent examples in the material will focus on using `ApplicationContext` and its implementations.
