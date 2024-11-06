@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>POM CSV &#8212; lit  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="exc yaml" href="exc_yaml.py.html" />
+    <link rel="prev" title="Rasp Hotkeys" href="pi_keys.py.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="pom-csv">
+<h1>POM CSV<a class="headerlink" href="#pom-csv" title="Link to this heading">¶</a></h1>
+<p>Export dependencies from POM to CSV file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="kn">import</span> <span class="nn">xmltodict</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</pre></div>
+</div>
+<p>Print banner.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
+<span class="k">def</span> <span class="nf">print_banner</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">     _______  _______  __   __         _______  _______  __   __</span>
+<span class="s2">    |       ||       ||  |_|  |       |       ||       ||  | |  |</span>
+<span class="s2">    |    _  ||   _   ||       | ____  |       ||  _____||  |_|  |</span>
+<span class="s2">    |   |_| ||  | |  ||       ||____| |       || |_____ |       |</span>
+<span class="s2">    |    ___||  |_|  ||       |       |      _||_____  ||       |</span>
+<span class="s2">    |   |    |       || ||_|| |       |     |_  _____| | |     |</span>
+<span class="s2">    |___|    |_______||_|   |_|       |_______||_______|  |___|</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">1</span>
+
+<span class="n">print_banner</span><span class="p">()</span>
+
+<span class="n">pom_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;POM&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Parse dependencies in “pom.xml” and store them to dataframe.</p>
+<p>Dataframe is stored in <code class="docutils literal notranslate"><span class="pre">session_state</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Parse&quot;</span><span class="p">):</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">xmltodict</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">pom_text</span><span class="p">)</span>
+    <span class="n">dependencies</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">][</span><span class="s1">&#39;dependencies&#39;</span><span class="p">][</span><span class="s1">&#39;dependency&#39;</span><span class="p">]</span>
+
+    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
+
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;### `</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span><span class="si">}</span><span class="s2">` dependencies&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Save dataframe to csv file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;df&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Save CSV&quot;</span><span class="p">):</span>
+    <span class="n">csv_name</span> <span class="o">=</span> <span class="s1">&#39;pom.csv&#39;</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csv_name</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">csv_name</span><span class="si">}</span><span class="s2">` created&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lit</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">POM CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_yaml.py.html">exc yaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_ui.py.html">exc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="pi_keys.py.html" title="previous chapter">Rasp Hotkeys</a></li>
+      <li>Next: <a href="exc_yaml.py.html" title="next chapter">exc yaml</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, EA.
+      
+      |
+      Powered by 
+      <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
+      &amp; 
+      <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; 
+      <a href="https://alabaster.readthedocs.io">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/pom_csv.py.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

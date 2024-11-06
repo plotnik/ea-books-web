@@ -451,6 +451,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_dependency_injection_inspring">Dependency Injection in Spring</a>
 <ul class="sectlevel2">
 <li><a href="#_beans_andbeanfactory">Beans and BeanFactory</a></li>
+<li><a href="#_basic_configuration_overview">Basic Configuration Overview</a></li>
 </ul>
 </li>
 </ul>
@@ -666,12 +667,27 @@ classDiagram
 <p>The <code>ApplicationContext</code> interface extends <code>BeanFactory</code>, offering additional services such as integration with AOP, internationalization, event handling, and application-specific contexts. It is recommended to use <code>ApplicationContext</code> for developing Spring applications, which can be bootstrapped manually or via web containers using <code>ContextLoaderListener</code>. Subsequent examples in the material will focus on using <code>ApplicationContext</code> and its implementations.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_basic_configuration_overview">Basic Configuration Overview</h3>
+<div class="paragraph">
+<p>The content describes how to configure a stand-alone Spring application using a class annotated with <code>@Configuration</code>. This annotation signifies that the class contains methods marked with <code>@Bean</code>, which declare beans. This setup is useful for integrating third-party libraries since you can&#8217;t modify their code to declare beans. Additionally, the class can use <code>@ComponentScan</code> to automatically find existing bean declarations marked with annotations like <code>@Component</code>.</p>
+</div>
+<div class="paragraph">
+<p>The Spring container processes these classes to generate bean definitions and manage their lifecycle, which includes creating objects, determining their creation order, and handling initialization and disposal. This collection of instructions is known as configuration metadata.</p>
+</div>
+<div class="paragraph">
+<p>The document illustrates a simple Spring configuration class (<code>HelloWorldConfiguration</code>) with two beans (<code>provider</code> and <code>renderer</code>). The configuration is bootstrapped using <code>AnnotationConfigApplicationContext</code>, which creates a Spring application context. The example shows how to retrieve a bean using <code>getBean</code> and execute its method.</p>
+</div>
+<div class="paragraph">
+<p>The process involves instantiating <code>AnnotationConfigApplicationContext</code> with the configuration class, creating a Spring IoC container that registers and manages the beans, and allowing beans to be accessed and utilized. This results in the "Hello World!" message being printed to the console.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-10-21 10:56:03 +0300
+Last updated 2024-11-06 08:58:33 +0200
 </div>
 </div>
 </body>

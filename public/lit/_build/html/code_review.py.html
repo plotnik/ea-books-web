@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Code Review &#8212; lit  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Upload File" href="up_file.py.html" />
+    <link rel="prev" title="Doc-Note" href="doc_note.py.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="code-review">
+<h1>Code Review<a class="headerlink" href="#code-review" title="Link to this heading">¶</a></h1>
+<p>Submit multiple <cite>.java</cite> files along with their corresponding <cite>.patch</cite> files
+to ChatGPT for review.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">fnmatch</span>
+<span class="kn">import</span> <span class="nn">tiktoken</span>
+<span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+</pre></div>
+</div>
+<p>Initialize OpenAI client</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o&quot;</span>
+<span class="n">openai_temperature</span> <span class="o">=</span> <span class="mf">0.7</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
+<span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="n">openai_model</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Get names of Java files in current folder.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;*.java&#39;</span><span class="p">)]</span>
+<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">java_files</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Collect <code class="docutils literal notranslate"><span class="pre">messages</span></code> for OpenAI request.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+  <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">      You are a helpful assistant that reviews Java code</span>
+<span class="s2">      and compares it with corresponding patch files.</span>
+<span class="s2">      For each pair of files, analyze the differences,</span>
+<span class="s2">      check code quality, suggest improvements, and flag potential bugs.</span>
+<span class="s2">      Provide feedback for each set.&quot;&quot;&quot;</span>
+<span class="p">})</span>
+
+<span class="n">tokens</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">java_file</span> <span class="ow">in</span> <span class="n">java_files</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">java_file</span> <span class="o">+</span> <span class="s2">&quot;.java&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">java</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">java_file</span> <span class="o">+</span> <span class="s2">&quot;.patch&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">patch</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">tokens</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">java</span><span class="p">))</span>
+        <span class="n">tokens</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">patch</span><span class="p">))</span>
+        <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;### Java File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2"> ###</span><span class="se">\n</span><span class="si">{</span><span class="n">java</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">})</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;### Patch File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2"> ###</span><span class="se">\n</span><span class="si">{</span><span class="n">patch</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">})</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Please review the changes in Patch File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2"> for Java File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">})</span>
+
+<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tokens: `</span><span class="si">{</span><span class="n">tokens</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Button to send OpenAI request.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Call OpenAI&quot;</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">openai_model</span><span class="p">,</span>
+        <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="n">openai_temperature</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">choice</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">openai_result</span> <span class="o">=</span> <span class="n">choice</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openai_result</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Save OpenAI result.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span> <span class="o">=</span> <span class="s2">&quot;code_review.md&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openai_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lit</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pom_csv.py.html">POM CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_yaml.py.html">exc yaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_ui.py.html">exc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="doc_note.py.html" title="previous chapter">Doc-Note</a></li>
+      <li>Next: <a href="up_file.py.html" title="next chapter">Upload File</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, EA.
+      
+      |
+      Powered by 
+      <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
+      &amp; 
+      <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; 
+      <a href="https://alabaster.readthedocs.io">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/code_review.py.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

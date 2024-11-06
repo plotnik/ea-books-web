@@ -146,3 +146,13 @@ The Spring Framework's IoC (Inversion of Control) container is primarily built o
 Applications that require dependency injection (DI) can use the `BeanFactory` interface, which necessitates creating an instance of a class that implements it and configuring it with bean information. Although setups can often be automated (e.g., in web applications), manual configuration is common in examples.
 
 The `ApplicationContext` interface extends `BeanFactory`, offering additional services such as integration with AOP, internationalization, event handling, and application-specific contexts. It is recommended to use `ApplicationContext` for developing Spring applications, which can be bootstrapped manually or via web containers using `ContextLoaderListener`. Subsequent examples in the material will focus on using `ApplicationContext` and its implementations.
+
+=== Basic Configuration Overview
+
+The content describes how to configure a stand-alone Spring application using a class annotated with `@Configuration`. This annotation signifies that the class contains methods marked with `@Bean`, which declare beans. This setup is useful for integrating third-party libraries since you can't modify their code to declare beans. Additionally, the class can use `@ComponentScan` to automatically find existing bean declarations marked with annotations like `@Component`.
+
+The Spring container processes these classes to generate bean definitions and manage their lifecycle, which includes creating objects, determining their creation order, and handling initialization and disposal. This collection of instructions is known as configuration metadata.
+
+The document illustrates a simple Spring configuration class (`HelloWorldConfiguration`) with two beans (`provider` and `renderer`). The configuration is bootstrapped using `AnnotationConfigApplicationContext`, which creates a Spring application context. The example shows how to retrieve a bean using `getBean` and execute its method.
+
+The process involves instantiating `AnnotationConfigApplicationContext` with the configuration class, creating a Spring IoC container that registers and manages the beans, and allowing beans to be accessed and utilized. This results in the "Hello World!" message being printed to the console.

@@ -28,18 +28,14 @@ from openai import OpenAI
 @st.cache_data
 def print_banner():
     print("""
-             _                    _                    _        
-            /\\ \\                 / /\\                 /\\ \\      
-           /  \\ \\               / /  \\                \\ \\ \\     
-          / /\\ \\ \\             / / /\\ \\               /\\ \\_\\    
-         / / /\\ \\ \\   ____    / / /\\ \\ \\             / /\\/_/    
-        / / /  \\ \\_\\/\\____/\\ / / /  \\ \\ \\           / / /       
-       / / /   / / /\\/____\\// / /___/ /\\ \\         / / /        
-      / / /   / / /        / / /_____/ /\\ \\       / / /         
-     / / /___/ / /        / /_________/\\ \\ \\  ___/ / /__        
-    / / /____\\/ /        / / /_       __\\ \\_\\/\\__\\/_/___\\       
-    \\/_________/         \\_\\___\\     /____/_/\\/_________/       
-                                                            
+                             d8b 
+                             Y8P 
+                                 
+     .d88b.          8888b.  888 
+    d88""88b            "88b 888 
+    888  888 888888 .d888888 888 
+    Y88..88P        888  888 888 
+     "Y88P"         "Y888888 888                                          
     """)
     return 1
 
@@ -49,7 +45,7 @@ print_banner()
 #
 # ::
 
-openai_model = "gpt-4o-mini"
+openai_model = "gpt-4o"
 openai_temperature = 0.7
 
 # Certain models are not compatible with ``tiktoken 0.7.0``, 
@@ -57,7 +53,7 @@ openai_temperature = 0.7
 # 
 # ::
 
-openai_model_tiktoken = openai_model # "gpt-4o-mini"
+openai_model_tiktoken = openai_model 
 
 # Select Obsidian folder from recent vaults.
 #

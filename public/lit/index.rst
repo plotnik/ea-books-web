@@ -14,9 +14,11 @@ Literate Programs
    ai_obsidian.py
    ai_note.py
    doc_note.py
+   code_review.py
    up_file.py
    cmp_props.py
    pi_keys.py
+   pom_csv.py
    exc_yaml.py
    exc_ui.py
    cmp_folders.py
