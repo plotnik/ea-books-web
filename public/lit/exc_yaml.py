@@ -16,12 +16,12 @@ import argparse
 parser = argparse.ArgumentParser(description="exc yaml")
 
 parser.add_argument("log_path", help="Log path")
+parser.add_argument("-c", "--chunk-length", help="Length of exception stack trace chunk", type=int, default=10)
 
 args = parser.parse_args()
 
 log_path = args.log_path
-
-chunk_length = 5
+chunk_length = args.chunk_length
 
 def read_yaml(file_path):
     with open(file_path, 'r') as file:
@@ -60,6 +60,7 @@ output_path = log_path + '.txt'
 line_numbers = read_yaml(yaml_path)
 extracted_lines = extract_lines(log_path, line_numbers)
 write_output(extracted_lines, output_path)
-print(f"Extraction complete. Check '{output_path}'.")
+print(f"[exc_yaml] Extraction complete with chunk length: {chunk_length}")
+print(f"[exc_yaml] Output file: {output_path}")
 
 

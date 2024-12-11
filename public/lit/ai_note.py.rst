@@ -4,10 +4,12 @@ Note-AI
 
 Running OpenAI prompts.
 
-To set up the environment you can install Miniconda_.
-For details see `Environment Setup`_.
+- To set up the environment you can install Miniconda_.
+- For details see `Environment Setup`_.
+- Get `Python Source`_.
 
 .. _Miniconda: https://docs.conda.io/projects/miniconda/en/latest/
+.. _Python Source: ../../ai_note.py
 
 .. contents::
 

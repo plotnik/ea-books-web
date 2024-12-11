@@ -16,12 +16,12 @@ Extract line numbers for exceptions and print then in chunks of ``chunk_length``
   parser = argparse.ArgumentParser(description="exc yaml")
 
   parser.add_argument("log_path", help="Log path")
+  parser.add_argument("-c", "--chunk-length", help="Length of exception stack trace chunk", type=int, default=10)
 
   args = parser.parse_args()
 
   log_path = args.log_path
-
-  chunk_length = 5
+  chunk_length = args.chunk_length
 
   def read_yaml(file_path):
       with open(file_path, 'r') as file:
@@ -34,7 +34,7 @@ Extract line numbers for exceptions and print then in chunks of ``chunk_length``
       # Include the three following lines for each line number
       for line in line_numbers:
           lines_to_extract.update(range(line, line + chunk_length))
-  
+
       extracted_lines = {}
       with open(log_path, 'r') as file:
           for i, line in enumerate(file, 1):
@@ -49,7 +49,7 @@ Extract line numbers for exceptions and print then in chunks of ``chunk_length``
               if k2 > k1 + 1:
                   file.write("\n\n")
               k1 = k2 
-            
+          
               file.write(f"{k2}: {extracted_lines[k2]}\n")
 
 
@@ -60,6 +60,7 @@ Extract line numbers for exceptions and print then in chunks of ``chunk_length``
   line_numbers = read_yaml(yaml_path)
   extracted_lines = extract_lines(log_path, line_numbers)
   write_output(extracted_lines, output_path)
-  print(f"Extraction complete. Check '{output_path}'.")
+  print(f"[exc_yaml] Extraction complete with chunk length: {chunk_length}")
+  print(f"[exc_yaml] Output file: {output_path}")
 
 

@@ -4,10 +4,12 @@
 #
 # Running OpenAI prompts.
 #
-# To set up the environment you can install Miniconda_.
-# For details see `Environment Setup`_.
+# - To set up the environment you can install Miniconda_.
+# - For details see `Environment Setup`_.
+# - Get `Python Source`_.
 #
 # .. _Miniconda: https://docs.conda.io/projects/miniconda/en/latest/
+# .. _Python Source: ../../ai_note.py
 #
 # .. contents::
 #
@@ -29,7 +31,7 @@ import time
 import os
 
 # Print banner.
-# 
+#
 # ::
 
 @st.cache_data
@@ -194,7 +196,7 @@ if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
         with open(out_file, 'w') as file:
             file.write(st.session_state.openai_result)
         st.write(f'Note saved: `{out_file}`')
-      
+    
 # Environment Setup
 # -----------------
 #

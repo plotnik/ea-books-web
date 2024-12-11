@@ -1,14 +1,21 @@
 # Code Review
 # ===========
 #
-# Submit multiple `.java` files along with their corresponding `.patch` files
+# Submit multiple ``.java`` files along with their corresponding ``.patch`` files
 # to ChatGPT for review.
+#
+# Here is the example on how to create ``.patch`` file between branches 
+# ``origin/develop`` and ``feature/JIRA-12345`` for file 
+# ``path/to/file/MyClass.java``:
+#
+# ``git diff origin/develop feature/JIRA-12345 -- path/to/file/MyClass.java > ../MyClass.patch``
 #
 # ::
 
 import os
 import fnmatch
 import tiktoken
+import textwrap
 import streamlit as st
 from openai import OpenAI
 
@@ -22,7 +29,7 @@ openai_temperature = 0.7
 client = OpenAI()
 encoding = tiktoken.encoding_for_model(openai_model)
 
-# Get names of Java files in current folder.
+# Get names of files in current folder.
 #
 # ::
     
@@ -45,6 +52,11 @@ messages.append({
       Provide feedback for each set."""
 })
 
+# Extract ``.java`` and ``.patch`` files from the list 
+# and add them to ``messages``.
+#
+# ::
+    
 tokens = 0
 num = 0
 for java_file in java_files:
@@ -70,10 +82,42 @@ for java_file in java_files:
 
 st.write(f"Tokens: `{tokens}`") 
 
-# Button to send OpenAI request.
+openai_result = ""
+
+# Join the strings with their corresponding numbers
 #
 # ::
     
+def format_list_with_numbers(string_list):
+    formatted_strings = "\n".join(f"{index + 1}. {item}" for index, item in enumerate(string_list))
+    return formatted_strings
+
+# Write output file
+#
+# ::
+
+def save_result(out_file):
+    with open(out_file, 'w') as file:
+        file.write(textwrap.dedent(f"""
+            # Code Review
+          
+            ## Files
+          
+            """))
+        file.write(format_list_with_numbers(java_files)) 
+        file.write(textwrap.dedent(f"""
+          
+            ## Result
+          
+            """))
+        file.write(openai_result)    
+          
+    st.write(f"File saved: `{out_file}`")  
+  
+# Button to send OpenAI request.
+#
+# ::
+
 if st.button("Call OpenAI"):
     response = client.chat.completions.create(
         model=openai_model,
@@ -84,11 +128,6 @@ if st.button("Call OpenAI"):
     openai_result = choice.message.content
     st.write(openai_result)
 
-# Save OpenAI result.
-#
-# ::
-    
-    out_file = "code_review.md"
-    with open(out_file, 'w') as file:
-            file.write(openai_result)
+    save_result("code_review.md")
+
 
