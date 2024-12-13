@@ -1,0 +1,519 @@
+= Tutorial on Spring Boot Actuator from Baeldung
+:toc: right
+:source-highlighter: coderay
+:icons: font
+
+> https://www.baeldung.com/spring-boot-actuators
+
+In a departure from earlier versions, *most endpoints in the Actuator
+are disabled by default.* As a result, only the _/health_ and _/info_
+endpoints are accessible initially.
+
+To enable all endpoints, we can set
+`management.endpoints.web.exposure.include=*`. Alternatively, specific
+endpoints can be listed for inclusion.
+
+*The Actuator now shares its security configuration with the
+application's standard security rules, greatly simplifying the security
+model.*
+
+For projects utilizing Spring Security, adjustments to the Actuator's
+security rules are necessary to permit access to its endpoints. For
+example, by adding the following entry for _/actuator/**_:
+
+[source,java]
+----
+@Bean
+public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+    return http
+      .authorizeExchange()
+      .pathMatchers("/actuator/**").permitAll()
+      .anyExchange().authenticated()
+      .and().build();
+}
+----
+
+Moreover, all Actuator endpoints are now consolidated under the default
+path of _/actuator_. This path can be customized using the new property
+`management.endpoints.web.base-path`.
+
+== Predefined Endpoints
+
+Let’s explore the current available endpoints, noting that some have
+been added, others removed, and several restructured:
+
+* *_/auditevents_*: Lists security audit events, such as user
+login/logout, with filtering options available by principal or type.
+* *_/beans_*: Displays all beans within the _BeanFactory_, though it
+does not support filtering.
+* *_/conditions_*: Previously known as _/autoconfig_, it reports on
+autoconfiguration conditions.
+* *_/configprops_*: Retrieves all _@ConfigurationProperties_ beans.
+* *_/env_*: Returns current environment properties, with the option to
+fetch individual properties.
+* *_/flyway_*: Offers information regarding Flyway database migrations.
+* *_/health_*: Summarizes the application's health status.
+* *_/heapdump_*: Generates and returns a heap dump from the JVM running
+the application.
+* *_/info_*: Provides general information, which may include custom
+data, build information, or details about the latest commit.
+* *_/liquibase_*: Functions similarly to _/flyway_, but for Liquibase.
+* *_/logfile_*: Displays standard application logs.
+* *_/loggers_*: Allows querying and modification of the application's
+logging level.
+* *_/metrics_*: Details application metrics, including both generic and
+custom metrics.
+* *_/prometheus_*: Returns metrics formatted for use with a Prometheus
+server.
+* *_/scheduledtasks_*: Provides information about scheduled tasks within
+the application.
+* *_/sessions_*: Lists HTTP sessions, applicable if Spring Session is in
+use.
+* *_/shutdown_*: Executes a graceful shutdown of the application.
+* *_/threaddump_*: Dumps thread information from the underlying JVM.
+
+== Hypermedia for Actuator Endpoints
+
+A new discovery endpoint has been introduced, providing links to all
+available actuator endpoints, facilitating easier navigation.
+
+*By default, this discovery endpoint is accessible via the _/actuator_
+path.*
+
+When a _GET_ request is sent to this URL, it will return a JSON object
+containing links to various actuator endpoints:
+
+[source,json]
+----
+{
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/actuator",
+      "templated": false
+    },
+    "features-arg0": {
+      "href": "http://localhost:8080/actuator/features/{arg0}",
+      "templated": true
+    },
+    "features": {
+      "href": "http://localhost:8080/actuator/features",
+      "templated": false
+    },
+    "beans": {
+      "href": "http://localhost:8080/actuator/beans",
+      "templated": false
+    },
+    "caches-cache": {
+      "href": "http://localhost:8080/actuator/caches/{cache}",
+      "templated": true
+    },
+    // truncated
+}
+----
+
+This response illustrates how the _/actuator_ endpoint lists all
+available actuator endpoints within the `_links` field.
+
+*If a custom management base path is configured, the discovery URL
+should reflect that base path.*
+
+For instance, setting `management.endpoints.web.base-path` to _/mgmt_
+requires requesting the _/mgmt_ endpoint to view the list of links.
+
+Notably, when the management base path is set to _/_ (the root), the
+discovery endpoint is disabled to avoid conflicts with other mappings.
+
+== Health Indicators
+
+As in previous versions, adding custom indicators is straightforward.
+While the abstractions for creating custom health endpoints remain
+unchanged, *a new interface, _ReactiveHealthIndicator_, has been
+introduced to facilitate reactive health checks.*
+
+Here's a simple example of a custom reactive health check:
+
+[source,java]
+----
+@Component
+public class DownstreamServiceHealthIndicator implements ReactiveHealthIndicator {
+
+    @Override
+    public Mono<Health> health() {
+        return checkDownstreamServiceHealth().onErrorResume(
+          ex -> Mono.just(new Health.Builder().down(ex).build())
+        );
+    }
+
+    private Mono<Health> checkDownstreamServiceHealth() {
+        // Use WebClient to check health reactively
+        return Mono.just(new Health.Builder().up().build());
+    }
+}
+----
+
+*A beneficial feature of health indicators is the ability to organize
+them into a hierarchical structure.*
+
+For instance, in previous example, we could classify all downstream
+services under a `downstream-services` category, which would be
+considered healthy as long as every nested service is reachable.
+
+For a more in-depth exploration of health indicators, refer to
+article on https://www.baeldung.com/spring-boot-health-indicators[health
+indicators].
+
+== Health Groups
+
+*Spring Boot now allows health indicators to be organized into
+https://github.com/spring-projects/spring-boot/blob/c3aa494ba32b8271ea19dd041327441b27ddc319/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/health/HealthEndpointGroups.java#L30[groups],
+enabling consistent configuration across all members of a group.*
+
+For example, we can create a health group named _custom_ by adding the
+following to our _application.properties_:
+
+[source,plaintext]
+----
+management.endpoint.health.group.custom.include=diskSpace,ping
+----
+
+In this configuration, the _custom_ group will include the _diskSpace_
+and _ping_ health indicators.
+
+When we call the _/actuator/health_ endpoint, the JSON response will
+reflect the new health group:
+
+[source,javascript]
+----
+{"status":"UP","groups":["custom"]}
+----
+
+*With health groups, we can view aggregated results from several health
+indicators.*
+
+If we query the _/actuator/health/custom_ endpoint:
+
+[source,javascript]
+----
+{"status":"UP"}
+----
+
+We can configure the group to reveal more details via
+_application.properties_:
+
+[source,plaintext]
+----
+management.endpoint.health.group.custom.show-components=always
+management.endpoint.health.group.custom.show-details=always
+----
+
+Now, sending the same request to _/actuator/health/custom_ will yield
+more comprehensive details:
+
+[source,javascript]
+----
+{
+  "status": "UP",
+  "components": {
+    "diskSpace": {
+      "status": "UP",
+      "details": {
+        "total": 499963170816,
+        "free": 91300069376,
+        "threshold": 10485760
+      }
+    },
+    "ping": {
+      "status": "UP"
+    }
+  }
+}
+----
+
+It's also possible to restrict the display of these details to
+authorized users:
+
+[source,plaintext]
+----
+management.endpoint.health.group.custom.show-components=when_authorized
+management.endpoint.health.group.custom.show-details=when_authorized
+----
+
+*We can define custom status mappings as well.*
+
+For instance, instead of returning an HTTP 200 OK response, we could
+configure it to return a 207 status code:
+
+[source,plaintext]
+----
+management.endpoint.health.group.custom.status.http-mapping.up=207
+----
+
+This tells Spring Boot to return a 207 HTTP status code if the _custom_
+group status is _UP_.
+
+== Metrics in Spring Boot
+
+*Spring Boot has transitioned from its in-house metrics system to
+Micrometer support*, resulting in breaking changes. If your application
+previously relied on metric services like _GaugeService_ or
+_CounterService_, these are no longer available.
+
+Additionally, Spring Boot now provides an autoconfigured _MeterRegistry_
+bean, enabling direct interactions with
+https://www.baeldung.com/micrometer[Micrometer] for metrics collection.
+
+With Micrometer now included in the Actuator's dependencies, it suffices
+to ensure the Actuator dependency is present in the classpath.
+
+Moreover, the response from the _/metrics_ endpoint has undergone
+significant redesign:
+
+[source,javascript]
+----
+{
+  "names": [
+    "jvm.gc.pause",
+    "jvm.buffer.memory.used",
+    "jvm.memory.used",
+    "jvm.buffer.count",
+    // ...
+  ]
+}
+----
+
+The metrics list no longer displays direct values. To access specific
+metric values, one must navigate to the desired metric, such as
+_/actuator/metrics/jvm.gc.pause_, for a detailed response:
+
+[source,javascript]
+----
+{
+  "name": "jvm.gc.pause",
+  "measurements": [
+    {
+      "statistic": "Count",
+      "value": 3.0
+    },
+    {
+      "statistic": "TotalTime",
+      "value": 7.9E7
+    },
+    {
+      "statistic": "Max",
+      "value": 7.9E7
+    }
+  ],
+  "availableTags": [
+    {
+      "tag": "cause",
+      "values": [
+        "Metadata GC Threshold",
+        "Allocation Failure"
+      ]
+    },
+    {
+      "tag": "action",
+      "values": [
+        "end of minor GC",
+        "end of major GC"
+      ]
+    }
+  ]
+}
+----
+
+Metrics are now more comprehensive, including multiple values and
+associated metadata.
+
+== Customizing the _/info_ Endpoint
+
+The _/info_ endpoint remains largely unchanged. *As before, we can add
+Git details by including the appropriate Maven or Gradle dependency*:
+
+[source,xml]
+----
+<dependency>
+    <groupId>pl.project13.maven</groupId>
+    <artifactId>git-commit-id-plugin</artifactId>
+</dependency>
+----
+
+We can also incorporate build information, such as name, group, and
+version, using the Maven or Gradle plugin:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <executions>
+        <execution>
+            <goals>
+                <goal>build-info</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+== Creating a Custom Endpoint
+
+As previously mentioned, creating custom endpoints is still feasible,
+but Spring Boot has restructured the process to accommodate the new
+technology-agnostic framework.
+
+*Here’s how to establish an Actuator endpoint for querying, enabling,
+and disabling feature flags in our application:*
+
+[source,java]
+----
+@Component
+@Endpoint(id = "features")
+public class FeaturesEndpoint {
+
+    private Map<String, Feature> features = new ConcurrentHashMap<>();
+
+    @ReadOperation
+    public Map<String, Feature> features() {
+        return features;
+    }
+
+    @ReadOperation
+    public Feature feature(@Selector String name) {
+        return features.get(name);
+    }
+
+    @WriteOperation
+    public void configureFeature(@Selector String name, Feature feature) {
+        features.put(name, feature);
+    }
+
+    @DeleteOperation
+    public void deleteFeature(@Selector String name) {
+        features.remove(name);
+    }
+
+    public static class Feature {
+        private Boolean enabled;
+
+        // [...] getters and setters 
+    }
+
+}
+----
+
+To register the endpoint, we need to create a bean. In this example,
+we’re using _@Component_ to achieve this and annotating the bean with
+_@Endpoint_.
+
+The endpoint's path is determined by the _id_ parameter in _@Endpoint_.
+In our case, requests will route to _/actuator/features_.
+
+Once implemented, we define operations using:
+
+* *_@ReadOperation_*: Maps to HTTP _GET_ requests.
+* *_@WriteOperation_*: Maps to HTTP _POST_ requests.
+* *_@DeleteOperation_*: Maps to HTTP _DELETE_ requests.
+
+Upon running the application with this endpoint defined, Spring Boot
+will automatically register it.
+
+A quick way to verify this is by checking the logs:
+
+[source,shell]
+----
+[...].WebFluxEndpointHandlerMapping: Mapped "{[/actuator/features/{name}],
+  methods=[GET],
+  produces=[application/vnd.spring-boot.actuator.v2+json || application/json]}"
+[...].WebFluxEndpointHandlerMapping : Mapped "{[/actuator/features],
+  methods=[GET],
+  produces=[application/vnd.spring-boot.actuator.v2+json || application/json]}"
+[...].WebFluxEndpointHandlerMapping : Mapped "{[/actuator/features/{name}],
+  methods=[POST],
+  consumes=[application/vnd.spring-boot.actuator.v2+json || application/json]}"
+[...].WebFluxEndpointHandlerMapping : Mapped "{[/actuator/features/{name}],
+  methods=[DELETE]}"[...]
+----
+
+In the logs, we observe how WebFlux is exposing our new endpoint. If we
+switch to MVC, this will simply delegate the handling without requiring
+code alterations.
+
+There are a few key considerations to keep in mind with this new
+approach:
+
+* There are no dependencies on MVC.
+* The metadata that was previously present in methods (like _sensitive_,
+_enabled_, etc.) is no longer available. However, we can enable or
+disable the endpoint using _@Endpoint(id = “features”, enableByDefault =
+false)_.
+* There’s no necessity to extend a specific interface.
+* Unlike the old read/write model, we can now define _DELETE_ operations
+using _@DeleteOperation_.
+
+== Extending Existing Endpoints
+
+Suppose we want to ensure that our production application never runs a
+_SNAPSHOT_ version. We can accomplish this by modifying the HTTP status
+code of the Actuator _/info_ endpoint that returns this information. If
+the app happens to be a _SNAPSHOT_, a different HTTP status code will be
+returned.
+
+*We can easily extend the behavior of a predefined endpoint using the
+_@EndpointExtension_ annotation* or its more specific variants,
+_@EndpointWebExtension_ or _@EndpointJmxExtension_:
+
+[source,java]
+----
+@Component
+@EndpointWebExtension(endpoint = InfoEndpoint.class)
+public class InfoWebEndpointExtension {
+
+    private InfoEndpoint delegate;
+
+    // standard constructor
+
+    @ReadOperation
+    public WebEndpointResponse<Map> info() {
+        Map<String, Object> info = this.delegate.info();
+        Integer status = getStatus(info);
+        return new WebEndpointResponse<>(info, status);
+    }
+
+    private Integer getStatus(Map<String, Object> info) {
+        // return 5xx if this is a snapshot
+        return 200;
+    }
+}
+----
+
+== Enabling All Endpoints
+
+*To access the actuator endpoints via HTTP, both enabling and exposing
+them is necessary.*
+
+By default, all endpoints except for _/shutdown_ are enabled, but only
+_/health_ and _/info_ are exposed initially.
+
+To expose all endpoints, the following configuration should be added:
+
+[source,java-no-repo]
+----
+management.endpoints.web.exposure.include=*
+----
+
+To explicitly enable a specific endpoint (like _/shutdown_), we use:
+
+[source,java-no-repo]
+----
+management.endpoint.shutdown.enabled=true
+----
+
+To expose all enabled endpoints except one (for instance, _/loggers_),
+we can configure:
+
+[source,java-no-repo]
+----
+management.endpoints.web.exposure.include=*
+management.endpoints.web.exposure.exclude=loggers
+----
