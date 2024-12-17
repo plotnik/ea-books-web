@@ -1,0 +1,191 @@
+= PromQL Cheat Sheet
+:toc: right
+:icons: font
+
+====
+First steps with Prometheus::
+https://prometheus.io/docs/introduction/first_steps/
+
+The Beginner’s Handbook to PromQL::
+https://betterstack.com/community/guides/monitoring/promql/
+
+====
+
+=== 1. Aggregation Operators
+
+[cols=",,",options="header",]
+|===
+|Function |Description |Example
+|`sum()` |Sums values for time series across a dimension.
+|`sum(rate(http_requests_total[5m]))`
+
+|`avg()` |Calculates the average. |`avg(rate(http_requests_total[5m]))`
+
+|`min()` |Finds the minimum value. |`min(rate(http_requests_total[5m]))`
+
+|`max()` |Finds the maximum value. |`max(rate(http_requests_total[5m]))`
+
+|`count()` |Counts the number of series.
+|`count(rate(http_requests_total[5m]))`
+
+|`stddev()` |Standard deviation of values.
+|`stddev(rate(http_requests_total[5m]))`
+
+|`stdvar()` |Variance of values.
+|`stdvar(rate(http_requests_total[5m]))`
+
+|`topk(k, expr)` |Top `k` time series by value.
+|`topk(5, rate(http_requests_total[5m]))`
+
+|`bottomk(k, expr)` |Bottom `k` time series by value.
+|`bottomk(5, rate(http_requests_total[5m]))`
+
+|`count_values()` |Counts occurrences of values and groups them.
+|`count_values("version", up)`
+|===
+
+=== 2. Rate & Time Functions
+
+[cols=",,",options="header",]
+|===
+|Function |Description |Example
+|`rate()` |Calculates per-second average rate of increase for counters
+over a time window. |`rate(http_requests_total[5m])`
+
+|`irate()` |Instantaneous rate of increase (based on the latest two
+samples). |`irate(http_requests_total[5m])`
+
+|`increase()` |Total increase of a counter in the specified time range.
+|`increase(http_requests_total[5m])`
+
+|`delta()` |Calculates difference between first and last value in range.
+|`delta(cpu_usage_total[5m])`
+
+|`deriv()` |Computes the per-second derivative.
+|`deriv(cpu_usage_total[5m])`
+
+|`predict_linear()` |Predicts the value of a gauge in the future based
+on linear regression. |`predict_linear(cpu_usage_total[5m], 3600)`
+|===
+
+=== 3. Time-Series Transformation
+
+[cols=",,",options="header",]
+|===
+|Function |Description |Example
+|`abs()` |Returns the absolute value of a series. |`abs(cpu_usage)`
+
+|`clamp_max()` |Limits the maximum value. |`clamp_max(cpu_usage, 80)`
+
+|`clamp_min()` |Limits the minimum value. |`clamp_min(cpu_usage, 20)`
+
+|`ceil()` |Rounds values up to the nearest integer. |`ceil(cpu_usage)`
+
+|`floor()` |Rounds values down to the nearest integer.
+|`floor(cpu_usage)`
+
+|`round()` |Rounds values to the nearest integer or step.
+|`round(cpu_usage, 0.1)`
+
+|`sort()` |Sorts series by value (ascending).
+|`sort(rate(http_requests_total[5m]))`
+
+|`sort_desc()` |Sorts series by value (descending).
+|`sort_desc(rate(http_requests_total[5m]))`
+|===
+
+=== 4. Time Functions
+
+[cols=",,",options="header",]
+|===
+|Function |Description |Example
+|`time()` |Returns the current time as a Unix timestamp (seconds).
+|`time()`
+
+|`timestamp()` |Returns the timestamp of the sample.
+|`timestamp(cpu_usage)`
+|===
+
+=== 5. Vector Matching & Filtering
+
+[cols=",,",options="header",]
+|===
+|Operator |Description |Example
+|`offset` |Shifts the time series in the past by a duration.
+|`rate(http_requests_total[5m] offset 1h)`
+
+|`ignoring` |Ignores certain labels in vector matching.
+|`up == ignoring(instance) up`
+
+|`on` |Keeps only specified labels for vector matching.
+|`up == on(instance) up`
+
+|`group_left` |Allows many-to-one matching.
+|`up * on(instance) group_left(job) up`
+
+|`group_right` |Allows one-to-many matching.
+|`up * on(instance) group_right(job) up`
+|===
+
+=== 6. String and Label Functions
+
+[cols=",,",options="header",]
+|===
+|Function |Description |Example
+|`label_replace()` |Replaces or creates a label.
+|`label_replace(up, "job", "new", "job", "old")`
+
+|`label_join()` |Joins label values into a single string.
+|`label_join(up, "instance_label", ",", "instance", "job")`
+|===
+
+=== 7. Special Functions
+
+[cols=",,",options="header",]
+|===
+|Function |Description |Example
+|`vector()` |Converts a scalar into a time series. |`vector(5)`
+
+|`scalar()` |Converts a time series into a scalar. |`scalar(up)`
+
+|`bool` |Compares values as a boolean (`0` or `1`) instead of filtering.
+|`up == bool 1`
+|===
+
+=== 8. Instant Vectors & Range Vectors
+
+[cols=",,",options="header",]
+|===
+|Type |Description |Example
+|Instant Vector |Single value per time series at a point in time. |`up`
+
+|Range Vector |Set of values over time for a series.
+|`http_requests_total[5m]`
+|===
+
+=== 9. Scalar Arithmetic
+
+[cols=",,",options="header",]
+|===
+|Operator |Description |Example
+|`+`, `-`, `*`, `/` |Basic arithmetic. |`cpu_usage + 5`
+|`%` |Modulo operator. |`cpu_usage % 2`
+|`^` |Exponentiation. |`cpu_usage ^ 2`
+|===
+
+=== 10. Comparison Operators
+
+[cols=",,",options="header",]
+|===
+|Operator |Description |Example
+|`==` |Equal to. |`up == 1`
+|`!=` |Not equal to. |`up != 1`
+|`>` |Greater than. |`up > 0`
+|`<` |Less than. |`up < 1`
+|`>=` |Greater than or equal. |`up >= 1`
+|`<=` |Less than or equal. |`up <= 1`
+|===
+
+
+
+

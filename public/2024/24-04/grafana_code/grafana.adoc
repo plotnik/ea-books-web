@@ -1,0 +1,47 @@
+= Learn Grafana 10.x
+:icons: font
+:toc: left
+Eric Salituro
+
+== Chapter 4: Connecting Grafana to a Prometheus Data Source
+
+=== Installing the Prometheus server
+
+==== Installing Prometheus from Docker
+
+The provided instructions guide you through setting up Prometheus using Docker Compose, along with a Grafana container for monitoring. First, you're instructed to create a **prometheus.yml** configuration file that sets a global scrape interval of 15 seconds and configures Prometheus to scrape itself every 5 seconds. This file should be saved in the local **ch4/prometheus** directory.
+
+A **docker-compose.yml** file is also provided to start up Grafana and Prometheus containers, exposing them on ports 3000 and 9090, respectively. The local **prometheus** directory is mapped to the Prometheus container for managing configurations externally. After setting up the configuration files, you can start the containers using `docker-compose up -d`, which will pull necessary images and create a network for communication between the containers.
+
+To verify Prometheus is running, you can access http://localhost:9090/targets in a web browser. This setup allows you to proceed with creating a Prometheus data source in Grafana for querying and visualization.
+
+====
+docker-compose.yml::
+link:https://github.com/PacktPublishing/Learn-Grafana-10/blob/main/Chapter04/docker-compose.yml[
+Chapter04/docker-compose.yml]
+
+prometheus.yml::
+https://github.com/PacktPublishing/Learn-Grafana-10/blob/main/Chapter04/prometheus/prometheus.yml[
+Chapter04/prometheus/prometheus.yml]
+====
+
+==== Configuring the Prometheus data source
+
+The instructions describe how to configure a new Prometheus data source within an application, likely Grafana. The steps involve navigating to the connections menu, searching for Prometheus, and entering specific details such as the server URL (`http://prometheus:9090`) and the scrape interval (`5s`). After saving and testing the configuration, a new data source is established, allowing users to view the data captured by Prometheus.
+
+=== Exploring Prometheus
+
+==== Using Explore for investigation
+
+The passage provides a guide on using Grafana's **Explore** tool with a Prometheus data source to visualize metrics. It explains how to select the Prometheus data source and choose metrics like the **Up** metric, which indicates server status (1 if up, 0 if down). Users are advised to set the time range to the last 30 minutes for recent data and can filter metrics by typing in the **Metric** box. The **Explore** tool displays data in graph and table formats, showing the server's status through series values and labels like **instance** and **job**. The text details how Prometheus collects metrics by querying an endpoint and provides an example of another metric, **go_gc_duration_seconds**, which includes multiple series with different labels. Lastly, it notes that Grafana is not limited to Prometheus metrics alone.
+
+==== Configuring Grafana metrics
+
+To obtain similar metrics in Grafana as those available in Prometheus, you need to ensure that Prometheus can connect to Grafana over the same network, especially when using Docker. This is achieved by running them as a dual-container app in Docker Compose, which allows them to share a common network with DNS entries for each service. To enable Prometheus to scrape metrics from Grafana, you need to update the Prometheus configuration by adding a new job in the `prometheus.yml` file to scrape the Grafana server. This involves specifying `grafana:3000` as a target in the `scrape_configs` section. After updating the configuration, restart the Prometheus container using Docker Compose to apply the changes. You can then verify if Grafana is included as a target by checking the Prometheus targets page. This setup allows you to explore the metrics scraped from Grafana in Prometheus.
+
+=== Querying the Prometheus data source
+
+==== Querying for process metrics
+
+The text guides users through querying Grafana for the number of goroutines to assess server load. It involves using Grafana's Metrics browser to specifically search for the **go_goroutines** metric, filtering by job to focus only on Grafana and not Prometheus. The process is detailed with steps and images, illustrating how to navigate through the interface to find and use the query, eventually showing the results in a graph. The graph reveals the stability in the number of goroutines, demonstrating the efficiency of querying Prometheus for application metrics.
+
