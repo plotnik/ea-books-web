@@ -138,7 +138,8 @@ Call OpenAI API
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
-   
+  
+   "Reasoning with o1" https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
 
 ::
@@ -149,31 +150,47 @@ Call OpenAI API
   st.write('---')
   st.write(st.session_state.openai_result)
 
+Call o1 model
+
+::
+
+  def call_o1_model(prompt, text):
+      messages = [
+          {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
+      ]
+      # messages = [
+      #    {"role": "developer", "content": prompt},
+      #    {"role": "user", "content": text},
+      # ] 
+      return client.chat.completions.create(
+          model=openai_model,
+          messages=messages,
+      )
+
+Call earlier model
+
+::
+
+  def call_earlier_model(prompt, text):
+      messages = [
+          {"role": "system", "content": prompt},
+          {"role": "user", "content": text},
+      ] 
+      return client.chat.completions.create(
+              model=openai_model,
+              messages=messages,
+              temperature=openai_temperature,
+          )
+        
   st.sidebar.write('---')
   if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
 
       start_time = time.time()
-    
+  
       if "o1" in openai_model:
-          # Call o1 models 
-          messages = [
-              {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
-          ]
-          response = client.chat.completions.create(
-              model=openai_model,
-              messages=messages,
-          )
+          response = call_o1_model(prompt, text)
       else:
-          # Call earlier models
-          messages = [
-              {"role": "system", "content": prompt},
-              {"role": "user", "content": text},
-          ] 
-          response = client.chat.completions.create(
-                  model=openai_model,
-                  messages=messages,
-                  temperature=openai_temperature,
-              )
+          response = call_earlier_model(prompt, text)
 
       choice = response.choices[0]
       st.session_state.openai_result = choice.message.content
@@ -222,7 +239,7 @@ Output format can be XML with request, response and prompt name, or just respons
           with open(out_file, 'w') as file:
               file.write(st.session_state.openai_result)
           st.write(f'Note saved: `{out_file}`')
-    
+  
 Environment Setup
 -----------------
 
