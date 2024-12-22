@@ -47,19 +47,6 @@ Print banner.
 
   print_banner()
 
-Select OpenAI LLM.
-
-.. csv-table:: Useful Links
-   :header: "Name", "URL"
-   :widths: 10 30
-
-   "OpenAI Models", https://platform.openai.com/docs/models
-
-::
-
-  openai_model = "gpt-4o-mini"
-  openai_temperature = 0.7
-
 Create OpenAI client.
 
 ::
@@ -94,7 +81,32 @@ Select the prompt.
   )
   prompt = get_prompt(prompt_name)
   st.write(prompt)
-  # print(f"Prompt: {prompt_name} for {openai_model}")
+
+Select OpenAI LLM
+-----------------
+
+.. csv-table:: Useful Links
+   :header: "Name", "URL"
+   :widths: 10 30
+
+   "OpenAI Models", https://platform.openai.com/docs/models
+
+::
+
+  openai_models = ["gpt-4o", "gpt-4o-mini"]
+  openai_temperatures = [0, 0.7, 1]
+
+  openai_model = st.sidebar.selectbox(
+     "OpenAI Model",
+     openai_models,
+     index = 1
+  )
+
+  openai_temperature = st.sidebar.select_slider(
+     "OpenAI Temperature",
+     options = openai_temperatures,
+     value = 0.7
+  )
 
 Count tokens
 ------------
@@ -110,7 +122,7 @@ We can use emojis in buttons
 
 ::
     
-  if st.sidebar.button(':thermometer: &nbsp; Count Tokens'):
+  if st.sidebar.button('Count Tokens'):
 
       encoding = tiktoken.encoding_for_model(openai_model)
       tokens = encoding.encode(text)
@@ -196,7 +208,7 @@ Output format can be XML with request, response and prompt name, or just respons
           with open(out_file, 'w') as file:
               file.write(st.session_state.openai_result)
           st.write(f'Note saved: `{out_file}`')
-      
+    
 Environment Setup
 -----------------
 

@@ -10,9 +10,10 @@ Literate Programs
    :maxdepth: 2
    :caption: Contents:
 
-   o_ed.py
-   ai_obsidian.py
    ai_note.py
+   ai_obsidian.py
+   o_ed.py
+   md_view.py
    doc_note.py
    code_review.py
    up_file.py

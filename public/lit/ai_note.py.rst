@@ -47,19 +47,6 @@ Print banner.
 
   print_banner()
 
-Select OpenAI LLM.
-
-.. csv-table:: Useful Links
-   :header: "Name", "URL"
-   :widths: 10 30
-
-   "OpenAI Models", https://platform.openai.com/docs/models
-
-::
-
-  openai_model = "gpt-4o-mini"
-  openai_temperature = 0.7
-
 Create OpenAI client.
 
 ::
@@ -94,7 +81,32 @@ Select the prompt.
   )
   prompt = get_prompt(prompt_name)
   st.write(prompt)
-  # print(f"Prompt: {prompt_name} for {openai_model}")
+
+Select OpenAI LLM
+-----------------
+
+.. csv-table:: Useful Links
+   :header: "Name", "URL"
+   :widths: 10 30
+
+   "OpenAI Models", https://platform.openai.com/docs/models
+
+::
+
+  openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview"]
+  openai_temperatures = [0, 0.7, 1]
+
+  openai_model = st.sidebar.selectbox(
+     "OpenAI Model",
+     openai_models,
+     index = 1
+  )
+
+  openai_temperature = st.sidebar.select_slider(
+     "OpenAI Temperature",
+     options = openai_temperatures,
+     value = 0.7
+  )
 
 Count tokens
 ------------
@@ -110,7 +122,7 @@ We can use emojis in buttons
 
 ::
     
-  if st.sidebar.button(':thermometer: &nbsp; Count Tokens'):
+  if st.sidebar.button('Count Tokens'):
 
       encoding = tiktoken.encoding_for_model(openai_model)
       tokens = encoding.encode(text)
@@ -122,6 +134,12 @@ Call OpenAI API
 ---------------
 
 ``openai_result`` is cached in ``session_state``.
+
+.. csv-table:: Useful Links
+   :header: "Name", "URL"
+   :widths: 10 30
+   
+   "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
 
 ::
 
@@ -135,23 +153,31 @@ Call OpenAI API
   if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
 
       start_time = time.time()
-      response = client.chat.completions.create(
+    
+      if "o1" in openai_model:
+          # Call o1 models 
+          messages = [
+              {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
+          ]
+          response = client.chat.completions.create(
               model=openai_model,
-              messages=[
-                  {"role": "system", "content": prompt},
-                  {"role": "user", "content": text},
-              ],
-              temperature=openai_temperature,
+              messages=messages,
           )
+      else:
+          # Call earlier models
+          messages = [
+              {"role": "system", "content": prompt},
+              {"role": "user", "content": text},
+          ] 
+          response = client.chat.completions.create(
+                  model=openai_model,
+                  messages=messages,
+                  temperature=openai_temperature,
+              )
 
       choice = response.choices[0]
       st.session_state.openai_result = choice.message.content
       st.write(st.session_state.openai_result)
-
-      # print('---')
-      # print(f'finish_reason: `{choice.finish_reason}`')
-      # print(response.usage)
-      # print(f'Choices: {len(response.choices)}')
 
       # Calculate and print execution time
       end_time = time.time()
@@ -196,7 +222,7 @@ Output format can be XML with request, response and prompt name, or just respons
           with open(out_file, 'w') as file:
               file.write(st.session_state.openai_result)
           st.write(f'Note saved: `{out_file}`')
-      
+    
 Environment Setup
 -----------------
 

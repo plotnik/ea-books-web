@@ -14,8 +14,8 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Doc-Note" href="doc_note.py.html" />
-    <link rel="prev" title="Obsidian-AI" href="ai_obsidian.py.html" />
+    <link rel="next" title="Obsidian-AI" href="ai_obsidian.py.html" />
+    <link rel="prev" title="Literate Programs" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -47,16 +47,17 @@
 <li><p><a class="reference internal" href="#note-ai" id="id4">Note-AI</a></p>
 <ul>
 <li><p><a class="reference internal" href="#load-llm-prompts" id="id5">Load LLM prompts</a></p></li>
-<li><p><a class="reference internal" href="#count-tokens" id="id6">Count tokens</a></p></li>
-<li><p><a class="reference internal" href="#call-openai-api" id="id7">Call OpenAI API</a></p></li>
-<li><p><a class="reference internal" href="#save-note" id="id8">Save note</a></p></li>
-<li><p><a class="reference internal" href="#environment-setup" id="id9">Environment Setup</a></p>
+<li><p><a class="reference internal" href="#select-openai-llm" id="id6">Select OpenAI LLM</a></p></li>
+<li><p><a class="reference internal" href="#count-tokens" id="id7">Count tokens</a></p></li>
+<li><p><a class="reference internal" href="#call-openai-api" id="id8">Call OpenAI API</a></p></li>
+<li><p><a class="reference internal" href="#save-note" id="id9">Save note</a></p></li>
+<li><p><a class="reference internal" href="#environment-setup" id="id10">Environment Setup</a></p>
 <ul>
-<li><p><a class="reference internal" href="#step-1-install-miniconda" id="id10">Step 1: Install Miniconda</a></p></li>
-<li><p><a class="reference internal" href="#step-2-configure-your-environment" id="id11">Step 2: Configure Your Environment</a></p></li>
-<li><p><a class="reference internal" href="#step-3-activate-the-environment" id="id12">Step 3: Activate the Environment</a></p></li>
-<li><p><a class="reference internal" href="#step-4-prepare-prompt-file" id="id13">Step 4: Prepare Prompt File</a></p></li>
-<li><p><a class="reference internal" href="#step-5-run-streamlit-script" id="id14">Step 5: Run Streamlit Script</a></p></li>
+<li><p><a class="reference internal" href="#step-1-install-miniconda" id="id11">Step 1: Install Miniconda</a></p></li>
+<li><p><a class="reference internal" href="#step-2-configure-your-environment" id="id12">Step 2: Configure Your Environment</a></p></li>
+<li><p><a class="reference internal" href="#step-3-activate-the-environment" id="id13">Step 3: Activate the Environment</a></p></li>
+<li><p><a class="reference internal" href="#step-4-prepare-prompt-file" id="id14">Step 4: Prepare Prompt File</a></p></li>
+<li><p><a class="reference internal" href="#step-5-run-streamlit-script" id="id15">Step 5: Run Streamlit Script</a></p></li>
 </ul>
 </li>
 </ul>
@@ -105,28 +106,6 @@
 <span class="n">print_banner</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Select OpenAI LLM.</p>
-<table class="docutils align-default" id="id2">
-<caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
-<colgroup>
-<col style="width: 25.0%" />
-<col style="width: 75.0%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>URL</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>OpenAI Models</p></td>
-<td><p><a class="reference external" href="https://platform.openai.com/docs/models">https://platform.openai.com/docs/models</a></p></td>
-</tr>
-</tbody>
-</table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o-mini&quot;</span>
-<span class="n">openai_temperature</span> <span class="o">=</span> <span class="mf">0.7</span>
-</pre></div>
-</div>
 <p>Create OpenAI client.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
 </pre></div>
@@ -154,12 +133,47 @@
 <span class="p">)</span>
 <span class="n">prompt</span> <span class="o">=</span> <span class="n">get_prompt</span><span class="p">(</span><span class="n">prompt_name</span><span class="p">)</span>
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
-<span class="c1"># print(f&quot;Prompt: {prompt_name} for {openai_model}&quot;)</span>
+</pre></div>
+</div>
+</section>
+<section id="select-openai-llm">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Select OpenAI LLM</a><a class="headerlink" href="#select-openai-llm" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>URL</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>OpenAI Models</p></td>
+<td><p><a class="reference external" href="https://platform.openai.com/docs/models">https://platform.openai.com/docs/models</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai_models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">]</span>
+<span class="n">openai_temperatures</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="n">openai_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
+   <span class="s2">&quot;OpenAI Model&quot;</span><span class="p">,</span>
+   <span class="n">openai_models</span><span class="p">,</span>
+   <span class="n">index</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="n">openai_temperature</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">select_slider</span><span class="p">(</span>
+   <span class="s2">&quot;OpenAI Temperature&quot;</span><span class="p">,</span>
+   <span class="n">options</span> <span class="o">=</span> <span class="n">openai_temperatures</span><span class="p">,</span>
+   <span class="n">value</span> <span class="o">=</span> <span class="mf">0.7</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="count-tokens">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Count tokens</a><a class="headerlink" href="#count-tokens" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Count tokens</a><a class="headerlink" href="#count-tokens" title="Link to this heading">¶</a></h2>
 <p>We can use emojis in buttons</p>
 <table class="docutils align-default" id="id3">
 <caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
@@ -181,7 +195,7 @@
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:thermometer: &amp;nbsp; Count Tokens&#39;</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Count Tokens&#39;</span><span class="p">):</span>
 
     <span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="n">openai_model</span><span class="p">)</span>
     <span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
@@ -191,7 +205,7 @@
 </div>
 </section>
 <section id="call-openai-api">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Call OpenAI API</a><a class="headerlink" href="#call-openai-api" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Call OpenAI API</a><a class="headerlink" href="#call-openai-api" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">openai_result</span></code> is cached in <code class="docutils literal notranslate"><span class="pre">session_state</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;openai_result&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -233,7 +247,7 @@
 </div>
 </section>
 <section id="save-note">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Save note</a><a class="headerlink" href="#save-note" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Save note</a><a class="headerlink" href="#save-note" title="Link to this heading">¶</a></h2>
 <p>Notes will be saved to <code class="docutils literal notranslate"><span class="pre">ai_note</span></code> folder which is expected to exist.</p>
 <p>Output format can be XML with request, response and prompt name, or just response markdown.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save_note_disabled</span><span class="p">():</span>
@@ -265,19 +279,19 @@
 </div>
 </section>
 <section id="environment-setup">
-<h2><a class="toc-backref" href="#id9" role="doc-backlink">Environment Setup</a><a class="headerlink" href="#environment-setup" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Environment Setup</a><a class="headerlink" href="#environment-setup" title="Link to this heading">¶</a></h2>
 <p>To set up your environment using <a class="reference external" href="https://docs.conda.io/projects/miniconda/en/latest/">Miniconda</a>, follow the steps below.
 These instructions will guide you through installing Miniconda,
 configuring your environment, and running a Streamlit application
 tailored for AI tasks.</p>
 <section id="step-1-install-miniconda">
-<h3><a class="toc-backref" href="#id10" role="doc-backlink">Step 1: Install Miniconda</a><a class="headerlink" href="#step-1-install-miniconda" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Step 1: Install Miniconda</a><a class="headerlink" href="#step-1-install-miniconda" title="Link to this heading">¶</a></h3>
 <p>First, you need to install Miniconda. Visit the <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Miniconda
 website</a> and follow
 the installation instructions for your operating system.</p>
 </section>
 <section id="step-2-configure-your-environment">
-<h3><a class="toc-backref" href="#id11" role="doc-backlink">Step 2: Configure Your Environment</a><a class="headerlink" href="#step-2-configure-your-environment" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Step 2: Configure Your Environment</a><a class="headerlink" href="#step-2-configure-your-environment" title="Link to this heading">¶</a></h3>
 <ol class="arabic">
 <li><p><strong>Create the Environment File</strong></p>
 <p>Create a file named <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> in your project directory.
@@ -312,14 +326,14 @@ conda<span class="w"> </span>config<span class="w"> </span>--set<span class="w">
 </ol>
 </section>
 <section id="step-3-activate-the-environment">
-<h3><a class="toc-backref" href="#id12" role="doc-backlink">Step 3: Activate the Environment</a><a class="headerlink" href="#step-3-activate-the-environment" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Step 3: Activate the Environment</a><a class="headerlink" href="#step-3-activate-the-environment" title="Link to this heading">¶</a></h3>
 <p>Activate your newly created environment by executing:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>ai_note
 </pre></div>
 </div>
 </section>
 <section id="step-4-prepare-prompt-file">
-<h3><a class="toc-backref" href="#id13" role="doc-backlink">Step 4: Prepare Prompt File</a><a class="headerlink" href="#step-4-prepare-prompt-file" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Step 4: Prepare Prompt File</a><a class="headerlink" href="#step-4-prepare-prompt-file" title="Link to this heading">¶</a></h3>
 <p>Create a file named <code class="docutils literal notranslate"><span class="pre">openai_helper.yml</span></code> in your project directory.
 This file should contain various prompts for the tasks you want to
 accomplish. Here’s an example of how to structure the contents:</p>
@@ -341,7 +355,7 @@ accomplish. Here’s an example of how to structure the contents:</p>
 </div>
 </section>
 <section id="step-5-run-streamlit-script">
-<h3><a class="toc-backref" href="#id14" role="doc-backlink">Step 5: Run Streamlit Script</a><a class="headerlink" href="#step-5-run-streamlit-script" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Step 5: Run Streamlit Script</a><a class="headerlink" href="#step-5-run-streamlit-script" title="Link to this heading">¶</a></h3>
 <p>With your environment set up and activated, and your
 <code class="docutils literal notranslate"><span class="pre">openai_helper.yml</span></code> file ready, you’re now set to run your Streamlit
 application. Execute the following command in your terminal:</p>
@@ -382,16 +396,18 @@ can interact with it through your web browser.</p>
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Note-AI</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#load-llm-prompts">Load LLM prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#select-openai-llm">Select OpenAI LLM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#count-tokens">Count tokens</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#call-openai-api">Call OpenAI API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#save-note">Save note</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#environment-setup">Environment Setup</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
@@ -408,8 +424,8 @@ can interact with it through your web browser.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="ai_obsidian.py.html" title="previous chapter">Obsidian-AI</a></li>
-      <li>Next: <a href="doc_note.py.html" title="next chapter">Doc-Note</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">Literate Programs</a></li>
+      <li>Next: <a href="ai_obsidian.py.html" title="next chapter">Obsidian-AI</a></li>
   </ul></li>
 </ul>
 </div>

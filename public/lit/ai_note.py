@@ -47,19 +47,6 @@ def print_banner():
 
 print_banner()
 
-# Select OpenAI LLM.
-#
-# .. csv-table:: Useful Links
-#    :header: "Name", "URL"
-#    :widths: 10 30
-#
-#    "OpenAI Models", https://platform.openai.com/docs/models
-#
-# ::
-
-openai_model = "gpt-4o-mini"
-openai_temperature = 0.7
-
 # Create OpenAI client.
 #
 # ::
@@ -94,7 +81,32 @@ prompt_name = st.sidebar.selectbox(
 )
 prompt = get_prompt(prompt_name)
 st.write(prompt)
-# print(f"Prompt: {prompt_name} for {openai_model}")
+
+# Select OpenAI LLM
+# -----------------
+#
+# .. csv-table:: Useful Links
+#    :header: "Name", "URL"
+#    :widths: 10 30
+#
+#    "OpenAI Models", https://platform.openai.com/docs/models
+#
+# ::
+
+openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview"]
+openai_temperatures = [0, 0.7, 1]
+
+openai_model = st.sidebar.selectbox(
+   "OpenAI Model",
+   openai_models,
+   index = 1
+)
+
+openai_temperature = st.sidebar.select_slider(
+   "OpenAI Temperature",
+   options = openai_temperatures,
+   value = 0.7
+)
 
 # Count tokens
 # ------------
@@ -110,7 +122,7 @@ st.write(prompt)
 #
 # ::
     
-if st.sidebar.button(':thermometer: &nbsp; Count Tokens'):
+if st.sidebar.button('Count Tokens'):
 
     encoding = tiktoken.encoding_for_model(openai_model)
     tokens = encoding.encode(text)
@@ -123,6 +135,13 @@ if st.sidebar.button(':thermometer: &nbsp; Count Tokens'):
 #
 # ``openai_result`` is cached in ``session_state``.
 #
+# .. csv-table:: Useful Links
+#    :header: "Name", "URL"
+#    :widths: 10 30
+#   
+#    "Reasoning with o1" https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
+#    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
+#
 # ::
 
 if "openai_result" not in st.session_state:
@@ -131,27 +150,51 @@ if "openai_result" not in st.session_state:
 st.write('---')
 st.write(st.session_state.openai_result)
 
+# Call o1 model
+#
+# ::
+
+def call_o1_model(prompt, text):
+    messages = [
+        {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
+    ]
+    # messages = [
+    #    {"role": "developer", "content": prompt},
+    #    {"role": "user", "content": text},
+    # ] 
+    return client.chat.completions.create(
+        model=openai_model,
+        messages=messages,
+    )
+
+# Call earlier model
+#
+# ::
+
+def call_earlier_model(prompt, text):
+    messages = [
+        {"role": "system", "content": prompt},
+        {"role": "user", "content": text},
+    ] 
+    return client.chat.completions.create(
+            model=openai_model,
+            messages=messages,
+            temperature=openai_temperature,
+        )
+        
 st.sidebar.write('---')
 if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
 
     start_time = time.time()
-    response = client.chat.completions.create(
-            model=openai_model,
-            messages=[
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": text},
-            ],
-            temperature=openai_temperature,
-        )
+  
+    if "o1" in openai_model:
+        response = call_o1_model(prompt, text)
+    else:
+        response = call_earlier_model(prompt, text)
 
     choice = response.choices[0]
     st.session_state.openai_result = choice.message.content
     st.write(st.session_state.openai_result)
-
-    # print('---')
-    # print(f'finish_reason: `{choice.finish_reason}`')
-    # print(response.usage)
-    # print(f'Choices: {len(response.choices)}')
 
     # Calculate and print execution time
     end_time = time.time()
@@ -196,7 +239,7 @@ if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
         with open(out_file, 'w') as file:
             file.write(st.session_state.openai_result)
         st.write(f'Note saved: `{out_file}`')
-    
+  
 # Environment Setup
 # -----------------
 #

@@ -4,6 +4,10 @@
 #
 # Edit markdown source for Obsidian page in ``textarea``
 #
+# By the way, jbang_ version appears to be more stable.
+#
+# .. _jbang: https://github.com/a-services/jbang-catalog/blob/main/o_ed.java
+#
 # ::
 
 import streamlit as st
@@ -11,7 +15,7 @@ import json
 import os
 
 # Print banner.
-# 
+#
 # ::
 
 @st.cache_data
@@ -69,7 +73,7 @@ note_home = obsidian_folders[obsidian_names.index(obsidian_name)]
 all_dir_items = os.listdir(note_home)
 subfolders = [item for item in all_dir_items if os.path.isdir(os.path.join(note_home, item)) and item != ".obsidian"]
 subfolders.insert(0, ".")
-      
+    
 subfolder = st.sidebar.selectbox(
    "Folder",
    subfolders,
@@ -134,5 +138,5 @@ note_text = st.text_area("Note", note_text, height=400)
 if st.button('Save'):
     with open(file_path, 'w') as file:
         file.write(note_text)  
-      
+    
     st.write(f'Page saved: `{note_name}`')    

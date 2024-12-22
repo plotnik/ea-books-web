@@ -2,7 +2,11 @@
 # POM CSV
 # =======
 #
-# Export dependencies from POM to CSV file
+# Export the dependencies from the POM file to a CSV file.
+#
+# Open a Streamlit window that contains a text area where you can paste the contents of the `pom.xml` file.
+#
+# After pasting, you can click the **"Parse"** button to process the data, and then click the **"Save CSV"** button to download the CSV file.
 #
 # ::
 
@@ -42,7 +46,7 @@ if st.button("Parse"):
     dependencies = tree['project']['dependencies']['dependency']
 
     st.session_state.df = pd.DataFrame(dependencies)
-  
+
     st.write(f"### `{len(dependencies)}` dependencies")
     st.table(st.session_state.df)
 
