@@ -94,8 +94,20 @@
 </pre></div>
 </div>
 <p>Select OpenAI LLM.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o&quot;</span>
-<span class="n">openai_temperature</span> <span class="o">=</span> <span class="mf">0.7</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai_models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">]</span>
+<span class="n">openai_temperatures</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="n">openai_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
+   <span class="s2">&quot;OpenAI Model&quot;</span><span class="p">,</span>
+   <span class="n">openai_models</span><span class="p">,</span>
+   <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span>
+
+<span class="n">openai_temperature</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">select_slider</span><span class="p">(</span>
+   <span class="s2">&quot;OpenAI Temperature&quot;</span><span class="p">,</span>
+   <span class="n">options</span> <span class="o">=</span> <span class="n">openai_temperatures</span><span class="p">,</span>
+   <span class="n">value</span> <span class="o">=</span> <span class="mf">0.7</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p>Certain models are not compatible with <code class="docutils literal notranslate"><span class="pre">tiktoken</span> <span class="pre">0.7.0</span></code>,
@@ -173,7 +185,6 @@ so we have added a separate configuration for them.</p>
 <span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="n">openai_model_tiktoken</span><span class="p">)</span>
 <span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
-<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Model: `</span><span class="si">{</span><span class="n">openai_model</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Tokens: `</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -195,7 +206,7 @@ so we have added a separate configuration for them.</p>
 <p>Call OpenAI API.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Summarize&#39;</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Summarize&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">):</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">model</span><span class="o">=</span><span class="n">openai_model</span><span class="p">,</span>
             <span class="n">messages</span><span class="o">=</span><span class="p">[</span>

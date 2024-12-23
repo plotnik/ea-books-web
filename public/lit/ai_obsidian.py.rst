@@ -45,8 +45,20 @@ Select OpenAI LLM.
 
 ::
 
-  openai_model = "gpt-4o"
-  openai_temperature = 0.7
+  openai_models = ["gpt-4o-mini", "gpt-4o"]
+  openai_temperatures = [0, 0.7, 1]
+
+  openai_model = st.sidebar.selectbox(
+     "OpenAI Model",
+     openai_models,
+     index = 0
+  )
+
+  openai_temperature = st.sidebar.select_slider(
+     "OpenAI Temperature",
+     options = openai_temperatures,
+     value = 0.7
+  )
 
 Certain models are not compatible with ``tiktoken 0.7.0``, 
 so we have added a separate configuration for them.
@@ -136,7 +148,6 @@ Get the number of tokens.
   encoding = tiktoken.encoding_for_model(openai_model_tiktoken)
   tokens = encoding.encode(text)
 
-  st.write(f'Model: `{openai_model}`') 
   st.write(f'Tokens: `{len(tokens)}`')  
 
 Select the prompt.
@@ -162,7 +173,7 @@ Call OpenAI API.
 
   client = OpenAI()
 
-  if st.button('Summarize'):
+  if st.sidebar.button('Summarize', type='primary'):
       response = client.chat.completions.create(
               model=openai_model,
               messages=[
