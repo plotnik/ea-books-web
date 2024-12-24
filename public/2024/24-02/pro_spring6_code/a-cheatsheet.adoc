@@ -1,0 +1,330 @@
+= Spring Boot Actuator Cheat Sheet
+:toc: right
+:source-highlighter: coderay
+:icons: font
+
+
+Below is a concise cheat sheet for *Spring Boot Actuator*. It covers the
+most commonly used features and configurations for quickly getting
+started, observing, and monitoring a Spring Boot application.
+
+====
+Actuator Docs::
+https://docs.spring.io/spring-boot/reference/actuator/index.html
+====
+
+'''''
+
+== 1. Adding Actuator to Your Project
+
+[arabic]
+. *Maven*
++
+[source,xml]
+----
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+----
+. *Gradle*
++
+[source,gradle]
+----
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+}
+----
+
+'''''
+
+== 2. Default Actuator Endpoints
+
+[cols=",,",options="header",]
+|===
+|*Endpoint* |*Description* |*Default Path*
+|`info` |Displays arbitrary application info (e.g., version,
+description). Customizable in `application.properties` or
+`application.yml`. |`/actuator/info`
+
+|`health` |Shows application health status. Summaries from multiple
+health indicators. |`/actuator/health`
+
+|`metrics` |Shows metrics and counters such as memory usage, CPU usage,
+JVM stats, etc. |`/actuator/metrics`
+
+|`metrics/{metricName}` |Details on a particular metric (e.g.,
+`jvm.memory.used`, `http.server.requests`). |`/actuator/metrics/{name}`
+
+|`prometheus` |Exposes metrics in https://prometheus.io/[Prometheus]
+format. |`/actuator/prometheus`
+
+|`env` |Shows Spring Environment properties (active profiles, property
+sources). |`/actuator/env`
+
+|`env/{name}` |Shows detail for a specific property in the Spring
+Environment. |`/actuator/env/{name}`
+
+|`beans` |Displays all beans in the ApplicationContext.
+|`/actuator/beans`
+
+|`conditions` (was `autoconfig` before 2.0) |Shows auto-configuration
+evaluation report. |`/actuator/conditions`
+
+|`configprops` |Shows configuration properties (prefix, default values,
+etc.). |`/actuator/configprops`
+
+|`threaddump` |Performs a thread dump. |`/actuator/threaddump`
+
+|`heapdump` |Returns a heap dump file. |`/actuator/heapdump`
+
+|`loggers` |Displays and modifies log levels at runtime.
+|`/actuator/loggers`
+
+|`shutdown` (disabled by default) |Gracefully shuts down the
+application. |`/actuator/shutdown`
+
+|`httptrace` (requires additional dependency) |Displays HTTP trace
+information (recent request/response exchanges). |`/actuator/httptrace`
+|===
+
+____
+*Note:* By default, all endpoints are exposed on the base path
+`/actuator`.
+____
+
+'''''
+
+== 3. Key Configuration Properties
+
+Configure Actuator endpoints in `application.properties` or
+`application.yml`:
+
+[cols=",,",options="header",]
+|===
+|*Property* |*Description* |*Example*
+|`management.endpoints.web.exposure.include` |Exposes specific endpoints
+over HTTP.
+|`management.endpoints.web.exposure.include=health,info,metrics`
+
+|`management.endpoints.web.exposure.exclude` |Excludes specific
+endpoints from HTTP exposure.
+|`management.endpoints.web.exposure.exclude=env`
+
+|`management.endpoint.health.show-details` |Sets health info detail
+level (`never`, `when_authorized`, `always`).
+|`management.endpoint.health.show-details=always`
+
+|`management.endpoint.health.roles` |Roles that can see full health
+details (`when_authorized`).
+|`management.endpoint.health.roles=ADMIN,ACTUATOR`
+
+|`management.server.port` |Dedicated management HTTP port.
+|`management.server.port=9001`
+
+|`management.server.address` |Binds the management server to a specific
+network address. |`management.server.address=127.0.0.1`
+
+|`management.server.base-path` |Changes the base path from `/actuator`
+to something else. |`management.server.base-path=/management`
+
+|`management.endpoint.shutdown.enabled` |Enables/disables the shutdown
+endpoint. |`management.endpoint.shutdown.enabled=true`
+
+|`management.trace.http.include` (Spring Boot 2.x) |Defines the items to
+include in HTTP trace.
+|`management.trace.http.include=request-headers,response-headers`
+|===
+
+'''''
+
+== 4. Security Considerations
+
+* In Spring Boot 2+, Actuator endpoints require secure access by default
+(if you have Spring Security on the classpath).
+* If using *Spring Security*, you can configure in `SecurityConfig`
+(Java config) or `application.properties`.
+
+=== Example (Basic Authentication in `application.properties`):
+
+[source,properties]
+----
+spring.security.user.name=admin
+spring.security.user.password=secret
+----
+
+=== Example (Granular Security with Java Config):
+
+[source,java]
+----
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+        .antMatchers("/actuator/health").permitAll()         // Publicly accessible
+        .antMatchers("/actuator/**").hasRole("ADMIN")        // Admin only
+        .anyRequest().authenticated()
+        .and()
+        .httpBasic();
+  }
+}
+----
+
+'''''
+
+== 5. Customizing Actuator Health Indicators
+
+* Health indicators are beans that implement `HealthIndicator`.
+* Add a custom health indicator by creating a class that implements
+`HealthIndicator`:
+
+[source,java]
+----
+@Component
+public class MyCustomHealthIndicator implements HealthIndicator {
+
+    @Override
+    public Health health() {
+        // Your logic to check health
+        boolean healthy = checkYourService();
+        if (healthy) {
+            return Health.up().withDetail("myService", "Available").build();
+        } else {
+            return Health.down().withDetail("myService", "Unavailable").build();
+        }
+    }
+}
+----
+
+'''''
+
+== 6. Viewing and Adding Metrics
+
+[arabic]
+. *Default Metrics*: Memory usage, CPU usage, GC stats, system uptime,
+etc.
+. *HTTP Request Metrics*: Exposed at `http.server.requests` (including
+status codes, timings).
+. *Database Metrics* (if using Spring Data): Connection pool metrics,
+etc.
+
+=== Custom Metrics with Micrometer
+
+[arabic]
+. *Add Micrometer* (usually included by default in newer Spring Boot
+apps).
+. *Use `@Timed`, `@Counted`, or `MeterRegistry`*:
++
+[source,java]
+----
+@RestController
+public class MyController {
+
+    // Option 1: Annotation-based
+    @Timed(value = "my.controller.timer", description = "Time spent in MyController")
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello, World!";
+    }
+
+    // Option 2: Programmatic
+    @Autowired
+    MeterRegistry meterRegistry;
+
+    @GetMapping("/goodbye")
+    public String goodbye() {
+        Counter counter = meterRegistry.counter("my.controller.counter");
+        counter.increment();
+        return "Goodbye, World!";
+    }
+}
+----
+
+'''''
+
+== 7. Exposing Actuator over HTTPS or a Separate Port
+
+* You can isolate Actuator endpoints from the main application
+endpoints:
++
+[source,properties]
+----
+server.port=8080
+management.server.port=9001
+----
+* (Optional) Enable HTTPS for management endpoints if your main
+application doesn’t use HTTPS:
++
+[source,properties]
+----
+management.server.ssl.enabled=true
+management.server.ssl.key-store=classpath:keystore.jks
+management.server.ssl.key-store-password=password
+management.server.ssl.key-password=password
+----
+
+'''''
+
+== 8. Tips & Best Practices
+
+[arabic]
+. *Secure Sensitive Endpoints* +
+Always secure or restrict access to sensitive endpoints like `shutdown`,
+`threaddump`, or `heapdump`.
+. *Limit Exposures in Production* +
+By default, only `health` and `info` might be exposed. Expose additional
+endpoints only if needed.
+. *Use Custom Health Indicators* +
+Write your own `HealthIndicator` or `ReactiveHealthIndicator` for key
+dependencies (databases, caches, message brokers).
+. *Integration with Monitoring Tools* +
+Combine Actuator with *Micrometer* to export metrics to tools like
+Prometheus, Graphite, or New Relic.
+. *Version Control of `info`* +
+Include version info from `git.properties` or `MANIFEST.MF` so you can
+easily see what version is running.
+. *Leverage `@Endpoint` for Custom Requirements* +
+Create entirely new endpoints by using the `@Endpoint` or `@WebEndpoint`
+annotation.
+
+'''''
+
+== Quick Reference: Common Properties
+
+[source,properties]
+----
+# Include only selected endpoints
+management.endpoints.web.exposure.include=health,info,metrics
+
+# Exclude certain endpoints
+management.endpoints.web.exposure.exclude=env
+
+# Turn on/off the shutdown endpoint
+management.endpoint.shutdown.enabled=true
+
+# Return full health details to authorized roles only
+management.endpoint.health.show-details=when_authorized
+management.endpoint.health.roles=ADMIN,ACTUATOR
+
+# Change base path
+management.server.base-path=/management
+
+# Run management on a separate port
+management.server.port=9001
+----
+
+'''''
+
+=== Further Reading
+
+* https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html[Spring
+Boot Actuator Reference]
+* https://micrometer.io/docs[Micrometer Documentation]
+
+'''''
+
+*That’s it!* Use this cheat sheet as a quick reference for configuring
+and using Spring Boot Actuator to gain visibility into your
+application’s health, metrics, and more.
