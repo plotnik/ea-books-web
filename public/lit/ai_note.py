@@ -2,7 +2,7 @@
 # Note-AI
 # =======
 #
-# Running OpenAI prompts.
+# This is kind of Notepad editor with AI functions.
 #
 # - To set up the environment you can install Miniconda_.
 # - For details see `Environment Setup`_.
@@ -13,11 +13,14 @@
 #
 # .. contents::
 #
-# .. csv-table:: Useful Links
-#    :header: "Name", "URL"
-#    :widths: 10 30
+# The provided Python code is a Streamlit_ application designed to interact with `OpenAI's language models`_, allowing users to generate and save notes based on prompts. 
 #
-#    "Examples of OpenAI prompts", https://platform.openai.com/examples
+# .. _Streamlit: https://docs.streamlit.io/
+# .. _OpenAI's language models: https://platform.openai.com/docs/models
+#
+# **User Input**: 
+#    - A text area is provided for users to input their notes.
+#    - A sidebar allows users to select a prompt from the loaded prompts.
 #
 # ::
 
@@ -30,7 +33,7 @@ import platform
 import time
 import os
 
-# Print banner.
+# Prints a stylized banner to the console when the application starts.
 #
 # ::
 
@@ -47,7 +50,9 @@ def print_banner():
 
 print_banner()
 
-# Create OpenAI client.
+# An instance of the OpenAI client is created to facilitate communication with the `OpenAI API`_.
+#
+# .. _OpenAI API: https://platform.openai.com/docs/guides/text-generation
 #
 # ::
 
@@ -55,6 +60,8 @@ client = OpenAI()
 
 # Load LLM prompts
 # ----------------
+#
+# The application reads prompts from a YAML file (`openai_helper.yml`). Each prompt has a name and a corresponding note that describes what the prompt should do.
 #
 # ::
 
@@ -111,7 +118,11 @@ openai_temperature = st.sidebar.select_slider(
 # Count tokens
 # ------------
 #
-# We can use emojis in buttons
+# If a button in the sidebar is clicked, the application counts the number of tokens in the user's input using the `tiktoken`_ library and displays the count.
+#
+# .. _tiktoken: https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
+#
+# By the way, we can use emojis in buttons.
 #
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
@@ -133,14 +144,9 @@ if st.sidebar.button('Count Tokens'):
 # Call OpenAI API
 # ---------------
 #
-# ``openai_result`` is cached in ``session_state``.
+# ``openai_result`` is cached in a `session_state`_.
 #
-# .. csv-table:: Useful Links
-#    :header: "Name", "URL"
-#    :widths: 10 30
-#   
-#    "Reasoning with o1" https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
-#    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
+# .. _session_state: https://docs.streamlit.io/get-started/fundamentals/advanced-concepts#session-state
 #
 # ::
 
@@ -150,30 +156,32 @@ if "openai_result" not in st.session_state:
 st.write('---')
 st.write(st.session_state.openai_result)
 
-# Call o1 model
+# Call ``o1`` model
 #
+# .. csv-table:: Useful Links
+#    :header: "Name", "URL"
+#    :widths: 10 30
+#  
+#    "Reasoning with o1" https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
+#   
 # ::
 
 def call_o1_model(prompt, text):
     messages = [
         {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
     ]
-    # messages = [
-    #    {"role": "developer", "content": prompt},
-    #    {"role": "user", "content": text},
-    # ] 
     return client.chat.completions.create(
         model=openai_model,
         messages=messages,
     )
 
-# Call earlier model
+# Call ``o1``-predecessor model.
 #
 # ::
 
 def call_earlier_model(prompt, text):
     messages = [
-        {"role": "system", "content": prompt},
+        {"role": "developer", "content": prompt},
         {"role": "user", "content": text},
     ] 
     return client.chat.completions.create(
@@ -181,12 +189,26 @@ def call_earlier_model(prompt, text):
             messages=messages,
             temperature=openai_temperature,
         )
+
+# When the user clicks a button to call OpenAI:
+#
+# - The application sends the selected prompt and user input to the OpenAI API.
+# - The response is stored in the session state and displayed to the user.
+# - The execution time for the API call is calculated and can be used for monitoring performance.
+#
+# .. csv-table:: Useful Links
+#    :header: "Name", "URL"
+#    :widths: 10 30
+#  
+#    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
+#
+# ::
         
 st.sidebar.write('---')
 if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
 
     start_time = time.time()
-  
+
     if "o1" in openai_model:
         response = call_o1_model(prompt, text)
     else:
@@ -239,7 +261,7 @@ if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
         with open(out_file, 'w') as file:
             file.write(st.session_state.openai_result)
         st.write(f'Note saved: `{out_file}`')
-  
+
 # Environment Setup
 # -----------------
 #
@@ -312,6 +334,12 @@ if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
 #
 # .. code:: yaml
 #
+#    - name: grammar
+#      note: You will be provided with statements in markdown, and your task is to convert them to standard English.  
+#     
+#    - name: improve_style
+#      note: Improve style of the content you are provided.
+# 
 #    - name: summarize_md
 #      note: You will be provided with statements in markdown, and your task is to summarize the content.
 #
@@ -321,11 +349,15 @@ if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
 #    - name: write_python
 #      note: Write Python code to satisfy the description you are provided.
 #
-#    - name: write_groovy
-#      note: Write Groovy code to satisfy the description you are provided.
-#
 #    - name: improve_style
 #      note: Improve style of the content you are provided.
+#
+# .. csv-table:: Useful Links
+#    :header: "Name", "URL"
+#    :widths: 10 30
+#
+#    "Examples of OpenAI prompts", https://platform.openai.com/examples
+#
 #
 # Step 5: Run Streamlit Script
 # ============================

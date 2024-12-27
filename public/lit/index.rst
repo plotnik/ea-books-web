@@ -14,8 +14,9 @@ Literate Programs
    ai_obsidian.py
    o_ed.py
    md_view.py
-   doc_note.py
+   pan_ui.py
    code_review.py
+   doc_note.py
    up_file.py
    cmp_props.py
    pi_keys.py

@@ -1,11 +1,14 @@
 Obsidian-AI
 ===========
 
+Summarize Obsidian_ page.
+
+.. _Obsidian: https://obsidian.md/
+
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
 
-   "Obsidian", https://obsidian.md/
    "OpenAI API Examples", https://platform.openai.com/examples
    "OpenAI Models", https://platform.openai.com/docs/models
    "How to count tokens with tiktoken", https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
