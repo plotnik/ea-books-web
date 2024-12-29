@@ -10,7 +10,7 @@
 #    :widths: 10 30
 #
 #    "Pandoc User’s Guide", https://pandoc.org/MANUAL.html
-#   
+#  
 # ::
 
 import streamlit as st
@@ -31,7 +31,7 @@ def print_banner():
       | '-' '\\ '-'  ||  ||  |\\ `-' |' '-' '\\ `--.       '  ''  '| 
       |  |-'  `--`--'`--''--' `---'  `---'  `---'        `----' `--' 
       `--'                                                           
-                                                                                                   
+                                                                                                 
     """)
     return 1
 
@@ -49,7 +49,7 @@ ext_names = {
 
 def ext_name(name):
     return ext_names[name]
-  
+
 i_ext = st.sidebar.radio(
     "Input format",
     options = [".md"],
@@ -70,7 +70,7 @@ home_directory = os.path.expanduser("~")
 output_folder = os.path.join(home_directory, ".a-services")
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
-  
+
 # Convert text.
 #
 # ::
@@ -78,29 +78,29 @@ if not os.path.exists(output_folder):
 text_area_height = 250
 
 text = st.text_area("Input text", height = text_area_height)
-      
+    
 def run_pandoc(input_file, output_file):
     with open(input_file, "w", encoding="utf-8") as fout:
         fout.write(text)
-      
+    
     subprocess.run(["pandoc", "-f", "gfm", "-s", input_file, "-o", output_file], check=True)    
-  
+
     with open(output_file, "r", encoding="utf-8") as fin:
         result = fin.read()
-      
+    
     return result    
  
 def convert_text():
     temp_name = "pan_ui"
     input_file = os.path.join(output_folder, temp_name + i_ext)
     output_file = os.path.join(output_folder, temp_name + o_ext)    
-  
+
     result = run_pandoc(input_file, output_file)
     if o_ext == ".adoc": 
         result = asciidoc_headers(result)
-      
+    
     st.text_area(label = "Output text", value = result, height = text_area_height) 
-      
+    
 # Remove lines that contain Pandoc's anchor markup: ``[[something]]``
 #
 # ::
@@ -123,4 +123,4 @@ if st.sidebar.button('Convert', type='primary'):
     else:    
         convert_text()
 
-          
+        
