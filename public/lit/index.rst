@@ -13,6 +13,7 @@ Literate Programs
    ai_note.py
    ai_obsidian.py
    o_ed.py
+   llama_chat.py
    md_view.py
    pan_ui.py
    code_review.py
