@@ -162,7 +162,7 @@ st.write(st.session_state.openai_result)
 #    :header: "Name", "URL"
 #    :widths: 10 30
 #  
-#    "Reasoning with o1" https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
+#    "Reasoning with o1", https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
 #   
 # ::
 

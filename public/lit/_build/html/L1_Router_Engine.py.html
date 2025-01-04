@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Llamaindex Router &#8212; lit  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="AsciiDoc links" href="adoc_links.py.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="llamaindex-router">
+<h1>Llamaindex Router<a class="headerlink" href="#llamaindex-router" title="Permalink to this headline">¶</a></h1>
+<p>Read Markdown documents from the folder, index them using OpenAI embeddings, and provide answers to questions regarding the content.</p>
+<table class="colwidths-given docutils align-default" id="id1">
+<caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>URL</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Building Agentic RAG with Llamaindex</p></td>
+<td><p><a class="reference external" href="https://learn.deeplearning.ai/courses/building-agentic-rag-with-llamaindex/">https://learn.deeplearning.ai/courses/building-agentic-rag-with-llamaindex/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>LlamaIndex</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/">https://docs.llamaindex.ai/en/stable/</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Getting Started</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/#getting-started">https://docs.llamaindex.ai/en/stable/#getting-started</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Starter Tutorial (Local Models)</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/getting_started/starter_example_local/#starter-tutorial-local-models">https://docs.llamaindex.ai/en/stable/getting_started/starter_example_local/#starter-tutorial-local-models</a></p></td>
+</tr>
+<tr class="row-even"><td><p>RAG CLI</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/getting_started/starter_tools/rag_cli/">https://docs.llamaindex.ai/en/stable/getting_started/starter_tools/rag_cli/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>RAG CLI using Local Model</p></td>
+<td><p><a class="reference external" href="https://github.com/run-llama/llama_index/issues/17013">https://github.com/run-llama/llama_index/issues/17013</a></p></td>
+</tr>
+</tbody>
+</table>
+<p>Python code in this chapter demonstrates the use of the LlamaIndex library to process and query text data, specifically from a directory containing Markdown files. The code sets up a system to summarize documents and retrieve specific information, using two types of query engines: one for summarization and one for context retrieval.</p>
+<p><strong>Data Loading:</strong></p>
+<ul class="simple">
+<li><p>The <cite>data_dir</cite> variable specifies the directory containing the text documents.</p></li>
+<li><p>The <cite>SimpleDirectoryReader</cite> class from LlamaIndex is used to load documents from this directory.</p></li>
+</ul>
+<table class="colwidths-given docutils align-default" id="id2">
+<caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>URL</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SimpleDirectoryReader</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/module_guides/loading/simpledirectoryreader/#simpledirectoryreader">https://docs.llamaindex.ai/en/stable/module_guides/loading/simpledirectoryreader/#simpledirectoryreader</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;data_dir&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Directory containing Markdown documents&quot;</span><span class="p">)</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data dir: &quot;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">data_dir</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">llama_index.core</span> <span class="kn">import</span> <span class="n">SimpleDirectoryReader</span>
+
+<span class="c1"># load documents</span>
+<span class="n">documents</span> <span class="o">=</span> <span class="n">SimpleDirectoryReader</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">data_dir</span><span class="p">)</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Define LLM and Embedding model</p>
+<p><strong>Text Processing:</strong></p>
+<ul class="simple">
+<li><p>The <cite>SentenceSplitter</cite> is initialized with a <cite>chunk_size</cite> of 1024, which means documents will be split into chunks of 1024 characters.</p></li>
+<li><p><cite>get_nodes_from_documents</cite> breaks down the documents into manageable nodes (chunks of text).</p></li>
+</ul>
+<table class="colwidths-given docutils align-default" id="id3">
+<caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>URL</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SentenceSplitter</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/api_reference/node_parsers/sentence_splitter/#llama_index.core.node_parser.SentenceSplitter">https://docs.llamaindex.ai/en/stable/api_reference/node_parsers/sentence_splitter/#llama_index.core.node_parser.SentenceSplitter</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Using LLMs</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/module_guides/models/llms/">https://docs.llamaindex.ai/en/stable/module_guides/models/llms/</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">llama_index.core.node_parser</span> <span class="kn">import</span> <span class="n">SentenceSplitter</span>
+
+<span class="n">splitter</span> <span class="o">=</span> <span class="n">SentenceSplitter</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="n">splitter</span><span class="o">.</span><span class="n">get_nodes_from_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Model Setup:</strong></p>
+<ul class="simple">
+<li><p>The code defines a language model (LLM) and an embedding model using the OpenAI <cite>gpt-4o-mini</cite> model for language processing and <cite>text-embedding-3-small</cite> for generating text embeddings.</p></li>
+<li><p>This setup is made using the <cite>Settings</cite> class from the LlamaIndex library.</p></li>
+</ul>
+<table class="colwidths-given docutils align-default" id="id4">
+<caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>URL</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Settings</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/module_guides/supporting_modules/settings/">https://docs.llamaindex.ai/en/stable/module_guides/supporting_modules/settings/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Ollama</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/examples/llm/ollama/">https://docs.llamaindex.ai/en/stable/examples/llm/ollama/</a></p></td>
+</tr>
+<tr class="row-even"><td><p>OpenAIEmbedding</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/api_reference/embeddings/openai/#llama_index.embeddings.openai.OpenAIEmbedding">https://docs.llamaindex.ai/en/stable/api_reference/embeddings/openai/#llama_index.embeddings.openai.OpenAIEmbedding</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>OllamaEmbedding</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/api_reference/embeddings/ollama/#llama_index.embeddings.ollama.OllamaEmbedding">https://docs.llamaindex.ai/en/stable/api_reference/embeddings/ollama/#llama_index.embeddings.ollama.OllamaEmbedding</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">llama_index.core</span> <span class="kn">import</span> <span class="n">Settings</span>
+<span class="kn">from</span> <span class="nn">llama_index.llms.openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+<span class="kn">from</span> <span class="nn">llama_index.embeddings.openai</span> <span class="kn">import</span> <span class="n">OpenAIEmbedding</span>
+
+<span class="n">Settings</span><span class="o">.</span><span class="n">llm</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">)</span>
+<span class="n">Settings</span><span class="o">.</span><span class="n">embed_model</span> <span class="o">=</span> <span class="n">OpenAIEmbedding</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Index Creation:</strong></p>
+<p>Two types of indices are created:</p>
+<ul class="simple">
+<li><p><cite>SummaryIndex</cite>: Used for summarizing documents.</p></li>
+<li><p><cite>VectorStoreIndex</cite>: Used for retrieving specific context or information from the documents.</p></li>
+</ul>
+<table class="colwidths-given docutils align-default" id="id5">
+<caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>URL</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Document Summary Index</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/examples/index_structs/doc_summary/DocSummary/">https://docs.llamaindex.ai/en/stable/examples/index_structs/doc_summary/DocSummary/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>VectorStoreIndex</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/examples/vector_stores/SimpleIndexDemoLlama2/">https://docs.llamaindex.ai/en/stable/examples/vector_stores/SimpleIndexDemoLlama2/</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Starter Tutorial (OpenAI)</p></td>
+<td><p><a class="reference external" href="https://docs.llamaindex.ai/en/stable/getting_started/starter_example/">https://docs.llamaindex.ai/en/stable/getting_started/starter_example/</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">llama_index.core</span> <span class="kn">import</span> <span class="n">SummaryIndex</span><span class="p">,</span> <span class="n">VectorStoreIndex</span>
+
+<span class="n">summary_index</span> <span class="o">=</span> <span class="n">SummaryIndex</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">vector_index</span> <span class="o">=</span> <span class="n">VectorStoreIndex</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Query Engine Initialization:</strong></p>
+<p>Two query engines are initialized:</p>
+<ul class="simple">
+<li><p><cite>summary_query_engine</cite>: Configured for summarization tasks, using a tree-based summarization response mode and asynchronous processing.</p></li>
+<li><p><cite>vector_query_engine</cite>: Configured for retrieving specific contexts from the documents.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">summary_query_engine</span> <span class="o">=</span> <span class="n">summary_index</span><span class="o">.</span><span class="n">as_query_engine</span><span class="p">(</span>
+    <span class="n">response_mode</span><span class="o">=</span><span class="s2">&quot;tree_summarize&quot;</span><span class="p">,</span>
+    <span class="n">use_async</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">vector_query_engine</span> <span class="o">=</span> <span class="n">vector_index</span><span class="o">.</span><span class="n">as_query_engine</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Tool Definition:</strong></p>
+<p><cite>QueryEngineTool</cite> instances are created for each query engine to facilitate query processing:</p>
+<ul class="simple">
+<li><p><cite>summary_tool</cite>: For summarization queries.</p></li>
+<li><p><cite>vector_tool</cite>: For context retrieval queries.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">llama_index.core.tools</span> <span class="kn">import</span> <span class="n">QueryEngineTool</span>
+
+<span class="n">summary_tool</span> <span class="o">=</span> <span class="n">QueryEngineTool</span><span class="o">.</span><span class="n">from_defaults</span><span class="p">(</span>
+    <span class="n">query_engine</span><span class="o">=</span><span class="n">summary_query_engine</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Useful for summarization questions related to the book&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">vector_tool</span> <span class="o">=</span> <span class="n">QueryEngineTool</span><span class="o">.</span><span class="n">from_defaults</span><span class="p">(</span>
+    <span class="n">query_engine</span><span class="o">=</span><span class="n">vector_query_engine</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Useful for retrieving specific context from the book.&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Router Query Engine:</strong></p>
+<ul class="simple">
+<li><p>A <cite>RouterQueryEngine</cite> is set up to handle queries using a selector (<cite>LLMSingleSelector</cite>) that chooses the appropriate query engine tool based on the query type.</p></li>
+<li><p><cite>verbose=True</cite> enables detailed logging of the query processing.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">llama_index.core.query_engine.router_query_engine</span> <span class="kn">import</span> <span class="n">RouterQueryEngine</span>
+<span class="kn">from</span> <span class="nn">llama_index.core.selectors</span> <span class="kn">import</span> <span class="n">LLMSingleSelector</span>
+
+<span class="n">query_engine</span> <span class="o">=</span> <span class="n">RouterQueryEngine</span><span class="p">(</span>
+    <span class="n">selector</span><span class="o">=</span><span class="n">LLMSingleSelector</span><span class="o">.</span><span class="n">from_defaults</span><span class="p">(),</span>
+    <span class="n">query_engine_tools</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">summary_tool</span><span class="p">,</span>
+        <span class="n">vector_tool</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Query Execution:</strong></p>
+<ul class="simple">
+<li><p>The <cite>query_engine</cite> is used to execute a query asking for a summary of the document.</p></li>
+<li><p>The response is printed, along with the number of source nodes (chunks of text) involved in generating the response.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">query_engine</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;What is the summary of the document?&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>In summary, this code sets up a system to load and process text data from a directory, create indices for summarization and context retrieval, and execute queries using a router query engine that selects the appropriate processing tool based on the query type.</p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lit</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llama_chat.py.html">LLama Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pom_csv.py.html">POM CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_yaml.py.html">exc yaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_ui.py.html">exc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Llamaindex Router</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="adoc_links.py.html" title="previous chapter">AsciiDoc links</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, EA.
+      
+      |
+      Powered by 
+      <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
+      &amp; 
+      <a href="https://www.sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; 
+      <a href="https://alabaster.readthedocs.io">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/L1_Router_Engine.py.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

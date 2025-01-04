@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
-<title>Building Systems with the ChatGPT API</title>
+<title>DeepLearning.AI Courses</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -434,247 +434,37 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-right">
+<body class="article">
 <div id="header">
-<h1>Building Systems with the ChatGPT API</h1>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_introduction">Introduction</a></li>
-<li><a href="#_language_models_the_chat_format_and_tokens">Language Models, the Chat Format and Tokens</a></li>
-<li><a href="#_classification">Classification</a></li>
-<li><a href="#_moderation">Moderation</a></li>
-<li><a href="#_chain_of_thought_reasoning">Chain of Thought Reasoning</a></li>
-<li><a href="#_chaining_prompts">Chaining Prompts</a></li>
-<li><a href="#_check_outputs">Check outputs</a></li>
-<li><a href="#_evaluation">Evaluation</a></li>
-<li><a href="#_evaluation_part_i">Evaluation Part I</a></li>
-<li><a href="#_evaluation_part_ii">Evaluation Part II</a></li>
-<li><a href="#_summary">Summary</a></li>
-</ul>
-</div>
+<h1><strong>DeepLearning.AI Courses</strong></h1>
 </div>
 <div id="content">
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p><a href="dl_ai.html">&lt;All DeepLearning.AI Courses&gt;</a></p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">DeepLearning.AI Course</dt>
-<dd>
-<p><a href="https://learn.deeplearning.ai/chatgpt-building-system/" class="bare">https://learn.deeplearning.ai/chatgpt-building-system/</a></p>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_introduction">Introduction</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This introduction outlines a course on creating complex applications using the ChatGPT API, expanding on a previous course focused on prompting ChatGPT. The course will cover best practices for building an application, such as a customer service assistant, that involves multiple steps and interactions with a language model. An example provided illustrates a step-by-step process for handling a product inquiry, from content evaluation to providing helpful information. The course will address the need for multiple internal processes that lead to the final user output and will also discuss the ongoing development and improvement of LLM-based applications. The introduction acknowledges contributions from individuals at OpenAI and the DeepLearning.AI team and aims to equip learners with the skills to build and enhance complex multi-step applications.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_language_models_the_chat_format_and_tokens">Language Models, the Chat Format and Tokens</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This video provides an overview of how Large Language Models (LLMs) like GPT-3 work, including training methods, tokenization, and chat formats. It explains that LLMs are trained using supervised learning to predict the next word in a sequence, and can be further tuned to follow instructions or perform specific tasks. Two types of LLMs are discussed: base LLMs, which predict the next word based on text data, and instruction-tuned LLMs, which follow given instructions more accurately.</p>
-</div>
-<div class="paragraph">
-<p>Instruction tuning involves fine-tuning a pre-trained base model with examples that have clear instructions and desired responses. Human feedback is also used to improve the quality of the model&#8217;s outputs, a process known as Reinforcement Learning from Human Feedback (RLHF). The video also shows how to use an LLM via an API, handle token limits, and set the tone or style of responses using system and user messages. Tokenization is important because LLMs predict the next token rather than the next word, which can affect tasks like reversing the letters in a word.</p>
-</div>
-<div class="paragraph">
-<p>The video advises on best practices for securely using API keys and emphasizes the transformative impact of prompting-based machine learning, which allows for rapid development of AI applications, particularly for text and increasingly for vision, though it&#8217;s less applicable for structured data. The video concludes with a transition to the next lesson, which will focus on using these components to build a customer service assistant for an online retailer.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_classification">Classification</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This section discusses the importance of classifying customer service queries to determine the appropriate response. It outlines a method where queries are categorized into primary and secondary categories, which then guide the system in providing relevant instructions. The process involves using a delimiter to separate parts of the instruction or output, and providing a structured output like JSON for easy integration into subsequent steps or systems. Two examples are given: one for a request to delete a user profile, classified as account management and close account, and another asking about flat screen TVs, which is categorized appropriately. The structured approach allows for more specific and relevant follow-up instructions based on the categorization of the query. Future videos will further address ways to process and evaluate inputs, including ensuring responsible use of the system.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_moderation">Moderation</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The provided text outlines strategies for moderating user input and preventing prompt injections in systems that use AI, particularly focusing on OpenAI&#8217;s Moderation API and specific techniques for handling user prompts.</p>
-</div>
-<div class="paragraph">
-<p>Key points include:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>OpenAI Moderation API</strong>: A free tool for developers to filter prohibited content in categories like hate, self-harm, sexual content, and violence. It provides scores for different categories and an overall flag for harmful content.</p>
-</li>
-<li>
-<p><strong>Detecting Prompt Injections</strong>: Users may try to manipulate AI systems by inputting prompts that bypass the system&#8217;s intended use. Strategies to prevent this include:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Using delimiters and clear instructions to contain user inputs.</p>
+<p><a href="llamaindex_rag.html">Building Agentic RAG with Llamaindex</a></p>
 </li>
 <li>
-<p>Adding a prompt to ask if the user is attempting a prompt injection.</p>
+<p><a href="langchain_data.html">LangChain Chat with Your Data</a></p>
+</li>
+<li>
+<p><a href="o1-canvas.html">Collaborative Writing and Coding with OpenAI Canvas</a></p>
+</li>
+<li>
+<p><a href="prompts.html">ChatGPT Prompt Engineering for Developers</a></p>
+</li>
+<li>
+<p><a href="chatgpt_api.html">Building Systems with the ChatGPT API</a></p>
+</li>
+<li>
+<p><a href="llm_testing.html">Automated Testing for LLMOps</a></p>
 </li>
 </ul>
-</div>
-</li>
-<li>
-<p><strong>Example of Moderation API</strong>: The video demonstrates how to use the API to flag inappropriate content.</p>
-</li>
-<li>
-<p><strong>Example of Delimiter Use</strong>: Delimiters can help prevent prompt injections by ensuring responses adhere to specific instructions, such as responding in Italian regardless of the user&#8217;s attempt to change the language.</p>
-</li>
-<li>
-<p><strong>Advanced Language Models</strong>: More sophisticated models like GPT-4 are better at following instructions and avoiding prompt injections, which may reduce the need for additional measures in future systems.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>Overall, the video aims to show developers how to maintain responsible use of AI systems by moderating content and preventing users from manipulating prompt responses.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_chain_of_thought_reasoning">Chain of Thought Reasoning</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This section discusses the concept of "Chain of Thought Reasoning" where a model is prompted to reason through a problem in a series of steps before providing a final answer. This can help prevent reasoning errors and allows for a more methodical approach to problem-solving. The term "inner monologue" refers to a technique where the model&#8217;s reasoning process is hidden from the user, which can be useful in applications like tutoring to avoid revealing answers prematurely.</p>
-</div>
-<div class="paragraph">
-<p>An example is given where a model classifies customer queries into categories and provides responses based on those categories. The model is instructed to follow multiple steps, including correcting any incorrect assumptions the customer might have made about products, and to use a specific format with delimiters to structure its output. This structured output allows for easy extraction of the final user-facing response by cutting off everything before the last delimiter.</p>
-</div>
-<div class="paragraph">
-<p>The model&#8217;s performance is tested with example queries, such as comparing the prices of two products or asking if the store sells TVs. The model is expected to follow the steps and respond correctly based on the information provided. The output is processed to only show the final response to the user, omitting the reasoning steps.</p>
-</div>
-<div class="paragraph">
-<p>The prompt complexity and the need for such detailed instructions might be unnecessary for advanced models like GPT-4. Experimentation is encouraged to find an optimal balance in prompt complexity, and the next video is set to explore how complex tasks can be broken down into simpler subtasks to avoid overcomplicating prompts.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_chaining_prompts">Chaining Prompts</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The video demonstrates how to split complex tasks into simpler subtasks and chain multiple prompts to manage and complete tasks more effectively. This method is compared to cooking a complex meal in stages or writing modular code instead of spaghetti code, emphasizing the benefits of clarity and manageability. Chaining prompts allows for maintaining the state of a system and taking actions based on that state, which can reduce errors, costs, and complexity.</p>
-</div>
-<div class="paragraph">
-<p>An example is given where customer service queries about products are processed. The task involves classifying queries, looking up product information in a catalog, and using that information to respond to customers. Helper functions are created for retrieving product details, and the process is broken down into steps where the output of one step is used as input for the next.</p>
-</div>
-<div class="paragraph">
-<p>The video explains that selectively loading relevant information into the model&#8217;s context avoids confusion, stays within token limits, and saves costs. Language models, like GPT-4, can use various tools and plugins to access external information when necessary. The video also touches on the use of text embeddings for information retrieval, which allows for fuzzy or semantic searches that do not require exact keywords.</p>
-</div>
-<div class="paragraph">
-<p>Finally, the video teases an upcoming course on using text embeddings and concludes by mentioning the next video will cover evaluating language model outputs.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_check_outputs">Check outputs</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This video tutorial covers how to ensure the quality and safety of outputs generated by an AI system before presenting them to users or using them in automation flows. It revisits the use of a moderation API, this time applied to the system&#8217;s outputs, to filter and moderate responses for potentially harmful content. The tutorial also introduces a method of using the AI model itself to evaluate the quality of its outputs by asking it to rate responses based on a predefined rubric or criteria. An example is shown where the model checks if a customer service response answers the question adequately and uses product information correctly. The video suggests that while using the model to evaluate its own output can ensure high quality in critical applications, it may be unnecessary for most applications, especially with more advanced models like GPT-4, due to increased system latency and cost. The tutorial concludes by indicating that the next video will combine everything learned about evaluating inputs, processing, and checking outputs to build an end-to-end system.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_evaluation">Evaluation</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This video tutorial demonstrates how to create an end-to-end customer service assistant using the techniques learned in previous videos. The process involves several steps:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Check user input against a moderation API to ensure it&#8217;s appropriate.</p>
-</li>
-<li>
-<p>Extract a list of products from the input.</p>
-</li>
-<li>
-<p>Look up product information if products are found.</p>
-</li>
-<li>
-<p>Use a model to answer the user&#8217;s question with the information gathered.</p>
-</li>
-<li>
-<p>Run the model&#8217;s response through the moderation API before returning it to the user.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>The tutorial includes a Python package for a chatbot UI and a function called "process_user_message" to handle these steps. It also shows an example interaction with the customer service assistant, demonstrating how it processes questions about products, including listing TVs, providing information on the cheapest and most expensive options, and offering detailed product descriptions.</p>
-</div>
-<div class="paragraph">
-<p>The video concludes by suggesting that the performance of the system can be monitored and improved by tweaking the steps, improving prompts, or changing the retrieval method, with the promise of further discussion in the next video.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_evaluation_part_i">Evaluation Part I</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Isa discusses best practices for evaluating the outputs of a large language model (LLM) used in building an application. Unlike traditional machine learning, which uses a predefined test set, evaluating an LLM often involves gradually building a set of test examples. Initially, one starts by tuning prompts with a few examples, adjusting them as new tricky cases arise. As the number of test examples grows, it becomes more practical to automate testing and use metrics like average accuracy.</p>
-</div>
-<div class="paragraph">
-<p>Isa provides an example of developing a prompt for a shopping application. The process begins with a few examples to refine the prompt, then additional challenging cases are added to the test set as they are encountered. When manual checking becomes cumbersome, automated testing is introduced. Isa demonstrates this process using a Jupyter notebook, where a prompt is fine-tuned through iterative testing against a small set of examples, with the goal of retrieving the correct product categories and items based on customer queries. The prompt is adjusted to eliminate unwanted output and is tested for regression.</p>
-</div>
-<div class="paragraph">
-<p>The video emphasizes the iterative nature of prompt tuning and evaluation, with the possibility of stopping the process early if the system performs satisfactorily on a small development set. For higher-stakes applications, Isa notes the importance of a rigorous evaluation with a larger test set to ensure the system&#8217;s reliability and safety.</p>
-</div>
-<div class="paragraph">
-<p>Overall, Isa highlights the speed and flexibility of developing applications with LLMs, noting that a small set of carefully selected examples can be surprisingly effective in creating a robust system. The next video will address evaluating outputs when the correct answer is more ambiguous.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_evaluation_part_ii">Evaluation Part II</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The video discusses methods for evaluating the quality of a language model&#8217;s (LLM) generated text when there isn&#8217;t just one correct answer. It introduces the concept of a rubric, which is a set of guidelines used to assess the LLM&#8217;s output on different dimensions such as factual accuracy, consistency, and completeness in relation to provided context. Two design patterns are presented for evaluation:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Using a rubric to evaluate the LLM&#8217;s output without an expert-provided ideal answer. The rubric checks whether the LLM&#8217;s response is based only on the given context, doesn&#8217;t include made-up information, and doesn&#8217;t disagree with the context. An example is provided where the LLM&#8217;s response is evaluated as good under these criteria.</p>
-</li>
-<li>
-<p>Comparing the LLM&#8217;s output to an expert-provided ideal answer. Traditional NLP metrics like BLEU score can measure similarity, but a more effective method is to have another LLM compare the generated text to the ideal answer using a rubric. An example demonstrates how the LLM rates its own output against an expert answer, and it is deemed consistent but shorter, receiving a high score.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>The video also suggests that while GPT-3.5 Turbo is used for demonstration, GPT-4 might be more appropriate for robust evaluations despite being more expensive. Additionally, the OpenAI open source evals framework is mentioned as a resource for evaluation methods and community contributions.</p>
-</div>
-<div class="paragraph">
-<p>In summary, the video provides insights on how to assess the quality of LLM outputs using rubrics and comparisons with expert answers, and it emphasizes the importance of continuous monitoring and improvement of LLM systems.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_summary">Summary</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The course concluded with a summary of its main topics, including the workings of an LLM, the importance of tokenizers, methods for evaluating and ensuring the quality and safety of user inputs, utilizing chain of thought reasoning, breaking tasks into subtasks with chain prompts, and the necessity of monitoring and improving system performance over time. The course emphasized responsible development, ensuring safe, accurate, relevant, and appropriately toned responses. The participants were encouraged to apply these concepts in their projects, with anticipation for the innovative applications they will create.</p>
-</div>
-</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-04 07:39:11 +0100
+Last updated 2025-01-04 07:47:22 +0100
 </div>
 </div>
 </body>
