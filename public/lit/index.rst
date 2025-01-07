@@ -27,4 +27,5 @@ Literate Programs
    cmp_folders.py
    adoc_links.py
    L1_Router_Engine.py
+   albums.py
 
