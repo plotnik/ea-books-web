@@ -32,6 +32,7 @@ The provided Python code is a Streamlit_ application designed to interact with `
   import platform
   import time
   import os
+  import ollama
 
 Prints a stylized banner to the console when the application starts.
 
@@ -100,7 +101,7 @@ Select OpenAI LLM
 
 ::
 
-  openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview"]
+  openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview", "ollama"]
   openai_temperatures = [0, 0.7, 1]
 
   openai_model = st.sidebar.selectbox(
@@ -161,19 +162,20 @@ Call ``o1`` model
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
-  
+ 
    "Reasoning with o1", https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
-   
+  
 ::
 
   def call_o1_model(prompt, text):
       messages = [
           {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
       ]
-      return client.chat.completions.create(
+      response = client.chat.completions.create(
           model=openai_model,
           messages=messages,
       )
+      return response.choices[0]
 
 Call ``o1``-predecessor model.
 
@@ -184,12 +186,27 @@ Call ``o1``-predecessor model.
           {"role": "developer", "content": prompt},
           {"role": "user", "content": text},
       ] 
-      return client.chat.completions.create(
+      response = client.chat.completions.create(
               model=openai_model,
               messages=messages,
               temperature=openai_temperature,
           )
+      return response.choices[0]
 
+Call Ollama.
+
+::
+
+  def call_ollama(prompt, text):
+      messages = [
+          {"role": "system", "content": prompt},
+          {"role": "user", "content": text},
+      ] 
+      return ollama.chat(
+              model='llama3.2',
+              messages=messages,
+          )
+    
 When the user clicks a button to call OpenAI:
 
 - The application sends the selected prompt and user input to the OpenAI API.
@@ -199,7 +216,7 @@ When the user clicks a button to call OpenAI:
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
-  
+ 
    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
 
 ::
@@ -208,14 +225,15 @@ When the user clicks a button to call OpenAI:
   if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
 
       start_time = time.time()
-  
+
       if "o1" in openai_model:
           response = call_o1_model(prompt, text)
+      elif "ollama" == openai_model:
+          response = call_ollama(prompt, text)    
       else:
           response = call_earlier_model(prompt, text)
 
-      choice = response.choices[0]
-      st.session_state.openai_result = choice.message.content
+      st.session_state.openai_result = response.message.content
       st.write(st.session_state.openai_result)
 
       # Calculate and print execution time
@@ -261,7 +279,7 @@ Output format can be XML with request, response and prompt name, or just respons
           with open(out_file, 'w') as file:
               file.write(st.session_state.openai_result)
           st.write(f'Note saved: `{out_file}`')
-  
+
 Environment Setup
 -----------------
 
@@ -336,10 +354,10 @@ accomplish. Here’s an example of how to structure the contents:
 
    - name: grammar
      note: You will be provided with statements in markdown, and your task is to convert them to standard English.  
-     
+    
    - name: improve_style
      note: Improve style of the content you are provided.
- 
+
    - name: summarize_md
      note: You will be provided with statements in markdown, and your task is to summarize the content.
 

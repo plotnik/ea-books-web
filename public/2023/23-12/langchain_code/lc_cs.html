@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
-<title>DeepLearning.AI: Building Agentic RAG with Llamaindex</title>
+<title>LangChain Cheat Sheet</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -432,15 +432,124 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+/*! Stylesheet for CodeRay to loosely match GitHub themes | MIT License */
+pre.CodeRay{background:#f7f7f8}
+.CodeRay .line-numbers{border-right:1px solid;opacity:.35;padding:0 .5em 0 0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.75em}
+.CodeRay .line-numbers strong{color:#000}
+table.CodeRay{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.CodeRay td{vertical-align:top;line-height:inherit}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.code{padding:0 0 0 .75em}
+.CodeRay .debug{color:#fff!important;background:navy!important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:navy}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:teal}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:teal}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:teal}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword{color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:teal}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}
+</style>
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>DeepLearning.AI: Building Agentic RAG with Llamaindex</h1>
+<h1>LangChain Cheat Sheet</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_router_engine">Router Engine</a></li>
+<li><a href="#_core_concepts"><strong>Core Concepts</strong></a>
+<ul class="sectlevel2">
+<li><a href="#_1_prompttemplates">1. <strong>PromptTemplates</strong></a></li>
+<li><a href="#_2_chains">2. <strong>Chains</strong></a></li>
+<li><a href="#_3_agents">3. <strong>Agents</strong></a></li>
+<li><a href="#_4_memory">4. <strong>Memory</strong></a></li>
+<li><a href="#_5_document_loaders">5. <strong>Document Loaders</strong></a></li>
+<li><a href="#_6_text_splitters">6. <strong>Text Splitters</strong></a></li>
+<li><a href="#_7_vector_stores">7. <strong>Vector Stores</strong></a></li>
+<li><a href="#_8_retrieval_qa">8. <strong>Retrieval QA</strong></a></li>
+</ul>
+</li>
+<li><a href="#_key_integrations"><strong>Key Integrations</strong></a>
+<ul class="sectlevel2">
+<li><a href="#_1_llms">1. <strong>LLMs</strong></a></li>
+<li><a href="#_2_tools">2. <strong>Tools</strong></a></li>
+<li><a href="#_3_databases">3. <strong>Databases</strong></a></li>
+<li><a href="#_4_document_formats">4. <strong>Document Formats</strong></a></li>
+</ul>
+</li>
+<li><a href="#_best_practices"><strong>Best Practices</strong></a></li>
+<li><a href="#_helpful_links"><strong>Helpful Links</strong></a></li>
 </ul>
 </div>
 </div>
@@ -448,43 +557,375 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p><a href="dl_ai.html">&lt;All DeepLearning.AI Courses&gt;</a></p>
+<p>LangChain is a framework designed for building applications powered by
+large language models (LLMs). It simplifies the development of LLM-based
+applications by providing tools for prompt management, memory, chains,
+agents, and integrations.</p>
 </div>
-<div class="exampleblock">
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_core_concepts"><strong>Core Concepts</strong></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_1_prompttemplates">1. <strong>PromptTemplates</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Purpose</strong>: Define templates for LLM prompts with variables.</p>
+</li>
+<li>
+<p><strong>Usage</strong>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
 <div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">DeepLearning.AI Course</dt>
-<dd>
-<p><a href="https://learn.deeplearning.ai/courses/building-agentic-rag-with-llamaindex/" class="bare">https://learn.deeplearning.ai/courses/building-agentic-rag-with-llamaindex/</a></p>
-</dd>
-</dl>
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.prompts</span> <span class="keyword">import</span> <span class="include">PromptTemplate</span>
+
+prompt = PromptTemplate(
+    input_variables=[<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>],
+    template=<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello {name}, how can I assist you today?</span><span class="delimiter">&quot;</span></span>
+)</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_2_chains">2. <strong>Chains</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Purpose</strong>: Combine multiple components (e.g., prompts, LLMs, tools)
+into a pipeline.</p>
+</li>
+<li>
+<p><strong>Types</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>LLMChain</strong>: Single LLM-based step.</p>
+</li>
+<li>
+<p><strong>SequentialChain</strong>: Sequence of multiple steps.</p>
+</li>
+<li>
+<p><strong>Custom Chains</strong>: User-defined logic.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.chains</span> <span class="keyword">import</span> <span class="include">LLMChain</span>
+<span class="keyword">from</span> <span class="include">langchain.llms</span> <span class="keyword">import</span> <span class="include">OpenAI</span>
+
+llm = OpenAI(temperature=<span class="float">0.7</span>)
+chain = LLMChain(llm=llm, prompt=prompt)
+response = chain.run({<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Alice</span><span class="delimiter">&quot;</span></span>})</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_3_agents">3. <strong>Agents</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Purpose</strong>: Dynamically decide which tool to use based on user input.</p>
+</li>
+<li>
+<p><strong>Tools</strong>: Integrations like search, calculators, etc.</p>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.agents</span> <span class="keyword">import</span> <span class="include">load_tools</span>, <span class="include">initialize_agent</span>
+<span class="keyword">from</span> <span class="include">langchain.llms</span> <span class="keyword">import</span> <span class="include">OpenAI</span>
+
+llm = OpenAI(temperature=<span class="integer">0</span>)
+tools = load_tools([<span class="string"><span class="delimiter">&quot;</span><span class="content">search</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">calculator</span><span class="delimiter">&quot;</span></span>])
+agent = initialize_agent(tools, llm, agent=<span class="string"><span class="delimiter">&quot;</span><span class="content">zero-shot-react-description</span><span class="delimiter">&quot;</span></span>, verbose=<span class="predefined-constant">True</span>)
+response = agent.run(<span class="string"><span class="delimiter">&quot;</span><span class="content">What is the square root of 144?</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_memory">4. <strong>Memory</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Purpose</strong>: Maintain conversation state (context).</p>
+</li>
+<li>
+<p><strong>Types</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>BufferMemory</strong>: Store all messages in a buffer.</p>
+</li>
+<li>
+<p><strong>ConversationSummaryMemory</strong>: Summarize conversations for brevity.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.memory</span> <span class="keyword">import</span> <span class="include">ConversationBufferMemory</span>
+<span class="keyword">from</span> <span class="include">langchain.chains</span> <span class="keyword">import</span> <span class="include">ConversationChain</span>
+
+memory = ConversationBufferMemory()
+conversation = ConversationChain(llm=llm, memory=memory)
+response = conversation.predict(input=<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello!</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_document_loaders">5. <strong>Document Loaders</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Purpose</strong>: Load and process external data (PDFs, text, etc.).</p>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.document_loaders</span> <span class="keyword">import</span> <span class="include">PyPDFLoader</span>
+
+loader = PyPDFLoader(<span class="string"><span class="delimiter">&quot;</span><span class="content">example.pdf</span><span class="delimiter">&quot;</span></span>)
+documents = loader.load()</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_6_text_splitters">6. <strong>Text Splitters</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Purpose</strong>: Split large documents into smaller chunks.</p>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.text_splitter</span> <span class="keyword">import</span> <span class="include">CharacterTextSplitter</span>
+
+splitter = CharacterTextSplitter(chunk_size=<span class="integer">1000</span>, chunk_overlap=<span class="integer">200</span>)
+chunks = splitter.split_text(<span class="string"><span class="delimiter">&quot;</span><span class="content">Long text here...</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_7_vector_stores">7. <strong>Vector Stores</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Purpose</strong>: Store and search embeddings.</p>
+</li>
+<li>
+<p><strong>Integrations</strong>: Pinecone, FAISS, Weaviate, etc.</p>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.vectorstores</span> <span class="keyword">import</span> <span class="include">FAISS</span>
+<span class="keyword">from</span> <span class="include">langchain.embeddings.openai</span> <span class="keyword">import</span> <span class="include">OpenAIEmbeddings</span>
+
+embedding = OpenAIEmbeddings()
+vectorstore = FAISS.from_texts([<span class="string"><span class="delimiter">&quot;</span><span class="content">sample text</span><span class="delimiter">&quot;</span></span>], embedding)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_8_retrieval_qa">8. <strong>Retrieval QA</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Purpose</strong>: Perform QA over a document store.</p>
+</li>
+<li>
+<p><strong>Example</strong>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.chains</span> <span class="keyword">import</span> <span class="include">RetrievalQA</span>
+
+retriever = vectorstore.as_retriever()
+qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+response = qa_chain.run(<span class="string"><span class="delimiter">&quot;</span><span class="content">What is this document about?</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<hr>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_router_engine">Router Engine</h2>
+<h2 id="_key_integrations"><strong>Key Integrations</strong></h2>
 <div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<a href="../../../lit/_build/html/L1_Router_Engine.py.html">L1_Router_Engine.py</a>
-</td>
-</tr>
-</table>
+<div class="sect2">
+<h3 id="_1_llms">1. <strong>LLMs</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>OpenAI, Hugging Face, Cohere, etc.</p>
+</li>
+<li>
+<p>Example:</p>
+</li>
+</ul>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.llms</span> <span class="keyword">import</span> <span class="include">OpenAI</span>
+
+llm = OpenAI(api_key=<span class="string"><span class="delimiter">&quot;</span><span class="content">your_key</span><span class="delimiter">&quot;</span></span>, temperature=<span class="float">0.5</span>)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_tools">2. <strong>Tools</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Search Engines</strong>: Google, Bing.</p>
+</li>
+<li>
+<p><strong>Calculators</strong>: Wolfram Alpha.</p>
+</li>
+<li>
+<p><strong>Custom APIs</strong>: Use <code>Requests</code> wrapper for custom APIs.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_3_databases">3. <strong>Databases</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Vector DBs</strong>: Pinecone, FAISS, Chroma.</p>
+</li>
+<li>
+<p><strong>Relational DBs</strong>: SQL database integrations available.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_document_formats">4. <strong>Document Formats</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>PDFs, CSVs, HTML, Markdown, etc.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_best_practices"><strong>Best Practices</strong></h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Debugging</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>verbose=True</code> in chains and agents for detailed logs.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Performance</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Optimize chunk size and overlap in text splitting for large documents.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Security</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Avoid hardcoding API keys. Use environment variables.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Customizability</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Extend base classes to create custom tools, memory, or chains.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_helpful_links"><strong>Helpful Links</strong></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>LangChain Documentation</strong>:
+<a href="https://docs.langchain.com">https://docs.langchain.com</a></p>
+</li>
+<li>
+<p><strong>GitHub Repository</strong>:
+<a href="https://github.com/hwchase17/langchain">https://github.com/hwchase17/langchain</a></p>
+</li>
+<li>
+<p><strong>Community</strong>: <a href="https://discord.gg/langchain">Discord Server</a></p>
+</li>
+</ul>
+</div>
+<hr>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-11 11:55:27 +0200
+Last updated 2025-01-05 18:44:46 +0200
 </div>
 </div>
 </body>

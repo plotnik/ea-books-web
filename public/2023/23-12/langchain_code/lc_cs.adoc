@@ -1,0 +1,195 @@
+= LangChain Cheat Sheet
+:fonts: icon
+:toc: right
+:source-highlighter: coderay
+
+LangChain is a framework designed for building applications powered by
+large language models (LLMs). It simplifies the development of LLM-based
+applications by providing tools for prompt management, memory, chains,
+agents, and integrations.
+
+'''''
+
+== *Core Concepts*
+
+=== 1. *PromptTemplates*
+
+* *Purpose*: Define templates for LLM prompts with variables.
+* *Usage*:
+
+[source,python]
+----
+from langchain.prompts import PromptTemplate
+
+prompt = PromptTemplate(
+    input_variables=["name"],
+    template="Hello {name}, how can I assist you today?"
+)
+----
+
+=== 2. *Chains*
+
+* *Purpose*: Combine multiple components (e.g., prompts, LLMs, tools)
+into a pipeline.
+* *Types*:
+** *LLMChain*: Single LLM-based step.
+** *SequentialChain*: Sequence of multiple steps.
+** *Custom Chains*: User-defined logic.
+* *Example*:
+
+[source,python]
+----
+from langchain.chains import LLMChain
+from langchain.llms import OpenAI
+
+llm = OpenAI(temperature=0.7)
+chain = LLMChain(llm=llm, prompt=prompt)
+response = chain.run({"name": "Alice"})
+----
+
+=== 3. *Agents*
+
+* *Purpose*: Dynamically decide which tool to use based on user input.
+* *Tools*: Integrations like search, calculators, etc.
+* *Example*:
+
+[source,python]
+----
+from langchain.agents import load_tools, initialize_agent
+from langchain.llms import OpenAI
+
+llm = OpenAI(temperature=0)
+tools = load_tools(["search", "calculator"])
+agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
+response = agent.run("What is the square root of 144?")
+----
+
+=== 4. *Memory*
+
+* *Purpose*: Maintain conversation state (context).
+* *Types*:
+** *BufferMemory*: Store all messages in a buffer.
+** *ConversationSummaryMemory*: Summarize conversations for brevity.
+* *Example*:
+
+[source,python]
+----
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationChain
+
+memory = ConversationBufferMemory()
+conversation = ConversationChain(llm=llm, memory=memory)
+response = conversation.predict(input="Hello!")
+----
+
+=== 5. *Document Loaders*
+
+* *Purpose*: Load and process external data (PDFs, text, etc.).
+* *Example*:
+
+[source,python]
+----
+from langchain.document_loaders import PyPDFLoader
+
+loader = PyPDFLoader("example.pdf")
+documents = loader.load()
+----
+
+=== 6. *Text Splitters*
+
+* *Purpose*: Split large documents into smaller chunks.
+* *Example*:
+
+[source,python]
+----
+from langchain.text_splitter import CharacterTextSplitter
+
+splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+chunks = splitter.split_text("Long text here...")
+----
+
+=== 7. *Vector Stores*
+
+* *Purpose*: Store and search embeddings.
+* *Integrations*: Pinecone, FAISS, Weaviate, etc.
+* *Example*:
+
+[source,python]
+----
+from langchain.vectorstores import FAISS
+from langchain.embeddings.openai import OpenAIEmbeddings
+
+embedding = OpenAIEmbeddings()
+vectorstore = FAISS.from_texts(["sample text"], embedding)
+----
+
+=== 8. *Retrieval QA*
+
+* *Purpose*: Perform QA over a document store.
+* *Example*:
+
+[source,python]
+----
+from langchain.chains import RetrievalQA
+
+retriever = vectorstore.as_retriever()
+qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+response = qa_chain.run("What is this document about?")
+----
+
+'''''
+
+== *Key Integrations*
+
+=== 1. *LLMs*
+
+* OpenAI, Hugging Face, Cohere, etc.
+* Example:
+
+[source,python]
+----
+from langchain.llms import OpenAI
+
+llm = OpenAI(api_key="your_key", temperature=0.5)
+----
+
+=== 2. *Tools*
+
+* *Search Engines*: Google, Bing.
+* *Calculators*: Wolfram Alpha.
+* *Custom APIs*: Use `+Requests+` wrapper for custom APIs.
+
+=== 3. *Databases*
+
+* *Vector DBs*: Pinecone, FAISS, Chroma.
+* *Relational DBs*: SQL database integrations available.
+
+=== 4. *Document Formats*
+
+* PDFs, CSVs, HTML, Markdown, etc.
+
+'''''
+
+== *Best Practices*
+
+[arabic]
+. *Debugging*:
+* Use `+verbose=True+` in chains and agents for detailed logs.
+. *Performance*:
+* Optimize chunk size and overlap in text splitting for large documents.
+. *Security*:
+* Avoid hardcoding API keys. Use environment variables.
+. *Customizability*:
+* Extend base classes to create custom tools, memory, or chains.
+
+'''''
+
+== *Helpful Links*
+
+* *LangChain Documentation*:
+https://docs.langchain.com[https://docs.langchain.com]
+* *GitHub Repository*:
+https://github.com/hwchase17/langchain[https://github.com/hwchase17/langchain]
+* *Community*: https://discord.gg/langchain[Discord Server]
+
+'''''

@@ -32,6 +32,7 @@ import textwrap
 import platform
 import time
 import os
+import ollama
 
 # Prints a stylized banner to the console when the application starts.
 #
@@ -100,7 +101,7 @@ st.write(prompt)
 #
 # ::
 
-openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview"]
+openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview", "ollama"]
 openai_temperatures = [0, 0.7, 1]
 
 openai_model = st.sidebar.selectbox(
@@ -170,10 +171,11 @@ def call_o1_model(prompt, text):
     messages = [
         {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
     ]
-    return client.chat.completions.create(
+    response = client.chat.completions.create(
         model=openai_model,
         messages=messages,
     )
+    return response.choices[0]
 
 # Call ``o1``-predecessor model.
 #
@@ -184,12 +186,27 @@ def call_earlier_model(prompt, text):
         {"role": "developer", "content": prompt},
         {"role": "user", "content": text},
     ] 
-    return client.chat.completions.create(
+    response = client.chat.completions.create(
             model=openai_model,
             messages=messages,
             temperature=openai_temperature,
         )
+    return response.choices[0]
 
+# Call Ollama.
+#
+# ::
+
+def call_ollama(prompt, text):
+    messages = [
+        {"role": "system", "content": prompt},
+        {"role": "user", "content": text},
+    ] 
+    return ollama.chat(
+            model='llama3.2',
+            messages=messages,
+        )
+    
 # When the user clicks a button to call OpenAI:
 #
 # - The application sends the selected prompt and user input to the OpenAI API.
@@ -211,11 +228,12 @@ if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
 
     if "o1" in openai_model:
         response = call_o1_model(prompt, text)
+    elif "ollama" == openai_model:
+        response = call_ollama(prompt, text)    
     else:
         response = call_earlier_model(prompt, text)
 
-    choice = response.choices[0]
-    st.session_state.openai_result = choice.message.content
+    st.session_state.openai_result = response.message.content
     st.write(st.session_state.openai_result)
 
     # Calculate and print execution time
