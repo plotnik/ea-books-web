@@ -1,6 +1,7 @@
 = DeepLearning.AI: Reasoning with o1
 :icons: font
 :toc: right
+:toclevels: 4
 :source-highlighter: coderay
 
 link:dl_ai.html[<All DeepLearning.AI Courses>]
@@ -11,7 +12,7 @@ https://learn.deeplearning.ai/courses/reasoning-with-o1/
 ====
 
 
-== Lesson 2: Prompting o1. Principles
+== Lesson 2: Prompting o1: Principles
 
 ```python
 import json
@@ -192,3 +193,142 @@ response = client.chat.completions.create(model=O1_MODEL
 
 print(response.choices[0].message.content)
 ```
+
+== Lesson 3: Planning with o1
+
+One of the great use cases where `o1` models shine is
+creating a plan to solve a task given a set of tools to carry out the
+plan, and constraints to set bounds around the task. This kind of use
+case would be very slow if we used `o1` for every step, so
+what we'll do is generate a plan with `o1-mini` and then
+execute each step with `gpt-4o-mini`.
+
+Explanation of the link:o1-L3.html[code in this lesson]:
+
+=== Imports and Setup
+
+[arabic]
+. import `copy`, `json`, and `OpenAI from openai`.
+* These libraries or modules provide functionality for duplicating
+Python objects (`copy`), working with JSON, and making requests to
+OpenAI’s services (`OpenAI`).
+. `from utils import o1_tools`: (Though not shown, presumably contains
+additional support or helpers for the “o1” model.)
+
+=== Global Objects
+
+[arabic]
+. `client = OpenAI()`: Instantiates an OpenAI client to call their API.
+. `O1_MODEL` and `GPT_MODEL`: Hold the names of the language models used.
+`O1_MODEL` is the “o1-mini” (a planning model), while `GPT_MODEL` is
+“gpt-4o-mini” (an execution model).
+. `message_list`: A list to store status messages, plan messages, function
+calls, etc. for inspection or logging.
+. `context`: A dictionary that holds the domain-specific data (inventory,
+orders, suppliers, shipping options, etc.). This “context” is central to
+the scenario and is updated as the plan is executed.
+. `initial_context = copy.deepcopy(context)`: Stores a copy of the initial
+state so that changes can be rolled back or examined as needed.
+
+=== Prompt Construction
+
+[arabic]
+. `o1_prompt`: This is the system prompt (or “planner” prompt) that
+instructs the O1 model exactly how to generate a plan. It includes: +
+– Instructions on how to structure the steps, sub-steps, and “if”
+conditions in the plan. +
+– A description of “tools” that the plan may use.
+. `gpt4o_system_prompt`: The system prompt for the GPT-4 “executor” model.
+It explains how to read the plan, identify steps, and call relevant
+functions.
+
+=== Defining Tools
+
+[arabic]
+. `TOOLS` is a list of tool definitions, each describing a function that
+GPT-4 can call. It includes the function name, description, and JSON
+schema for parameters. These are the “allowed” actions GPT-4 can perform
+in the scenario.
+
+=== Implementing the Tools
+
+Each tool from `TOOLS` is implemented as an
+actual Python function. They all read or modify the context dictionary.
+For example: +
+– `get_inventory_status(product_id)`: returns how many units of a product
+are in the current inventory (`context["inventory"]`). +
+– `update_inventory(product_id, quantity_change)`: modifies the inventory
+quantity of a given product. +
+– `allocate_stock`: reduces inventory by a given quantity. +
+– `place_purchase_order`: simulates placing an order for components with a
+supplier, etc.
+
+• `function_mapping`: This dictionary ties the function names (as listed
+in `TOOLS`) to their actual Python implementations. When GPT-4 calls a
+function by name, this mapping is used to run that code with the
+requested arguments.
+
+=== The Main Process
+
+`process_scenario(scenario)`:
+
+[arabic]
+. `append_message(\{'type': 'status', ...})`: Logs a “Generating plan…”
+status.
+. `plan = call_o1(scenario)`: Calls the O1 model with the scenario text to
+produce a plan in a strictly defined format.
+. `append_message(\{'type': 'plan', 'content': plan})`: Stores/logs the
+returned plan.
+. `append_message(\{'type': 'status', ...})`: Logs “Executing plan…”.
+. `messages = call_gpt4o(plan)`: Passes the plan to GPT-4 for execution.
+. `append_message(\{'type': 'status', 'message': 'Processing
+complete.'})`: Logs that the process is done.
+
+• `call_o1(scenario)`:
+
+[arabic]
+. Builds a prompt that includes the o1_prompt plus the scenario details.
+. Calls the O1 model with `client.chat.completions.create(...)` and
+returns the plan text from the response.
+
+• `call_gpt4o(plan)`:
+
+[arabic]
+. Replaces the placeholder `\{policy}` in `gpt4o_system_prompt` with the
+plan text.
+. Maintains a conversation in the messages list. It first sets the
+system message to the `policy`.
+. Enters a loop to repeatedly call GPT-4 with the current messages.
+. GPT-4 can respond with text or function calls (`tool_calls`). +
+– If it calls a function, the code runs the corresponding Python
+function from function_mapping, then replies with the result. GPT-4 can
+read this `tool` response to keep going. +
+– The loop continues until GPT-4 calls the `instructions_complete`
+function, signaling the plan is done.
+
+• `append_message(message)`:
+
+[arabic]
+. Helper to store a message object inside message_list.
+. Also optionally prints out the message for debug/logging.
+
+=== Example Usage
+
+[arabic]
+. `scenario_text`: A string describing the situation: new orders, shipping
+to LA, needing to check inventory, produce items, etc.
+. `messages = process_scenario(scenario_text)`: Runs the entire planning +
+execution pipeline.
+. Prints out each message in messages, including final logs.
+
+=== Overall Flow
+
+[arabic]
+. You provide the scenario.
+. The “planner” model (o1-mini) reads the scenario and generates a
+structured plan.
+. The “execution” model (gpt-4o-mini) reads the plan and, step by step,
+calls Python functions from the provided tools to manage inventory,
+deliver goods, send updates to the customer, etc.
+. Once the plan is fully executed, the entire conversation is logged in
+`message_list`.

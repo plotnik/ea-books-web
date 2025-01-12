@@ -71,6 +71,33 @@ Checks if ``output_folder`` exists in the user's home directory.
   if not os.path.exists(output_folder):
       os.makedirs(output_folder)
 
+  temp_name = "pan_ui"
+  input_file = os.path.join(output_folder, temp_name + i_ext)
+  output_file = os.path.join(output_folder, temp_name + o_ext)    
+
+When converting from ReST to Asciidoc using the Pandoc tool, the code snippets are surrounded by dots.
+We can use a **custom Lua filter** in Pandoc to transform the code blocks into the desired format. 
+
+::
+    
+  custom_codeblock = """
+  function CodeBlock(el)
+      local code = el.text
+      local lang = el.classes[1] or "python" -- Get the first class as the language
+      if lang ~= "" then
+          return pandoc.RawBlock('asciidoc', '```' .. lang .. '\\n' .. code .. '\\n```\\n\\n')
+      else
+          return pandoc.RawBlock('asciidoc', '```\\n' .. code .. '\\n```\\n\\n')
+      end
+  end
+  """
+
+  lua_codeblock_file = os.path.join(output_folder, "custom_codeblock.lua")    
+  with open(lua_codeblock_file, "w", encoding="utf-8") as fout:
+      fout.write(custom_codeblock)
+    
+  lua_filter = "--lua-filter=" + lua_codeblock_file
+
 Convert text.
 
 ::
@@ -84,7 +111,9 @@ Convert text.
           fout.write(text)
   
       if i_ext == ".md":
-          subprocess.run(["pandoc", "-f", "gfm", "-s", input_file, "-o", output_file], check=True)   
+          subprocess.run(["pandoc", "-f", "gfm", "-s", input_file, "-o", output_file], check=True)  
+      elif o_ext == ".adoc": 
+          subprocess.run(["pandoc", lua_filter, "-s", input_file, "-o", output_file], check=True) 
       else:    
           subprocess.run(["pandoc", "-s", input_file, "-o", output_file], check=True)
 
@@ -94,9 +123,6 @@ Convert text.
       return result    
  
   def convert_text():
-      temp_name = "pan_ui"
-      input_file = os.path.join(output_folder, temp_name + i_ext)
-      output_file = os.path.join(output_folder, temp_name + o_ext)    
 
       result = run_pandoc(input_file, output_file)
       if o_ext == ".adoc": 

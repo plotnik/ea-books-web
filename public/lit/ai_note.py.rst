@@ -101,7 +101,7 @@ Select OpenAI LLM
 
 ::
 
-  openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview", "ollama"]
+  openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1", "ollama"]
   openai_temperatures = [0, 0.7, 1]
 
   openai_model = st.sidebar.selectbox(

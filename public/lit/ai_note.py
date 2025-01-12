@@ -101,7 +101,7 @@ st.write(prompt)
 #
 # ::
 
-openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview", "ollama"]
+openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1", "ollama"]
 openai_temperatures = [0, 0.7, 1]
 
 openai_model = st.sidebar.selectbox(
@@ -169,7 +169,9 @@ st.write(st.session_state.openai_result)
 
 def call_o1_model(prompt, text):
     messages = [
-        {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
+        #{"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
+        {"role": "developer", "content": prompt},
+        {"role": "user", "content": text},
     ]
     response = client.chat.completions.create(
         model=openai_model,
@@ -259,7 +261,7 @@ def save_note_disabled():
 
 note_name = st.text_input("Note Name:")
 
-out_format = st.radio("Output Format:", ["XML", "Markdown"], horizontal=True)
+out_format = st.radio("Output Format:", ["Markdown", "XML"], horizontal=True)
 
 if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
     if out_format == "XML":

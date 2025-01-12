@@ -529,12 +529,24 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_lesson_2_prompting_o1_principles">Lesson 2: Prompting o1. Principles</a>
+<li><a href="#_lesson_2_prompting_o1_principles">Lesson 2: Prompting o1: Principles</a>
 <ul class="sectlevel2">
 <li><a href="#_1_simple_and_direct">1. Simple and direct</a></li>
 <li><a href="#_2_no_explicit_cot_required">2. No explicit CoT required</a></li>
 <li><a href="#_3_use_structured_formats">3. Use structured formats</a></li>
 <li><a href="#_4_show_rather_than_tell">4. Show rather than tell</a></li>
+</ul>
+</li>
+<li><a href="#_lesson_3_planning_with_o1">Lesson 3: Planning with o1</a>
+<ul class="sectlevel2">
+<li><a href="#_imports_and_setup">Imports and Setup</a></li>
+<li><a href="#_global_objects">Global Objects</a></li>
+<li><a href="#_prompt_construction">Prompt Construction</a></li>
+<li><a href="#_defining_tools">Defining Tools</a></li>
+<li><a href="#_implementing_the_tools">Implementing the Tools</a></li>
+<li><a href="#_the_main_process">The Main Process</a></li>
+<li><a href="#_example_usage">Example Usage</a></li>
+<li><a href="#_overall_flow">Overall Flow</a></li>
 </ul>
 </li>
 </ul>
@@ -561,7 +573,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </div>
 </div>
 <div class="sect1">
-<h2 id="_lesson_2_prompting_o1_principles">Lesson 2: Prompting o1. Principles</h2>
+<h2 id="_lesson_2_prompting_o1_principles">Lesson 2: Prompting o1: Principles</h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
@@ -760,10 +772,272 @@ print(response.choices[<span class="integer">0</span>].message.content)</code></
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_lesson_3_planning_with_o1">Lesson 3: Planning with o1</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the great use cases where <code>o1</code> models shine is
+creating a plan to solve a task given a set of tools to carry out the
+plan, and constraints to set bounds around the task. This kind of use
+case would be very slow if we used <code>o1</code> for every step, so
+what we&#8217;ll do is generate a plan with <code>o1-mini</code> and then
+execute each step with <code>gpt-4o-mini</code>.</p>
+</div>
+<div class="paragraph">
+<p>Explanation of the <a href="o1-L3.html">code in this lesson</a>:</p>
+</div>
+<div class="sect2">
+<h3 id="_imports_and_setup">Imports and Setup</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>import <code>copy</code>, <code>json</code>, and <code>OpenAI from openai</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>These libraries or modules provide functionality for duplicating
+Python objects (<code>copy</code>), working with JSON, and making requests to
+OpenAI’s services (<code>OpenAI</code>).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>from utils import o1_tools</code>: (Though not shown, presumably contains
+additional support or helpers for the “o1” model.)</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_global_objects">Global Objects</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>client = OpenAI()</code>: Instantiates an OpenAI client to call their API.</p>
+</li>
+<li>
+<p><code>O1_MODEL</code> and <code>GPT_MODEL</code>: Hold the names of the language models used.
+<code>O1_MODEL</code> is the “o1-mini” (a planning model), while <code>GPT_MODEL</code> is
+“gpt-4o-mini” (an execution model).</p>
+</li>
+<li>
+<p><code>message_list</code>: A list to store status messages, plan messages, function
+calls, etc. for inspection or logging.</p>
+</li>
+<li>
+<p><code>context</code>: A dictionary that holds the domain-specific data (inventory,
+orders, suppliers, shipping options, etc.). This “context” is central to
+the scenario and is updated as the plan is executed.</p>
+</li>
+<li>
+<p><code>initial_context = copy.deepcopy(context)</code>: Stores a copy of the initial
+state so that changes can be rolled back or examined as needed.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_prompt_construction">Prompt Construction</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>o1_prompt</code>: This is the system prompt (or “planner” prompt) that
+instructs the O1 model exactly how to generate a plan. It includes:<br>
+– Instructions on how to structure the steps, sub-steps, and “if”
+conditions in the plan.<br>
+– A description of “tools” that the plan may use.</p>
+</li>
+<li>
+<p><code>gpt4o_system_prompt</code>: The system prompt for the GPT-4 “executor” model.
+It explains how to read the plan, identify steps, and call relevant
+functions.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_defining_tools">Defining Tools</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>TOOLS</code> is a list of tool definitions, each describing a function that
+GPT-4 can call. It includes the function name, description, and JSON
+schema for parameters. These are the “allowed” actions GPT-4 can perform
+in the scenario.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_implementing_the_tools">Implementing the Tools</h3>
+<div class="paragraph">
+<p>Each tool from <code>TOOLS</code> is implemented as an
+actual Python function. They all read or modify the context dictionary.
+For example:<br>
+– <code>get_inventory_status(product_id)</code>: returns how many units of a product
+are in the current inventory (<code>context["inventory"]</code>).<br>
+– <code>update_inventory(product_id, quantity_change)</code>: modifies the inventory
+quantity of a given product.<br>
+– <code>allocate_stock</code>: reduces inventory by a given quantity.<br>
+– <code>place_purchase_order</code>: simulates placing an order for components with a
+supplier, etc.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>function_mapping</code>: This dictionary ties the function names (as listed
+in <code>TOOLS</code>) to their actual Python implementations. When GPT-4 calls a
+function by name, this mapping is used to run that code with the
+requested arguments.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_main_process">The Main Process</h3>
+<div class="paragraph">
+<p><code>process_scenario(scenario)</code>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>append_message(\{'type': 'status', &#8230;&#8203;})</code>: Logs a “Generating plan…”
+status.</p>
+</li>
+<li>
+<p><code>plan = call_o1(scenario)</code>: Calls the O1 model with the scenario text to
+produce a plan in a strictly defined format.</p>
+</li>
+<li>
+<p><code>append_message(\{'type': 'plan', 'content': plan})</code>: Stores/logs the
+returned plan.</p>
+</li>
+<li>
+<p><code>append_message(\{'type': 'status', &#8230;&#8203;})</code>: Logs “Executing plan…”.</p>
+</li>
+<li>
+<p><code>messages = call_gpt4o(plan)</code>: Passes the plan to GPT-4 for execution.</p>
+</li>
+<li>
+<p><code>append_message(\{'type': 'status', 'message': 'Processing
+complete.'})</code>: Logs that the process is done.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>call_o1(scenario)</code>:</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Builds a prompt that includes the o1_prompt plus the scenario details.</p>
+</li>
+<li>
+<p>Calls the O1 model with <code>client.chat.completions.create(&#8230;&#8203;)</code> and
+returns the plan text from the response.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>call_gpt4o(plan)</code>:</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Replaces the placeholder <code>{policy}</code> in <code>gpt4o_system_prompt</code> with the
+plan text.</p>
+</li>
+<li>
+<p>Maintains a conversation in the messages list. It first sets the
+system message to the <code>policy</code>.</p>
+</li>
+<li>
+<p>Enters a loop to repeatedly call GPT-4 with the current messages.</p>
+</li>
+<li>
+<p>GPT-4 can respond with text or function calls (<code>tool_calls</code>).<br>
+– If it calls a function, the code runs the corresponding Python
+function from function_mapping, then replies with the result. GPT-4 can
+read this <code>tool</code> response to keep going.<br>
+– The loop continues until GPT-4 calls the <code>instructions_complete</code>
+function, signaling the plan is done.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>append_message(message)</code>:</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Helper to store a message object inside message_list.</p>
+</li>
+<li>
+<p>Also optionally prints out the message for debug/logging.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_example_usage">Example Usage</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>scenario_text</code>: A string describing the situation: new orders, shipping
+to LA, needing to check inventory, produce items, etc.</p>
+</li>
+<li>
+<p><code>messages = process_scenario(scenario_text)</code>: Runs the entire planning<br>
+execution pipeline.</p>
+</li>
+<li>
+<p>Prints out each message in messages, including final logs.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_overall_flow">Overall Flow</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>You provide the scenario.</p>
+</li>
+<li>
+<p>The “planner” model (o1-mini) reads the scenario and generates a
+structured plan.</p>
+</li>
+<li>
+<p>The “execution” model (gpt-4o-mini) reads the plan and, step by step,
+calls Python functions from the provided tools to manage inventory,
+deliver goods, send updates to the customer, etc.</p>
+</li>
+<li>
+<p>Once the plan is fully executed, the entire conversation is logged in
+<code>message_list</code>.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-11 12:02:26 +0200
+Last updated 2025-01-12 11:51:36 +0200
 </div>
 </div>
 </body>
