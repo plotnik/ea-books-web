@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
-<title>LangChain Cheat Sheet</title>
+<title>GitHub Copilot Cheat Sheet</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -525,32 +525,26 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>LangChain Cheat Sheet</h1>
+<h1>GitHub Copilot Cheat Sheet</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_core_concepts"><strong>Core Concepts</strong></a>
+<li><a href="#_1_setup">1. Setup</a></li>
+<li><a href="#_2_basic_usage">2. Basic Usage</a></li>
+<li><a href="#_3_keyboard_shortcuts_commands">3. Keyboard Shortcuts &amp; Commands</a>
 <ul class="sectlevel2">
-<li><a href="#_1_prompttemplates">1. <strong>PromptTemplates</strong></a></li>
-<li><a href="#_2_chains">2. <strong>Chains</strong></a></li>
-<li><a href="#_3_agents">3. <strong>Agents</strong></a></li>
-<li><a href="#_4_memory">4. <strong>Memory</strong></a></li>
-<li><a href="#_5_document_loaders">5. <strong>Document Loaders</strong></a></li>
-<li><a href="#_6_text_splitters">6. <strong>Text Splitters</strong></a></li>
-<li><a href="#_7_vector_stores">7. <strong>Vector Stores</strong></a></li>
-<li><a href="#_8_retrieval_qa">8. <strong>Retrieval QA</strong></a></li>
+<li><a href="#_quick_commands_via_command_palette">Quick Commands via Command Palette</a></li>
 </ul>
 </li>
-<li><a href="#_key_integrations"><strong>Key Integrations</strong></a>
+<li><a href="#_4_working_with_suggestions">4. Working with Suggestions</a></li>
+<li><a href="#_5_tips_best_practices">5. Tips &amp; Best Practices</a></li>
+<li><a href="#_6_common_use_cases">6. Common Use Cases</a></li>
+<li><a href="#_7_troubleshooting">7. Troubleshooting</a></li>
+<li><a href="#_8_resources">8. Resources</a>
 <ul class="sectlevel2">
-<li><a href="#_1_llms">1. <strong>LLMs</strong></a></li>
-<li><a href="#_2_tools">2. <strong>Tools</strong></a></li>
-<li><a href="#_3_databases">3. <strong>Databases</strong></a></li>
-<li><a href="#_4_document_formats">4. <strong>Document Formats</strong></a></li>
+<li><a href="#_final_thoughts">Final Thoughts</a></li>
 </ul>
 </li>
-<li><a href="#_best_practices"><strong>Best Practices</strong></a></li>
-<li><a href="#_helpful_links"><strong>Helpful Links</strong></a></li>
 </ul>
 </div>
 </div>
@@ -558,341 +552,46 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>LangChain is a framework designed for building applications powered by
-large language models (LLMs). It simplifies the development of LLM-based
-applications by providing tools for prompt management, memory, chains,
-agents, and integrations.</p>
+<p>Below is a handy cheat sheet for using GitHub Copilot in Visual Studio
+Code. It covers setup, common commands, best practices, and helpful tips
+to get the most out of Copilot’s AI-assisted coding features. Feel free
+to adjust it to your own workflow!</p>
 </div>
 <hr>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_core_concepts"><strong>Core Concepts</strong></h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_1_prompttemplates">1. <strong>PromptTemplates</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Purpose</strong>: Define templates for LLM prompts with variables.</p>
-</li>
-<li>
-<p><strong>Usage</strong>:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
+<div class="exampleblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.prompts</span> <span class="keyword">import</span> <span class="include">PromptTemplate</span>
-
-prompt = PromptTemplate(
-    input_variables=[<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>],
-    template=<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello {name}, how can I assist you today?</span><span class="delimiter">&quot;</span></span>
-)</code></pre>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">GitHub Copilot in VS Code cheat sheet</dt>
+<dd>
+<p><a href="https://code.visualstudio.com/docs/copilot/copilot-vscode-features" class="bare">https://code.visualstudio.com/docs/copilot/copilot-vscode-features</a></p>
+</dd>
+<dt class="hdlist1">Copilot Chat Cookbook</dt>
+<dd>
+<p><a href="https://docs.github.com/en/copilot/example-prompts-for-github-copilot-chat" class="bare">https://docs.github.com/en/copilot/example-prompts-for-github-copilot-chat</a></p>
+</dd>
+</dl>
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_2_chains">2. <strong>Chains</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Purpose</strong>: Combine multiple components (e.g., prompts, LLMs, tools)
-into a pipeline.</p>
-</li>
-<li>
-<p><strong>Types</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>LLMChain</strong>: Single LLM-based step.</p>
-</li>
-<li>
-<p><strong>SequentialChain</strong>: Sequence of multiple steps.</p>
-</li>
-<li>
-<p><strong>Custom Chains</strong>: User-defined logic.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Example</strong>:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.chains</span> <span class="keyword">import</span> <span class="include">LLMChain</span>
-<span class="keyword">from</span> <span class="include">langchain.llms</span> <span class="keyword">import</span> <span class="include">OpenAI</span>
-
-llm = OpenAI(temperature=<span class="float">0.7</span>)
-chain = LLMChain(llm=llm, prompt=prompt)
-response = chain.run({<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Alice</span><span class="delimiter">&quot;</span></span>})</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_3_agents">3. <strong>Agents</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Purpose</strong>: Dynamically decide which tool to use based on user input.</p>
-</li>
-<li>
-<p><strong>Tools</strong>: Integrations like search, calculators, etc.</p>
-</li>
-<li>
-<p><strong>Example</strong>:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.agents</span> <span class="keyword">import</span> <span class="include">load_tools</span>, <span class="include">initialize_agent</span>
-<span class="keyword">from</span> <span class="include">langchain.llms</span> <span class="keyword">import</span> <span class="include">OpenAI</span>
-
-llm = OpenAI(temperature=<span class="integer">0</span>)
-tools = load_tools([<span class="string"><span class="delimiter">&quot;</span><span class="content">search</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">calculator</span><span class="delimiter">&quot;</span></span>])
-agent = initialize_agent(tools, llm, agent=<span class="string"><span class="delimiter">&quot;</span><span class="content">zero-shot-react-description</span><span class="delimiter">&quot;</span></span>, verbose=<span class="predefined-constant">True</span>)
-response = agent.run(<span class="string"><span class="delimiter">&quot;</span><span class="content">What is the square root of 144?</span><span class="delimiter">&quot;</span></span>)</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_4_memory">4. <strong>Memory</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Purpose</strong>: Maintain conversation state (context).</p>
-</li>
-<li>
-<p><strong>Types</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>BufferMemory</strong>: Store all messages in a buffer.</p>
-</li>
-<li>
-<p><strong>ConversationSummaryMemory</strong>: Summarize conversations for brevity.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Example</strong>:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.memory</span> <span class="keyword">import</span> <span class="include">ConversationBufferMemory</span>
-<span class="keyword">from</span> <span class="include">langchain.chains</span> <span class="keyword">import</span> <span class="include">ConversationChain</span>
-
-memory = ConversationBufferMemory()
-conversation = ConversationChain(llm=llm, memory=memory)
-response = conversation.predict(input=<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello!</span><span class="delimiter">&quot;</span></span>)</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_5_document_loaders">5. <strong>Document Loaders</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Purpose</strong>: Load and process external data (PDFs, text, etc.).</p>
-</li>
-<li>
-<p><strong>Example</strong>:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.document_loaders</span> <span class="keyword">import</span> <span class="include">PyPDFLoader</span>
-
-loader = PyPDFLoader(<span class="string"><span class="delimiter">&quot;</span><span class="content">example.pdf</span><span class="delimiter">&quot;</span></span>)
-documents = loader.load()</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_6_text_splitters">6. <strong>Text Splitters</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Purpose</strong>: Split large documents into smaller chunks.</p>
-</li>
-<li>
-<p><strong>Example</strong>:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.text_splitter</span> <span class="keyword">import</span> <span class="include">CharacterTextSplitter</span>
-
-splitter = CharacterTextSplitter(chunk_size=<span class="integer">1000</span>, chunk_overlap=<span class="integer">200</span>)
-chunks = splitter.split_text(<span class="string"><span class="delimiter">&quot;</span><span class="content">Long text here...</span><span class="delimiter">&quot;</span></span>)</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_7_vector_stores">7. <strong>Vector Stores</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Purpose</strong>: Store and search embeddings.</p>
-</li>
-<li>
-<p><strong>Integrations</strong>: Pinecone, FAISS, Weaviate, etc.</p>
-</li>
-<li>
-<p><strong>Example</strong>:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.vectorstores</span> <span class="keyword">import</span> <span class="include">FAISS</span>
-<span class="keyword">from</span> <span class="include">langchain.embeddings.openai</span> <span class="keyword">import</span> <span class="include">OpenAIEmbeddings</span>
-
-embedding = OpenAIEmbeddings()
-vectorstore = FAISS.from_texts([<span class="string"><span class="delimiter">&quot;</span><span class="content">sample text</span><span class="delimiter">&quot;</span></span>], embedding)</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_8_retrieval_qa">8. <strong>Retrieval QA</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Purpose</strong>: Perform QA over a document store.</p>
-</li>
-<li>
-<p><strong>Example</strong>:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.chains</span> <span class="keyword">import</span> <span class="include">RetrievalQA</span>
-
-retriever = vectorstore.as_retriever()
-qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
-response = qa_chain.run(<span class="string"><span class="delimiter">&quot;</span><span class="content">What is this document about?</span><span class="delimiter">&quot;</span></span>)</code></pre>
-</div>
-</div>
-<hr>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_key_integrations"><strong>Key Integrations</strong></h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_1_llms">1. <strong>LLMs</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p>OpenAI, Hugging Face, Cohere, etc.</p>
-</li>
-<li>
-<p>Example:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">from</span> <span class="include">langchain.llms</span> <span class="keyword">import</span> <span class="include">OpenAI</span>
-
-llm = OpenAI(api_key=<span class="string"><span class="delimiter">&quot;</span><span class="content">your_key</span><span class="delimiter">&quot;</span></span>, temperature=<span class="float">0.5</span>)</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_2_tools">2. <strong>Tools</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Search Engines</strong>: Google, Bing.</p>
-</li>
-<li>
-<p><strong>Calculators</strong>: Wolfram Alpha.</p>
-</li>
-<li>
-<p><strong>Custom APIs</strong>: Use <code>Requests</code> wrapper for custom APIs.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_3_databases">3. <strong>Databases</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Vector DBs</strong>: Pinecone, FAISS, Chroma.</p>
-</li>
-<li>
-<p><strong>Relational DBs</strong>: SQL database integrations available.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_4_document_formats">4. <strong>Document Formats</strong></h3>
-<div class="ulist">
-<ul>
-<li>
-<p>PDFs, CSVs, HTML, Markdown, etc.</p>
-</li>
-</ul>
-</div>
-<hr>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_best_practices"><strong>Best Practices</strong></h2>
+<h2 id="_1_setup">1. Setup</h2>
 <div class="sectionbody">
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong>Debugging</strong>:</p>
+<p><strong>Configure Settings (optional)</strong></p>
 <div class="ulist">
 <ul>
 <li>
-<p>Use <code>verbose=True</code> in chains and agents for detailed logs.</p>
-</li>
-</ul>
-</div>
+<p>Go to <strong>File &gt; Preferences &gt; Settings</strong> (Windows/Linux) or <strong>Code &gt;
+Preferences &gt; Settings</strong> (macOS).</p>
 </li>
 <li>
-<p><strong>Performance</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Optimize chunk size and overlap in text splitting for large documents.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Security</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Avoid hardcoding API keys. Use environment variables.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Customizability</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Extend base classes to create custom tools, memory, or chains.</p>
+<p>Search for “Copilot” to see configuration options (e.g., inline
+suggestions, enabling/disabling suggestions).</p>
 </li>
 </ul>
 </div>
@@ -903,30 +602,414 @@ llm = OpenAI(api_key=<span class="string"><span class="delimiter">&quot;</span><
 </div>
 </div>
 <div class="sect1">
-<h2 id="_helpful_links"><strong>Helpful Links</strong></h2>
+<h2 id="_2_basic_usage">2. Basic Usage</h2>
 <div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Inline Suggestions</strong></p>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>LangChain Documentation</strong>:
-<a href="https://docs.langchain.com">https://docs.langchain.com</a></p>
+<p>Start typing your code; Copilot will suggest completions inline
+(semi-transparent text).</p>
 </li>
 <li>
-<p><strong>GitHub Repository</strong>:
-<a href="https://github.com/hwchase17/langchain">https://github.com/hwchase17/langchain</a></p>
-</li>
-<li>
-<p><strong>Community</strong>: <a href="https://discord.gg/langchain">Discord Server</a></p>
+<p>Press <strong>Tab</strong> to accept the suggestion or keep typing to let Copilot
+refine it.</p>
 </li>
 </ul>
+</div>
+</li>
+<li>
+<p><strong>Multi-line Suggestions</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Type a descriptive comment or function signature.</p>
+</li>
+<li>
+<p>Copilot often generates multi-line code blocks following that comment.</p>
+</li>
+<li>
+<p>Accept with <strong>Tab</strong> or <strong>Enter</strong> (depending on your settings).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Ask Copilot in Comments</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You can write a comment describing what you want, e.g.,
+<code>// Create a function that sums an array of numbers</code>, and Copilot will
+try to generate the solution below.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Trigger Suggestions Manually</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Sometimes you need to re-trigger suggestions (especially if they
+didn’t appear automatically).</p>
+</li>
+<li>
+<p>Use <strong>Ctrl + Space</strong> (Windows/Linux) or <strong>Cmd + Space</strong> (macOS) to open
+IntelliSense suggestions (which can include Copilot suggestions).</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_keyboard_shortcuts_commands">3. Keyboard Shortcuts &amp; Commands</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Some shortcuts may differ depending on your OS or personal
+keybindings. Below are the most commonly used ones out of the box.
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Action</th>
+<th class="tableblock halign-left valign-top">Windows/Linux</th>
+<th class="tableblock halign-left valign-top">macOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Accept</strong> Copilot suggestion (inline)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Tab</code> or <code>Enter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Tab</code> or
+<code>Enter</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Show next</strong> Copilot suggestion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Alt + ]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Option + ]</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Show previous</strong> Copilot suggestion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Alt + [</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Option + [</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Manually trigger</strong> suggestions (IntelliSense)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Ctrl + Space</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Cmd + Space</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Open Commands Palette</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Ctrl + Shift + P</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Cmd + Shift + P</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="_quick_commands_via_command_palette">Quick Commands via Command Palette</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>GitHub Copilot: Enable</strong> <em>(turn on suggestions)</em></p>
+</li>
+<li>
+<p><strong>GitHub Copilot: Disable</strong> <em>(turn off suggestions)</em></p>
+</li>
+<li>
+<p><strong>GitHub Copilot: Open Chat</strong> <em>(for Chat Beta users)</em></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Just open the <strong>Command Palette</strong> and type “Copilot” to see these
+commands.</p>
 </div>
 <hr>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_4_working_with_suggestions">4. Working with Suggestions</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Reviewing Multiple Suggestions</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>If you see a suggestion inline but want to check more options, use
+<code>Alt + ]</code> (Windows) / <code>Option + ]</code> (macOS) to cycle to the next
+suggestion.</p>
+</li>
+<li>
+<p>Likewise, <code>Alt + [</code> (Windows) / <code>Option + [</code> (macOS) goes to the
+previous suggestion.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Partial Acceptance</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>If only part of the suggestion is useful, you can accept it and then
+edit the rest.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Context Matters</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Copilot’s suggestions are heavily influenced by the surrounding code
+and comments. Provide meaningful function names, comments, and
+docstrings for better suggestions.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_tips_best_practices">5. Tips &amp; Best Practices</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Use Comments for Clarity</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>The more descriptive your comment, the better Copilot can guess your
+intentions.</p>
+</li>
+<li>
+<p>Example:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// Generate a React component that displays a user’s profile information</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Check Security &amp; Accuracy</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Copilot is not always perfect. Always review generated code for
+correctness, security issues, or licensing concerns.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Experiment with Different Prompts</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Try short prompts for quick suggestions and longer, detailed prompts
+for more complex tasks.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Leverage Snippets</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Combine Copilot with your existing code snippets for a hybrid
+approach.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Disable/Enable for Sensitive Code</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>If you’re working on sensitive or proprietary code, you can
+temporarily disable Copilot to ensure no code suggestions are generated.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_common_use_cases">6. Common Use Cases</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Rapid Prototyping</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Outline functions or data structures quickly.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Boilerplate Code</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Generate repetitive code (e.g., error-handling, common patterns).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Refactoring Assistance</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Provide a comment for how you want to refactor; Copilot may suggest
+partial or complete refactors.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Learning New APIs</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use Copilot suggestions to see example usage of libraries/APIs you’re
+unfamiliar with.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_7_troubleshooting">7. Troubleshooting</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Suggestions Not Appearing</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Make sure you’re logged in to GitHub, and Copilot is enabled.</p>
+</li>
+<li>
+<p>Check your <strong>User Settings</strong> → <strong>Copilot</strong> is turned <strong>On</strong>.</p>
+</li>
+<li>
+<p>Ensure your environment (language server, network, etc.) is working
+correctly.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Conflicts with IntelliSense</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Sometimes VS Code’s IntelliSense might overshadow Copilot suggestions.
+You can change the Copilot suggestion display setting in the extension
+settings (e.g., inline vs. separate panel).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Rate Limits</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>GitHub Copilot has certain rate limits. If you exceed them,
+suggestions might be delayed or missing temporarily.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_8_resources">8. Resources</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>GitHub Copilot Docs</strong>:
+<a href="https://docs.github.com/copilot">docs.github.com/copilot</a></p>
+</li>
+<li>
+<p><strong>Visual Studio Code Marketplace</strong> (GitHub Copilot extension page)</p>
+</li>
+<li>
+<p><strong>GitHub Copilot Community</strong> (Discussion boards, Q&amp;A, troubleshooting)</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="sect2">
+<h3 id="_final_thoughts">Final Thoughts</h3>
+<div class="paragraph">
+<p>GitHub Copilot in VS Code can supercharge your workflow by accelerating
+code generation and reducing boilerplate. However, always review and
+test the AI-generated code to ensure it meets your project’s
+requirements and standards.</p>
+</div>
+<div class="paragraph">
+<p>Happy coding with Copilot!</p>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-12 14:37:13 +0200
+Last updated 2025-01-12 14:37:00 +0200
 </div>
 </div>
 </body>

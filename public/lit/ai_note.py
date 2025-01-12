@@ -162,9 +162,9 @@ st.write(st.session_state.openai_result)
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
 #    :widths: 10 30
-#  
+# 
 #    "Reasoning with o1", https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
-#   
+#  
 # ::
 
 def call_o1_model(prompt, text):
@@ -197,6 +197,13 @@ def call_earlier_model(prompt, text):
 
 # Call Ollama.
 #
+# .. csv-table:: Useful Links
+#    :header: "Name", "URL"
+#    :widths: 10 30
+#
+#    "Ollama", https://github.com/ollama/ollama?tab=readme-ov-file
+#    "Ollama Python", https://github.com/ollama/ollama-python
+#   
 # ::
 
 def call_ollama(prompt, text):
@@ -208,7 +215,7 @@ def call_ollama(prompt, text):
             model='llama3.2',
             messages=messages,
         )
-    
+  
 # When the user clicks a button to call OpenAI:
 #
 # - The application sends the selected prompt and user input to the OpenAI API.
@@ -218,7 +225,7 @@ def call_ollama(prompt, text):
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
 #    :widths: 10 30
-#  
+# 
 #    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
 #
 # ::
@@ -316,6 +323,7 @@ if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
 #         - openai
 #         - tiktoken
 #         - streamlit
+#         - ollama
 #
 # 2. **Select conda-forge Channel**
 #
@@ -356,10 +364,10 @@ if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
 #
 #    - name: grammar
 #      note: You will be provided with statements in markdown, and your task is to convert them to standard English.  
-#     
+#    
 #    - name: improve_style
 #      note: Improve style of the content you are provided.
-# 
+#
 #    - name: summarize_md
 #      note: You will be provided with statements in markdown, and your task is to summarize the content.
 #

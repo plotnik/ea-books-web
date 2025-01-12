@@ -169,7 +169,9 @@ Call ``o1`` model
 
   def call_o1_model(prompt, text):
       messages = [
-          {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
+          #{"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
+          {"role": "developer", "content": prompt},
+          {"role": "user", "content": text},
       ]
       response = client.chat.completions.create(
           model=openai_model,
@@ -195,6 +197,13 @@ Call ``o1``-predecessor model.
 
 Call Ollama.
 
+.. csv-table:: Useful Links
+   :header: "Name", "URL"
+   :widths: 10 30
+
+   "Ollama", https://github.com/ollama/ollama?tab=readme-ov-file
+   "Ollama Python", https://github.com/ollama/ollama-python
+   
 ::
 
   def call_ollama(prompt, text):
@@ -259,7 +268,7 @@ Output format can be XML with request, response and prompt name, or just respons
 
   note_name = st.text_input("Note Name:")
 
-  out_format = st.radio("Output Format:", ["XML", "Markdown"], horizontal=True)
+  out_format = st.radio("Output Format:", ["Markdown", "XML"], horizontal=True)
 
   if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
       if out_format == "XML":
@@ -314,6 +323,7 @@ Step 2: Configure Your Environment
         - openai
         - tiktoken
         - streamlit
+        - ollama
 
 2. **Select conda-forge Channel**
 
