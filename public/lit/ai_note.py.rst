@@ -33,6 +33,7 @@ The provided Python code is a Streamlit_ application designed to interact with `
   import time
   import os
   import ollama
+  import pyperclip
 
 Prints a stylized banner to the console when the application starts.
 
@@ -162,9 +163,9 @@ Call ``o1`` model
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
- 
+
    "Reasoning with o1", https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
-  
+ 
 ::
 
   def call_o1_model(prompt, text):
@@ -203,7 +204,7 @@ Call Ollama.
 
    "Ollama", https://github.com/ollama/ollama?tab=readme-ov-file
    "Ollama Python", https://github.com/ollama/ollama-python
-   
+  
 ::
 
   def call_ollama(prompt, text):
@@ -215,7 +216,7 @@ Call Ollama.
               model='llama3.2',
               messages=messages,
           )
-    
+  
 When the user clicks a button to call OpenAI:
 
 - The application sends the selected prompt and user input to the OpenAI API.
@@ -225,7 +226,7 @@ When the user clicks a button to call OpenAI:
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
- 
+
    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
 
 ::
@@ -263,15 +264,19 @@ Output format can be XML with request, response and prompt name, or just respons
 
 ::
 
-  def save_note_disabled():
-      return len(note_name.strip())==0
 
   note_name = st.text_input("Note Name:")
 
-  out_format = st.radio("Output Format:", ["Markdown", "XML"], horizontal=True)
+  out_format = st.radio("Output:", ["Clipboard", "Markdown", "XML"], horizontal=True)
+
+  def save_note_disabled():
+      return len(note_name.strip())==0 and out_format != "Clipboard"
 
   if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
-      if out_format == "XML":
+      if out_format == "Clipboard":
+          pyperclip.copy(st.session_state.openai_result)
+          st.write(f'Copied to clipboard')
+      elif out_format == "XML":
           xml = textwrap.dedent(f"""
               <note>
                 <question><![CDATA[{text}]]></question>
@@ -324,6 +329,7 @@ Step 2: Configure Your Environment
         - tiktoken
         - streamlit
         - ollama
+        - pyperclip
 
 2. **Select conda-forge Channel**
 
@@ -364,7 +370,7 @@ accomplish. Here’s an example of how to structure the contents:
 
    - name: grammar
      note: You will be provided with statements in markdown, and your task is to convert them to standard English.  
-    
+   
    - name: improve_style
      note: Improve style of the content you are provided.
 

@@ -33,6 +33,7 @@ import platform
 import time
 import os
 import ollama
+import pyperclip
 
 # Prints a stylized banner to the console when the application starts.
 #
@@ -263,15 +264,19 @@ if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
 #
 # ::
 
-def save_note_disabled():
-    return len(note_name.strip())==0
 
 note_name = st.text_input("Note Name:")
 
-out_format = st.radio("Output Format:", ["Markdown", "XML"], horizontal=True)
+out_format = st.radio("Output:", ["Clipboard", "Markdown", "XML"], horizontal=True)
+
+def save_note_disabled():
+    return len(note_name.strip())==0 and out_format != "Clipboard"
 
 if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
-    if out_format == "XML":
+    if out_format == "Clipboard":
+        pyperclip.copy(st.session_state.openai_result)
+        st.write(f'Copied to clipboard')
+    elif out_format == "XML":
         xml = textwrap.dedent(f"""
             <note>
               <question><![CDATA[{text}]]></question>
@@ -324,6 +329,7 @@ if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
 #         - tiktoken
 #         - streamlit
 #         - ollama
+#         - pyperclip
 #
 # 2. **Select conda-forge Channel**
 #

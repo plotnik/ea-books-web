@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
-<meta name="author" content="Maximilian Schwarzmüller">
-<title>React - The Complete Guide (incl Hooks, React Router, Redux)</title>
+<title>26. A (Pretty Deep Dive) Introduction to Next.js</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,37 +436,38 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>React - The Complete Guide (incl Hooks, React Router, Redux)</h1>
-<div class="details">
-<span id="author" class="author">Maximilian Schwarzmüller</span><br>
-</div>
+<h1>26. A (Pretty Deep Dive) Introduction to Next.js</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_1_getting_started">1. Getting Started</a></li>
-<li><a href="#_2_javascript_refresher">2. JavaScript Refresher</a></li>
-<li><a href="#_3_react_basics_and_working_with_components">3. React Basics and Working With Components</a></li>
-<li><a href="#_4_react_essentials_deep_dive">4. React Essentials - Deep Dive</a></li>
-<li><a href="#_5_react_essentials_practice_project">5. React Essentials - Practice Project</a></li>
-<li><a href="#_6_styling_react_components">6. Styling React Components</a></li>
-<li><a href="#_26_a_pretty_deep_dive_introduction_to_next_js">26. A (Pretty Deep Dive) Introduction to Next.js</a></li>
+<ul class="sectlevel2">
+<li><a href="#_426_module_introduction">426. Module Introduction</a></li>
+<li><a href="#_427_creating_a_nextjs_project">427. Creating a NextJS Project</a></li>
+<li><a href="#_428_understanding_file_based_routing_react_server_components">428. Understanding File-based Routing &amp; React Server Components</a></li>
+<li><a href="#_429_adding_another_route_via_the_filesystem">429. Adding Another Route via the Filesystem</a></li>
+<li><a href="#_430_navigating_between_pages">430. Navigating Between Pages</a></li>
+<li><a href="#_431_working_with_pages_layouts">431. Working with Pages &amp; Layouts</a></li>
+<li><a href="#_432_reserved_file_names_custom_components_how_to_organize_a_nextjs_project">432. Reserved File Names, Custom Components &amp; How To Organize A NextJS Project</a></li>
+<li><a href="#_433_reserved_filenames">433. Reserved Filenames</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
+<div class="paragraph">
+<p><a href="udemy_react.html">&lt;Contents&gt;</a></p>
+</div>
 <div class="exampleblock">
 <div class="content">
 <div class="dlist">
 <dl>
-<dt class="hdlist1">Course on Udemy</dt>
+<dt class="hdlist1">Getting Started with Next.js</dt>
 <dd>
-<p><a href="https://www.udemy.com/course/react-the-complete-guide-incl-redux/" class="bare">https://www.udemy.com/course/react-the-complete-guide-incl-redux/</a></p>
+<p><a href="https://nextjs.org/docs/app/getting-started/installation" class="bare">https://nextjs.org/docs/app/getting-started/installation</a></p>
 </dd>
-<dt class="hdlist1">Course source code on GitHub</dt>
+<dt class="hdlist1">v0</dt>
 <dd>
-<p><a href="https://github.com/academind/react-complete-guide-course-resources" class="bare">https://github.com/academind/react-complete-guide-course-resources</a></p>
+<p><a href="https://v0.dev/" class="bare">https://v0.dev/</a></p>
 </dd>
 </dl>
 </div>
@@ -475,54 +475,88 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_1_getting_started">1. <a href="getting_started.html">Getting Started</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_2_javascript_refresher">2. <a href="js_refresh.html">JavaScript Refresher</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_3_react_basics_and_working_with_components">3. <a href="react_basics.html">React Basics and Working With Components</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_4_react_essentials_deep_dive">4. <a href="react_essentials.html">React Essentials - Deep Dive</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_5_react_essentials_practice_project">5. <a href="react_essentials_practice.html">React Essentials - Practice Project</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_6_styling_react_components">6. <a href="styling.html">Styling React Components</a></h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_426_module_introduction">426. Module Introduction</h3>
 <div class="paragraph">
-<p>&#8230;&#8203;</p>
+<p>This section of the course introduces building a new React project with a focus on creating a fullstack application using NextJS, a React framework. The project allows users to view and share meals within a foodies community. Unlike previous lessons, this project combines both front-end and backend elements. You&#8217;ll learn about NextJS, its benefits, and how to set up routes, pages, and work with React components within this framework. The section will cover data fetching and sending, styling, working with images, and page metadata, enhancing your React skills to create fullstack applications.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_427_creating_a_nextjs_project">427. Creating a NextJS Project</h3>
+<div class="paragraph">
+<p>The content explains how to set up a new Next.js project, highlighting the differences from standard React projects. It suggests using the command <code>npx create-next-app</code> to create a project with Next.js pre-installed and outlines the initial setup process, including optional configurations like TypeScript, ESLint, and Tailwind CSS. The instructor opts out of using TypeScript and Tailwind to simplify the course content. After the project is created, they replace some default files with customized ones and provide a starting snapshot for learners to use, either through local files or CodeSandbox. Finally, they guide users on running the project using <code>npm run dev</code> to start the development server, noting that CodeSandbox automates this process.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>npm run dev</code></pre>
 </div>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_26_a_pretty_deep_dive_introduction_to_next_js">26. <a href="nextjs.html">A (Pretty Deep Dive) Introduction to Next.js</a></h2>
-<div class="sectionbody">
-
+<div class="sect2">
+<h3 id="_428_understanding_file_based_routing_react_server_components">428. Understanding File-based Routing &amp; React Server Components</h3>
+<div class="paragraph">
+<p>The text explains the role of the <code>app</code> folder in a modern NextJS project, particularly focusing on the <code>Page.js</code> file within it. The <code>Page.js</code> file is important because it designates a React component as a page in NextJS, and it functions as a server component. This means the component is executed on the server, not the client side, which is a unique feature of NextJS compared to traditional React. Logs from the component are visible in the server terminal, not the browser console, demonstrating its server-side execution. The server component&#8217;s JSX code is then sent to the client&#8217;s browser to be rendered as HTML, making it visible on the screen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_429_adding_another_route_via_the_filesystem">429. Adding Another Route via the Filesystem</h3>
+<div class="paragraph">
+<p>The document explains how to add a new page to a Next.js website using server components. In Next.js, rather than using React Router, you create new pages by adding folders with a <code>page.js</code> file inside the <code>app</code> directory. For example, to create a page accessible at <code>localhost:3000/about</code>, you would create an <code>about</code> folder in the <code>app</code> directory and include a <code>page.js</code> file within it. This file should export a function returning the JSX content that will be rendered on the page. The folder structure is crucial because Next.js uses it to define routes. Once set up, visiting the <code>/about</code> route will display the content specified in the <code>about</code> page&#8217;s component.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_430_navigating_between_pages">430. Navigating Between Pages</h3>
+<div class="paragraph">
+<p>The provided text explains how to enhance navigation between pages in a NextJS application without losing the single-page application (SPA) benefits. Initially, a traditional anchor element is used to link to a new page, causing a full page reload and breaking the SPA model by downloading a new page from the backend. To maintain the SPA experience, the text suggests using the <code>Link</code> component from <code>next/link</code>, which allows navigation without fully reloading the page. This component ensures that while the content is pre-rendered on the server, it updates on the client side with JavaScript, providing a seamless, interactive user experience.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_431_working_with_pages_layouts">431. Working with Pages &amp; Layouts</h3>
+<div class="paragraph">
+<p>The provided content explains the structure and purpose of layout and page JS files in a Next.js project. The page JS file defines the content of a specific page, while the layout JS file acts as a shell or wrapper for one or more pages. A root layout JS file is necessary at the top of the app folder, and additional nested layout files can be added for specific sections like an "about" folder. The layout file exports a React component that uses the children prop to render page content between HTML and body tags, setting up the basic HTML skeleton. The head element, typically used for metadata like titles, is not included directly in layout files because Next.js allows metadata to be set via a special reserved variable called "metadata." This way, the metadata applies to all pages covered by the layout. The children prop represents the content of the currently active page, illustrating how layout and page JS files work together, with layout providing the structure and page offering the content.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_432_reserved_file_names_custom_components_how_to_organize_a_nextjs_project">432. Reserved File Names, Custom Components &amp; How To Organize A NextJS Project</h3>
+<div class="paragraph">
+<p>The provided text explains the setup and organization of a NextJS project, focusing on file structure and component management. It highlights the use of a <code>globals.css</code> file for global styles across all pages by importing it in <code>layout.js</code>, and mentions the special <code>icon.png</code> file for setting a favicon without explicit configuration in <code>layout.js</code>. The text describes creating routes through folders and reserved filenames like <code>page.js</code> and <code>layout.js</code>, and discusses adding regular React components that aren&#8217;t automatically treated as pages. It suggests organizing components in a <code>components</code> folder, either inside or outside the <code>app</code> directory, and emphasizes the importance of <code>page.js</code> for routing. Additionally, it mentions using an <code>@</code> symbol in import paths for convenience, as configured in a <code>jsconfig</code> file, to simplify imports by referencing the root project folder. The text recommends consulting the official NextJS documentation for structuring projects and concludes with a preference for keeping components outside the <code>app</code> folder for a cleaner routing-focused structure.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_433_reserved_filenames">433. Reserved Filenames</h3>
+<div class="paragraph">
+<p>In NextJS, certain filenames are reserved when used inside the <code>app/</code> folder (or any subfolders). These reserved filenames include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>page.js</code>: Creates a new page (e.g., <code>app/about/page.js</code> for <code>&lt;your-domain&gt;/about</code>).</p>
+</li>
+<li>
+<p><code>layout.js</code>: Sets up a layout wrapping sibling and nested pages.</p>
+</li>
+<li>
+<p><code>not-found.js</code>: Serves as a fallback for "Not Found" errors.</p>
+</li>
+<li>
+<p><code>error.js</code>: Acts as a fallback for other errors.</p>
+</li>
+<li>
+<p><code>loading.js</code>: Displays while sibling or nested pages (or layouts) are fetching data.</p>
+</li>
+<li>
+<p><code>route.js</code>: Creates an API route, returning data instead of JSX (e.g., JSON format).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These filenames have specific purposes and are only treated specially within the <code>app/</code> folder. For more details, refer to the official documentation.</p>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-17 08:43:44 +0200
+Last updated 2025-01-17 11:15:07 +0200
 </div>
 </div>
 </body>

@@ -1,0 +1,59 @@
+= 26. A (Pretty Deep Dive) Introduction to Next.js
+:icons: font
+:toc: left
+
+link:udemy_react.html[<Contents>]
+
+====
+Getting Started with Next.js::
+https://nextjs.org/docs/app/getting-started/installation
+
+v0::
+https://v0.dev/
+====
+
+=== 426. Module Introduction
+
+This section of the course introduces building a new React project with a focus on creating a fullstack application using NextJS, a React framework. The project allows users to view and share meals within a foodies community. Unlike previous lessons, this project combines both front-end and backend elements. You'll learn about NextJS, its benefits, and how to set up routes, pages, and work with React components within this framework. The section will cover data fetching and sending, styling, working with images, and page metadata, enhancing your React skills to create fullstack applications.
+
+=== 427. Creating a NextJS Project
+
+The content explains how to set up a new Next.js project, highlighting the differences from standard React projects. It suggests using the command `npx create-next-app` to create a project with Next.js pre-installed and outlines the initial setup process, including optional configurations like TypeScript, ESLint, and Tailwind CSS. The instructor opts out of using TypeScript and Tailwind to simplify the course content. After the project is created, they replace some default files with customized ones and provide a starting snapshot for learners to use, either through local files or CodeSandbox. Finally, they guide users on running the project using `npm run dev` to start the development server, noting that CodeSandbox automates this process.
+
+```
+npm run dev
+```
+
+=== 428. Understanding File-based Routing & React Server Components
+
+The text explains the role of the `app` folder in a modern NextJS project, particularly focusing on the `Page.js` file within it. The `Page.js` file is important because it designates a React component as a page in NextJS, and it functions as a server component. This means the component is executed on the server, not the client side, which is a unique feature of NextJS compared to traditional React. Logs from the component are visible in the server terminal, not the browser console, demonstrating its server-side execution. The server component's JSX code is then sent to the client's browser to be rendered as HTML, making it visible on the screen.
+
+=== 429. Adding Another Route via the Filesystem
+
+The document explains how to add a new page to a Next.js website using server components. In Next.js, rather than using React Router, you create new pages by adding folders with a `page.js` file inside the `app` directory. For example, to create a page accessible at `localhost:3000/about`, you would create an `about` folder in the `app` directory and include a `page.js` file within it. This file should export a function returning the JSX content that will be rendered on the page. The folder structure is crucial because Next.js uses it to define routes. Once set up, visiting the `/about` route will display the content specified in the `about` page's component.
+
+=== 430. Navigating Between Pages
+
+The provided text explains how to enhance navigation between pages in a NextJS application without losing the single-page application (SPA) benefits. Initially, a traditional anchor element is used to link to a new page, causing a full page reload and breaking the SPA model by downloading a new page from the backend. To maintain the SPA experience, the text suggests using the `Link` component from `next/link`, which allows navigation without fully reloading the page. This component ensures that while the content is pre-rendered on the server, it updates on the client side with JavaScript, providing a seamless, interactive user experience.
+
+=== 431. Working with Pages & Layouts
+
+The provided content explains the structure and purpose of layout and page JS files in a Next.js project. The page JS file defines the content of a specific page, while the layout JS file acts as a shell or wrapper for one or more pages. A root layout JS file is necessary at the top of the app folder, and additional nested layout files can be added for specific sections like an "about" folder. The layout file exports a React component that uses the children prop to render page content between HTML and body tags, setting up the basic HTML skeleton. The head element, typically used for metadata like titles, is not included directly in layout files because Next.js allows metadata to be set via a special reserved variable called "metadata." This way, the metadata applies to all pages covered by the layout. The children prop represents the content of the currently active page, illustrating how layout and page JS files work together, with layout providing the structure and page offering the content.
+
+
+=== 432. Reserved File Names, Custom Components & How To Organize A NextJS Project
+
+The provided text explains the setup and organization of a NextJS project, focusing on file structure and component management. It highlights the use of a `globals.css` file for global styles across all pages by importing it in `layout.js`, and mentions the special `icon.png` file for setting a favicon without explicit configuration in `layout.js`. The text describes creating routes through folders and reserved filenames like `page.js` and `layout.js`, and discusses adding regular React components that aren't automatically treated as pages. It suggests organizing components in a `components` folder, either inside or outside the `app` directory, and emphasizes the importance of `page.js` for routing. Additionally, it mentions using an `@` symbol in import paths for convenience, as configured in a `jsconfig` file, to simplify imports by referencing the root project folder. The text recommends consulting the official NextJS documentation for structuring projects and concludes with a preference for keeping components outside the `app` folder for a cleaner routing-focused structure.
+
+=== 433. Reserved Filenames
+
+In NextJS, certain filenames are reserved when used inside the `app/` folder (or any subfolders). These reserved filenames include:
+
+- `page.js`: Creates a new page (e.g., `app/about/page.js` for `<your-domain>/about`).
+- `layout.js`: Sets up a layout wrapping sibling and nested pages.
+- `not-found.js`: Serves as a fallback for "Not Found" errors.
+- `error.js`: Acts as a fallback for other errors.
+- `loading.js`: Displays while sibling or nested pages (or layouts) are fetching data.
+- `route.js`: Creates an API route, returning data instead of JSX (e.g., JSON format).
+
+These filenames have specific purposes and are only treated specially within the `app/` folder. For more details, refer to the official documentation.
