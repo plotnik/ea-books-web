@@ -448,6 +448,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_431_working_with_pages_layouts">431. Working with Pages &amp; Layouts</a></li>
 <li><a href="#_432_reserved_file_names_custom_components_how_to_organize_a_nextjs_project">432. Reserved File Names, Custom Components &amp; How To Organize A NextJS Project</a></li>
 <li><a href="#_433_reserved_filenames">433. Reserved Filenames</a></li>
+<li><a href="#_434_configuring_dynamic_routes_using_route_parameters">434. Configuring Dynamic Routes &amp; Using Route Parameters</a></li>
+<li><a href="#_435_onwards_to_the_main_project_the_foodies_app">435. Onwards to the Main Project - The Foodies App</a></li>
+<li><a href="#_438_revisiting_the_concept_of_layouts">438. Revisiting The Concept Of Layouts</a></li>
+<li><a href="#_439_adding_a_custom_component_to_a_layout">439. Adding a Custom Component To A Layout</a></li>
+<li><a href="#_440_styling_nextjs_project_your_options_using_css_modules">440. Styling NextJS Project - Your Options &amp; Using CSS Modules</a></li>
+<li><a href="#_441_optimizing_images_with_the_nextjs_image_component">441. Optimizing Images with the NextJS Image Component</a></li>
+<li><a href="#_442_using_more_custom_components">442. Using More Custom Components</a></li>
+<li><a href="#_443_populating_the_starting_page_content">443. Populating The Starting Page Content</a></li>
+<li><a href="#_444_preparing_an_image_slideshow">444. Preparing an Image Slideshow</a></li>
+<li><a href="#_445_react_server_components_vs_client_components_when_to_use_what">445. React Server Components vs Client Components - When To Use What</a></li>
+<li><a href="#_446_using_client_components_efficiently">446. Using Client Components Efficiently</a></li>
+<li><a href="#_447_outputting_meals_data_images_with_unknown_dimensions">447. Outputting Meals Data &amp; Images With Unknown Dimensions</a></li>
+<li><a href="#_448_setting_up_a_sqlite_database">448. Setting Up A SQLite Database</a></li>
+<li><a href="#_449_fetching_data_by_leveraging_nextjs_fullstack_capabilities">449. Fetching Data By Leveraging NextJS &amp; Fullstack Capabilities</a></li>
+<li><a href="#_450_adding_a_loading_page">450. Adding A Loading Page</a></li>
+<li><a href="#_451_using_suspense_streamed_responses_for_granular_loading_state_management">451. Using Suspense &amp; Streamed Responses For Granular Loading State Management</a></li>
 </ul>
 </div>
 </div>
@@ -553,10 +569,183 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>These filenames have specific purposes and are only treated specially within the <code>app/</code> folder. For more details, refer to the official documentation.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_434_configuring_dynamic_routes_using_route_parameters">434. Configuring Dynamic Routes &amp; Using Route Parameters</h3>
+<div class="paragraph">
+<p>The text provides a detailed explanation of setting up dynamic routes in a NextJS application, particularly for a blog with multiple posts. It describes the process of creating a scalable and maintainable routing structure, emphasizing the use of dynamic routes to handle multiple posts without manually creating a new folder for each post. This is achieved using a special syntax in NextJS, where square brackets are used to create a placeholder (e.g., <code>[slug]</code>) for dynamic segments in the URL. This allows the same page component to render different content based on the URL path segment values. The text also explains how NextJS automatically passes a <code>params</code> prop containing these dynamic segment values, which can be used to fetch specific content like blog posts from a database. The explanation hints at further capabilities of NextJS, such as custom error handling and data fetching, which will be explored in a future project focused on a Meals app.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_435_onwards_to_the_main_project_the_foodies_app">435. Onwards to the Main Project - The Foodies App</h3>
+<div class="paragraph">
+<p>The text describes a new project, a foodies app, which is set up in both local and CodeSandbox versions. The project has been simplified by removing previously created pages and includes a new assets folder with necessary images. Updates have been made to styles, and the layout and page JavaScript files. Notably, the layout JavaScript file now includes an SVG graphic for aesthetic purposes, to be displayed behind the website&#8217;s header. This project is prepared and ready for further work.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_438_revisiting_the_concept_of_layouts">438. Revisiting The Concept Of Layouts</h3>
+<div class="paragraph">
+<p>The content provides a detailed explanation of how layouts function in NextJS, particularly focusing on creating and utilizing a root layout and nested layouts. The author intends to enhance a webpage by adding a proper header, navigation, and logo using the <code>layout.js</code> file. In NextJS, layouts serve as wrappers around pages and can be nested for more specialized layouts. The root layout remains active across all pages, while nested layouts apply only to specific subsets, like meals-related pages in this example. The explanation includes using React components and the <code>children</code> prop to manage content within layouts. Although a nested layout was demonstrated, it was deemed unnecessary for the current task, so the focus shifted to updating the root layout to include a universal header for navigation.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_439_adding_a_custom_component_to_a_layout">439. Adding a Custom Component To A Layout</h3>
+<div class="paragraph">
+<p>The text describes the process of creating a new header component in a Next.js project. The author explains the steps for adding a "MainHeader" component to manage a shared header across all pages. This involves creating a separate file named <code>main-header.js</code> and exporting a React component called <code>MainHeader</code>. The component includes a clickable logo, using Next.js&#8217;s <code>Link</code> component, and a navigation menu with links to different pages. The author emphasizes the flexibility in organizing component files and chooses to keep them outside the app folder for clarity. They also mention importing images in Next.js projects, highlighting the need to access the <code>src</code> property. Finally, the component is integrated into the root layout, and although the header is functional, it requires styling to improve its appearance.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_440_styling_nextjs_project_your_options_using_css_modules">440. Styling NextJS Project - Your Options &amp; Using CSS Modules</h3>
+<div class="paragraph">
+<p>The provided text explains various methods for styling NextJS projects, focusing on CSS options. Initially, it discusses using global CSS files, which apply styles across all pages when imported into the root <code>layout.js</code> file. Another popular option is Tailwind CSS, a utility-first CSS framework that allows styling through small utility classes; however, it&#8217;s not used in this project to keep the focus on NextJS and React. Instead, CSS modules are chosen, offering a way to scope styles to specific components by using files ending in <code>.module.css</code>. These modules prevent styles from affecting other components, even with similar class names. The process involves importing these CSS module files into component files and using the imported object to access and apply the styles. The text concludes by demonstrating how this method results in a well-styled header, logo, and navigation links in the project.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_441_optimizing_images_with_the_nextjs_image_component">441. Optimizing Images with the NextJS Image Component</h3>
+<div class="paragraph">
+<p>The content discusses optimizing image handling in a NextJS project by using the built-in NextJS image component instead of the default HTML image element. The NextJS image component provides several benefits, such as lazy loading, responsive image setup, automatic size detection, and serving images in optimal formats like WebP for different browsers. It simplifies image management without additional configuration. The component also allows customization, such as prioritizing image loading to prevent content shift during page load. The text encourages exploring further options and configurations for advanced use cases, like loading images from third-party sources.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_442_using_more_custom_components">442. Using More Custom Components</h3>
+<div class="paragraph">
+<p>The text describes the process of refactoring a web application&#8217;s header background into a separate component for better organization and practice. The steps include creating a new JavaScript file (<code>main-header-background.js</code>) for the component, extracting the relevant HTML and CSS into separate module files, and adjusting the CSS to work with modules. The component is then integrated back into the application within <code>main-header.js</code> instead of <code>layout.js</code>, and all related files are organized into a <code>main-header</code> subfolder within the <code>components</code> directory. Path updates are also made to ensure the application functions as expected. This organization improves code maintainability and clarity.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_443_populating_the_starting_page_content">443. Populating The Starting Page Content</h3>
+<div class="paragraph">
+<p>The content describes the process of updating the main page content in a <code>page.js</code> file located in the root of the app folder. The aim is to replace existing content with a new layout that includes a page-specific header and main section. The header will contain a nested header introducing the page, a <code>div</code> for an image slideshow, and another <code>div</code> with two inner <code>divs</code> for a hero section and a call-to-action (CTA) section. The hero section will have an <code>h1</code> title and a marketing paragraph, while the CTA section will contain links for users to join a community and explore meals. CSS modules are used for styling, and the file includes a <code>page.module.css</code> for this purpose. The main section will temporarily hold dummy text. The description also notes that a prepared <code>page.js</code> file is available for use, and the next step will be to work on the image slideshow.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_444_preparing_an_image_slideshow">444. Preparing an Image Slideshow</h3>
+<div class="paragraph">
+<p>The statement discusses the process of adding an image slideshow to a web project using React and Next.js. The plan is to create a new component for the slideshow to keep the main file lean. This component will be placed in a new subfolder within the components folder, specifically named <code>image-slideshow.js</code>, along with a CSS module file for styling.</p>
+</div>
+<div class="paragraph">
+<p>The JavaScript file will use React&#8217;s <code>useState</code> and <code>useEffect</code> hooks to manage the slideshow&#8217;s state, changing the visible image every five seconds using <code>setInterval</code>. The images are imported from an assets folder and displayed using Next.js&#8217;s image component.</p>
+</div>
+<div class="paragraph">
+<p>However, while attempting to integrate this component into the main page, an error occurs. The error indicates a conflict between client and server components in Next.js because the slideshow component requires <code>useState</code> (a client-side feature) but is being used within a server component context. This highlights the need to mark components correctly in Next.js to handle client-side functionality.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_445_react_server_components_vs_client_components_when_to_use_what">445. React Server Components vs Client Components - When To Use What</h3>
+<div class="paragraph">
+<p>The text explains the distinction between Server and Client components in NextJS, a full-stack framework built on React. Unlike standard React applications that run purely on the client side, NextJS utilizes Server components that are rendered on the server before being sent to the client. This approach can enhance performance and improve search engine optimization by delivering complete HTML content to web crawlers. However, Client components, necessary for features like state management and event handling, are also supported in NextJS. They must be explicitly defined using the <code>use client</code> directive, enabling client-side features such as hooks and event handlers. Understanding these component types is crucial for effectively leveraging NextJS&#8217;s capabilities.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_446_using_client_components_efficiently">446. Using Client Components Efficiently</h3>
+<div class="paragraph">
+<p>The provided text details the process of updating a community page and improving navigation functionality within a project using NextJS. First, the community page is populated with dummy content by replacing existing files with attached <code>page.js</code> and <code>page.module.css</code> files. A <code>community</code> component is used to display placeholder text and images. The main focus of the project will be on meal-related logic, which will be addressed later.</p>
+</div>
+<div class="paragraph">
+<p>The navigation header is improved by highlighting the active page link. This is achieved by adding a CSS class conditionally based on the current path. The <code>usePathname</code> hook from NextJS is used to determine the active path. A new <code>NavLink</code> component is created to handle the active link logic, ensuring only necessary parts are rendered as client components. This keeps the majority of the components as server components, maintaining server-side rendering advantages. CSS classes are adjusted and imported to style the links properly. By segmenting client-side rendering to specific components, the project maintains optimal performance while enhancing navigation user experience.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_447_outputting_meals_data_images_with_unknown_dimensions">447. Outputting Meals Data &amp; Images With Unknown Dimensions</h3>
+<div class="paragraph">
+<p>The content outlines a development plan for a Meals page in a web application. Initially, the team has worked on the starting and community pages, as well as the header. The focus is now on the Meals page, which will eventually allow users to share meals. The task involves setting up the page structure with a header and main section, and importing necessary styles from a CSS module. The header includes a title, a paragraph, and a link to a share page for users to contribute recipes.</p>
+</div>
+<div class="paragraph">
+<p>A new component, <code>MealsGrid</code>, is introduced to display meal items in a grid format. This component will map through meal data, outputting each meal as a list item with a unique key (<code>meal.id</code>). Styles for this component are managed via a CSS module. Another component, <code>MealItem</code>, is created to display details of each meal, including dynamic links to meal detail pages and images. The images, stored in a database, will use the Next.js Image component with a <code>fill</code> prop to handle dynamic dimensions since their sizes are unknown at build time.</p>
+</div>
+<div class="paragraph">
+<p>The <code>MealsGrid</code> component is integrated into the Meals page, though initially, it displays no meals due to the absence of a data source. Future steps will involve populating this component with actual meal data.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_448_setting_up_a_sqlite_database">448. Setting Up A SQLite Database</h3>
+<div class="paragraph">
+<p>The process described involves setting up a local SQLite database to store meal data for a meals grid component in a development environment. Here&#8217;s a summary:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Purpose</strong>: To display meals on a screen, a database is needed to store meal information, including dummy data and user-shared meals.</p>
+</li>
+<li>
+<p><strong>Setup</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Stop the development server using <code>Ctrl + C</code>.</p>
+</li>
+<li>
+<p>Install the <code>better-sqlite3</code> package using <code>NPM install</code>. This package allows interaction with a SQLite database, which is chosen for its simplicity and local setup.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Database Initialization</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>An <code>initdb.js</code> file is prepared to create and initialize the database with dummy meal data.</p>
+</li>
+<li>
+<p>The file creates a new database or uses an existing one and sets up a table with fields like ID, slug, title, image path, summary, instructions, creator&#8217;s name, and email.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Data Insertion</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>initdb.js</code> file uses the installed package to execute a function that populates the database with dummy meal entries.</p>
+</li>
+<li>
+<p>The <code>prepare</code> function from <code>better-sqlite3</code> is used for this purpose.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Execution</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Run the <code>initdb.js</code> script using <code>node</code> to generate the <code>meals DB</code> file.</p>
+</li>
+<li>
+<p>This database will then be used to load meals onto the meals page.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The next step involves figuring out how to load meals from this database onto the meals page.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_449_fetching_data_by_leveraging_nextjs_fullstack_capabilities">449. Fetching Data By Leveraging NextJS &amp; Fullstack Capabilities</h3>
+<div class="paragraph">
+<p>The content discusses data loading in a Next.js application, highlighting its server-side capabilities. Unlike vanilla React, Next.js combines backend and frontend, allowing direct database access without useEffect or fetch requests. The example involves setting up a database connection using the better SQLite3 package and creating a function to fetch data from a database. The explanation includes converting functions to async for handling promises and simulating delays, which is beneficial for managing loading states. It also covers passing data to components without <code>useEffect</code>. A minor styling error is noted, and the document concludes with an overview of how data and images are fetched and displayed in the application.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_450_adding_a_loading_page">450. Adding A Loading Page</h3>
+<div class="paragraph">
+<p>The content discusses how to improve user experience when loading pages in a web application using NextJS. Initially, when accessing a meals page, there&#8217;s a noticeable delay due to a forced two-second wait implemented in the data fetching function. However, NextJS caches pages, so revisiting them is faster. To enhance the experience during the initial load, a loading indicator can be added. This is achieved by creating a <code>loading.js</code> file, which displays a message (e.g., "Fetching meals&#8230;&#8203;") while data is being loaded. This provides immediate feedback to users, indicating that their navigation request is processing, thus improving the overall user experience. Basic styling for this indicator is handled with a <code>loading.module.css</code> file.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_451_using_suspense_streamed_responses_for_granular_loading_state_management">451. Using Suspense &amp; Streamed Responses For Granular Loading State Management</h3>
+<div class="paragraph">
+<p>The text discusses improving the user experience on a NextJS meals page by handling loading states more effectively. Initially, the loading text occupies the entire screen, which is not ideal since the header can be displayed immediately without waiting for data. The proposed solution involves using React&#8217;s <code>Suspense</code> component to manage loading states. By moving data fetching to a separate component and wrapping it with <code>Suspense</code>, it allows displaying fallback content while data loads. This approach avoids using the <code>loading.js</code> file that applies to all nested layouts, enabling more granular control. The text also explains how this method partially renders the page, loading visible content first and streaming in data as it becomes available, enhancing the user experience.</p>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-17 11:15:07 +0200
+Last updated 2025-01-18 15:03:15 +0200
 </div>
 </div>
 </body>
