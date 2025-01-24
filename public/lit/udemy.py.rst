@@ -59,15 +59,18 @@ Find the Obsidian folder, which is the first subfolder within the current folder
 
 ::
 
-  home_subfolders = os.listdir(".")
-  
-  note_home =  os.getenv("OBSIDIAN_HOME")
+  current_folder = os.getcwd()
+  home_folders = os.listdir(current_folder)
+  book_folders = [item for item in home_folders if os.path.isdir(os.path.join(current_folder, item)) and item.endswith(" Book")]
+  note_home =  book_folders[0]
   print("OBSIDIAN_HOME: " + note_home)
-  
-Get ``GEMINI_API_KEY``.
+
+Get Gemini API key.
 
 ::  
+
   g_key = os.getenv("GEMINI_API_KEY")
+
 
 Get ``num_files`` newest files from the provided ``directory``.
 
@@ -213,7 +216,7 @@ Call OpenAI API.
 
       if platform.system() == 'Darwin':
           os.system("afplay /System/Library/Sounds/Glass.aiff")
-    
+  
 Show OpenAI result.
 
 ::
@@ -229,7 +232,7 @@ Show OpenAI result.
       pyperclip.copy(st.session_state.openai_result)
       st.sidebar.write(f'Copied to clipboard')
 
-    
+  
 
 
 

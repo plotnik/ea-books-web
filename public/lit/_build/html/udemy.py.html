@@ -95,10 +95,15 @@
 </pre></div>
 </div>
 <p>Find the Obsidian folder, which is the first subfolder within the current folder that has a name ending with “ Book”.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">contents</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-<span class="n">note_home</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OBSIDIAN_HOME&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">current_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">home_folders</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">current_folder</span><span class="p">)</span>
+<span class="n">book_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">home_folders</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_folder</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot; Book&quot;</span><span class="p">)]</span>
+<span class="n">note_home</span> <span class="o">=</span>  <span class="n">book_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OBSIDIAN_HOME: &quot;</span> <span class="o">+</span> <span class="n">note_home</span><span class="p">)</span>
-<span class="n">g_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Get Gemini API key.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Get <code class="docutils literal notranslate"><span class="pre">num_files</span></code> newest files from the provided <code class="docutils literal notranslate"><span class="pre">directory</span></code>.</p>
