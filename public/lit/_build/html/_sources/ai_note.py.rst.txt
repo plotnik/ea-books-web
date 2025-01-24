@@ -102,13 +102,26 @@ Select OpenAI LLM
 
 ::
 
-  openai_models = ["gpt-4o", "gpt-4o-mini", "o1-mini", "o1", "ollama"]
+  openai_models = [
+      "gemini-2.0-flash-exp", 
+      "gemini-1.5-pro", 
+      "gemini-1.5-flash", 
+      "gemini-1.5-flash-8b", 
+
+      "gpt-4o", 
+      "gpt-4o-mini", 
+      "o1-mini", 
+      "o1", 
+
+      "ollama llama3.2"
+  ]
+    
   openai_temperatures = [0, 0.7, 1]
 
   openai_model = st.sidebar.selectbox(
      "OpenAI Model",
      openai_models,
-     index = 1
+     index = 0
   )
 
   openai_temperature = st.sidebar.select_slider(
@@ -159,13 +172,14 @@ Call OpenAI API
   st.write(st.session_state.openai_result)
 
 Call ``o1`` model
+~~~~~~~~~~~~~~~~~
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
 
    "Reasoning with o1", https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
- 
+
 ::
 
   def call_o1_model(prompt, text):
@@ -180,7 +194,8 @@ Call ``o1`` model
       )
       return response.choices[0]
 
-Call ``o1``-predecessor model.
+Call ``o1``-predecessor model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -196,7 +211,8 @@ Call ``o1``-predecessor model.
           )
       return response.choices[0]
 
-Call Ollama.
+Call Ollama
+~~~~~~~~~~~
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
@@ -204,18 +220,51 @@ Call Ollama.
 
    "Ollama", https://github.com/ollama/ollama?tab=readme-ov-file
    "Ollama Python", https://github.com/ollama/ollama-python
-  
+ 
 ::
 
   def call_ollama(prompt, text):
+      model = openai_model[len("ollama "):]
       messages = [
           {"role": "system", "content": prompt},
           {"role": "user", "content": text},
       ] 
       return ollama.chat(
-              model='llama3.2',
+              model=model,
               messages=messages,
           )
+
+Call Gemini
+~~~~~~~~~~~
+
+.. csv-table:: Useful Links
+   :header: "Name", "URL"
+   :widths: 10 30
+
+   "Text generation", https://ai.google.dev/gemini-api/docs/text-generation?lang=python
+   "OpenAI compatibility", https://ai.google.dev/gemini-api/docs/openai
+   "Example applications", https://ai.google.dev/gemini-api/docs/models/generative-models#example-applications
+   "Model variants", https://ai.google.dev/gemini-api/docs/models/gemini#model-variations
+   "Google Gen AI SDKs", https://ai.google.dev/gemini-api/docs/sdks
+ 
+::
+
+  def call_gemini(prompt, text):
+      g_key = os.getenv("GEMINI_API_KEY")
+      g_client = OpenAI(
+          api_key=g_key,
+          base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+      )
+      messages = [
+          {"role": "developer", "content": prompt},
+          {"role": "user", "content": text},
+      ] 
+      response = g_client.chat.completions.create(
+              model=openai_model,
+              messages=messages,
+              temperature=openai_temperature,
+          )
+      return response.choices[0]
   
 When the user clicks a button to call OpenAI:
 
@@ -232,14 +281,19 @@ When the user clicks a button to call OpenAI:
 ::
         
   st.sidebar.write('---')
-  if st.sidebar.button(':thinking_face: &nbsp; Call OpenAI', type="primary"):
+  if st.sidebar.button(':thinking_face: &nbsp; Ask', type="primary"):
 
       start_time = time.time()
 
       if "o1" in openai_model:
           response = call_o1_model(prompt, text)
-      elif "ollama" == openai_model:
-          response = call_ollama(prompt, text)    
+        
+      elif openai_model.startswith("gemini"): 
+          response = call_gemini(prompt, text)
+        
+      elif openai_model.startswith("ollama "): 
+          response = call_ollama(prompt, text)
+        
       else:
           response = call_earlier_model(prompt, text)
 
@@ -370,7 +424,7 @@ accomplish. Here’s an example of how to structure the contents:
 
    - name: grammar
      note: You will be provided with statements in markdown, and your task is to convert them to standard English.  
-   
+  
    - name: improve_style
      note: Improve style of the content you are provided.
 

@@ -19,6 +19,7 @@ Literate Programs
    code_review.py
    doc_note.py
    up_file.py
+   udemy.py
    cmp_props.py
    pi_keys.py
    pom_csv.py
