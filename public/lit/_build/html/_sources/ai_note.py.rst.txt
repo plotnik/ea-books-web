@@ -115,7 +115,7 @@ Select OpenAI LLM
 
       "ollama llama3.2"
   ]
-    
+  
   openai_temperatures = [0, 0.7, 1]
 
   openai_model = st.sidebar.selectbox(
@@ -148,12 +148,12 @@ By the way, we can use emojis in buttons.
 
 ::
     
-  if st.sidebar.button('Count Tokens'):
+  if st.sidebar.button('Count Tokens', use_container_width=True):
 
-      encoding = tiktoken.encoding_for_model(openai_model)
+      encoding = tiktoken.encoding_for_model("gpt-4o-mini")
       tokens = encoding.encode(text)
-      st.write('---')
-      st.write(f'Tokens: `{len(tokens)}`')
+      #st.write('---')
+      st.sidebar.write(f'Tokens: `{len(tokens)}`')
 
 
 Call OpenAI API
@@ -172,7 +172,7 @@ Call OpenAI API
   st.write(st.session_state.openai_result)
 
 Call ``o1`` model
-~~~~~~~~~~~~~~~~~
+=================
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
@@ -195,7 +195,7 @@ Call ``o1`` model
       return response.choices[0]
 
 Call ``o1``-predecessor model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=============================
 
 ::
 
@@ -212,7 +212,7 @@ Call ``o1``-predecessor model
       return response.choices[0]
 
 Call Ollama
-~~~~~~~~~~~
+===========
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
@@ -220,7 +220,7 @@ Call Ollama
 
    "Ollama", https://github.com/ollama/ollama?tab=readme-ov-file
    "Ollama Python", https://github.com/ollama/ollama-python
- 
+
 ::
 
   def call_ollama(prompt, text):
@@ -235,7 +235,7 @@ Call Ollama
           )
 
 Call Gemini
-~~~~~~~~~~~
+===========
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
@@ -246,7 +246,7 @@ Call Gemini
    "Example applications", https://ai.google.dev/gemini-api/docs/models/generative-models#example-applications
    "Model variants", https://ai.google.dev/gemini-api/docs/models/gemini#model-variations
    "Google Gen AI SDKs", https://ai.google.dev/gemini-api/docs/sdks
- 
+
 ::
 
   def call_gemini(prompt, text):
@@ -265,7 +265,7 @@ Call Gemini
               temperature=openai_temperature,
           )
       return response.choices[0]
-  
+
 When the user clicks a button to call OpenAI:
 
 - The application sends the selected prompt and user input to the OpenAI API.
@@ -279,21 +279,29 @@ When the user clicks a button to call OpenAI:
    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
 
 ::
+
+Concatenate request
+
+::
+   
+  def concat_request(prompt, text):
+      return prompt + "\n\n```\n" + text + "\n```\n"
         
+    
   st.sidebar.write('---')
-  if st.sidebar.button(':thinking_face: &nbsp; Ask', type="primary"):
+  if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
 
       start_time = time.time()
 
       if "o1" in openai_model:
           response = call_o1_model(prompt, text)
-        
+      
       elif openai_model.startswith("gemini"): 
           response = call_gemini(prompt, text)
-        
+      
       elif openai_model.startswith("ollama "): 
           response = call_ollama(prompt, text)
-        
+      
       else:
           response = call_earlier_model(prompt, text)
 
@@ -321,15 +329,21 @@ Output format can be XML with request, response and prompt name, or just respons
 
   note_name = st.text_input("Note Name:")
 
-  out_format = st.radio("Output:", ["Clipboard", "Markdown", "XML"], horizontal=True)
+  save_formats = ["Markdown", "XML"]
+  out_format = st.radio("Output:", ["Clipboard", "Request"] + save_formats, horizontal=True)
+
+  button_name = "Save" if out_format in save_formats else "Copy"
 
   def save_note_disabled():
-      return len(note_name.strip())==0 and out_format != "Clipboard"
+      return len(note_name.strip())==0 and out_format in save_formats
 
-  if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
+  if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
       if out_format == "Clipboard":
           pyperclip.copy(st.session_state.openai_result)
           st.write(f'Copied to clipboard')
+      if out_format == "Request":
+          pyperclip.copy(concat_request(prompt, text))
+          st.write(f'Request copied to clipboard')    
       elif out_format == "XML":
           xml = textwrap.dedent(f"""
               <note>
@@ -424,7 +438,7 @@ accomplish. Here’s an example of how to structure the contents:
 
    - name: grammar
      note: You will be provided with statements in markdown, and your task is to convert them to standard English.  
-  
+ 
    - name: improve_style
      note: Improve style of the content you are provided.
 

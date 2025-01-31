@@ -446,6 +446,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_108_vanilla_css_styles_are_not_scoped_to_components">108. Vanilla CSS Styles Are NOT Scoped To Components!</a></li>
 <li><a href="#_109_styling_react_apps_with_inline_styles">109. Styling React Apps with Inline Styles</a></li>
 <li><a href="#_110_dynamic_conditional_inline_styles">110. Dynamic &amp; Conditional Inline Styles</a></li>
+<li><a href="#_111_dynamic_conditional_styling_with_css_files_css_classes">111. Dynamic &amp; Conditional Styling with CSS Files &amp; CSS Classes</a></li>
+<li><a href="#_112_scoping_css_rules_with_css_modules">112. Scoping CSS Rules with CSS Modules</a></li>
+<li><a href="#_113_introducing_styled_components_third_party_package">113. Introducing Styled Components (Third-party Package)</a></li>
 </ul>
 </div>
 </div>
@@ -522,11 +525,77 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>The content discusses a method of applying conditional inline styles to input fields, particularly focusing on styling invalid inputs. Initially, the author considers inline styling for inputs in a project, but decides to conditionally style inputs based on their validity using a ternary expression. This involves setting a background color based on whether an input is valid or not, using a constant to determine the condition. The approach is demonstrated with an example where an invalid email input is highlighted in red. However, the author acknowledges the downsides of inline styling, such as code duplication and cluttering JSX with CSS, and suggests exploring conditional styling using class names with vanilla CSS as a more efficient alternative.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Dynamic &amp; Conditional Inline Styles</dt>
+</dl>
+</div>
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/07%20Styling/02-dynamic-conditional-inline-styles/src/components/AuthInputs.jsx" target="_blank">
+07-Styling/02-dynamic-conditional-inline-styles/src/components/AuthInputs.jsx</a>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_111_dynamic_conditional_styling_with_css_files_css_classes">111. Dynamic &amp; Conditional Styling with CSS Files &amp; CSS Classes</h3>
+<div class="paragraph">
+<p>This text discusses how to dynamically style elements in React applications using CSS class names instead of inline styles. It emphasizes the use of conditional class names, explaining that ternary expressions should be used instead of the <code>&amp;&amp;</code> shortcut to avoid adding boolean values as class names and causing console warnings. The text also explains how to combine a class that is always applied with a conditional class, using template literals with backticks and <code>${}</code> syntax to dynamically construct the class name string. An example is provided using a label element with a permanent "label" class and a conditional "invalid" class based on whether an input field is valid. The explanation concludes with demonstrating how the same approach can be applied to multiple elements.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_112_scoping_css_rules_with_css_modules">112. Scoping CSS Rules with CSS Modules</h3>
+<div class="paragraph">
+<p>This section discusses the limitations of using plain CSS in React applications, specifically the lack of scoping, which can lead to unintended style conflicts between components. The example given is a paragraph style in the header affecting labels in other components. The solution is to use CSS Modules, which automatically scopes styles to the component where they are imported. This is done by renaming the CSS file with the <code>.module.css</code> extension and importing it as a JavaScript object containing transformed class names. The build process generates unique class names for each component, ensuring that styles do not interfere with other components. This approach allows for CSS code to be decoupled from JSX, written as Vanilla CSS and allows for conditional application of styles. However, it may result in many small CSS files.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_113_introducing_styled_components_third_party_package">113. Introducing Styled Components (Third-party Package)</h3>
+<div class="paragraph">
+<p>This section introduces the styled-components package as an alternative to traditional CSS styling in React. Instead of separate CSS files or inline styles, styled-components allows you to define styles directly within your React components using special "styled" components.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a breakdown of the key points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Installation:</strong> The package is installed using <code>npm install styled-components</code> or by adding it as a dependency in CodeSandbox.</p>
+</li>
+<li>
+<p><strong>Import <code>styled</code>:</strong> You import <code>styled</code> from the <code>styled-components</code> package.</p>
+</li>
+<li>
+<p><strong>Creating Styled Components:</strong> You use <code>styled.element</code> (e.g., <code>styled.div</code>, <code>styled.h1</code>, <code>styled.p</code>) followed by backticks (``) to create a styled component.</p>
+</li>
+<li>
+<p><strong>Tagged Templates:</strong> The backticks create a tagged template, which is a JavaScript feature that allows you to embed styles directly into the component definition.</p>
+</li>
+<li>
+<p><strong>CSS Inside:</strong> Inside the backticks, you write standard CSS code, including multi-line styles.</p>
+</li>
+<li>
+<p><strong>Component Creation:</strong> This process creates a new React component that renders the specified HTML element with the provided CSS styles.</p>
+</li>
+<li>
+<p><strong>Usage:</strong> You then use this newly created component in your React application.</p>
+</li>
+<li>
+<p><strong>Internal Mechanism:</strong> Under the hood, styled-components generates unique CSS class names and injects the corresponding styles into the <code>&lt;head&gt;</code> of the document.</p>
+</li>
+<li>
+<p><strong>Dynamic Elements:</strong> You can change the HTML element rendered by changing the property called on the <code>styled</code> object, such as <code>styled.div</code> to <code>styled.p</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In essence, styled-components provides a way to encapsulate both the structure and style of a component within a single, reusable entity, making it easier to manage styles and create more maintainable React applications. The example given then shows how to replace a div in a component with a styled div using the <code>styled-components</code> package.</p>
+</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-24 10:17:13 +0200
+Last updated 2025-01-31 09:51:30 +0200
 </div>
 </div>
 </body>

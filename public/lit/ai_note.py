@@ -115,7 +115,7 @@ openai_models = [
 
     "ollama llama3.2"
 ]
-    
+  
 openai_temperatures = [0, 0.7, 1]
 
 openai_model = st.sidebar.selectbox(
@@ -172,14 +172,14 @@ st.write('---')
 st.write(st.session_state.openai_result)
 
 # Call ``o1`` model
-# ~~~~~~~~~~~~~~~~~
+# =================
 #
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
 #    :widths: 10 30
 #
 #    "Reasoning with o1", https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
-# 
+#
 # ::
 
 def call_o1_model(prompt, text):
@@ -195,7 +195,7 @@ def call_o1_model(prompt, text):
     return response.choices[0]
 
 # Call ``o1``-predecessor model
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# =============================
 #
 # ::
 
@@ -212,7 +212,7 @@ def call_earlier_model(prompt, text):
     return response.choices[0]
 
 # Call Ollama
-# ~~~~~~~~~~~
+# ===========
 #
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
@@ -220,7 +220,7 @@ def call_earlier_model(prompt, text):
 #
 #    "Ollama", https://github.com/ollama/ollama?tab=readme-ov-file
 #    "Ollama Python", https://github.com/ollama/ollama-python
-#  
+# 
 # ::
 
 def call_ollama(prompt, text):
@@ -235,7 +235,7 @@ def call_ollama(prompt, text):
         )
 
 # Call Gemini
-# ~~~~~~~~~~~
+# ===========
 #
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
@@ -246,7 +246,7 @@ def call_ollama(prompt, text):
 #    "Example applications", https://ai.google.dev/gemini-api/docs/models/generative-models#example-applications
 #    "Model variants", https://ai.google.dev/gemini-api/docs/models/gemini#model-variations
 #    "Google Gen AI SDKs", https://ai.google.dev/gemini-api/docs/sdks
-#  
+# 
 # ::
 
 def call_gemini(prompt, text):
@@ -265,7 +265,7 @@ def call_gemini(prompt, text):
             temperature=openai_temperature,
         )
     return response.choices[0]
-  
+
 # When the user clicks a button to call OpenAI:
 #
 # - The application sends the selected prompt and user input to the OpenAI API.
@@ -279,21 +279,29 @@ def call_gemini(prompt, text):
 #    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
 #
 # ::
+
+# Concatenate request
+#
+# ::
+   
+def concat_request(prompt, text):
+    return prompt + "\n\n```\n" + text + "\n```\n"
         
+    
 st.sidebar.write('---')
-if st.sidebar.button(':thinking_face: &nbsp; Ask', type="primary", use_container_width=True):
+if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
 
     start_time = time.time()
 
     if "o1" in openai_model:
         response = call_o1_model(prompt, text)
-        
+      
     elif openai_model.startswith("gemini"): 
         response = call_gemini(prompt, text)
-        
+      
     elif openai_model.startswith("ollama "): 
         response = call_ollama(prompt, text)
-        
+      
     else:
         response = call_earlier_model(prompt, text)
 
@@ -321,15 +329,21 @@ if st.sidebar.button(':thinking_face: &nbsp; Ask', type="primary", use_container
 
 note_name = st.text_input("Note Name:")
 
-out_format = st.radio("Output:", ["Clipboard", "Markdown", "XML"], horizontal=True)
+save_formats = ["Markdown", "XML"]
+out_format = st.radio("Output:", ["Clipboard", "Request"] + save_formats, horizontal=True)
+
+button_name = "Save" if out_format in save_formats else "Copy"
 
 def save_note_disabled():
-    return len(note_name.strip())==0 and out_format != "Clipboard"
+    return len(note_name.strip())==0 and out_format in save_formats
 
-if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
+if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
     if out_format == "Clipboard":
         pyperclip.copy(st.session_state.openai_result)
         st.write(f'Copied to clipboard')
+    if out_format == "Request":
+        pyperclip.copy(concat_request(prompt, text))
+        st.write(f'Request copied to clipboard')    
     elif out_format == "XML":
         xml = textwrap.dedent(f"""
             <note>
@@ -424,7 +438,7 @@ if st.button(':spiral_note_pad: Save', disabled=save_note_disabled()):
 #
 #    - name: grammar
 #      note: You will be provided with statements in markdown, and your task is to convert them to standard English.  
-#   
+#  
 #    - name: improve_style
 #      note: Improve style of the content you are provided.
 #

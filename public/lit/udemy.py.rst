@@ -1,5 +1,5 @@
-Summarize Udemy
-===============
+Udemy
+=====
 
 Summarize Udemy Transcript
 
@@ -63,7 +63,7 @@ Find the Obsidian folder, which is the first subfolder within the current folder
   home_folders = os.listdir(current_folder)
   book_folders = [item for item in home_folders if os.path.isdir(os.path.join(current_folder, item)) and item.endswith(" Book")]
   note_home =  book_folders[0]
-  print("OBSIDIAN_HOME: " + note_home)
+  # print("OBSIDIAN_HOME: " + note_home)
 
 Get Gemini API key.
 
@@ -150,10 +150,10 @@ Truncate text to max len.
           file.write(text)
       st.rerun()    
 
-if st.button('Remove empty lines'):
-    text = remove_empty_lines(text)
-    with open(file_path, 'w', encoding='utf-8') as file:
-        file.write(text)
+  if st.button('Remove empty lines'):
+      text = remove_empty_lines(text)
+      with open(file_path, 'w', encoding='utf-8') as file:
+          file.write(text)
 
 
 Get the number of tokens.
@@ -206,7 +206,7 @@ Call OpenAI API.
       st.write(st.session_state.openai_result)
 
       # st.write(f'finish_reason: `{choice.finish_reason}`')
-      print("--- " + response.model)
+      # print("--- " + response.model)
       # print(response)
       # st.write(f'Choices: {len(response.choices)}')
 
@@ -216,7 +216,7 @@ Call OpenAI API.
 
       if platform.system() == 'Darwin':
           os.system("afplay /System/Library/Sounds/Glass.aiff")
-  
+
 Show OpenAI result.
 
 ::
@@ -232,7 +232,7 @@ Show OpenAI result.
       pyperclip.copy(st.session_state.openai_result)
       st.sidebar.write(f'Copied to clipboard')
 
-  
+
 
 
 
