@@ -65,6 +65,12 @@ client = OpenAI()
 #
 # The application reads prompts from a YAML file (`openai_helper.yml`). Each prompt has a name and a corresponding note that describes what the prompt should do.
 #
+# .. csv-table:: Useful Links
+#    :header: "Name", "URL"
+#    :widths: 10 30
+#
+#    "Prompt engineering", https://platform.openai.com/docs/guides/prompt-engineering
+#
 # ::
 
 prompts_file = "openai_helper.yml"
@@ -104,18 +110,18 @@ st.write(prompt)
 
 openai_models = [
     "gemini-2.0-flash-exp", 
-    "gemini-1.5-pro", 
     "gemini-1.5-flash", 
-    "gemini-1.5-flash-8b", 
+    "gemini-1.5-pro", 
 
-    "gpt-4o", 
     "gpt-4o-mini", 
-    "o1-mini", 
+    "o3-mini",
+    
+    "gpt-4o", 
     "o1", 
-
+      
     "ollama llama3.2"
 ]
-  
+
 openai_temperatures = [0, 0.7, 1]
 
 openai_model = st.sidebar.selectbox(
@@ -171,8 +177,8 @@ if "openai_result" not in st.session_state:
 st.write('---')
 st.write(st.session_state.openai_result)
 
-# Call ``o1`` model
-# =================
+# Call ``o`` model
+# ================
 #
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
@@ -182,7 +188,7 @@ st.write(st.session_state.openai_result)
 #
 # ::
 
-def call_o1_model(prompt, text):
+def call_o_model(prompt, text):
     messages = [
         #{"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
         {"role": "developer", "content": prompt},
@@ -194,12 +200,12 @@ def call_o1_model(prompt, text):
     )
     return response.choices[0]
 
-# Call ``o1``-predecessor model
-# =============================
+# Call ``gpt`` model
+# ==================
 #
 # ::
 
-def call_earlier_model(prompt, text):
+def call_gpt_model(prompt, text):
     messages = [
         {"role": "developer", "content": prompt},
         {"role": "user", "content": text},
@@ -220,7 +226,7 @@ def call_earlier_model(prompt, text):
 #
 #    "Ollama", https://github.com/ollama/ollama?tab=readme-ov-file
 #    "Ollama Python", https://github.com/ollama/ollama-python
-# 
+#
 # ::
 
 def call_ollama(prompt, text):
@@ -246,7 +252,7 @@ def call_ollama(prompt, text):
 #    "Example applications", https://ai.google.dev/gemini-api/docs/models/generative-models#example-applications
 #    "Model variants", https://ai.google.dev/gemini-api/docs/models/gemini#model-variations
 #    "Google Gen AI SDKs", https://ai.google.dev/gemini-api/docs/sdks
-# 
+#
 # ::
 
 def call_gemini(prompt, text):
@@ -286,24 +292,24 @@ def call_gemini(prompt, text):
    
 def concat_request(prompt, text):
     return prompt + "\n\n```\n" + text + "\n```\n"
-        
-    
+      
+  
 st.sidebar.write('---')
 if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
 
     start_time = time.time()
 
-    if "o1" in openai_model:
-        response = call_o1_model(prompt, text)
-      
+    if openai_model.startswith(("o1", "o3")):
+        response = call_o_model(prompt, text)
+    
     elif openai_model.startswith("gemini"): 
         response = call_gemini(prompt, text)
-      
+    
     elif openai_model.startswith("ollama "): 
         response = call_ollama(prompt, text)
-      
+    
     else:
-        response = call_earlier_model(prompt, text)
+        response = call_gpt_model(prompt, text)
 
     st.session_state.openai_result = response.message.content
     st.write(st.session_state.openai_result)
@@ -330,7 +336,7 @@ if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_contain
 note_name = st.text_input("Note Name:")
 
 save_formats = ["Markdown", "XML"]
-out_format = st.radio("Output:", ["Clipboard", "Request"] + save_formats, horizontal=True)
+out_format = st.radio(openai_model + ":", ["Clipboard", "Request"] + save_formats, horizontal=True)
 
 button_name = "Save" if out_format in save_formats else "Copy"
 
@@ -438,7 +444,7 @@ if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
 #
 #    - name: grammar
 #      note: You will be provided with statements in markdown, and your task is to convert them to standard English.  
-#  
+# 
 #    - name: improve_style
 #      note: Improve style of the content you are provided.
 #

@@ -10,6 +10,8 @@ Summarize Udemy Transcript
    "Session State", https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state
    "How to count tokens with tiktoken", https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
 
+.. contents::
+   
 ::
 
   import streamlit as st
@@ -49,11 +51,13 @@ Select OpenAI LLM.
 
 ::
 
-  llm_models = ["gemini-2.0-flash-exp", "gpt-4o"]
+  llm_models = ["gemini-2.0-flash-exp", "gpt-4o-mini"]
   openai_model = st.sidebar.radio("LLM Models", llm_models)
 
   is_gemini = openai_model.startswith("gemini")
-  st.sidebar.write("---")
+
+Obsidian folder
+---------------
 
 Find the Obsidian folder, which is the first subfolder within the current folder that has a name ending with " Book".
 
@@ -71,6 +75,8 @@ Get Gemini API key.
 
   g_key = os.getenv("GEMINI_API_KEY")
 
+Newest files 
+------------
 
 Get ``num_files`` newest files from the provided ``directory``.
 
@@ -106,7 +112,8 @@ Select ``note_name`` from 5 newest notes.
      newest_files,
   )
 
-Load obsidian note.
+Load Obsidian note
+------------------
 
 ::
 
@@ -114,23 +121,12 @@ Load obsidian note.
   with open(file_path, 'r', encoding='utf-8') as file:
       text = file.read()
 
-Remove empty lines from text.
+ 
+Write truncated input text
 
 ::
-
-  def remove_empty_lines(text):
-      lines = text.splitlines()
-      non_empty_lines = [line for line in lines if line.strip()]
-      cleaned_text = '\n'.join(non_empty_lines)
-      return cleaned_text
-
-  def replace_newlines_with_spaces(input_string):
-      return input_string.replace('\n', ' ')
-
-Truncate text to max len.
-
-::
-
+    
+  # Truncate text to max len
   def max_len(text, k):
       if len(text) <= k:
           return text
@@ -139,24 +135,11 @@ Truncate text to max len.
   st.write(f"""
  
   {max_len(text, 250)}
-
-  ---    
+ 
   """)
 
-
-  if st.sidebar.button(':arrows_counterclockwise: &nbsp; Replace newlines with spaces', use_container_width=True):
-      text = replace_newlines_with_spaces(text)
-      with open(file_path, 'w', encoding='utf-8') as file:
-          file.write(text)
-      st.rerun()    
-
-  if st.button('Remove empty lines'):
-      text = remove_empty_lines(text)
-      with open(file_path, 'w', encoding='utf-8') as file:
-          file.write(text)
-
-
-Get the number of tokens.
+Count tokens
+------------
 
 ::
 
@@ -166,18 +149,55 @@ Get the number of tokens.
       encoding = tiktoken.encoding_for_model(openai_model)
       tokens = encoding.encode(text)
 
-      st.write(f'Characters: `{len(text)}`')  
-      st.write(f'Tokens: `{len(tokens)}`')  
+      st.sidebar.write(f'''
+          | Characters | Tokens |
+          |---|---|
+          | {len(text)} | {len(tokens)} |
+          ''')  
+
+  st.sidebar.divider()
 
 
+Buttons to update text
+----------------------
+
+- Replace newlines with spaces, and
+- Remove empty lines from text
+
+::
+    
+  def replace_newlines_with_spaces(input_string):
+      return input_string.replace('\n', ' ')
+ 
+  def remove_empty_lines(text):
+      lines = text.splitlines()
+      non_empty_lines = [line for line in lines if line.strip()]
+      cleaned_text = '\n'.join(non_empty_lines)
+      return cleaned_text
+
+
+  if st.button(':red_circle: &nbsp; **Replace newlines with spaces**', use_container_width=True):
+      text = replace_newlines_with_spaces(text)
+      with open(file_path, 'w', encoding='utf-8') as file:
+          file.write(text)
+      st.rerun()    
+
+
+  if False: # st.button(':small_red_triangle_down: &nbsp; ~~Remove empty lines~~', use_container_width=True):
+    text = remove_empty_lines(text)
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.write(text)
+    st.rerun()  
+
+Call OpenAI API
+---------------
+
+::
+    
   prompt = """You will be provided with statements in markdown, 
   and your task is to summarize the content you are provided.
   """
   st.sidebar.write(prompt)
-
-Call OpenAI API.
-
-::
 
   g_client = OpenAI(
       api_key=g_key,
@@ -202,7 +222,6 @@ Call OpenAI API.
       out_text = choice.message.content
       st.session_state.openai_result = out_text
 
-      st.write('---')
       st.write(st.session_state.openai_result)
 
       # st.write(f'finish_reason: `{choice.finish_reason}`')
@@ -227,10 +246,16 @@ Show OpenAI result.
 
   if st.sidebar.button(':sparkles: &nbsp; Summarize', type='primary', use_container_width=True):
       call_openai(text, prompt)
+      st.rerun()
 
-  if st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
-      pyperclip.copy(st.session_state.openai_result)
-      st.sidebar.write(f'Copied to clipboard')
+Copy to clipboard
+
+::
+
+  if len(st.session_state.openai_result) > 0:
+      if st.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
+          pyperclip.copy(st.session_state.openai_result)
+          st.sidebar.write(f'Copied to clipboard')
 
 
 
