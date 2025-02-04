@@ -450,6 +450,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_112_scoping_css_rules_with_css_modules">112. Scoping CSS Rules with CSS Modules</a></li>
 <li><a href="#_113_introducing_styled_components_third_party_package">113. Introducing Styled Components (Third-party Package)</a></li>
 <li><a href="#_114_creating_flexible_components_with_styled_components">114. Creating Flexible Components with Styled Components</a></li>
+<li><a href="#_115_dynamic_conditional_styling_with_styled_components">115. Dynamic &amp; Conditional Styling with Styled Components</a></li>
+<li><a href="#_116_styled_components_pseudo_selectors_nested_rules_media_queries">116. Styled Components - Pseudo Selectors, Nested Rules &amp; Media Queries</a></li>
+<li><a href="#_117_creating_reusable_components_component_combinations">117. Creating Reusable Components &amp; Component Combinations</a></li>
+<li><a href="#_118_introducing_tailwind_css_for_react_app_styling">118. Introducing Tailwind CSS For React App Styling</a></li>
 </ul>
 </div>
 </div>
@@ -610,10 +614,84 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_115_dynamic_conditional_styling_with_styled_components">115. Dynamic &amp; Conditional Styling with Styled Components</h3>
+<div class="paragraph">
+<p>The passage explains how to use styled components in React to encapsulate and reuse styling without resorting to inline styles or duplicated CSS classes. It shows that by creating small wrapper components with styled components, styles can be kept close to the JSX code while remaining separate. The discussion then focuses on dynamically styling elements based on props—such as an <code>invalid</code> or <code>$invalid</code> prop—to conditionally change properties like text color, background color, and border color. This dynamic styling is achieved through a special injection syntax in template literals that executes a function receiving the component’s props, allowing the style to change depending on whether a condition (like form validation) is met. A noteworthy point is the importance of avoiding name clashes with built-in props by prefixing custom props with a dollar sign (e.g., <code>$invalid</code>), which prevents warnings and ensures the styled component behaves as intended.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_116_styled_components_pseudo_selectors_nested_rules_media_queries">116. Styled Components - Pseudo Selectors, Nested Rules &amp; Media Queries</h3>
+<div class="paragraph">
+<p>The content describes how to utilize styled components for creating and styling React components, focusing on media queries, pseudo-selectors, and nesting rules.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Media Queries and Nested Selectors</strong>: The author explains how to replace a standard header with a styled header in a React component. By importing styled from 'styled-components', they create a <code>StyledHeader</code> component and apply styles using template literals. They discuss how to ensure that images and other elements within the header are styled by using the ampersand symbol (<code>&amp;</code>) to target nested elements.</p>
+</li>
+<li>
+<p><strong>CSS Cleanup</strong>: The risk of breaking styles when removing CSS imports is noted, and the author suggests copying existing CSS rules, including media queries, into styled components. This allows for a smooth transition while maintaining styles for different screen sizes.</p>
+</li>
+<li>
+<p><strong>Pseudo-selectors</strong>: The author demonstrates creating a styled button component and applying hover effects using the <code>&amp;:hover</code> syntax. This directs the hover styles to the button itself rather than child elements.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The overall message is that by converting to styled components, developers can effectively manage component styles and utilize CSS features like media queries and hover effects without complex changes. The author emphasizes the ease of styling parents that can influence child elements and encourages practicing the migration of components into styled components.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_117_creating_reusable_components_component_combinations">117. Creating Reusable Components &amp; Component Combinations</h3>
+<div class="paragraph">
+<p>The content discusses the use of styled components in React applications, highlighting the process of organizing and structuring these components effectively. It begins by examining the <code>AuthInputs.jsx</code> file, where several styled components (div, label, input, button) are created. The author suggests that some components, like the <code>ControlContainer</code>, are specific to <code>AuthInputs.jsx</code>, while others, such as the label, input, and button, could be reused across the application.</p>
+</div>
+<div class="paragraph">
+<p>To enhance reusability, it is recommended to create separate files for commonly used components, such as <code>Button.jsx</code>, <code>Input.jsx</code>, and <code>Label.jsx</code>. The author demonstrates how to move the button component into <code>Button.jsx</code>, ensuring it can be imported back into <code>AuthInputs.jsx</code>, maintaining its functionality while allowing reuse in other components.</p>
+</div>
+<div class="paragraph">
+<p>For the label and input components, the suggestion is given to combine them into a single component called <code>CustomInput</code>. This new component accepts a <code>label</code> prop and other passed props, ensuring a clean and reusable design. After creating <code>CustomInput</code>, it is imported and used in <code>AuthInputs.jsx</code>, simplifying the structure.</p>
+</div>
+<div class="paragraph">
+<p>The discussion concludes with advantages of styled components, including ease of setup, automatic scoping of styles, and the ability to stay within the React paradigm. However, it also notes the need for CSS knowledge, the blending of React and CSS code, and the potential creation of numerous small components, which can be cumbersome despite being a core aspect of React development.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_118_introducing_tailwind_css_for_react_app_styling">118. Introducing Tailwind CSS For React App Styling</h3>
+<div class="paragraph">
+<p>This section introduces Tailwind CSS, a popular utility-first CSS framework that works well with React and any other web projects. The instructor explains that Tailwind uses many small utility classes added directly to HTML elements to style components, which can seem overwhelming at first but becomes manageable with practice and the help of tools like the Tailwind IntelliSense extension in Visual Studio Code.</p>
+</div>
+<div class="paragraph">
+<p>The tutorial walks through basic setup steps for integrating Tailwind into a project. This includes installing the necessary packages, initializing Tailwind, and modifying configuration files to specify content sources. It also involves replacing the existing CSS by adding required Tailwind directives to the main CSS file.</p>
+</div>
+<div class="paragraph">
+<p>Once Tailwind is set up, the demo shows how to gradually convert component styling from previous methods to Tailwind. For example, the header is restyled using Flexbox utility classes along with margin, width, and text-related classes to achieve a centered layout with appropriate spacing, sizing, and color styling. The instructor highlights that while the class names may look cryptic initially, frequent use and referencing the documentation will help in learning them over time.</p>
+</div>
+<div class="paragraph">
+<p>In summary, the content provides an introductory guide to using Tailwind CSS for styling by:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Setting up Tailwind via installation commands and configuration changes.</p>
+</li>
+<li>
+<p>Replacing existing CSS with Tailwind’s utility classes.</p>
+</li>
+<li>
+<p>Demonstrating practical examples of re-styling components with utility classes.</p>
+</li>
+<li>
+<p>Recommending the official documentation and dedicated courses for deeper dives into Tailwind’s customization options.</p>
+</li>
+</ul>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-02-02 23:21:46 +0200
+Last updated 2025-02-04 09:45:45 +0200
 </div>
 </div>
 </body>
