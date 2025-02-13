@@ -284,8 +284,6 @@ When the user clicks a button to call OpenAI:
 
    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
 
-::
-
 Concatenate request
 
 ::

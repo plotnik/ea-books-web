@@ -115,10 +115,10 @@ openai_models = [
 
     "gpt-4o-mini", 
     "o3-mini",
-    
+  
     "gpt-4o", 
     "o1", 
-      
+    
     "ollama llama3.2"
 ]
 
@@ -284,16 +284,14 @@ def call_gemini(prompt, text):
 #
 #    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
 #
-# ::
-
 # Concatenate request
 #
 # ::
    
 def concat_request(prompt, text):
     return prompt + "\n\n```\n" + text + "\n```\n"
-      
-  
+    
+
 st.sidebar.write('---')
 if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
 
@@ -301,13 +299,13 @@ if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_contain
 
     if openai_model.startswith(("o1", "o3")):
         response = call_o_model(prompt, text)
-    
+  
     elif openai_model.startswith("gemini"): 
         response = call_gemini(prompt, text)
-    
+  
     elif openai_model.startswith("ollama "): 
         response = call_ollama(prompt, text)
-    
+  
     else:
         response = call_gpt_model(prompt, text)
 
@@ -444,7 +442,7 @@ if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
 #
 #    - name: grammar
 #      note: You will be provided with statements in markdown, and your task is to convert them to standard English.  
-# 
+#
 #    - name: improve_style
 #      note: Improve style of the content you are provided.
 #

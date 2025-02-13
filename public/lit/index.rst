@@ -25,8 +25,10 @@ Literate Programs
    pom_csv.py
    exc_yaml.py
    exc_ui.py
+   exc_histo.py
    cmp_folders.py
    adoc_links.py
+   google_search.py
    L1_Router_Engine.py
    albums.py
 
