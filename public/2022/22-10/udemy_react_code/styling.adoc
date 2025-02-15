@@ -193,3 +193,45 @@ Overall, the lecture highlights the ease of using Tailwind CSS for responsive de
 The discussion focuses on how to effectively use Tailwind CSS for responsive design and applying hover styles. It highlights the use of specific prefixes for utility classes in Tailwind, such as `md:` for medium-sized screens, which allows developers to apply styles conditionally based on screen width. An example is given where different margin and text sizes can be applied to a header and h1 element on medium or larger screens.
 
 Additionally, the explanation covers how to create a button component using Tailwind CSS, detailing the use of utility classes for styling, such as padding, font weight, text color, background color, and border radius. It also emphasizes the use of the `hover:` prefix to change styles when the button is hovered over, allowing a different background color to appear. The guide illustrates that while the class names may become lengthy, the result is a responsive and interactive design that adapts to user actions and screen sizes.
+
+=== 122. Dynamic & Conditional Styling with Tailwind
+
+The text explains how to implement dynamic, conditional styling in an Input component using Tailwind CSS instead of styled components. The author shows how to remove custom styled components and use standard HTML labels and inputs with Tailwind utility classes. The process involves:
+
+- Establishing base classes for components (labels and inputs).
+- Defining variables (like `labelClasses` and `inputClasses`) that hold these base classes.
+- Using an if-statement to check the `invalid` prop; if it’s true, additional or alternative classes (such as red text or background colors) are concatenated to change the appearance.
+- Ensuring proper spacing between concatenated classes so they remain separate.
+- Applying the dynamically built classes to the JSX elements to reflect the conditional styles.
+
+The result is a component that displays default styling under normal conditions and changes its colors (e.g., turning labels red) when in an invalid state.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/07%20Styling/06-tailwind-finished/src/components/Input.jsx" target="_blank">
+07 Styling/06-tailwind-finished/src/components/Input.jsx</a>
+++++
+====
+
+=== 123. Migrating The Demo App to Tailwind CSS
+
+The content describes the process of converting an authentication component’s styling from traditional methods (vanilla CSS/styled-components) to Tailwind CSS. Key steps include:
+
+- Removing the old control container style component and switching back to standard HTML tags.
+- Applying various Tailwind utility classes on the main div to control layout and design: setting full width with a maximum of 24rem (`max-w-sm`), adding uniform padding (`p-8`), rounded corners (`rounded`), a medium shadow (`shadow-md`), and a gradient background (`bg-gradient-to-b`) that transitions from `stone-700` to `stone-800`.
+- Centering the `div` by applying `mx-auto`.
+- Organizing the input fields inside a `div` using Flexbox (`flex flex-col`) to stack them vertically with a gap (`gap-2`) and additional margin at the bottom to separate them from the buttons.
+- Adjusting the styling of the action buttons so they align to the right by using Flexbox (`flex justify-end`), adding space between the buttons (`gap-4`), and styling one of the buttons with specific text colors (`text-amber-400` and `hover:text-amber-500`).
+
+Overall, the migration cleanly integrates Tailwind CSS classes to achieve responsive, modern, and consistent styling in the authentication component.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/07%20Styling/06-tailwind-finished/src/components/AuthInputs.jsx" target="_blank">
+07 Styling/06-tailwind-finished/src/components/AuthInputs.jsx</a>
+++++
+====
+
+=== 124. Tailwind CSS - Pros & Cons
+
+The passage provides an overview of using Tailwind CSS with React. It explains that although Tailwind can result in long lists of CSS classes in your JSX, you can alleviate this clutter by creating reusable utility components (like custom input or button components) that encapsulate these classes. This approach makes your code leaner and easier to manage. The speaker highlights several advantages of Tailwind CSS, including rapid development without needing deep CSS knowledge, helpful tooling that suggests classes, avoidance of global style clashes, and high configurability. However, there are some downsides, such as the mixing of styling directly in JSX, which can compromise the separation of concerns, and the potential for cumbersome component creation or repetitive copy-pasting if utility components are not used. Ultimately, while Tailwind CSS offers many benefits for building React apps, the choice of using it comes down to personal preference; for the course, the instructor opts to use Vanilla CSS to keep the focus on teaching React without the extra overhead of managing numerous CSS class names.

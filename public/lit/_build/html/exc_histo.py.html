@@ -39,19 +39,24 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
-
-<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;histo&quot;</span><span class="p">)</span>
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;input_yaml&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;YAML file created by exc_yaml&quot;</span><span class="p">)</span>
-<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="kn">import</span> <span class="nn">os</span>
 </pre></div>
 </div>
 <p>Bin size.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bin_size</span> <span class="o">=</span> <span class="s2">&quot;1min&quot;</span>
 </pre></div>
 </div>
-<p><strong>Step 1.</strong> Load the YAML file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_yaml</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<p>Get the list of <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files in the current directory</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yml_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.yml&#39;</span><span class="p">)]</span>
+<span class="n">yml_files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Create radio buttons to select a file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">input_yaml</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Select **yml** file to process:&quot;</span><span class="p">,</span> <span class="n">yml_files</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Load the YAML file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_yaml</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
     <span class="n">events</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -59,17 +64,16 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Step 2.</strong> Process the time field</p>
-<p>Convert the ‘time’ column to datetime.
-The provided time format is “YYYY/MM/DD HH:MM:SS”</p>
+<p>Convert the <code class="docutils literal notranslate"><span class="pre">time</span></code> column to datetime.</p>
+<p>The provided time format is <code class="docutils literal notranslate"><span class="pre">YYYY/MM/DD</span> <span class="pre">HH:MM:SS</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Step 3.</strong> Set the time column as the index</p>
+<p>Set the time column as the index</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Step 4.</strong> Resample in <code class="docutils literal notranslate"><span class="pre">bin_size</span></code> intervals</p>
+<p>Resample in <code class="docutils literal notranslate"><span class="pre">bin_size</span></code> intervals</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">.resample()</span></code> method groups data into bins of a specified time frequency.
 The <code class="docutils literal notranslate"><span class="pre">.size()</span></code> function counts the number of events per bin.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">counts</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">bin_size</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
@@ -80,9 +84,21 @@ The <code class="docutils literal notranslate"><span class="pre">.size()</span><
 <span class="n">chart_data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Step 5.</strong> Plot with Streamlit</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of exceptions in </span><span class="si">{</span><span class="n">bin_size</span><span class="si">}</span><span class="s2"> intervals&quot;</span><span class="p">)</span>
+<p>Plot with Streamlit</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Number of exceptions in `</span><span class="si">{</span><span class="n">bin_size</span><span class="si">}</span><span class="s2">` intervals**&quot;</span><span class="p">)</span>
 <span class="n">st</span><span class="o">.</span><span class="n">bar_chart</span><span class="p">(</span><span class="n">chart_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Export Excel</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Export Excel&quot;</span><span class="p">):</span>
+    <span class="n">output_excel</span> <span class="o">=</span> <span class="n">input_yaml</span> <span class="o">+</span> <span class="s2">&quot;.xlsx&quot;</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">output_excel</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File created `</span><span class="si">{</span><span class="n">output_excel</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Show table</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
