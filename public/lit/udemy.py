@@ -9,9 +9,10 @@
 #
 #    "Session State", https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state
 #    "How to count tokens with tiktoken", https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
+#    "Model Pricing", https://platform.openai.com/docs/pricing#latest-models
 #
 # .. contents::
-#    
+#   
 # ::
 
 import streamlit as st
@@ -138,8 +139,8 @@ st.write(f"""
  
 """)
 
-# Count tokens
-# ------------
+# Tokens & price
+# --------------
 #
 # ::
 
@@ -148,11 +149,18 @@ if not is_gemini:
     #encoding = tiktoken.get_encoding(tiktoken_model) 
     encoding = tiktoken.encoding_for_model("gpt-4o-mini")
     tokens = encoding.encode(text)
+    
+# Calculate price in cents.
+#
+# ::
+
+    pricing = {"gpt-4o-mini": 0.15, "o3-mini": 1.10}
+    cents = round(len(tokens) * pricing[openai_model]/10000, 5)
 
     st.sidebar.write(f'''
-        | Characters | Tokens |
-        |---|---|
-        | {len(text)} | {len(tokens)} |
+        | Characters | Tokens | Cents |
+        |---|---|---|
+        | {len(text)} | {len(tokens)} | {cents} |
         ''')  
 
 st.sidebar.divider()

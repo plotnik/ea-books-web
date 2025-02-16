@@ -28,6 +28,7 @@ Literate Programs
    exc_histo.py
    cmp_folders.py
    adoc_links.py
+   jira_stats.py
    google_search.py
    L1_Router_Engine.py
    albums.py

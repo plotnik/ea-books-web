@@ -22,6 +22,15 @@ The provided Python code is a Streamlit_ application designed to interact with `
    - A text area is provided for users to input their notes.
    - A sidebar allows users to select a prompt from the loaded prompts.
 
+By the way, we can use emojis in buttons.
+
+.. csv-table:: Useful Links
+   :header: "Name", "URL"
+   :widths: 10 30
+
+   "Streamlit emoji shortcodes", https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
+   "Emoji Cheat Sheet", https://www.webfx.com/tools/emoji-cheat-sheet/
+
 ::
 
   import streamlit as st
@@ -108,59 +117,73 @@ Select OpenAI LLM
 
 ::
 
-  openai_models = [
-      "gemini-2.0-flash-exp", 
-      "gemini-1.5-flash", 
-      "gemini-1.5-pro", 
+  model_type = st.sidebar.radio("Model Type", ["Gemini", "OpenAI", "Ollama"])
 
-      "gpt-4o-mini", 
-      "o3-mini",
+  if model_type=="Gemini":    
+      llm_models = [
+          "gemini-2.0-flash-exp", 
+          "gemini-1.5-flash", 
+          "gemini-1.5-pro", 
+      ]
+  elif model_type=="OpenAI":    
+      llm_models = [
+          "gpt-4o-mini", 
+          "o3-mini",
+          "gpt-4o", 
+          "o1", 
+      ]    
+  else:    
+      llm_models = [
+          "ollama llama3.2",
+      ]
     
-      "gpt-4o", 
-      "o1", 
-      
-      "ollama llama3.2"
-  ]
-
-  openai_temperatures = [0, 0.7, 1]
+  llm_temperatures = [0, 0.7, 1]
 
   openai_model = st.sidebar.selectbox(
-     "OpenAI Model",
-     openai_models,
+     "LLM Model",
+     llm_models,
      index = 0
   )
 
-  openai_temperature = st.sidebar.select_slider(
-     "OpenAI Temperature",
-     options = openai_temperatures,
+  llm_temperature = st.sidebar.select_slider(
+     "LLM Temperature",
+     options = llm_temperatures,
      value = 0.7
   )
 
-Count tokens
-------------
+Tokens & Price
+--------------
 
 If a button in the sidebar is clicked, the application counts the number of tokens in the user's input using the `tiktoken`_ library and displays the count.
 
 .. _tiktoken: https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
 
-By the way, we can use emojis in buttons.
-
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
 
-   "Streamlit emoji shortcodes", https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
-   "Emoji Cheat Sheet", https://www.webfx.com/tools/emoji-cheat-sheet/
+   "Model Pricing", https://platform.openai.com/docs/pricing#latest-models
 
 ::
     
-  if st.sidebar.button('Count Tokens', use_container_width=True):
+  if model_type=="OpenAI":
 
       encoding = tiktoken.encoding_for_model("gpt-4o-mini")
       tokens = encoding.encode(text)
-      #st.write('---')
-      st.sidebar.write(f'Tokens: `{len(tokens)}`')
+    
+      openai_prices = {
+          "gpt-4o-mini": 0.15, 
+          "o3-mini": 1.10,
+          "gpt-4o": 2.5, 
+          "o1": 15.0, 
+      }
+      cents = round(len(tokens) * openai_prices[openai_model]/10000, 5)
 
+      st.sidebar.write(f'''
+          | Characters | Tokens | Cents |
+          |---|---|---|
+          | {len(text)} | {len(tokens)} | {cents} |
+          ''')  
 
 Call OpenAI API
 ---------------
@@ -213,7 +236,7 @@ Call ``gpt`` model
       response = client.chat.completions.create(
               model=openai_model,
               messages=messages,
-              temperature=openai_temperature,
+              temperature=llm_temperature,
           )
       return response.choices[0]
 
@@ -268,7 +291,7 @@ Call Gemini
       response = g_client.chat.completions.create(
               model=openai_model,
               messages=messages,
-              temperature=openai_temperature,
+              temperature=llm_temperature,
           )
       return response.choices[0]
 
@@ -290,8 +313,8 @@ Concatenate request
    
   def concat_request(prompt, text):
       return prompt + "\n\n```\n" + text + "\n```\n"
-      
-  
+    
+
   st.sidebar.write('---')
   if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
 
@@ -299,13 +322,13 @@ Concatenate request
 
       if openai_model.startswith(("o1", "o3")):
           response = call_o_model(prompt, text)
-    
+  
       elif openai_model.startswith("gemini"): 
           response = call_gemini(prompt, text)
-    
+  
       elif openai_model.startswith("ollama "): 
           response = call_ollama(prompt, text)
-    
+  
       else:
           response = call_gpt_model(prompt, text)
 

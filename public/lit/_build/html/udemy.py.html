@@ -54,6 +54,9 @@
 <tr class="row-odd"><td><p>How to count tokens with tiktoken</p></td>
 <td><p><a class="reference external" href="https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken">https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken</a></p></td>
 </tr>
+<tr class="row-even"><td><p>Model Pricing</p></td>
+<td><p><a class="reference external" href="https://platform.openai.com/docs/pricing#latest-models">https://platform.openai.com/docs/pricing#latest-models</a></p></td>
+</tr>
 </tbody>
 </table>
 <nav class="contents" id="contents">
@@ -64,7 +67,7 @@
 <li><p><a class="reference internal" href="#obsidian-folder" id="id3">Obsidian folder</a></p></li>
 <li><p><a class="reference internal" href="#newest-files" id="id4">Newest files</a></p></li>
 <li><p><a class="reference internal" href="#load-obsidian-note" id="id5">Load Obsidian note</a></p></li>
-<li><p><a class="reference internal" href="#count-tokens" id="id6">Count tokens</a></p></li>
+<li><p><a class="reference internal" href="#tokens-price" id="id6">Tokens &amp; price</a></p></li>
 <li><p><a class="reference internal" href="#buttons-to-update-text" id="id7">Buttons to update text</a></p></li>
 <li><p><a class="reference internal" href="#call-openai-api" id="id8">Call OpenAI API</a></p></li>
 </ul>
@@ -102,7 +105,7 @@
 </pre></div>
 </div>
 <p>Select OpenAI LLM.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gemini-2.0-flash-exp&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gemini-2.0-flash-exp&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span> <span class="s2">&quot;o3-mini&quot;</span><span class="p">]</span>
 <span class="n">openai_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;LLM Models&quot;</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
 
 <span class="n">is_gemini</span> <span class="o">=</span> <span class="n">openai_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemini&quot;</span><span class="p">)</span>
@@ -178,18 +181,23 @@
 </pre></div>
 </div>
 </section>
-<section id="count-tokens">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Count tokens</a><a class="headerlink" href="#count-tokens" title="Link to this heading">¶</a></h2>
+<section id="tokens-price">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Tokens &amp; price</a><a class="headerlink" href="#tokens-price" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">is_gemini</span><span class="p">:</span>
     <span class="n">tiktoken_model</span> <span class="o">=</span> <span class="s2">&quot;o200k_base&quot;</span>
     <span class="c1">#encoding = tiktoken.get_encoding(tiktoken_model)</span>
-    <span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="n">openai_model</span><span class="p">)</span>
+    <span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">)</span>
     <span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Calculate price in cents.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">pricing</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="s2">&quot;o3-mini&quot;</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">}</span>
+    <span class="n">cents</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">*</span> <span class="n">pricing</span><span class="p">[</span><span class="n">openai_model</span><span class="p">]</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
     <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">        | Characters | Tokens |</span>
-<span class="s1">        |---|---|</span>
-<span class="s1">        | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span><span class="si">}</span><span class="s1"> |</span>
+<span class="s1">        | Characters | Tokens | Cents |</span>
+<span class="s1">        |---|---|---|</span>
+<span class="s1">        | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">cents</span><span class="si">}</span><span class="s1"> |</span>
 <span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
 
 <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">divider</span><span class="p">()</span>
@@ -250,7 +258,7 @@
                 <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
                 <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">},</span>
             <span class="p">],</span>
-            <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+            <span class="c1"># temperature=0.7,</span>
         <span class="p">)</span>
 
     <span class="n">choice</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -333,7 +341,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#obsidian-folder">Obsidian folder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#newest-files">Newest files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#load-obsidian-note">Load Obsidian note</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#count-tokens">Count tokens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tokens-price">Tokens &amp; price</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#buttons-to-update-text">Buttons to update text</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#call-openai-api">Call OpenAI API</a></li>
 </ul>
@@ -346,6 +354,7 @@
 <li class="toctree-l1"><a class="reference internal" href="exc_histo.py.html">exc histo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
 <li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
 <li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>

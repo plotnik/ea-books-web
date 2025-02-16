@@ -1,0 +1,37 @@
+= 7. Debugging React Apps
+:icons: font
+:toc: left
+
+link:udemy_react.html[<Contents>]
+
+=== 125. Module Introduction
+
+The text explains that when working with React, you will inevitably encounter errors and bugs in your code. In this section, you'll learn methods and tools to debug your React apps efficiently. This includes understanding error messages provided by React, using browser developer tools and debuggers to fix logical errors, enabling React's Strict Mode to catch potential issues, and utilizing React DevTools for further inspection and troubleshooting.
+
+
+=== 126. The Starting Project
+
+The speaker explains that they have taken an earlier investment calculator project and made some minor modifications to introduce small errors. This updated project is available both locally and on CodeSandbox. Even if you haven't built the project yourself before, you can follow along since the modified version is required for this section. The project is simple—with a few components handling state and computed values—and will be used as a starting point to learn about identifying and fixing bugs in React applications.
+
+=== 127. Understanding React Error Messages
+
+The speaker walks through a debugging process for a React project that crashes when a user enters a zero or negative duration. At first, everything seems to work until an error occurs: a property (`valueEndOfYear`) is attempted to be read from an undefined value. By examining the error message and its stack trace, it becomes clear that the error originates in the Results component where the property is accessed. Tracing further reveals that the underlying issue is an empty results array—because the for loop that populates it never runs when the duration is zero or negative. The speaker then shows how to fix the error by adding a guard clause that checks if the array is empty and returns a message (instead of trying to access the non-existent property), ensuring the app no longer crashes and the user sees a meaningful error message.
+
+=== 128. Using the Browser Debugger & Breakpoints
+
+The speaker discusses debugging logical errors in React code, specifically addressing an issue where changing the initial investment value causes incorrect calculations without any error messages. The debugging process involves using Chrome DevTools (or similar tools in other browsers) to set breakpoints in the code and step through its execution, examining variable values at each step. The root cause of the issue is identified as the input values being treated as strings instead of numbers, leading to concatenation instead of addition in the calculations. The solution is to convert the input value to a number using the unary plus operator before storing and using it in calculations.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/06%20Debugging/01-starting-project/src/util/investment.js" target="_blank">
+06 Debugging/01-starting-project/src/util/investment.js</a>
+++++
+====
+
+=== 129. Understanding React Strict Mode
+
+The content discusses a React feature called StrictMode that helps identify and catch errors during development. The author illustrates how using StrictMode can surface issues in a React application more readily, such as a growing table due to an improperly handled array in the Results component. By moving an array outside of the component function, the array persists and accumulates items with each state change, leading to duplicate keys and an error in the console.
+
+The solution is to wrap the App component (or specific components) in StrictMode to execute every component function twice during development. This behavior allows developers to spot errors immediately without interacting with the application. The author concludes that moving the results array back into the component function resolves the issue and maintains functionality with the added layer of error checking provided by StrictMode.
+
+
