@@ -1,0 +1,574 @@
+= Chapter 8: Spring Reactive and Spring Cloud Stream
+:icons: font
+:toc: left
+:source-highlighter: coderay
+
+link:sboot_proven.html[<Contents>]
+
+== Creating a Reactive RESTful API with Spring WebFlux
+
+Spring Reactive is part of the Spring framework that offers features for
+reactive programming, allowing us to build asynchronous and non-blocking
+applications with Spring Boot. Reactive programming is beneficial for
+applications that need to handle high concurrency and scalability, such
+as web applications with numerous simultaneous connections or real-time
+data processing systems.
+
+In this guide, we will create a RESTful API using Spring WebFlux, which
+is specifically designed for building reactive web applications.
+
+====
+++++
+<a href="https://github.com/PacktPublishing/Spring-Boot-3.0-Cookbook/tree/main/chapter8/recipe8-1/end" target="_blank">
+recipe8-1/end</a>
+++++
+====
+
+=== Steps to Create the API
+
+Follow these steps to create a RESTful API using reactive programming:
+
+[arabic]
+. *Generate a Spring Boot Project:*
+* Go to https://start.spring.io[Spring Initializr].
+* Use the same parameters as in link:restful.hrml[Chapter 1] from the *Creating a RESTful API* recipe, with the following
+changes:
+** Set *Artifact* to *cards*.
+** Under *Dependencies*, select *Spring Reactive Web*.
+. *Create a Card Record:*
+* In the *cards* project, create a record named *Card*. Define it as
+follows:
++
+[source,java]
+----
+public record Card(String cardId, String album, String player, int ranking) {
+}
+----
+. *Add a Cards Controller:*
+* Create a controller named *CardsController*:
++
+[source,java]
+----
+@RequestMapping("/cards")
+@RestController
+public class CardsController {
+----
+* Within the controller, add a method to retrieve all cards:
++
+[source,java]
+----
+@GetMapping
+public Flux<Card> getCards() {
+    return Flux.fromIterable(List.of(
+        new Card("1", "WWC23", "Ivana Andres", 7),
+        new Card("2", "WWC23", "Alexia Putellas", 1)));
+}
+----
+* Add another method to retrieve a specific card:
++
+[source,java]
+----
+@GetMapping("/{cardId}")
+public Mono<Card> getCard(@PathVariable String cardId) {
+    return Mono.just(new Card(cardId, "WWC23", "Superplayer", 1));
+}
+----
++
+In WebFlux, `+Flux<T>+` is used to represent a stream of objects, while
+`+Mono<T>+` represents a single object. In traditional programming,
+these would correspond to returning `+List<T>+` and `+T+`, respectively.
+. *Create a Custom Exception:*
+* Add an exception class named *SampleException*:
++
+[source,java]
+----
+public class SampleException extends RuntimeException {
+    public SampleException(String message) {
+        super(message);
+    }
+}
+----
+. *Implement Error Handling:*
+* Add two more methods to *CardsController* to demonstrate error
+handling:
++
+[source,java]
+----
+@GetMapping("/exception")
+public Mono<Card> getException() {
+    throw new SampleException("This is a sample exception");
+}
+
+@ExceptionHandler(SampleException.class)
+public ProblemDetail handleSampleException(SampleException e) {
+    ProblemDetail problemDetail = ProblemDetail
+        .forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+    problemDetail.setTitle("Sample Exception");
+    return problemDetail;
+}
+----
++
+The `+getException+` method always throws an exception, while
+`+handleSampleException+` manages exceptions of type *SampleException*.
+. *Run the Application:*
+* Open a terminal in the root folder of the *cards* project and execute:
++
+[source,bash]
+----
+./mvnw spring-boot:run
+----
++
+This command will start the RESTful API server.
+. *Test the API:*
+* You can test the application by sending a request to
+`+http://localhost:8080/cards+` using *curl*:
++
+[source,bash]
+----
+curl http://localhost:8080/cards
+----
+* To see how error handling works, request
+`+http://localhost:8080/exception+`. This will return an *HTTP 400*
+response.
+
+=== Understanding the Implementation
+
+In this implementation, we used the same annotations found in Spring Web
+to define the controllers, but we returned *Mono* and *Flux* types
+instead of traditional objects, indicating that responses will be
+generated asynchronously.
+
+==== Key Concepts:
+
+* *Non-blocking*: Operations related to I/O (like HTTP requests) avoid
+blocking threads, enabling high concurrency without needing a dedicated
+thread for each request.
+* *Backpressure*: A mechanism ensuring that data is produced only as
+quickly as it can be consumed, preventing resource exhaustion.
+
+=== Additional Information
+
+In addition to the annotation-based programming model, WebFlux also
+supports a *functional programming* model for defining routes and
+handling requests. Here’s how to achieve the same functionality as the
+*cards* RESTful API using a functional approach:
+
+[arabic, start=8]
+. *Create a Cards Handler Class:*
++
+[source,java]
+----
+public class CardsHandler {
+    public Flux<Card> getCards() {
+        return Flux.fromIterable(List.of(
+            new Card("1", "WWC23", "Ivana Andres", 7),
+            new Card("2", "WWC23", "Alexia Putellas", 1)));
+    }
+
+    public Mono<Card> getCard(String cardId) {
+        return Mono.just(new Card(cardId, "WWC23", "Superplayer", 1));
+    }
+}
+----
+. *Configure the Application with Functional Routing:*
++
+[source,java]
+----
+@Configuration
+public class CardsRouterConfig {
+    @Bean
+    CardsHandler cardsHandler() {
+        return new CardsHandler();
+    }
+
+    @Bean
+    RouterFunction<ServerResponse> getCards() {
+        return route(GET("/cards"), req ->
+            ok().body(cardsHandler().getCards(), Card.class));
+    }
+
+    @Bean
+    RouterFunction<ServerResponse> getCard() {
+        return route(GET("/cards/{cardId}"), req ->
+            ok().body(cardsHandler().getCard(req.pathVariable("cardId")), Card.class));
+    }
+}
+----
+
+==== Choosing a Programming Model
+
+While the annotation-based approach resembles traditional non-reactive
+programming, the functional programming style can be more expressive,
+especially for complex routing scenarios. The functional style is
+inherently better for handling high concurrency and non-blocking
+scenarios, as it integrates seamlessly with reactive programming.
+
+The choice between annotation-based and functional programming is
+largely a matter of personal preference.
+
+
+== Using a Reactive API Client
+
+In this guide, we will create a reactive RESTful API client that
+consumes another RESTful API in a non-blocking fashion using Spring
+WebClient.
+
+====
+++++
+<a href="https://github.com/PacktPublishing/Spring-Boot-3.0-Cookbook/tree/main/chapter8/recipe8-2/end" target="_blank">
+chapter8/recipe8-2/end</a>
+++++
+====
+
+Make sure to run the target project, as we will be consuming its API.
+
+=== Steps to Create a Reactive Consumer Application
+
+Follow these steps to set up your reactive application:
+
+[arabic]
+. *Create a New Application:*
+* Use the https://start.spring.io/[Spring Boot Initializr] to create a
+new application.
+* Use the same options as in the *Creating a RESTful API* recipe from
+*Chapter 1*, but modify the following:
+** *Artifact*: `+consumer+`
+** *Dependencies*: Select *Spring Reactive Web*
+. *Configure Application Properties:*
+* Open the `+application.yml+` file in the `+src/main/resources+`
+folder.
+* Update it with the following content to set the server port and the
+target football service URL:
++
+[source,yaml]
+----
+server:
+  port: 8090
+footballservice:
+  url: http://localhost:8080
+----
+. *Create a Record for Card:*
+* Create a new record named `+Card+` with the following code:
++
+[source,java]
+----
+public record Card(String cardId, String album, String player, int ranking) {}
+----
+. *Create the Consumer Controller:*
+* Create a controller class named `+ConsumerController+` with a
+`+WebClient+` instance:
++
+[source,java]
+----
+@RequestMapping("/consumer")
+@RestController
+public class ConsumerController {
+    private final WebClient webClient;
+
+    public ConsumerController(@Value("${footballservice.url}") String footballServiceUrl) {
+        this.webClient = WebClient.create(footballServiceUrl);
+    }
+}
+----
+* This controller will allow us to perform non-blocking requests to the
+target API.
+. *Method to Get All Cards:*
+* Add the following method to the `+ConsumerController+` to retrieve a
+stream of `+Card+` instances:
++
+[source,java]
+----
+@GetMapping("/cards")
+public Flux<Card> getCards() {
+    return webClient.get()
+            .uri("/cards")
+            .retrieve()
+            .bodyToFlux(Card.class);
+}
+----
+. *Method to Get a Specific Card:*
+* Add this method to retrieve a single `+Card+`:
++
+[source,java]
+----
+@GetMapping("/cards/{cardId}")
+public Mono<Card> getCard(@PathVariable String cardId) {
+    return webClient.get()
+            .uri("/cards/" + cardId)
+            .retrieve()
+            .onStatus(HttpStatus::is4xxClientError, response -> Mono.empty())
+            .bodyToMono(Card.class);
+}
+----
+. *Method to Handle Errors:*
+* Create a method to manage different response codes from the remote
+server:
++
+[source,java]
+----
+@GetMapping("/error")
+public Mono<String> getFailedRequest() {
+    return webClient.get()
+            .uri("/invalidpath")
+            .exchangeToMono(response -> {
+                if (response.statusCode().equals(HttpStatus.NOT_FOUND)) {
+                    return Mono.just("Server returned 404");
+                } else if (response.statusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+                    return Mono.just("Server returned 500: " + response.bodyToMono(String.class));
+                } else {
+                    return response.bodyToMono(String.class);
+                }
+            });
+}
+----
+. *Run the Consumer Application:*
+* Open a terminal in the root folder of the `+consumer+` project and
+execute:
++
+[source,bash]
+----
+./mvnw spring-boot:run
+----
+* This will start your application on port *8090*, while the server
+application runs on port *8080*.
+. *Test the Consumer Application:*
+* Test the endpoints using `+curl+` commands in your terminal:
+** Retrieve all cards:
++
+[source,bash]
+----
+curl http://localhost:8090/consumer/cards
+----
+** Retrieve a specific card with ID 7:
++
+[source,bash]
+----
+curl http://localhost:8090/consumer/cards/7
+----
+** Test the error handling:
++
+[source,bash]
+----
+curl http://localhost:8090/consumer/error
+----
+
+=== How It Works
+
+In this guide, we built a consumer application that interacts with a
+RESTful API using reactive programming principles. The non-blocking
+nature of the WebClient allows the consumer application to handle
+multiple requests efficiently without blocking threads, thus improving
+concurrency compared to traditional blocking applications.
+
+By leveraging reactive technologies, your application can perform better
+under load, making it suitable for high-performance use cases.
+
+== Testing Reactive Applications
+
+To ensure that our reactive Spring Boot applications are robust and
+reliable, we need to automate their testing. Spring Boot provides
+excellent support for testing reactive applications, especially when you
+include the *Spring Reactive Web* starter.
+
+In this guide, we’ll learn how to create tests using the components that
+Spring Boot provides by default.
+
+====
+++++
+<a href="https://github.com/PacktPublishing/Spring-Boot-3.0-Cookbook/tree/main/chapter8/recipe8-3/end" target="_blank">
+chapter8/recipe8-3/end</a>
+++++
+====
+
+=== Steps to Create Tests
+
+==== 1. Verify Dependencies
+
+Ensure that your *pom.xml* file contains the necessary dependencies for
+testing. If you created your application with the Spring Boot Initializr
+tool and added the Spring Reactive Web starter, the testing dependencies
+should already be included:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>io.projectreactor</groupId>
+    <artifactId>reactor-test</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== 2. Create Tests for the Cards Application
+
+[arabic]
+. Create a new test class named *CardsControllerTest* in the
+*src/test/java/com/packt/cards* folder. The class should be annotated
+with *@WebFluxTest*:
++
+[source,java]
+----
+@WebFluxTest(CardsController.class)
+public class CardsControllerTests {
+----
+. Inject a *WebTestClient* field using the *@Autowired* annotation:
++
+[source,java]
+----
+@Autowired
+WebTestClient webTestClient;
+----
+. Use the *webTestClient* to emulate calls to the reactive RESTful API.
+Create a test method for the */cards* path that returns a list of type
+*Card*:
++
+[source,java]
+----
+@Test
+void testGetCards() {
+    webTestClient.get()
+            .uri("/cards")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBodyList(Card.class);
+}
+----
+. Create a test for the */cards/exception* path, which always returns a
+404 status code:
++
+[source,java]
+----
+@Test
+void testGetException() {
+    webTestClient.get()
+            .uri("/cards/exception")
+            .exchange()
+            .expectStatus().isBadRequest()
+            .expectBody(ProblemDetail.class);
+}
+----
+
+==== 3. Create Tests for the Consumer Application
+
+Since we want to test the *consumer* application independently of the
+*cards* application, we need to mock the *cards* application server
+using WireMock.
+
+[arabic]
+. Open the *pom.xml* file of the *consumer* project and add the
+following dependency:
++
+[source,xml]
+----
+<dependency>
+    <groupId>com.github.tomakehurst</groupId>
+    <artifactId>wiremock-standalone</artifactId>
+    <version>3.0.1</version>
+    <scope>test</scope>
+</dependency>
+----
+. Create a new test class named *ConsumerControllerTest*. Annotate the
+class with *@SpringBootTest* and set the configuration options:
++
+[source,java]
+----
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    classes = {ConsumerApplication.class, ConsumerController.class, ConsumerControllerTests.Config.class})
+public class ConsumerControllerTests {
+----
+. Create a configuration subclass named *Config* to define a
+*WireMockServer* bean:
++
+[source,java]
+----
+@TestConfiguration
+static class Config {
+    @Bean
+    public WireMockServer webServer() {
+        WireMockServer wireMockServer = new WireMockServer(7979);
+        wireMockServer.start();
+        return wireMockServer;
+    }
+}
+----
+. Set the URI for the mocked server using *@DynamicPropertySource*:
++
+[source,java]
+----
+@DynamicPropertySource
+static void setProperties(DynamicPropertyRegistry registry) {
+    registry.add("footballservice.url", () -> "http://localhost:7979");
+}
+----
+. Inject *WebTestClient* and *WireMockServer* into the test class:
++
+[source,java]
+----
+@Autowired
+private WebTestClient webTestClient;
+@Autowired
+private WireMockServer server;
+----
+. Write a test method to retrieve the cards:
++
+[source,java]
+----
+@Test
+public void getCards() {
+    server.stubFor(WireMock.get(WireMock.urlEqualTo("/cards"))
+        .willReturn(WireMock.aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "application/json")
+            .withBody("""
+            [
+                {
+                    "cardId": "1",
+                    "album": "WWC23",
+                    "player": "Ivana Andres",
+                    "ranking": 7
+                },
+                {
+                    "cardId": "2",
+                    "album": "WWC23",
+                    "player": "Alexia Putellas",
+                    "ranking": 1
+                }
+            ]""")));
+
+    webTestClient.get().uri("/consumer/cards")
+        .exchange().expectStatus().isOk()
+        .expectBodyList(Card.class).hasSize(2)
+        .contains(new Card("1", "WWC23", "Ivana Andres", 7),
+                  new Card("2", "WWC23", "Alexia Putellas", 1));
+}
+----
+
+=== How It Works
+
+Using the *@WebFluxTest* annotation allows us to focus on testing only
+WebFlux-related components, disabling the configuration of all other
+components. This includes configuring classes annotated with
+*@Controller* or *@RestController* while excluding classes annotated
+with *@Service*. This setup enables Spring Boot to inject
+*WebTestClient*, which facilitates performing requests to our
+application server.
+
+In the consumer application, we mocked the *cards* service using a
+configuration subclass annotated with *@TestConfiguration*. This allows
+us to define beans that can be used in tests. We also dynamically
+configured the URI for the mocked server using the
+*@DynamicPropertySource* annotation.
+
+NOTE: To reference the *Config* class, we used
+*ConsumerControllerTests.Config*. This is necessary because it's a
+subclass of the *ConsumerControllerTests* class.
+
+The *webEnvironment* field is set to
+*SpringBootTest.WebEnvironment.RANDOM_PORT*, which allows the test to
+host the application as a service on a random port to prevent port
+collisions with any remote server.
