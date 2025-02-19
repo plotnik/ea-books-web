@@ -1,0 +1,128 @@
+= Chapter 3: Observability, Monitoring, and Application Management
+:icons: font
+:toc: left
+:source-highlighter: coderay
+
+link:sboot_proven.html[<Contents>]
+
+== Adding Actuator to Your Application
+
+You are planning to develop a new RESTful API to complement your
+football-related suite of services and want to ensure your application
+is responsive and resilient. To effectively monitor your application's
+health, you'll be utilizing *Spring Boot Actuator*.
+
+=== What is Spring Boot Actuator?
+
+Spring Boot Actuator provides a set of production-ready functionalities
+packaged with the Spring Framework. It includes various built-in tools
+and endpoints designed to monitor, manage, and interact with Spring Boot
+applications in production environments. The Actuator simplifies
+understanding and addressing runtime behaviors in Spring Boot
+applications by exposing multiple endpoints, including *health*,
+*metrics*, *info*, *dump*, and *env*.
+
+Once the Actuator dependency is included in your application, you'll
+have access to numerous out-of-the-box endpoints, which can be
+customized or extended according to your needs.
+
+=== Getting Started
+
+In this section, we'll create an application using the _Spring
+Initializr_ tool. You can access this tool either through your browser
+at https://start.spring.io[https://start.spring.io] or by integrating it
+into your favorite code editor.
+
+=== Steps to Include Actuator
+
+Follow these steps to create a project with Actuator enabled and explore
+the provided endpoints:
+
+[arabic]
+. *Create a New Project*:
+* Open https://start.spring.io[Spring Initializr].
+* Use the same parameters as in the _Creating a RESTful API_ recipe from
+link:restful.html#_creating_a_restful_api[Chapter 1], changing the following options:
+** *Artifact*: `+footballobs+`
+** *Dependencies*: Select *Spring Web* and *Spring Boot Actuator*.
+. *Download and Unzip the Project*:
+* Download the generated template and unzip it into your working
+directory.
+. *Configure Actuator Endpoints*:
+* Before running your application, create an `+application.yml+` file in
+the `+src/main/resources+` folder and add the following configuration:
+
+[source,yaml]
+----
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, env, metrics, beans, loggers
+----
+
+[arabic, start=4]
+. *Run Your Application*:
+* Start your application. You can now access the exposed Actuator
+endpoints:
+** *Health Endpoint*: `+http://localhost:8080/actuator/health+` –
+Provides health information about your application.
+** *Environment Endpoint*: `+http://localhost:8080/actuator/env+` –
+Returns the environment variables of the application.
+** *Metrics Endpoint*: `+http://localhost:8080/actuator/metrics+` –
+Lists the metrics exposed by the application. For specific metrics,
+append the metric name (e.g.,
+`+http://localhost:8080/actuator/metrics/process.cpu.usage+`).
+** *Beans Endpoint*: `+http://localhost:8080/actuator/beans+` – Lists
+the beans registered in the IoC container.
+** *Loggers Endpoint*: `+http://localhost:8080/actuator/loggers+` –
+Displays log levels and loggers of the application and allows runtime
+modification of log levels.
+. *Explore Additional Endpoints*:
+* You have only exposed a subset of the available endpoints. For a
+complete list, refer to the official documentation:
+https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints[Spring
+Boot Actuator Endpoints].
+
+=== How It Works
+
+Integrating Actuator into your application provides a variety of
+endpoints for monitoring and managing application behavior. By default,
+all endpoints except the shutdown endpoint are enabled. The shutdown
+endpoint allows for graceful application termination. You can expose
+endpoints via HTTP requests or JMX, with HTTP being preferred for
+standard monitoring tools.
+
+Additional components, such as Spring Data JPA, may expose more metrics
+that require configuration for monitoring purposes.
+
+=== Security Considerations
+
+Some Actuator endpoints may expose sensitive information. By default,
+only the health endpoint is exposed. Depending on your application’s
+accessibility, you may want to secure other endpoints. You can implement
+security configurations, as demonstrated below:
+
+[source,java]
+----
+@Configuration
+public class SecurityConfig {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+            .authorizeHttpRequests(authorize ->
+                authorize.requestMatchers("/actuator/**")
+                    .hasRole("ADMIN")
+                    .anyRequest().authenticated())
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+            .build();
+    }
+}
+----
+
+For more details on securing Actuator endpoints, refer to the official
+documentation:
+https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints.security[Securing
+Actuator Endpoints].
+
+

@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
-<meta name="author" content="Felip Miguel Puig">
-<title>Spring Boot 3.0 Cookbook</title>
+<title>Chapter 3: Observability, Monitoring, and Application Management</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -434,21 +433,109 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+/*! Stylesheet for CodeRay to loosely match GitHub themes | MIT License */
+pre.CodeRay{background:#f7f7f8}
+.CodeRay .line-numbers{border-right:1px solid;opacity:.35;padding:0 .5em 0 0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.75em}
+.CodeRay .line-numbers strong{color:#000}
+table.CodeRay{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.CodeRay td{vertical-align:top;line-height:inherit}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.code{padding:0 0 0 .75em}
+.CodeRay .debug{color:#fff!important;background:navy!important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:navy}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:teal}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:teal}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:teal}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword{color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:teal}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}
+</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><strong>Spring Boot 3.0 Cookbook</strong></h1>
-<div class="details">
-<span id="author" class="author">Felip Miguel Puig</span><br>
-</div>
+<h1>Chapter 3: Observability, Monitoring, and Application Management</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_part_1_web_applications_and_microservices">Part 1: Web Applications and Microservices</a>
+<li><a href="#_adding_actuator_to_your_application">Adding Actuator to Your Application</a>
 <ul class="sectlevel2">
-<li><a href="#_chapter_1_building_restful_apis">Chapter 1: Building RESTful APIs</a></li>
-<li><a href="#_chapter_3_observability_monitoring_and_application_management">Chapter 3: Observability, Monitoring, and Application Management</a></li>
-<li><a href="#_chapter_8_spring_reactive_and_spring_cloud_stream">Chapter 8: Spring Reactive and Spring Cloud Stream</a></li>
+<li><a href="#_what_is_spring_boot_actuator">What is Spring Boot Actuator?</a></li>
+<li><a href="#_getting_started">Getting Started</a></li>
+<li><a href="#_steps_to_include_actuator">Steps to Include Actuator</a></li>
+<li><a href="#_how_it_works">How It Works</a></li>
+<li><a href="#_security_considerations">Security Considerations</a></li>
 </ul>
 </li>
 </ul>
@@ -457,41 +544,220 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">GitHub</dt>
-<dd>
-<p><a href="https://github.com/PacktPublishing/Spring-Boot-3.0-Cookbook" class="bare">https://github.com/PacktPublishing/Spring-Boot-3.0-Cookbook</a></p>
-</dd>
-</dl>
-</div>
-</div>
+<div class="paragraph">
+<p><a href="sboot_proven.html">&lt;Contents&gt;</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_part_1_web_applications_and_microservices">Part 1: Web Applications and Microservices</h2>
+<h2 id="_adding_actuator_to_your_application">Adding Actuator to Your Application</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_chapter_1_building_restful_apis"><a href="restful.html">Chapter 1: Building RESTful APIs</a></h3>
-
+<div class="paragraph">
+<p>You are planning to develop a new RESTful API to complement your
+football-related suite of services and want to ensure your application
+is responsive and resilient. To effectively monitor your application&#8217;s
+health, you&#8217;ll be utilizing <strong>Spring Boot Actuator</strong>.</p>
 </div>
 <div class="sect2">
-<h3 id="_chapter_3_observability_monitoring_and_application_management"><a href="actuator.html">Chapter 3: Observability, Monitoring, and Application Management</a></h3>
-
+<h3 id="_what_is_spring_boot_actuator">What is Spring Boot Actuator?</h3>
+<div class="paragraph">
+<p>Spring Boot Actuator provides a set of production-ready functionalities
+packaged with the Spring Framework. It includes various built-in tools
+and endpoints designed to monitor, manage, and interact with Spring Boot
+applications in production environments. The Actuator simplifies
+understanding and addressing runtime behaviors in Spring Boot
+applications by exposing multiple endpoints, including <strong>health</strong>,
+<strong>metrics</strong>, <strong>info</strong>, <strong>dump</strong>, and <strong>env</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Once the Actuator dependency is included in your application, you&#8217;ll
+have access to numerous out-of-the-box endpoints, which can be
+customized or extended according to your needs.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_chapter_8_spring_reactive_and_spring_cloud_stream"><a href="reactive.html">Chapter 8: Spring Reactive and Spring Cloud Stream</a></h3>
-
+<h3 id="_getting_started">Getting Started</h3>
+<div class="paragraph">
+<p>In this section, we&#8217;ll create an application using the <em>Spring
+Initializr</em> tool. You can access this tool either through your browser
+at <a href="https://start.spring.io">https://start.spring.io</a> or by integrating it
+into your favorite code editor.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_steps_to_include_actuator">Steps to Include Actuator</h3>
+<div class="paragraph">
+<p>Follow these steps to create a project with Actuator enabled and explore
+the provided endpoints:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Create a New Project</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Open <a href="https://start.spring.io">Spring Initializr</a>.</p>
+</li>
+<li>
+<p>Use the same parameters as in the <em>Creating a RESTful API</em> recipe from
+<a href="restful.html#_creating_a_restful_api">Chapter 1</a>, changing the following options:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Artifact</strong>: <code>footballobs</code></p>
+</li>
+<li>
+<p><strong>Dependencies</strong>: Select <strong>Spring Web</strong> and <strong>Spring Boot Actuator</strong>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Download and Unzip the Project</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Download the generated template and unzip it into your working
+directory.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Configure Actuator Endpoints</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Before running your application, create an <code>application.yml</code> file in
+the <code>src/main/resources</code> folder and add the following configuration:</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">management</span>:
+  <span class="key">endpoints</span>:
+    <span class="key">web</span>:
+      <span class="key">exposure</span>:
+        <span class="key">include</span>: <span class="string"><span class="content">health, env, metrics, beans, loggers</span></span></code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="4">
+<li>
+<p><strong>Run Your Application</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Start your application. You can now access the exposed Actuator
+endpoints:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Health Endpoint</strong>: <code>http://localhost:8080/actuator/health</code> –
+Provides health information about your application.</p>
+</li>
+<li>
+<p><strong>Environment Endpoint</strong>: <code>http://localhost:8080/actuator/env</code> –
+Returns the environment variables of the application.</p>
+</li>
+<li>
+<p><strong>Metrics Endpoint</strong>: <code>http://localhost:8080/actuator/metrics</code> –
+Lists the metrics exposed by the application. For specific metrics,
+append the metric name (e.g.,
+<code>http://localhost:8080/actuator/metrics/process.cpu.usage</code>).</p>
+</li>
+<li>
+<p><strong>Beans Endpoint</strong>: <code>http://localhost:8080/actuator/beans</code> – Lists
+the beans registered in the IoC container.</p>
+</li>
+<li>
+<p><strong>Loggers Endpoint</strong>: <code>http://localhost:8080/actuator/loggers</code> –
+Displays log levels and loggers of the application and allows runtime
+modification of log levels.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Explore Additional Endpoints</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>You have only exposed a subset of the available endpoints. For a
+complete list, refer to the official documentation:
+<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints">Spring
+Boot Actuator Endpoints</a>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_how_it_works">How It Works</h3>
+<div class="paragraph">
+<p>Integrating Actuator into your application provides a variety of
+endpoints for monitoring and managing application behavior. By default,
+all endpoints except the shutdown endpoint are enabled. The shutdown
+endpoint allows for graceful application termination. You can expose
+endpoints via HTTP requests or JMX, with HTTP being preferred for
+standard monitoring tools.</p>
+</div>
+<div class="paragraph">
+<p>Additional components, such as Spring Data JPA, may expose more metrics
+that require configuration for monitoring purposes.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_security_considerations">Security Considerations</h3>
+<div class="paragraph">
+<p>Some Actuator endpoints may expose sensitive information. By default,
+only the health endpoint is exposed. Depending on your application’s
+accessibility, you may want to secure other endpoints. You can implement
+security configurations, as demonstrated below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">SecurityConfig</span> {
+    <span class="annotation">@Bean</span>
+    <span class="directive">public</span> SecurityFilterChain filterChain(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+        <span class="keyword">return</span> http
+            .authorizeHttpRequests(authorize -&gt;
+                authorize.requestMatchers(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>)
+                    .hasRole(<span class="string"><span class="delimiter">&quot;</span><span class="content">ADMIN</span><span class="delimiter">&quot;</span></span>)
+                    .anyRequest().authenticated())
+            .oauth2ResourceServer(oauth2 -&gt; oauth2.jwt(<span class="predefined-type">Customizer</span>.withDefaults()))
+            .build();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more details on securing Actuator endpoints, refer to the official
+documentation:
+<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints.security">Securing
+Actuator Endpoints</a>.</p>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-02-19 09:23:30 +0200
+Last updated 2025-02-19 09:36:49 +0200
 </div>
 </div>
 </body>

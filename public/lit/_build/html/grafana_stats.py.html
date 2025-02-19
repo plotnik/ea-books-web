@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Grafana Stats &#8212; lit  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Google Search" href="google_search.py.html" />
+    <link rel="prev" title="Jira Stats" href="jira_stats.py.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="grafana-stats">
+<h1>Grafana Stats<a class="headerlink" href="#grafana-stats" title="Link to this heading">¶</a></h1>
+<p>Process CSV file exported from Grafana</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+
+<span class="n">csv_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">)]</span>
+<span class="n">csv_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Select CSV file to process:&quot;</span><span class="p">,</span> <span class="n">csv_files</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tsNs&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;traceID&quot;</span><span class="p">,</span> <span class="s2">&quot;exporter&quot;</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">,</span> <span class="s2">&quot;service_name&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">num_rows</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rows: `</span><span class="si">{</span><span class="n">num_rows</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+
+<span class="n">num</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span><span class="s2">&quot;Row&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">num_rows</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">series</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Parse body</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="s2">&quot;Line&quot;</span><span class="p">])</span>
+<span class="n">series</span><span class="p">[</span><span class="s2">&quot;Line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">]</span>
+
+<span class="n">timestamp_s</span> <span class="o">=</span> <span class="n">series</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1000.0</span>  <span class="c1"># Convert milliseconds to seconds</span>
+<span class="n">series</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">timestamp_s</span><span class="p">)</span>
+
+<span class="n">st</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lit</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llama_chat.py.html">LLama Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pom_csv.py.html">POM CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_yaml.py.html">exc yaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_ui.py.html">exc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_histo.py.html">exc histo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Grafana Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="jira_stats.py.html" title="previous chapter">Jira Stats</a></li>
+      <li>Next: <a href="google_search.py.html" title="next chapter">Google Search</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, EA.
+      
+      |
+      Powered by 
+      <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
+      &amp; 
+      <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; 
+      <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/grafana_stats.py.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
