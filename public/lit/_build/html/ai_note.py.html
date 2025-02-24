@@ -47,24 +47,26 @@
 <li><p><a class="reference internal" href="#note-ai" id="id10">Note-AI</a></p>
 <ul>
 <li><p><a class="reference internal" href="#load-llm-prompts" id="id11">Load LLM prompts</a></p></li>
-<li><p><a class="reference internal" href="#select-openai-llm" id="id12">Select OpenAI LLM</a></p></li>
-<li><p><a class="reference internal" href="#tokens-price" id="id13">Tokens &amp; Price</a></p></li>
-<li><p><a class="reference internal" href="#call-openai-api" id="id14">Call OpenAI API</a></p>
+<li><p><a class="reference internal" href="#prompt-tags" id="id12">Prompt Tags</a></p></li>
+<li><p><a class="reference internal" href="#select-the-prompt" id="id13">Select the Prompt</a></p></li>
+<li><p><a class="reference internal" href="#select-openai-llm" id="id14">Select OpenAI LLM</a></p></li>
+<li><p><a class="reference internal" href="#tokens-price" id="id15">Tokens &amp; Price</a></p></li>
+<li><p><a class="reference internal" href="#call-openai-api" id="id16">Call OpenAI API</a></p>
 <ul>
-<li><p><a class="reference internal" href="#call-o-model" id="id15">Call <code class="docutils literal notranslate"><span class="pre">o</span></code> model</a></p></li>
-<li><p><a class="reference internal" href="#call-gpt-model" id="id16">Call <code class="docutils literal notranslate"><span class="pre">gpt</span></code> model</a></p></li>
-<li><p><a class="reference internal" href="#call-ollama" id="id17">Call Ollama</a></p></li>
-<li><p><a class="reference internal" href="#call-gemini" id="id18">Call Gemini</a></p></li>
+<li><p><a class="reference internal" href="#call-o-model" id="id17">Call <code class="docutils literal notranslate"><span class="pre">o</span></code> model</a></p></li>
+<li><p><a class="reference internal" href="#call-gpt-model" id="id18">Call <code class="docutils literal notranslate"><span class="pre">gpt</span></code> model</a></p></li>
+<li><p><a class="reference internal" href="#call-ollama" id="id19">Call Ollama</a></p></li>
+<li><p><a class="reference internal" href="#call-gemini" id="id20">Call Gemini</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#save-note" id="id19">Save note</a></p></li>
-<li><p><a class="reference internal" href="#environment-setup" id="id20">Environment Setup</a></p>
+<li><p><a class="reference internal" href="#save-note" id="id21">Save note</a></p></li>
+<li><p><a class="reference internal" href="#environment-setup" id="id22">Environment Setup</a></p>
 <ul>
-<li><p><a class="reference internal" href="#step-1-install-miniconda" id="id21">Step 1: Install Miniconda</a></p></li>
-<li><p><a class="reference internal" href="#step-2-configure-your-environment" id="id22">Step 2: Configure Your Environment</a></p></li>
-<li><p><a class="reference internal" href="#step-3-activate-the-environment" id="id23">Step 3: Activate the Environment</a></p></li>
-<li><p><a class="reference internal" href="#step-4-prepare-prompt-file" id="id24">Step 4: Prepare Prompt File</a></p></li>
-<li><p><a class="reference internal" href="#step-5-run-streamlit-script" id="id25">Step 5: Run Streamlit Script</a></p></li>
+<li><p><a class="reference internal" href="#step-1-install-miniconda" id="id23">Step 1: Install Miniconda</a></p></li>
+<li><p><a class="reference internal" href="#step-2-configure-your-environment" id="id24">Step 2: Configure Your Environment</a></p></li>
+<li><p><a class="reference internal" href="#step-3-activate-the-environment" id="id25">Step 3: Activate the Environment</a></p></li>
+<li><p><a class="reference internal" href="#step-4-prepare-prompt-file" id="id26">Step 4: Prepare Prompt File</a></p></li>
+<li><p><a class="reference internal" href="#step-5-run-streamlit-script" id="id27">Step 5: Run Streamlit Script</a></p></li>
 </ul>
 </li>
 </ul>
@@ -155,17 +157,81 @@
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">prompts_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
     <span class="n">prompts</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">get_prompt</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="prompt-tags">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Prompt Tags</a><a class="headerlink" href="#prompt-tags" title="Link to this heading">¶</a></h2>
+<p>Read a list of strings from a file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read_list_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Read all lines and remove leading/trailing whitespace</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="n">lines</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error reading </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>Write a list of strings to a text file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">write_list_to_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">list_of_strings</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">list_of_strings</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error writing </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Removes specified strings from a list of strings.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">remove_strings_from_list</span><span class="p">(</span><span class="n">string_list</span><span class="p">,</span> <span class="n">strings_to_remove</span><span class="p">):</span>
+  <span class="k">return</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">string_list</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">strings_to_remove</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Collect all tags into a single set</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tags_file</span> <span class="o">=</span> <span class="s2">&quot;openai_tags.txt&quot;</span>
+
+<span class="k">def</span> <span class="nf">sort_by_pattern</span><span class="p">(</span><span class="n">all_tags</span><span class="p">):</span>
+    <span class="n">tags_order</span> <span class="o">=</span> <span class="n">read_list_from_file</span><span class="p">(</span><span class="n">tags_file</span><span class="p">)</span>
+
+    <span class="c1"># Create a mapping from tag to priority index for known tags.</span>
+    <span class="n">tag_priority</span> <span class="o">=</span> <span class="p">{</span> <span class="n">tag</span><span class="p">:</span> <span class="n">index</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tags_order</span><span class="p">)</span> <span class="p">}</span>
+
+    <span class="c1"># Sort the all_tags list.</span>
+    <span class="c1"># For tags in tags_order, the key is (0, priority) and for others (1, tag)</span>
+    <span class="n">sorted_tags</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">all_tags</span><span class="p">,</span>
+                         <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tag</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tag_priority</span><span class="p">[</span><span class="n">tag</span><span class="p">])</span> <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tag_priority</span>
+                                           <span class="k">else</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">tag</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sorted_tags</span>
+
+<span class="n">all_tags_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">tag</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">prompts</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">,</span> <span class="p">[])}</span>
+<span class="n">all_tags</span> <span class="o">=</span> <span class="n">sort_by_pattern</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">all_tags_set</span><span class="p">))</span>
+<span class="n">all_tags</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+<span class="n">tag_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
+   <span class="s2">&quot;Tag&quot;</span><span class="p">,</span>
+   <span class="n">all_tags</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="select-the-prompt">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Select the Prompt</a><a class="headerlink" href="#select-the-prompt" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_prompt</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;note&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span>
 
-<span class="n">text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Select the prompt.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">tag_name</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+    <span class="n">prompt_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">prompt_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">prompts</span> <span class="k">if</span> <span class="n">tag_name</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">,</span> <span class="p">[])]</span>
+
 <span class="n">prompt_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
    <span class="s2">&quot;Prompt&quot;</span><span class="p">,</span>
    <span class="n">prompt_names</span><span class="p">,</span>
@@ -176,7 +242,7 @@
 </div>
 </section>
 <section id="select-openai-llm">
-<h2><a class="toc-backref" href="#id12" role="doc-backlink">Select OpenAI LLM</a><a class="headerlink" href="#select-openai-llm" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Select OpenAI LLM</a><a class="headerlink" href="#select-openai-llm" title="Link to this heading">¶</a></h2>
 <table class="docutils align-default" id="id3">
 <caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
 <colgroup>
@@ -198,9 +264,7 @@
 
 <span class="k">if</span> <span class="n">model_type</span><span class="o">==</span><span class="s2">&quot;Gemini&quot;</span><span class="p">:</span>
     <span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;gemini-2.0-flash-exp&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;gemini-1.5-flash&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;gemini-1.5-pro&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 <span class="k">elif</span> <span class="n">model_type</span><span class="o">==</span><span class="s2">&quot;OpenAI&quot;</span><span class="p">:</span>
     <span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span>
@@ -231,7 +295,7 @@
 </div>
 </section>
 <section id="tokens-price">
-<h2><a class="toc-backref" href="#id13" role="doc-backlink">Tokens &amp; Price</a><a class="headerlink" href="#tokens-price" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Tokens &amp; Price</a><a class="headerlink" href="#tokens-price" title="Link to this heading">¶</a></h2>
 <p>If a button in the sidebar is clicked, the application counts the number of tokens in the user’s input using the <a class="reference external" href="https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken">tiktoken</a> library and displays the count.</p>
 <table class="docutils align-default" id="id4">
 <caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id4" title="Link to this table">¶</a></caption>
@@ -272,7 +336,7 @@
 </div>
 </section>
 <section id="call-openai-api">
-<h2><a class="toc-backref" href="#id14" role="doc-backlink">Call OpenAI API</a><a class="headerlink" href="#call-openai-api" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Call OpenAI API</a><a class="headerlink" href="#call-openai-api" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">openai_result</span></code> is cached in a <a class="reference external" href="https://docs.streamlit.io/get-started/fundamentals/advanced-concepts#session-state">session_state</a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;openai_result&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -282,7 +346,7 @@
 </pre></div>
 </div>
 <section id="call-o-model">
-<h3><a class="toc-backref" href="#id15" role="doc-backlink">Call <code class="docutils literal notranslate"><span class="pre">o</span></code> model</a><a class="headerlink" href="#call-o-model" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Call <code class="docutils literal notranslate"><span class="pre">o</span></code> model</a><a class="headerlink" href="#call-o-model" title="Link to this heading">¶</a></h3>
 <table class="docutils align-default" id="id5">
 <caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id5" title="Link to this table">¶</a></caption>
 <colgroup>
@@ -315,7 +379,7 @@
 </div>
 </section>
 <section id="call-gpt-model">
-<h3><a class="toc-backref" href="#id16" role="doc-backlink">Call <code class="docutils literal notranslate"><span class="pre">gpt</span></code> model</a><a class="headerlink" href="#call-gpt-model" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Call <code class="docutils literal notranslate"><span class="pre">gpt</span></code> model</a><a class="headerlink" href="#call-gpt-model" title="Link to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call_gpt_model</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
     <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;developer&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
@@ -331,7 +395,7 @@
 </div>
 </section>
 <section id="call-ollama">
-<h3><a class="toc-backref" href="#id17" role="doc-backlink">Call Ollama</a><a class="headerlink" href="#call-ollama" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Call Ollama</a><a class="headerlink" href="#call-ollama" title="Link to this heading">¶</a></h3>
 <table class="docutils align-default" id="id6">
 <caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id6" title="Link to this table">¶</a></caption>
 <colgroup>
@@ -366,7 +430,7 @@
 </div>
 </section>
 <section id="call-gemini">
-<h3><a class="toc-backref" href="#id18" role="doc-backlink">Call Gemini</a><a class="headerlink" href="#call-gemini" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Call Gemini</a><a class="headerlink" href="#call-gemini" title="Link to this heading">¶</a></h3>
 <table class="docutils align-default" id="id7">
 <caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id7" title="Link to this table">¶</a></caption>
 <colgroup>
@@ -467,6 +531,11 @@
     <span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
     <span class="c1"># print(f&#39;Execution time: `{execution_time:.1f}` seconds&#39;)</span>
 
+    <span class="c1"># Move selected tag to the beginning of the list</span>
+    <span class="n">all_tags</span> <span class="o">=</span> <span class="n">remove_strings_from_list</span><span class="p">(</span><span class="n">all_tags</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">])</span>
+    <span class="n">all_tags</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">)</span>
+    <span class="n">write_list_to_file</span><span class="p">(</span><span class="n">tags_file</span><span class="p">,</span> <span class="n">all_tags</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Darwin&#39;</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;afplay /System/Library/Sounds/Glass.aiff&quot;</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
@@ -475,7 +544,7 @@
 </section>
 </section>
 <section id="save-note">
-<h2><a class="toc-backref" href="#id19" role="doc-backlink">Save note</a><a class="headerlink" href="#save-note" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id21" role="doc-backlink">Save note</a><a class="headerlink" href="#save-note" title="Link to this heading">¶</a></h2>
 <p>Notes will be saved to <code class="docutils literal notranslate"><span class="pre">ai_note</span></code> folder which is expected to exist.</p>
 <p>Output format can be XML with request, response and prompt name, or just response markdown.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">note_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Note Name:&quot;</span><span class="p">)</span>
@@ -516,19 +585,19 @@
 </div>
 </section>
 <section id="environment-setup">
-<h2><a class="toc-backref" href="#id20" role="doc-backlink">Environment Setup</a><a class="headerlink" href="#environment-setup" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id22" role="doc-backlink">Environment Setup</a><a class="headerlink" href="#environment-setup" title="Link to this heading">¶</a></h2>
 <p>To set up your environment using <a class="reference external" href="https://docs.conda.io/projects/miniconda/en/latest/">Miniconda</a>, follow the steps below.
 These instructions will guide you through installing Miniconda,
 configuring your environment, and running a Streamlit application
 tailored for AI tasks.</p>
 <section id="step-1-install-miniconda">
-<h3><a class="toc-backref" href="#id21" role="doc-backlink">Step 1: Install Miniconda</a><a class="headerlink" href="#step-1-install-miniconda" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">Step 1: Install Miniconda</a><a class="headerlink" href="#step-1-install-miniconda" title="Link to this heading">¶</a></h3>
 <p>First, you need to install Miniconda. Visit the <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Miniconda
 website</a> and follow
 the installation instructions for your operating system.</p>
 </section>
 <section id="step-2-configure-your-environment">
-<h3><a class="toc-backref" href="#id22" role="doc-backlink">Step 2: Configure Your Environment</a><a class="headerlink" href="#step-2-configure-your-environment" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">Step 2: Configure Your Environment</a><a class="headerlink" href="#step-2-configure-your-environment" title="Link to this heading">¶</a></h3>
 <ol class="arabic">
 <li><p><strong>Create the Environment File</strong></p>
 <p>Create a file named <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> in your project directory.
@@ -565,34 +634,43 @@ conda<span class="w"> </span>config<span class="w"> </span>--set<span class="w">
 </ol>
 </section>
 <section id="step-3-activate-the-environment">
-<h3><a class="toc-backref" href="#id23" role="doc-backlink">Step 3: Activate the Environment</a><a class="headerlink" href="#step-3-activate-the-environment" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Step 3: Activate the Environment</a><a class="headerlink" href="#step-3-activate-the-environment" title="Link to this heading">¶</a></h3>
 <p>Activate your newly created environment by executing:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>ai_note
 </pre></div>
 </div>
 </section>
 <section id="step-4-prepare-prompt-file">
-<h3><a class="toc-backref" href="#id24" role="doc-backlink">Step 4: Prepare Prompt File</a><a class="headerlink" href="#step-4-prepare-prompt-file" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id26" role="doc-backlink">Step 4: Prepare Prompt File</a><a class="headerlink" href="#step-4-prepare-prompt-file" title="Link to this heading">¶</a></h3>
 <p>Create a file named <code class="docutils literal notranslate"><span class="pre">openai_helper.yml</span></code> in your project directory.
 This file should contain various prompts for the tasks you want to
-accomplish. Here’s an example of how to structure the contents:</p>
+accomplish.
+You can include tags in your prompts to categorize them.
+Here’s an example of how to structure the contents:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grammar</span>
 <span class="w">  </span><span class="nt">note</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">You will be provided with statements in markdown, and your task is to convert them to standard English.</span>
+<span class="w">  </span><span class="nt">tags</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">improve_style</span>
 <span class="w">  </span><span class="nt">note</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Improve style of the content you are provided.</span>
+<span class="w">  </span><span class="nt">tags</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">summarize_md</span>
 <span class="w">  </span><span class="nt">note</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">You will be provided with statements in markdown, and your task is to summarize the content.</span>
+<span class="w">  </span><span class="nt">tags</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">explain_python</span>
 <span class="w">  </span><span class="nt">note</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Explain Python code you are provided.</span>
+<span class="w">  </span><span class="nt">tags</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write_python</span>
 <span class="w">  </span><span class="nt">note</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Write Python code to satisfy the description you are provided.</span>
-
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">improve_style</span>
-<span class="w">  </span><span class="nt">note</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Improve style of the content you are provided.</span>
+<span class="w">  </span><span class="nt">tags</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span>
 </pre></div>
 </div>
 <table class="docutils align-default" id="id9">
@@ -614,7 +692,7 @@ accomplish. Here’s an example of how to structure the contents:</p>
 </table>
 </section>
 <section id="step-5-run-streamlit-script">
-<h3><a class="toc-backref" href="#id25" role="doc-backlink">Step 5: Run Streamlit Script</a><a class="headerlink" href="#step-5-run-streamlit-script" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">Step 5: Run Streamlit Script</a><a class="headerlink" href="#step-5-run-streamlit-script" title="Link to this heading">¶</a></h3>
 <p>With your environment set up and activated, and your
 <code class="docutils literal notranslate"><span class="pre">openai_helper.yml</span></code> file ready, you’re now set to run your Streamlit
 application. Execute the following command in your terminal:</p>
@@ -657,6 +735,8 @@ can interact with it through your web browser.</p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Note-AI</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#load-llm-prompts">Load LLM prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prompt-tags">Prompt Tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#select-the-prompt">Select the Prompt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#select-openai-llm">Select OpenAI LLM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tokens-price">Tokens &amp; Price</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#call-openai-api">Call OpenAI API</a></li>
@@ -666,13 +746,12 @@ can interact with it through your web browser.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="llama_chat.py.html">LLama Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
 <li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
-<li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pom_csv.py.html">POM CSV</a></li>
@@ -685,6 +764,7 @@ can interact with it through your web browser.</p>
 <li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
 <li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llama_chat.py.html">LLama Chat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
 </ul>
 

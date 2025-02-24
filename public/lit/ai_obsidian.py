@@ -20,6 +20,7 @@ import json
 import os
 import tiktoken
 from openai import OpenAI
+import pyperclip
 
 # Print banner.
 #
@@ -45,27 +46,20 @@ print_banner()
 #
 # ::
 
-openai_models = ["gpt-4o-mini", "gpt-4o"]
-openai_temperatures = [0, 0.7, 1]
+llm_models = ["gemini-2.0-flash", "gpt-4o-mini", "gpt-4o"]
+llm_temperatures = [0, 0.1, 0.7, 1]
 
-openai_model = st.sidebar.selectbox(
+llm_model = st.sidebar.selectbox(
    "OpenAI Model",
-   openai_models,
+   llm_models,
    index = 0
 )
 
-openai_temperature = st.sidebar.select_slider(
+llm_temperature = st.sidebar.select_slider(
    "OpenAI Temperature",
-   options = openai_temperatures,
-   value = 0.7
+   options = llm_temperatures,
+   value = 0.1
 )
-
-# Certain models are not compatible with ``tiktoken 0.7.0``, 
-# so we have added a separate configuration for them.
-# 
-# ::
-
-openai_model_tiktoken = openai_model 
 
 # Select Obsidian folder from recent vaults.
 #
@@ -145,24 +139,38 @@ file_path = os.path.join(note_home, note_name)
 with open(file_path, 'r', encoding='utf-8') as file:
     text = file.read()
 
-encoding = tiktoken.encoding_for_model(openai_model_tiktoken)
-tokens = encoding.encode(text)
-
-st.write(f'Tokens: `{len(tokens)}`')  
-
-# Select the prompt.
-#
+# Certain models are not compatible with ``tiktoken 0.7.0``, 
+# so we have added a separate configuration for them.
+# 
 # ::
 
-if False:
-    prompt_names = [item['name'] for item in prompts]
-    prompt_name = st.selectbox(
-       "Prompt",
-       prompt_names,
-    )
+def count_tokens():
+    llm_model_tiktoken = "gpt-4o-mini"
     
-    prompt = get_prompt(prompt_name)
-    st.write(prompt)
+    encoding = tiktoken.encoding_for_model(llm_model_tiktoken)
+    tokens = encoding.encode(text)
+    
+    openai_prices = {
+        "gpt-4o-mini": 0.15,
+        "o3-mini": 1.10,
+        "gpt-4o": 2.5,
+        "o1": 15.0,
+    }
+        
+    cents = round(len(tokens) * openai_prices[llm_model]/10000, 5)
+
+    st.sidebar.write(f'''
+        | Characters | Tokens | Cents |
+        |---|---|---|
+        | {len(text)} | {len(tokens)} | {cents} |
+        ''')
+    
+if llm_model.startswith("gpt-") or llm_model.startswith("o-"):
+    count_tokens()
+ 
+# The prompt to summarize text.
+#
+# ::
 
 prompt = """You will be provided with statements in markdown, 
 and your task is to summarize the content you are provided."""
@@ -173,31 +181,68 @@ and your task is to summarize the content you are provided."""
 
 client = OpenAI()
 
-if st.sidebar.button('Summarize', type='primary'):
+def call_openai():
     response = client.chat.completions.create(
-            model=openai_model,
+            model=llm_model,
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": text},
             ],
-            temperature=openai_temperature,
+            temperature=llm_temperature,
         )
 
-    choice = response.choices[0]
-    out_text = choice.message.content
+    return response.choices[0]
+    
+# Call Gemini.
+#
+# ::
+
+g_key = os.getenv("GEMINI_API_KEY")
+g_client = OpenAI(
+    api_key=g_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
+
+def call_gemini():
+    messages = [
+        {"role": "developer", "content": prompt},
+        {"role": "user", "content": text},
+    ]
+    response = g_client.chat.completions.create(
+            model=llm_model,
+            messages=messages,
+            temperature=llm_temperature,
+        )
+    return response.choices[0]
+    
+# Click button.
+#
+# ::
+
+if st.sidebar.button('Summarize', type='primary', use_container_width=True):
+    if llm_model.startswith("gemini"):
+        choice = call_gemini()
+    else:
+        choice = call_openai()
+        
+    out_text = choice.message.content    
     st.session_state.openai_result = out_text
 
     st.write('---')
     st.write(out_text)
     st.write('---')
     st.write(f'finish_reason: `{choice.finish_reason}`')
-    st.write(response.usage)
-    st.write(f'Choices: {len(response.choices)}')
 
     out_file = 'ai_obsidian.txt'
     with open(out_file, 'w') as file:
         file.write(out_text)
     st.write(f'Result saved: `{out_file}`')    
-
-if 'openai_result' in st.session_state:
-    st.text_area("Result", st.session_state.openai_result)
+    
+    pyperclip.copy(out_text)
+    st.write(f'Copied to clipboard')
+    
+if "openai_result" in st.session_state and st.button('Copy to clipboard', use_container_width=True):
+    pyperclip.copy(st.session_state.openai_result)
+        
+    
+    

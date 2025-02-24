@@ -86,19 +86,90 @@ The application reads prompts from a YAML file (`openai_helper.yml`). Each promp
   with open(prompts_file, 'r') as file:
       prompts = yaml.safe_load(file)
 
+  text = st.text_area(f"Note", height=300)
+
+Prompt Tags
+-----------
+
+Read a list of strings from a file
+
+::
+
+  def read_list_from_file(filename):
+      try:
+          with open(filename, 'r') as file:
+              # Read all lines and remove leading/trailing whitespace
+              lines = [line.strip() for line in file.readlines()]  
+          return lines
+      except FileNotFoundError:
+          return []
+      except Exception as e:
+          print(f"Error reading {filename}: {e}")
+          return []
+      
+Write a list of strings to a text file
+
+::
+
+  def write_list_to_file(filename, list_of_strings):
+      try:
+          with open(filename, 'w') as file:  
+              for string in list_of_strings:
+                  file.write(string + '\n') 
+      except Exception as e:
+          print(f"Error writing {filename}: {e}")
+      
+Removes specified strings from a list of strings.  
+
+::
+
+  def remove_strings_from_list(string_list, strings_to_remove):
+    return [s for s in string_list if s not in strings_to_remove]
+       
+Collect all tags into a single set
+
+::
+
+  tags_file = "openai_tags.txt"
+
+  def sort_by_pattern(all_tags):
+      tags_order = read_list_from_file(tags_file)
+  
+      # Create a mapping from tag to priority index for known tags.
+      tag_priority = { tag: index for index, tag in enumerate(tags_order) }
+  
+      # Sort the all_tags list.
+      # For tags in tags_order, the key is (0, priority) and for others (1, tag)
+      sorted_tags = sorted(all_tags,
+                           key=lambda tag: (0, tag_priority[tag]) if tag in tag_priority
+                                             else (1, tag))
+      return sorted_tags 
+
+  all_tags_set = {tag for item in prompts for tag in item.get('tags', [])}
+  all_tags = sort_by_pattern(list(all_tags_set))
+  all_tags.insert(0, "all")
+
+  tag_name = st.sidebar.selectbox(
+     "Tag",
+     all_tags,
+  )
+
+Select the Prompt
+-----------------
+
+::
+
   def get_prompt(name):
       for entry in prompts:
           if entry['name'] == name:
               return entry.get('note')
       return None
+  
+  if tag_name == "all":
+      prompt_names = [item['name'] for item in prompts]
+  else:    
+      prompt_names = [item['name'] for item in prompts if tag_name in item.get('tags', [])]
 
-  text = st.text_area(f"Note", height=300)
-
-Select the prompt.
-
-::
-
-  prompt_names = [item['name'] for item in prompts]
   prompt_name = st.sidebar.selectbox(
      "Prompt",
      prompt_names,
@@ -121,9 +192,7 @@ Select OpenAI LLM
 
   if model_type=="Gemini":    
       llm_models = [
-          "gemini-2.0-flash-exp", 
-          "gemini-1.5-flash", 
-          "gemini-1.5-pro", 
+          "gemini-2.0-flash", 
       ]
   elif model_type=="OpenAI":    
       llm_models = [
@@ -136,7 +205,7 @@ Select OpenAI LLM
       llm_models = [
           "ollama llama3.2",
       ]
-    
+  
   llm_temperatures = [0, 0.7, 1]
 
   openai_model = st.sidebar.selectbox(
@@ -170,7 +239,7 @@ If a button in the sidebar is clicked, the application counts the number of toke
 
       encoding = tiktoken.encoding_for_model("gpt-4o-mini")
       tokens = encoding.encode(text)
-    
+  
       openai_prices = {
           "gpt-4o-mini": 0.15, 
           "o3-mini": 1.10,
@@ -294,7 +363,7 @@ Call Gemini
               temperature=llm_temperature,
           )
       return response.choices[0]
-
+   
 When the user clicks a button to call OpenAI:
 
 - The application sends the selected prompt and user input to the OpenAI API.
@@ -313,7 +382,7 @@ Concatenate request
    
   def concat_request(prompt, text):
       return prompt + "\n\n```\n" + text + "\n```\n"
-    
+  
 
   st.sidebar.write('---')
   if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
@@ -322,13 +391,13 @@ Concatenate request
 
       if openai_model.startswith(("o1", "o3")):
           response = call_o_model(prompt, text)
-  
+
       elif openai_model.startswith("gemini"): 
           response = call_gemini(prompt, text)
-  
+
       elif openai_model.startswith("ollama "): 
           response = call_ollama(prompt, text)
-  
+
       else:
           response = call_gpt_model(prompt, text)
 
@@ -340,6 +409,11 @@ Concatenate request
       execution_time = end_time - start_time
       # print(f'Execution time: `{execution_time:.1f}` seconds')
 
+      # Move selected tag to the beginning of the list
+      all_tags = remove_strings_from_list(all_tags, ["all", tag_name])
+      all_tags.insert(0, tag_name)
+      write_list_to_file(tags_file, all_tags)
+  
       if platform.system() == 'Darwin':
           os.system("afplay /System/Library/Sounds/Glass.aiff")
       st.rerun()
@@ -459,27 +533,37 @@ Step 4: Prepare Prompt File
 
 Create a file named ``openai_helper.yml`` in your project directory.
 This file should contain various prompts for the tasks you want to
-accomplish. Here’s an example of how to structure the contents:
+accomplish. 
+You can include tags in your prompts to categorize them.
+Here’s an example of how to structure the contents:
 
 .. code:: yaml
 
    - name: grammar
      note: You will be provided with statements in markdown, and your task is to convert them to standard English.  
+     tags:
+       - text
 
    - name: improve_style
      note: Improve style of the content you are provided.
-
+     tags:
+       - text
+      
    - name: summarize_md
      note: You will be provided with statements in markdown, and your task is to summarize the content.
-
+     tags:
+       - text
+      
    - name: explain_python
      note: Explain Python code you are provided.
-
+     tags:
+       - python
+      
    - name: write_python
      note: Write Python code to satisfy the description you are provided.
+     tags:
+       - python
 
-   - name: improve_style
-     note: Improve style of the content you are provided.
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"

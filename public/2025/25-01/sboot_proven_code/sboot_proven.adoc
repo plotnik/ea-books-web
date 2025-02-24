@@ -14,6 +14,54 @@ https://github.com/PacktPublishing/Spring-Boot-3.0-Cookbook
 
 === link:restful.html[Chapter 1: Building RESTful APIs]
 
+
+==== link:restful.html#_creating_a_restful_api[Creating a RESTful API]
+
+This text explains how to create a basic RESTful API using Spring Boot for managing football player data. It walks through setting up a project with Spring Initializr, creating a `PlayerController` with CRUD operations (Create, Read, Update, Delete) using HTTP methods (GET, POST, PUT, DELETE), and testing the API endpoints with `curl` commands. The explanation covers how Spring Boot and annotations like `@RestController`, `@RequestMapping`, `@GetMapping`, `@PostMapping`, `@PutMapping`, `@DeleteMapping`, `@PathVariable`, and `@RequestBody` work together to handle HTTP requests and map them to specific methods. It also touches on the importance of HTTP status codes in RESTful API design and provides links for further learning on API design best practices.
+
+
+==== link:restful.html#_defining_responses_and_the_data_model_exposed_by_the_api[Defining Responses and the Data Model Exposed by the API]
+
+This recipe focuses on enhancing a basic RESTful API by incorporating standard response codes and a consistent data model. It involves creating a `Player` data model, custom exceptions (`AlreadyExistsException`, `NotFoundException`), and a `FootballService` to manage player data operations (listing, retrieving, adding, updating, and deleting players). The `PlayerController` is then modified to utilize the `FootballService` and expose the `Player` data model through REST endpoints. The recipe also touches on how Spring Boot handles serialization and HTTP status codes by default, and briefly explains Java records and Spring's dependency injection using `@Service`.
+
+
+==== link:restful.html#_managing_errors_in_a_restful_api[Managing Errors in a RESTful API]
+
+This recipe focuses on enhancing a RESTful API to handle common errors and return consistent HTTP response codes. It demonstrates how to manage exceptions like `NotFoundException` and `AlreadyExistsException` using `@ExceptionHandler` and `@ResponseStatus` annotations within the `PlayerController`. This ensures that appropriate HTTP status codes (e.g., 404 for "Not Found", 400 for "Bad Request") are returned to the client, adhering to RESTful API semantics. The recipe also briefly touches on alternative approaches, such as using `ResponseEntity` for explicit status code control and `@ControllerAdvice` for global exception handling across all controllers.
+
+==== link:restful.html#_testing_a_restful_api[Testing a RESTful API]
+
+This guide explains how to implement unit tests for a RESTful API in Spring Boot using the `spring-boot-starter-test` dependency. It walks through creating a test class, mocking the service layer, and using `MockMvc` to simulate HTTP requests. The example demonstrates testing both successful API calls and error handling (e.g., resource not found). It also briefly explains the annotations and classes used, such as `@WebMvcTest`, `@MockBean`, `given`, and `MockMvc`, and introduces the Arrange-Act-Assert (AAA) testing principle.
+
+==== link:restful.html#_using_openapi_to_document_our_restful_api[Using OpenAPI to Document Our RESTful API]
+
+This document explains how to add OpenAPI support to a Spring Boot RESTful API. OpenAPI is a standard for documenting RESTful APIs and generating client applications. The steps involve adding the `org.springdoc:springdoc-openapi-starter-webmvc-ui` dependency to the project's `pom.xml` file. Once added, the application can be run, and the API documentation can be accessed in JSON format at `http://localhost:8080/v3/api-docs`. A user-friendly interface for interacting with the API is available at `http://localhost:8080/swagger-ui/index.html`. This UI allows users to execute API operations and view the data model. The OpenAPI dependency examines the application at runtime to generate the API description, which includes endpoints, HTTP methods, parameters, responses, and data schemas.
+
+==== link:restful.html#_consuming_a_restful_api_from_another_spring_boot_application_using_feignclient[Consuming a RESTful API from Another Spring Boot Application Using FeignClient]
+
+This document describes how to create a Spring Boot application that consumes a RESTful API using Feign, a declarative web service client. It walks through the steps of setting up a new Spring Boot project with Spring Web and OpenFeign dependencies, defining a `Player` record and a `FootballClient` interface to specify the API endpoint, creating an `AlbumsController` to use the `FootballClient` to retrieve player data, and enabling Feign clients in the main application class. The application is then run on port 8081 to avoid conflicts with the API running on port 8080, and tested using `curl`. The document also explains how Feign simplifies HTTP requests and mentions alternative tools for generating client code from OpenAPI specifications.
+
+
+==== link:restful.html#_consuming_a_restful_api_from_another_spring_boot_application_using_restclient[Consuming a RESTful API from Another Spring Boot Application Using RestClient]
+
+This recipe demonstrates how to use the `RestClient` component in Spring Framework 6.1 (Spring Boot 3.2+) to consume a RESTful API. Instead of creating a FeignClient with an interface, `RestClient` offers a fluent API for making HTTP requests and handling responses.
+
+**Key steps:**
+
+1.  **Create a Spring Boot application:** Using Spring Initializr with `Spring Web` dependency.
+2.  **Configure `RestClient`:** Create a `@Configuration` class (`AlbumsConfiguration`) to define a `RestClient` bean, injecting the base URL of the remote API using `@Value`.
+3.  **Use `RestClient` in a service:** Create a service class (`FootballClientService`) and inject the `RestClient` bean.
+4.  **Make API calls:** Use the `RestClient`'s fluent API (`get().uri().retrieve().body()`) to make requests and retrieve data.  The `exchange` method allows for handling different response statuses (e.g., 404 Not Found).  `ParameterizedTypeReference` is used to handle generic types like `List<Player>`.
+5.  **Configuration with `@Value`:**  The `@Value` annotation is used to inject the base URL from configuration files or environment variables, with a default value provided. The recipe also explains the difference in property formats between `application.properties` and `application.yml` files.
+
+
+==== link:restful.html#_mocking_a_restful_api_with_wiremock[Mocking a RESTful API with WireMock]
+
+This document explains how to use Wiremock to mock a remote "Football" service in a Spring Boot Albums application during testing. It details the process of adding the Wiremock dependency, creating a test class for the FootballClientService, setting up a Wiremock server, and writing a test to validate the getPlayer method. The test involves arranging the result of the remote service, calling the getPlayer method, and validating the results. The document also explains how Wiremock works and provides a link to the Wiremock project web page for more information.
+
+
 === link:actuator.html[Chapter 3: Observability, Monitoring, and Application Management]
+
+== Part 3: Application Optimization
 
 === link:reactive.html[Chapter 8: Spring Reactive and Spring Cloud Stream]

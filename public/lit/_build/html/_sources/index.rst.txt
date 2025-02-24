@@ -13,13 +13,12 @@ Literate Programs
    ai_note.py
    ai_obsidian.py
    o_ed.py
-   llama_chat.py
+   udemy.py
    md_view.py
    pan_ui.py
    code_review.py
    doc_note.py
    up_file.py
-   udemy.py
    cmp_props.py
    pi_keys.py
    pom_csv.py
@@ -32,5 +31,6 @@ Literate Programs
    grafana_stats.py
    google_search.py
    L1_Router_Engine.py
+   llama_chat.py
    albums.py
 

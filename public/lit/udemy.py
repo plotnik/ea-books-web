@@ -52,7 +52,7 @@ out_file = 'udemy.txt'
 #
 # ::
 
-llm_models = ["gemini-2.0-flash-exp", "gpt-4o-mini", "o3-mini"]
+llm_models = ["gemini-2.0-flash", "gpt-4o-mini", "o3-mini"]
 openai_model = st.sidebar.radio("LLM Models", llm_models)
 
 is_gemini = openai_model.startswith("gemini")
@@ -67,6 +67,11 @@ is_gemini = openai_model.startswith("gemini")
 current_folder = os.getcwd()
 home_folders = os.listdir(current_folder)
 book_folders = [item for item in home_folders if os.path.isdir(os.path.join(current_folder, item)) and item.endswith(" Book")]
+
+if (len(book_folders)==0):
+    st.error('The folder should contain a subfolder with a name that ends with " Book".')
+    st.stop()
+    
 note_home =  book_folders[0]
 # print("OBSIDIAN_HOME: " + note_home)
 

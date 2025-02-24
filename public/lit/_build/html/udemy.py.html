@@ -14,8 +14,8 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Compare Properties" href="cmp_props.py.html" />
-    <link rel="prev" title="Upload File" href="up_file.py.html" />
+    <link rel="next" title="Markdown Viewer" href="md_view.py.html" />
+    <link rel="prev" title="Obsidian Web Editor" href="o_ed.py.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -105,7 +105,7 @@
 </pre></div>
 </div>
 <p>Select OpenAI LLM.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gemini-2.0-flash-exp&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span> <span class="s2">&quot;o3-mini&quot;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span> <span class="s2">&quot;o3-mini&quot;</span><span class="p">]</span>
 <span class="n">openai_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;LLM Models&quot;</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
 
 <span class="n">is_gemini</span> <span class="o">=</span> <span class="n">openai_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemini&quot;</span><span class="p">)</span>
@@ -117,6 +117,11 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">current_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
 <span class="n">home_folders</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">current_folder</span><span class="p">)</span>
 <span class="n">book_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">home_folders</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_folder</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot; Book&quot;</span><span class="p">)]</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">book_folders</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;The folder should contain a subfolder with a name that ends with &quot; Book&quot;.&#39;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
 <span class="n">note_home</span> <span class="o">=</span>  <span class="n">book_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="c1"># print(&quot;OBSIDIAN_HOME: &quot; + note_home)</span>
 </pre></div>
@@ -331,12 +336,6 @@
 <li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="llama_chat.py.html">LLama Chat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
-<li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
-<li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Udemy</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#obsidian-folder">Obsidian folder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#newest-files">Newest files</a></li>
@@ -346,6 +345,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#call-openai-api">Call OpenAI API</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pom_csv.py.html">POM CSV</a></li>
@@ -358,6 +362,7 @@
 <li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
 <li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llama_chat.py.html">LLama Chat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
 </ul>
 
@@ -365,8 +370,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="up_file.py.html" title="previous chapter">Upload File</a></li>
-      <li>Next: <a href="cmp_props.py.html" title="next chapter">Compare Properties</a></li>
+      <li>Previous: <a href="o_ed.py.html" title="previous chapter">Obsidian Web Editor</a></li>
+      <li>Next: <a href="md_view.py.html" title="next chapter">Markdown Viewer</a></li>
   </ul></li>
 </ul>
 </div>
