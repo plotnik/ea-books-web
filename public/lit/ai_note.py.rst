@@ -200,13 +200,14 @@ Select OpenAI LLM
           "o3-mini",
           "gpt-4o", 
           "o1", 
+          "gpt-4.5-preview",
       ]    
   else:    
       llm_models = [
           "ollama llama3.2",
       ]
   
-  llm_temperatures = [0, 0.7, 1]
+  llm_temperatures = [0, 0.1, 0.7, 1]
 
   openai_model = st.sidebar.selectbox(
      "LLM Model",
@@ -217,7 +218,7 @@ Select OpenAI LLM
   llm_temperature = st.sidebar.select_slider(
      "LLM Temperature",
      options = llm_temperatures,
-     value = 0.7
+     value = 0.1
   )
 
 Tokens & Price
@@ -245,6 +246,7 @@ If a button in the sidebar is clicked, the application counts the number of toke
           "o3-mini": 1.10,
           "gpt-4o": 2.5, 
           "o1": 15.0, 
+          "gpt-4.5-preview": 75.0,
       }
       cents = round(len(tokens) * openai_prices[openai_model]/10000, 5)
 
