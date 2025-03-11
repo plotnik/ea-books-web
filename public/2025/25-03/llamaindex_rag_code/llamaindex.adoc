@@ -1,0 +1,27 @@
+= Building Data-Driven Applications with LlamaIndex
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+Andrei Gheorghiu
+
+====
+GitHub::
+https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex
+====
+
+= Part 2: Starting Your First LlamaIndex Project
+
+== Chapter 3: Kickstarting your Journey with LlamaIndex
+
+=== Uncovering the essential building blocks of LlamaIndex – documents, nodes, and indexes
+
+This document provides an introduction to LlamaIndex and its key components for building Retrieval-Augmented Generation (RAG) applications. Here's a summary:
+
+*   **LlamaIndex Overview:** LlamaIndex connects external data sources to LLMs by ingesting, structuring, and organizing data for efficient retrieval and querying.
+*   **Documents:** Documents are containers for various types of raw data (text, PDFs, databases, APIs). They include the text itself, metadata (author, category), and a unique ID. Data loaders from LlamaHub are used to ingest data from various sources into Documents.
+*   **Nodes:** Nodes are smaller, more manageable chunks of content extracted from Documents. They allow proprietary knowledge to fit within the model’s prompt limits, create semantic units of data centered around specific information, and allow the creation of relationships between Nodes. `TextNode` is a key class, containing text, character indices, templates, metadata, and relationships to other nodes. Nodes can be created manually or automatically using splitters like `TokenTextSplitter`.
+*   **Node Relationships:** Nodes can be linked to each other (previous, next, parent, child, source) to enable contextual querying, track provenance, enable navigation, support knowledge graph construction, and improve index structure.
+*   **Indexes:** Indexes are data structures that organize Nodes for optimized storage and retrieval. LlamaIndex supports various index types, including `SummaryIndex`, `DocumentSummaryIndex`, `VectorStoreIndex`, `TreeIndex`, `KeywordTableIndex`, `KnowledgeGraphIndex`, and `ComposableGraph`. Indexes are built from Nodes, allow insertion of new Nodes, and provide a query interface.
+*   **QueryEngine:** A `QueryEngine` contains a retriever, node postprocessor, and response synthesizer. The retriever fetches relevant Nodes from the index. The node postprocessor transforms, re-ranks, or filters Nodes after they’ve been retrieved and before the final response is crafted. The response synthesizer crafts the final response using the LLM, formatting the retrieved Nodes into a prompt, generating a response, and post-processing the response.
+*   **RAG Workflow:** The complete RAG workflow involves loading data as Documents, parsing Documents into Nodes, building an index from Nodes, running queries over the index to retrieve relevant Nodes, and synthesizing the final response.
