@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
-<meta name="author" content="Andrei Gheorghiu">
-<title>Building Data-Driven Applications with LlamaIndex</title>
+<title>DeepLearning.AI: Building Agentic RAG with Llamaindex</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -435,62 +434,29 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article toc2 toc-right">
 <div id="header">
-<h1>Building Data-Driven Applications with LlamaIndex</h1>
-<div class="details">
-<span id="author" class="author">Andrei Gheorghiu</span><br>
-</div>
+<h1>DeepLearning.AI: Building Agentic RAG with Llamaindex</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel0">
-<li><a href="#_part_2_starting_your_first_llamaindex_project">Part 2: Starting Your First LlamaIndex Project</a>
 <ul class="sectlevel1">
-<li><a href="#_chapter_3_kickstarting_your_journey_with_llamaindex">Chapter 3: Kickstarting your Journey with LlamaIndex</a>
-<ul class="sectlevel2">
-<li><a href="#_uncovering_the_essential_building_blocks_of_llamaindex_documents_nodes_and_indexes">Uncovering the essential building blocks of LlamaIndex – documents, nodes, and indexes</a>
-<ul class="sectlevel3">
-<li><a href="#_documents">Documents</a></li>
-<li><a href="#_nodes">Nodes</a></li>
-<li><a href="#_manually_creating_the_node_objects">Manually creating the Node objects</a></li>
-<li><a href="#_automatically_extracting_nodes_from_documents_using_splitters">Automatically extracting Nodes from Documents using splitters</a></li>
-<li><a href="#_nodes_dont_like_to_be_alone_they_crave_relationships">Nodes don’t like to be alone – they crave relationships</a></li>
-<li><a href="#_why_are_relationships_important">Why are relationships important?</a></li>
-<li><a href="#_indexes">Indexes</a></li>
-<li><a href="#_are_we_there_yet">Are we there yet?</a></li>
-<li><a href="#_how_does_this_actually_work_under_the_hood">How does this actually work under the hood?</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#_chapter_4_ingesting_data_into_our_rag_workflow">Chapter 4: Ingesting Data into Our RAG Workflow</a>
-<ul class="sectlevel2">
-<li><a href="#_ingesting_data_via_llamahub">Ingesting data via LlamaHub</a></li>
-<li><a href="#_an_overview_of_llamahub">An overview of LlamaHub</a></li>
-<li><a href="#_using_the_llamahub_data_loaders_to_ingest_content">Using the LlamaHub data loaders to ingest content</a>
-<ul class="sectlevel3">
-<li><a href="#_ingesting_data_from_a_web_page">Ingesting data from a web page</a></li>
-<li><a href="#_ingesting_data_from_a_database">Ingesting data from a database</a></li>
-<li><a href="#_bulk_ingesting_data_from_sources_with_multiple_file_formats">Bulk-ingesting data from sources with multiple file formats</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a href="#_router_engine">Router Engine</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
+<div class="paragraph">
+<p><a href="dl_ai.html">&lt;All DeepLearning.AI Courses&gt;</a></p>
+</div>
 <div class="exampleblock">
 <div class="content">
 <div class="dlist">
 <dl>
-<dt class="hdlist1">GitHub</dt>
+<dt class="hdlist1">DeepLearning.AI Course</dt>
 <dd>
-<p><a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex" class="bare">https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex</a></p>
+<p><a href="https://learn.deeplearning.ai/courses/building-agentic-rag-with-llamaindex/" class="bare">https://learn.deeplearning.ai/courses/building-agentic-rag-with-llamaindex/</a></p>
 </dd>
 </dl>
 </div>
@@ -498,158 +464,27 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
-<h1 id="_part_2_starting_your_first_llamaindex_project" class="sect0">Part 2: Starting Your First LlamaIndex Project</h1>
 <div class="sect1">
-<h2 id="_chapter_3_kickstarting_your_journey_with_llamaindex">Chapter 3: Kickstarting your Journey with LlamaIndex</h2>
+<h2 id="_router_engine">Router Engine</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_uncovering_the_essential_building_blocks_of_llamaindex_documents_nodes_and_indexes">Uncovering the essential building blocks of LlamaIndex – documents, nodes, and indexes</h3>
-<div class="sect3">
-<h4 id="_documents">Documents</h4>
-<div class="paragraph">
-<p>LlamaIndex uses <code>Document</code> objects to contain and structure raw data from various sources like PDFs, databases, or APIs. A <code>Document</code> holds the text content, a unique ID, and metadata (additional information) for more specific queries. Documents can be created manually or, more commonly, generated in bulk using data loaders from LlamaHub, which supports various data formats and sources. An example is provided using the <code>WikipediaReader</code> to load data from Wikipedia articles into <code>Document</code> objects. The next step is converting these raw <code>Document</code> objects into a format that LLMs can process, which is where Nodes come in.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_nodes">Nodes</h4>
-<div class="paragraph">
-<p>Nodes are smaller, manageable chunks of content extracted from Documents, addressing prompt size limits by allowing selection of relevant information. They create semantic units of data centered around specific information and allow the creation of relationships between Nodes. In LlamaIndex, the <code>TextNode</code> class is a main focus, with attributes like <code>text</code>, <code>start_char_idx</code>, <code>end_char_idx</code>, <code>text_template</code>, <code>metadata_template</code>, <code>metadata_seperator</code>, and <code>metadata</code>. Nodes inherit Document-level metadata but can also be individually customized.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_manually_creating_the_node_objects">Manually creating the Node objects</h4>
-<div class="paragraph">
-<p>The provided code demonstrates how to manually create <code>TextNode</code> objects from a <code>Document</code> object in LlamaIndex. It involves slicing the document&#8217;s text and assigning it to individual nodes. Each node is automatically assigned a unique ID, but this can be customized. This manual approach offers full control over the node&#8217;s text and metadata.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_automatically_extracting_nodes_from_documents_using_splitters">Automatically extracting Nodes from Documents using splitters</h4>
-<div class="paragraph">
-<p>The <code>TokenTextSplitter</code> in LlamaIndex is a tool for chunking documents into nodes, which is important for RAG workflows. It splits text into chunks of whole sentences with a default overlap to maintain context. The splitter can be customized with parameters like <code>chunk_size</code> and <code>chunk_overlap</code>. The example shows how to use <code>TokenTextSplitter</code> on a <code>Document</code> object, splitting the text into nodes and inheriting metadata from the original document. A warning is triggered if the metadata is too large, leaving less room for the actual content text. The next chapter will cover more text-splitting and node-parsing techniques available in LlamaIndex.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_nodes_dont_like_to_be_alone_they_crave_relationships">Nodes don’t like to be alone – they crave relationships</h4>
-<div class="paragraph">
-<p>This content explains how to manually create relationships between nodes in LlamaIndex, focusing on the "previous" and "next" relationships to maintain order within a document. It highlights that LlamaIndex can automatically create these relationships during node parsing. Additionally, it introduces other relationship types like "SOURCE," "PARENT," and "CHILD," which are useful for tracking the origin of nodes and representing hierarchical structures within the data. The content concludes by posing the question of why these relationships are important, setting the stage for further discussion on their utility.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_why_are_relationships_important">Why are relationships important?</h4>
-<div class="paragraph">
-<p>Creating relationships between Nodes in LlamaIndex enhances querying by providing more context, tracking provenance, enabling navigation, supporting knowledge graph construction, and improving index structure. These relationships augment Nodes with contextual connections, leading to more expressive querying and complex index topologies. After structuring raw data into queryable Nodes, the next step is to organize them into efficient indexes.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_indexes">Indexes</h4>
-<div class="paragraph">
-<p>The passage explains the concept of indexing in LlamaIndex, which is crucial for organizing data for retrieval-augmented generation (RAG). Indexing transforms messy data into structured knowledge that AI can use effectively. LlamaIndex supports various index types, including <code>SummaryIndex</code>, <code>DocumentSummaryIndex</code>, <code>VectorStoreIndex</code>, <code>TreeIndex</code>, <code>KeywordTableIndex</code>, <code>KnowledgeGraphIndex</code>, and <code>ComposableGraph</code>, each with its own strengths and trade-offs. All index types share common features like building the index, inserting new nodes, and querying the index. A <code>SummaryIndex</code> example is provided, illustrating its creation and function as a simple list-based data structure that organizes nodes in order.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_are_we_there_yet">Are we there yet?</h4>
-<div class="paragraph">
-<p>The text discusses how to retrieve answers from an index using retrievers and response synthesizers. It uses a Lionel Messi index as an example, querying "What is Messi&#8217;s hometown?" The summary index retrieves all nodes to synthesize a response with full context.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_how_does_this_actually_work_under_the_hood">How does this actually work under the hood?</h4>
-<div class="paragraph">
-<p>The <code>QueryEngine</code> in LlamaIndex retrieves relevant Nodes from an index using a retriever, which fetches and ranks them. A node postprocessor then transforms, re-ranks, or filters these Nodes. Finally, a response synthesizer formulates an LLM prompt with the query and Node context, generates a response, and post-processes it into a natural language answer. The <code>index.as_query_engine()</code> creates a complete query engine with default components. The overall process involves loading data, parsing it into Nodes, building an index, querying the index, and synthesizing a response. Different index types like <code>SummaryIndex</code>, <code>TreeIndex</code>, and <code>KeywordIndex</code> impact performance and use cases, and the index structure defines the data management logic.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_chapter_4_ingesting_data_into_our_rag_workflow">Chapter 4: Ingesting Data into Our RAG Workflow</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_ingesting_data_via_llamahub">Ingesting data via LlamaHub</h3>
-<div class="paragraph">
-<p>This section emphasizes the importance of data ingestion and processing in a RAG workflow, highlighting common challenges and potential solutions.</p>
-</div>
-<div class="paragraph">
-<p><strong>Key Challenges:</strong></p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Data Quality:</strong> The quality of the RAG output depends on the quality of the input data. Cleaning, deduplicating, and removing redundant, ambiguous, biased, incomplete, or outdated information is crucial.</p>
-</li>
-<li>
-<p><strong>Data Dynamics:</strong> Knowledge repositories evolve, requiring a system for regularly updating content to incorporate new information and remove outdated data.</p>
-</li>
-<li>
-<p><strong>Data Variety:</strong> Data comes in various formats, and a RAG system should handle them all. While LlamaIndex offers many data loaders, automated ingestion can be challenging. LlamaParse is introduced as a solution for automated data ingestion and processing.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>The section then transitions to discussing data ingestion using LlamaHub data loaders.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_an_overview_of_llamahub">An overview of LlamaHub</h3>
-<div class="paragraph">
-<p>LlamaHub is a library of integrations, including over 180 data connectors (also known as data readers or data loaders), that allow seamless integration of external data with LlamaIndex. These connectors extract data from various sources like databases, APIs, files, and websites, converting it into LlamaIndex <code>Document</code> objects, saving you from writing custom parsers. LlamaIndex&#8217;s modular architecture means these integrations aren&#8217;t included in the core installation, requiring separate installation of the corresponding package. These readers may also utilize specialized libraries and tools tailored to each data type. The LlamaHub website lists all available readers with documentation and samples. The source code for the readers can be found in the <code>llama-index-integrations/readers</code> subfolder of the Llama-index GitHub repository. Before using a data reader, make sure to install any additional dependencies required by the specific connector.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_using_the_llamahub_data_loaders_to_ingest_content">Using the LlamaHub data loaders to ingest content</h3>
-<div class="sect3">
-<h4 id="_ingesting_data_from_a_web_page">Ingesting data from a web page</h4>
-<div class="exampleblock">
-<div class="content">
-<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_reader_SimpleWebPageReader.py" target="_blank">
-ch4/sample_reader_SimpleWebPageReader.py</a>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>SimpleWebPageReader</code> in LlamaIndex extracts text content from web pages. It requires the <code>llama-index-readers-web</code> package to be installed. The reader fetches content from URLs, converts HTML to plain text (if specified and if the <code>html2text</code> package is installed), and attaches metadata using a custom function if provided. The content, URL, and metadata are then encapsulated in a <code>Document</code> object. While effective for simple web pages, it may not be suitable for complex, interactive websites. It simplifies the process of ingesting and structuring basic web content, allowing developers to focus on building RAG applications.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_ingesting_data_from_a_database">Ingesting data from a database</h4>
-<div class="exampleblock">
-<div class="content">
-<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_reader_DatabaseReader.py" target="_blank">
-ch4/sample_reader_DatabaseReader.py</a>
-</div>
-</div>
-<div class="paragraph">
-<p>This text discusses using databases for efficient data management and introduces the <code>DatabaseReader</code> connector in LlamaIndex for querying various database systems. It explains how to install the connector, connect to a database (using a URI, SQLAlchemy Engine, or credentials), execute a SQL query, and convert the results into LlamaIndex Document objects. The text provides an example using an SQLite database and points to the official documentation for a more general example. It also highlights the ease of use of LlamaHub readers, mentioning the wide variety of supported data formats and hinting at more efficient methods for ingesting multiple documents in the next section.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_bulk_ingesting_data_from_sources_with_multiple_file_formats">Bulk-ingesting data from sources with multiple file formats</h4>
-<div class="exampleblock">
-<div class="content">
-<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_reader_SimpleDirectoryReader.py" target="_blank">
-ch4/sample_reader_SimpleDirectoryReader.py</a>
-</div>
-</div>
-<div class="paragraph">
-<p>This document discusses two methods for loading data into LlamaIndex for use in Retrieval-Augmented Generation (RAG) systems.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>SimpleDirectoryReader</strong>: This is a simple and easy-to-use reader that can ingest multiple data formats (PDFs, Word docs, text files, CSVs) from a directory or a list of files. It automatically detects the file type and uses the appropriate reader to extract the content.</p>
-</li>
-<li>
-<p><strong>LlamaParse</strong>: This is a more advanced parsing service that is part of the LlamaCloud enterprise platform. It is designed for complex file formats and uses multi-modal capabilities and LLM intelligence to provide high-quality document parsing. It allows users to provide natural language instructions to guide the parsing process and offers a JSON output mode for structured data. It can be used in combination with <code>SimpleDirectoryReader</code> for bulk ingestion. It supports a wide range of file types and offers a free tier. It is a paid service, so users should review the privacy policy before submitting proprietary data.</p>
-</li>
-</ol>
-</div>
-</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<a href="../../../lit/_build/html/L1_Router_Engine.py.html">L1_Router_Engine.py</a>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-03-14 10:02:33 +0200
+Last updated 2025-01-11 11:55:27 +0200
 </div>
 </div>
 </body>
