@@ -444,6 +444,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel0">
+<li><a href="#_part_1_introduction_to_generative_ai_and_llamaindex">Part 1: Introduction to Generative AI and LlamaIndex</a>
+<ul class="sectlevel1">
+<li><a href="#_chapter_2_llamaindex_the_hidden_jewel_an_introduction_to_the_llamaindex_ecosystem">Chapter 2: LlamaIndex: The Hidden Jewel - An Introduction to the LlamaIndex Ecosystem</a>
+<ul class="sectlevel2">
+<li><a href="#_familiarizing_ourselves_with_the_structure_of_the_llamaindex_code_repository">Familiarizing ourselves with the structure of the LlamaIndex code repository</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#_part_2_starting_your_first_llamaindex_project">Part 2: Starting Your First LlamaIndex Project</a>
 <ul class="sectlevel1">
 <li><a href="#_chapter_3_kickstarting_your_journey_with_llamaindex">Chapter 3: Kickstarting your Journey with LlamaIndex</a>
@@ -474,6 +483,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_bulk_ingesting_data_from_sources_with_multiple_file_formats">Bulk-ingesting data from sources with multiple file formats</a></li>
 </ul>
 </li>
+<li><a href="#_parsing_the_documents_into_nodes">Parsing the documents into nodes</a>
+<ul class="sectlevel3">
+<li><a href="#_understanding_the_simple_text_splitters">Understanding the simple text splitters</a></li>
+<li><a href="#_using_more_advanced_node_parsers">Using more advanced node parsers</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -494,6 +509,46 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </dd>
 </dl>
 </div>
+</div>
+</div>
+</div>
+</div>
+<h1 id="_part_1_introduction_to_generative_ai_and_llamaindex" class="sect0">Part 1: Introduction to Generative AI and LlamaIndex</h1>
+<div class="sect1">
+<h2 id="_chapter_2_llamaindex_the_hidden_jewel_an_introduction_to_the_llamaindex_ecosystem">Chapter 2: LlamaIndex: The Hidden Jewel - An Introduction to the LlamaIndex Ecosystem</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_familiarizing_ourselves_with_the_structure_of_the_llamaindex_code_repository">Familiarizing ourselves with the structure of the LlamaIndex code repository</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/run-llama/llama_index" target="_blank">
+https://github.com/run-llama/llama_index</a>
+</div>
+</div>
+<div class="paragraph">
+<p>The LlamaIndex framework&#8217;s code, reorganized for modularity and efficiency, is structured as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>llama-index-core:</strong> The foundational package, providing essential framework components.</p>
+</li>
+<li>
+<p><strong>llama-index-integrations:</strong> Add-on packages for customizing the framework with specific LLMs, data loaders, embedding models, and vector store providers.</p>
+</li>
+<li>
+<p><strong>llama-index-packs:</strong> Ready-made templates developed by the community to kickstart applications.</p>
+</li>
+<li>
+<p><strong>llama-index-cli:</strong> Supports the LlamaIndex command-line interface.</p>
+</li>
+<li>
+<p><strong>OTHERS:</strong> Contains fine-tuning abstractions and experimental features.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each subfolder within <code>llama-index-integrations</code> and <code>llama-index-packs</code> represents an individual package that can be installed via pip. For example, to use <code>llama_index.llms.mistralai</code>, you must first install the <code>llama-index-llms-mistralai</code> package. The book will list necessary packages at the beginning of each chapter.</p>
 </div>
 </div>
 </div>
@@ -644,12 +699,101 @@ ch4/sample_reader_SimpleDirectoryReader.py</a>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_parsing_the_documents_into_nodes">Parsing the documents into nodes</h3>
+<div class="sect3">
+<h4 id="_understanding_the_simple_text_splitters">Understanding the simple text splitters</h4>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_splitter_TokenTextSplitter.py" target="_blank">
+ch4/sample_splitter_TokenTextSplitter.py</a>
+<hr>
+<a href="https://github.com/run-llama/llama_index/blob/main/llama-index-core/llama_index/core/node_parser/text/token.py" target="_blank">
+llama-index-core/llama_index/core/node_parser/text/token.py</a>
+<hr>
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_splitter_CodeSplitter.py" target="_blank">
+ch4/sample_splitter_CodeSplitter.py</a>
+<hr>
+<a href="https://github.com/run-llama/llama_index/blob/main/llama-index-core/llama_index/core/node_parser/text/code.py" target="_blank">
+llama-index-core/llama_index/core/node_parser/text/code.py</a>
+</div>
+</div>
+<div class="paragraph">
+<p>This text discusses text splitters in LlamaIndex, which break down documents into smaller pieces at the raw text level. It provides code examples and explanations for three specific text splitters:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>SentenceSplitter:</strong> Splits text while maintaining sentence boundaries, creating nodes containing groups of sentences.</p>
+</li>
+<li>
+<p><strong>TokenTextSplitter:</strong> Splits text at the token level, respecting sentence boundaries. Key parameters include <code>chunk_size</code> (max tokens per chunk), <code>chunk_overlap</code> (token overlap between chunks), <code>separator</code> (primary token boundary), and <code>backup_separators</code> (additional splitting points).</p>
+</li>
+<li>
+<p><strong>CodeSplitter:</strong> Designed for source code, splitting based on programming language using an abstract syntax tree (AST) to keep related statements together. Requires installing <code>tree_sitter</code> and <code>tree_sitter_languages</code>. Key parameters include <code>language</code> (programming language), <code>chunk_lines</code> (lines per chunk), <code>chunk_lines_overlap</code> (line overlap), and <code>max_chars</code> (max characters per chunk).</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_using_more_advanced_node_parsers">Using more advanced node parsers</h4>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_SentenceWindowNodeParser.py" target="_blank">
+ch4/sample_parser_SentenceWindowNodeParser.py</a>
+<hr>
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_LangchainNodeParser.py" target="_blank">
+ch4/sample_parser_LangchainNodeParser.py</a>
+<hr>
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_SimpleFileNodeParser.py" target="_blank">
+ch4/sample_parser_SimpleFileNodeParser.py</a>
+<hr>
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_HTMLNodeParser.py" target="_blank">
+ch4/sample_parser_HTMLNodeParser.py</a>
+<hr>
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_MarkdownNodeParser.py" target="_blank">
+ch4/sample_parser_MarkdownNodeParser.py</a>
+<hr>
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_JSONNodeParser.py" target="_blank">
+ch4/sample_parser_JSONNodeParser.py</a>
+</div>
+</div>
+<div class="paragraph">
+<p>This text discusses advanced tools in LlamaIndex for chunking text into nodes, focusing on <code>NodeParser</code> and its derived classes. Key aspects include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>NodeParser Basics:</strong> All node parsers inherit from the <code>NodeParser</code> class, which allows customization of <code>include_metadata</code>, <code>Include_prev_next_rel</code>, and <code>Callback_manager</code>.</p>
+</li>
+<li>
+<p><strong>SentenceWindowNodeParser:</strong> Splits text into sentences and includes a window of surrounding sentences in the metadata.</p>
+</li>
+<li>
+<p><strong>LangchainNodeParser:</strong> Integrates Langchain text splitters into LlamaIndex.</p>
+</li>
+<li>
+<p><strong>SimpleFileNodeParser:</strong> Automatically selects a node parser based on the file type.</p>
+</li>
+<li>
+<p><strong>HTMLNodeParser:</strong> Parses HTML files using Beautiful Soup, converting them into nodes based on HTML tags.</p>
+</li>
+<li>
+<p><strong>MarkdownNodeParser:</strong> Processes markdown text, creating nodes for each header and incorporating the header hierarchy into the metadata.</p>
+</li>
+<li>
+<p><strong>JSONNodeParser:</strong> Processes structured data in JSON format.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-03-14 10:02:33 +0200
+Last updated 2025-03-15 09:53:54 +0200
 </div>
 </div>
 </body>

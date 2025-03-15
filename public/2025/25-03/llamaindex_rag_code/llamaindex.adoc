@@ -10,6 +10,29 @@ GitHub::
 https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex
 ====
 
+= Part 1: Introduction to Generative AI and LlamaIndex
+
+== Chapter 2: LlamaIndex: The Hidden Jewel - An Introduction to the LlamaIndex Ecosystem
+
+=== Familiarizing ourselves with the structure of the LlamaIndex code repository
+
+====
+++++
+<a href="https://github.com/run-llama/llama_index" target="_blank">
+https://github.com/run-llama/llama_index</a>
+++++
+====
+
+The LlamaIndex framework's code, reorganized for modularity and efficiency, is structured as follows:
+
+*   **llama-index-core:** The foundational package, providing essential framework components.
+*   **llama-index-integrations:** Add-on packages for customizing the framework with specific LLMs, data loaders, embedding models, and vector store providers.
+*   **llama-index-packs:** Ready-made templates developed by the community to kickstart applications.
+*   **llama-index-cli:** Supports the LlamaIndex command-line interface.
+*   **OTHERS:** Contains fine-tuning abstractions and experimental features.
+
+Each subfolder within `llama-index-integrations` and `llama-index-packs` represents an individual package that can be installed via pip. For example, to use `llama_index.llms.mistralai`, you must first install the `llama-index-llms-mistralai` package. The book will list necessary packages at the beginning of each chapter.
+
 = Part 2: Starting Your First LlamaIndex Project
 
 == Chapter 3: Kickstarting your Journey with LlamaIndex
@@ -121,3 +144,89 @@ This document discusses two methods for loading data into LlamaIndex for use in 
 
 1.  **SimpleDirectoryReader**: This is a simple and easy-to-use reader that can ingest multiple data formats (PDFs, Word docs, text files, CSVs) from a directory or a list of files. It automatically detects the file type and uses the appropriate reader to extract the content.
 2.  **LlamaParse**: This is a more advanced parsing service that is part of the LlamaCloud enterprise platform. It is designed for complex file formats and uses multi-modal capabilities and LLM intelligence to provide high-quality document parsing. It allows users to provide natural language instructions to guide the parsing process and offers a JSON output mode for structured data. It can be used in combination with `SimpleDirectoryReader` for bulk ingestion. It supports a wide range of file types and offers a free tier. It is a paid service, so users should review the privacy policy before submitting proprietary data.
+
+=== Parsing the documents into nodes
+
+==== Understanding the simple text splitters
+
+====
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_splitter_TokenTextSplitter.py" target="_blank">
+ch4/sample_splitter_TokenTextSplitter.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/run-llama/llama_index/blob/main/llama-index-core/llama_index/core/node_parser/text/token.py" target="_blank">
+llama-index-core/llama_index/core/node_parser/text/token.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_splitter_CodeSplitter.py" target="_blank">
+ch4/sample_splitter_CodeSplitter.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/run-llama/llama_index/blob/main/llama-index-core/llama_index/core/node_parser/text/code.py" target="_blank">
+llama-index-core/llama_index/core/node_parser/text/code.py</a>
+++++
+
+====
+
+This text discusses text splitters in LlamaIndex, which break down documents into smaller pieces at the raw text level. It provides code examples and explanations for three specific text splitters:
+
+1.  **SentenceSplitter:** Splits text while maintaining sentence boundaries, creating nodes containing groups of sentences.
+2.  **TokenTextSplitter:** Splits text at the token level, respecting sentence boundaries. Key parameters include `chunk_size` (max tokens per chunk), `chunk_overlap` (token overlap between chunks), `separator` (primary token boundary), and `backup_separators` (additional splitting points).
+3.  **CodeSplitter:** Designed for source code, splitting based on programming language using an abstract syntax tree (AST) to keep related statements together. Requires installing `tree_sitter` and `tree_sitter_languages`. Key parameters include `language` (programming language), `chunk_lines` (lines per chunk), `chunk_lines_overlap` (line overlap), and `max_chars` (max characters per chunk).
+
+
+==== Using more advanced node parsers
+
+====
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_SentenceWindowNodeParser.py" target="_blank">
+ch4/sample_parser_SentenceWindowNodeParser.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_LangchainNodeParser.py" target="_blank">
+ch4/sample_parser_LangchainNodeParser.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_SimpleFileNodeParser.py" target="_blank">
+ch4/sample_parser_SimpleFileNodeParser.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_HTMLNodeParser.py" target="_blank">
+ch4/sample_parser_HTMLNodeParser.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_MarkdownNodeParser.py" target="_blank">
+ch4/sample_parser_MarkdownNodeParser.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_parser_JSONNodeParser.py" target="_blank">
+ch4/sample_parser_JSONNodeParser.py</a>
+++++
+====
+
+This text discusses advanced tools in LlamaIndex for chunking text into nodes, focusing on `NodeParser` and its derived classes. Key aspects include:
+
+*   **NodeParser Basics:** All node parsers inherit from the `NodeParser` class, which allows customization of `include_metadata`, `Include_prev_next_rel`, and `Callback_manager`.
+*   **SentenceWindowNodeParser:** Splits text into sentences and includes a window of surrounding sentences in the metadata.
+*   **LangchainNodeParser:** Integrates Langchain text splitters into LlamaIndex.
+*   **SimpleFileNodeParser:** Automatically selects a node parser based on the file type.
+*   **HTMLNodeParser:** Parses HTML files using Beautiful Soup, converting them into nodes based on HTML tags.
+*   **MarkdownNodeParser:** Processes markdown text, creating nodes for each header and incorporating the header hierarchy into the metadata.
+*   **JSONNodeParser:** Processes structured data in JSON format.
