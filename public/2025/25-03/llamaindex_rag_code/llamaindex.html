@@ -448,6 +448,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_chapter_2_llamaindex_the_hidden_jewel_an_introduction_to_the_llamaindex_ecosystem">Chapter 2: LlamaIndex: The Hidden Jewel - An Introduction to the LlamaIndex Ecosystem</a>
 <ul class="sectlevel2">
+<li><a href="#_introducing_pits_our_llamaindex_hands_on_project">Introducing PITS – our LlamaIndex hands-on project</a></li>
 <li><a href="#_familiarizing_ourselves_with_the_structure_of_the_llamaindex_code_repository">Familiarizing ourselves with the structure of the LlamaIndex code repository</a></li>
 </ul>
 </li>
@@ -470,6 +471,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_how_does_this_actually_work_under_the_hood">How does this actually work under the hood?</a></li>
 </ul>
 </li>
+<li><a href="#_starting_our_pits_project_hands_on_exercise">Starting our PITS project – hands-on exercise</a></li>
 </ul>
 </li>
 <li><a href="#_chapter_4_ingesting_data_into_our_rag_workflow">Chapter 4: Ingesting Data into Our RAG Workflow</a>
@@ -517,6 +519,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect1">
 <h2 id="_chapter_2_llamaindex_the_hidden_jewel_an_introduction_to_the_llamaindex_ecosystem">Chapter 2: LlamaIndex: The Hidden Jewel - An Introduction to the LlamaIndex Ecosystem</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_introducing_pits_our_llamaindex_hands_on_project">Introducing PITS – our LlamaIndex hands-on project</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/tree/main/PITS_APP" target="_blank">
+PITS_APP</a>
+</div>
+</div>
+<div class="paragraph">
+<p>The author introduces PITS, an AI tutor built with LlamaIndex, designed to provide a personalized and interactive learning experience. Users can upload study materials, after which PITS will assess the user&#8217;s knowledge with a quiz and then create customized learning material, including slides and narration, divided into chapters. PITS will adapt to the user&#8217;s knowledge level, answer questions, and remember the conversation context across multiple sessions. LlamaIndex will be used to understand and index the study materials, while GPT-4 will power the teaching interactions.</p>
+</div>
+</div>
 <div class="sect2">
 <h3 id="_familiarizing_ourselves_with_the_structure_of_the_llamaindex_code_repository">Familiarizing ourselves with the structure of the LlamaIndex code repository</h3>
 <div class="exampleblock">
@@ -612,6 +626,73 @@ https://github.com/run-llama/llama_index</a>
 <div class="paragraph">
 <p>The <code>QueryEngine</code> in LlamaIndex retrieves relevant Nodes from an index using a retriever, which fetches and ranks them. A node postprocessor then transforms, re-ranks, or filters these Nodes. Finally, a response synthesizer formulates an LLM prompt with the query and Node context, generates a response, and post-processes it into a natural language answer. The <code>index.as_query_engine()</code> creates a complete query engine with default components. The overall process involves loading data, parsing it into Nodes, building an index, querying the index, and synthesizing a response. Different index types like <code>SummaryIndex</code>, <code>TreeIndex</code>, and <code>KeywordIndex</code> impact performance and use cases, and the index structure defines the data management logic.</p>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_starting_our_pits_project_hands_on_exercise">Starting our PITS project – hands-on exercise</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="PITS_APP/global_settings.py" target="_blank">
+PITS_APP/global_settings.py</a>
+<hr>
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/PITS_APP/session_functions.py" target="_blank">
+PITS_APP/session_functions.py</a>
+<hr>
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/PITS_APP/logging_functions.py" target="_blank">
+PITS_APP/logging_functions.py</a>
+</div>
+</div>
+<div class="paragraph">
+<p>The chapter introduces the hands-on development of the PITS project, emphasizing a modular code structure for clarity and ease of understanding. The project is built using Python and integrates with LlamaIndex, with a focus on creating a learning application. The author provides a disclaimer that the current implementation lacks certain features, such as authentication and error handling, which can be improved upon later.</p>
+</div>
+<div class="paragraph">
+<p>A detailed overview of the Python source code files is provided, including their functions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>app.py</strong>: Main entry point for the Streamlit app.</p>
+</li>
+<li>
+<p><strong>document_uploader.py</strong>: Manages document ingestion and indexing.</p>
+</li>
+<li>
+<p><strong>training_material_builder.py</strong>: Creates learning materials based on user knowledge.</p>
+</li>
+<li>
+<p><strong>training_interface.py</strong>: Displays teaching content and facilitates user interaction.</p>
+</li>
+<li>
+<p><strong>quiz_builder.py</strong>: Generates quizzes based on user knowledge.</p>
+</li>
+<li>
+<p><strong>quiz_interface.py</strong>: Administers quizzes and evaluates user performance.</p>
+</li>
+<li>
+<p><strong>conversation_engine.py</strong>: Manages user interactions and maintains conversational context.</p>
+</li>
+<li>
+<p><strong>storage_manager.py</strong>: Handles file operations for session states and user uploads.</p>
+</li>
+<li>
+<p><strong>session_functions.py</strong>: Manages session state saving, loading, and deletion.</p>
+</li>
+<li>
+<p><strong>logging_functions.py</strong>: Records user interactions and application events.</p>
+</li>
+<li>
+<p><strong>global_settings.py</strong>: Contains application configurations and settings.</p>
+</li>
+<li>
+<p><strong>user_onboarding.py</strong>: Manages user onboarding processes.</p>
+</li>
+<li>
+<p><strong>index_builder.py</strong>: Builds indexes for the application.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The chapter also highlights the importance of the YAML package for session management and provides installation instructions. It delves into the <code>global_settings.py</code>, <code>session_functions.py</code>, and <code>logging_functions.py</code> modules, explaining their roles in managing configurations, session states, and logging user actions, respectively. The author emphasizes the necessity of logging for debugging and monitoring the application. The chapter concludes with a promise of further coding in subsequent chapters.</p>
 </div>
 </div>
 </div>
@@ -793,7 +874,7 @@ ch4/sample_parser_JSONNodeParser.py</a>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-03-15 09:53:54 +0200
+Last updated 2025-03-18 23:08:46 +0200
 </div>
 </div>
 </body>

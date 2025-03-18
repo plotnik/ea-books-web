@@ -19,8 +19,7 @@ Literate Programs
    code_review.py
    doc_note.py
    up_file.py
-   cmp_props.py
-   pi_keys.py
+   epub_toc.py
    pom_csv.py
    exc_yaml.py
    exc_ui.py
@@ -32,5 +31,7 @@ Literate Programs
    google_search.py
    L1_Router_Engine.py
    llama_chat.py
+   cmp_props.py
+   pi_keys.py
    albums.py
 

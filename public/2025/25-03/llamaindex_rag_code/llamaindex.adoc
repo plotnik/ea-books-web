@@ -14,6 +14,17 @@ https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaI
 
 == Chapter 2: LlamaIndex: The Hidden Jewel - An Introduction to the LlamaIndex Ecosystem
 
+=== Introducing PITS – our LlamaIndex hands-on project
+
+====
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/tree/main/PITS_APP" target="_blank">
+PITS_APP</a>
+++++
+====
+
+The author introduces PITS, an AI tutor built with LlamaIndex, designed to provide a personalized and interactive learning experience. Users can upload study materials, after which PITS will assess the user's knowledge with a quiz and then create customized learning material, including slides and narration, divided into chapters. PITS will adapt to the user's knowledge level, answer questions, and remember the conversation context across multiple sessions. LlamaIndex will be used to understand and index the study materials, while GPT-4 will power the teaching interactions.
+
 === Familiarizing ourselves with the structure of the LlamaIndex code repository
 
 ====
@@ -88,6 +99,47 @@ The text discusses how to retrieve answers from an index using retrievers and re
 
 The `QueryEngine` in LlamaIndex retrieves relevant Nodes from an index using a retriever, which fetches and ranks them. A node postprocessor then transforms, re-ranks, or filters these Nodes. Finally, a response synthesizer formulates an LLM prompt with the query and Node context, generates a response, and post-processes it into a natural language answer. The `index.as_query_engine()` creates a complete query engine with default components. The overall process involves loading data, parsing it into Nodes, building an index, querying the index, and synthesizing a response. Different index types like `SummaryIndex`, `TreeIndex`, and `KeywordIndex` impact performance and use cases, and the index structure defines the data management logic.
 
+=== Starting our PITS project – hands-on exercise
+
+
+====
+++++
+<a href="PITS_APP/global_settings.py" target="_blank">
+PITS_APP/global_settings.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/PITS_APP/session_functions.py" target="_blank">
+PITS_APP/session_functions.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/PITS_APP/logging_functions.py" target="_blank">
+PITS_APP/logging_functions.py</a>
+++++
+====
+
+The chapter introduces the hands-on development of the PITS project, emphasizing a modular code structure for clarity and ease of understanding. The project is built using Python and integrates with LlamaIndex, with a focus on creating a learning application. The author provides a disclaimer that the current implementation lacks certain features, such as authentication and error handling, which can be improved upon later.
+
+A detailed overview of the Python source code files is provided, including their functions:
+
+- **app.py**: Main entry point for the Streamlit app.
+- **document_uploader.py**: Manages document ingestion and indexing.
+- **training_material_builder.py**: Creates learning materials based on user knowledge.
+- **training_interface.py**: Displays teaching content and facilitates user interaction.
+- **quiz_builder.py**: Generates quizzes based on user knowledge.
+- **quiz_interface.py**: Administers quizzes and evaluates user performance.
+- **conversation_engine.py**: Manages user interactions and maintains conversational context.
+- **storage_manager.py**: Handles file operations for session states and user uploads.
+- **session_functions.py**: Manages session state saving, loading, and deletion.
+- **logging_functions.py**: Records user interactions and application events.
+- **global_settings.py**: Contains application configurations and settings.
+- **user_onboarding.py**: Manages user onboarding processes.
+- **index_builder.py**: Builds indexes for the application.
+
+The chapter also highlights the importance of the YAML package for session management and provides installation instructions. It delves into the `global_settings.py`, `session_functions.py`, and `logging_functions.py` modules, explaining their roles in managing configurations, session states, and logging user actions, respectively. The author emphasizes the necessity of logging for debugging and monitoring the application. The chapter concludes with a promise of further coding in subsequent chapters.
 
 == Chapter 4: Ingesting Data into Our RAG Workflow
 
