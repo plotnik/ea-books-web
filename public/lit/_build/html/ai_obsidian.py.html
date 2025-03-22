@@ -95,7 +95,13 @@
 </pre></div>
 </div>
 <p>Select OpenAI LLM.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;gemma-3-27b-it&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gemini-2.0-flash-lite&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o&quot;</span>
+<span class="p">]</span>
 <span class="n">llm_temperatures</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 
 <span class="n">llm_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
@@ -206,9 +212,25 @@ so we have added a separate configuration for them.</p>
     <span class="n">count_tokens</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The prompt to summarize text.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
+<section id="prompts">
+<h2>Prompts<a class="headerlink" href="#prompts" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_summary</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
 <span class="s2">and your task is to summarize the content you are provided.&quot;&quot;&quot;</span>
+
+<span class="n">prompt_summary_2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
+<span class="s2">and your task is to summarize the key topics and entities you are provided.&quot;&quot;&quot;</span>
+
+<span class="n">prompt_questions</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You will be provided with context in markdown,</span>
+<span class="s2">and your task is to generate 3 questions this context can provide</span>
+<span class="s2">specific answers to which are unlikely to be found elsewhere.</span>
+
+<span class="s2">Higher-level summaries of surrounding context may be provided</span>
+<span class="s2">as well. Try using these summaries to generate better questions</span>
+<span class="s2">that this context can answer.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_summary</span>
 </pre></div>
 </div>
 <p>Call OpenAI API.</p>
@@ -245,12 +267,27 @@ so we have added a separate configuration for them.</p>
             <span class="n">temperature</span><span class="o">=</span><span class="n">llm_temperature</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">call_gemma</span><span class="p">():</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&lt;prompt&gt;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&lt;/prompt&gt;</span><span class="se">\n</span><span class="s2">&lt;query&gt;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&lt;/query&gt;&quot;</span><span class="p">},</span>
+    <span class="p">]</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">g_client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">messages</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Click button.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Summarize&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<p>Buttons.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call_llm</span><span class="p">():</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemini&quot;</span><span class="p">):</span>
         <span class="n">choice</span> <span class="o">=</span> <span class="n">call_gemini</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemma&quot;</span><span class="p">):</span>
+        <span class="n">choice</span> <span class="o">=</span> <span class="n">call_gemma</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">choice</span> <span class="o">=</span> <span class="n">call_openai</span><span class="p">()</span>
 
@@ -270,10 +307,23 @@ so we have added a separate configuration for them.</p>
     <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">out_text</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
 
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Summarize&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_summary</span>
+    <span class="n">call_llm</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Ask questions&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_questions</span>
+    <span class="n">call_llm</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Summarize v.2&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_summary_2</span>
+    <span class="n">call_llm</span><span class="p">()</span>
+
 <span class="k">if</span> <span class="s2">&quot;openai_result&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Copy to clipboard&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
 </section>
 
 
@@ -305,8 +355,13 @@ so we have added a separate configuration for them.</p>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Obsidian-AI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Obsidian-AI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prompts">Prompts</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="li_extract.py.html">LlamaIndex Extractors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
 <li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
@@ -323,7 +378,6 @@ so we have added a separate configuration for them.</p>
 <li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
-<li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
 <li class="toctree-l1"><a class="reference internal" href="llama_chat.py.html">LLama Chat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>

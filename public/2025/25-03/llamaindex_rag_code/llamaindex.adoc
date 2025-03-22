@@ -104,7 +104,7 @@ The `QueryEngine` in LlamaIndex retrieves relevant Nodes from an index using a r
 
 ====
 ++++
-<a href="PITS_APP/global_settings.py" target="_blank">
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/PITS_APP/global_settings.py" target="_blank">
 PITS_APP/global_settings.py</a>
 ++++
 
@@ -282,3 +282,31 @@ This text discusses advanced tools in LlamaIndex for chunking text into nodes, f
 *   **HTMLNodeParser:** Parses HTML files using Beautiful Soup, converting them into nodes based on HTML tags.
 *   **MarkdownNodeParser:** Processes markdown text, creating nodes for each header and incorporating the header hierarchy into the metadata.
 *   **JSONNodeParser:** Processes structured data in JSON format.
+
+==== Practical ways of using these node creation models
+
+The provided text outlines three main ways to implement node parsers or text splitters in LlamaIndex:
+
+1.  **Standalone Usage:** Directly calling `get_nodes_from_documents()` on a parser instance. This allows for explicit control and inspection of the generated nodes and their metadata.
+2.  **Configuring in `Settings`:** Setting a custom `text_splitter` in `Settings` makes it the default for all subsequent operations that rely on text splitting.
+3.  **Ingestion Pipeline:** Defining the parser as a transformation step within an ingestion pipeline, which is a structured process for data ingestion. This will be explained later in the chapter.
+
+=== Working with metadata to improve the context
+
+====
+++++
+<a href="https://github.com/run-llama/llama_index/blob/main/llama-index-core/llama_index/core/extractors/metadata_extractors.py" target="_blank">
+llama-index-core/llama_index/core/extractors/metadata_extractors.py</a>
+++++
+====
+
+==== SummaryExtractor
+
+====
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_extractor_SummaryExtractor.py" target="_blank">
+ch4/sample_extractor_SummaryExtractor.py</a>
+++++
+====
+
+The `SummaryExtractor` in LlamaIndex generates concise summaries of nodes and their adjacent nodes ("prev", "self", "next"). This is useful in RAG architectures to improve retrieval by allowing search to consider summaries instead of full document content.  It can be customized by specifying which summaries to generate and defining a custom prompt template. A practical use case is summarizing customer support issues and resolutions to quickly retrieve relevant past cases for new support requests.

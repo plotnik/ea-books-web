@@ -46,7 +46,13 @@ Select OpenAI LLM.
 
 ::
 
-  llm_models = ["gemini-2.0-flash", "gpt-4o-mini", "gpt-4o"]
+  llm_models = [
+      "gemma-3-27b-it",
+      "gemini-2.0-flash", 
+      "gemini-2.0-flash-lite",
+      "gpt-4o-mini", 
+      "gpt-4o"
+  ]
   llm_temperatures = [0, 0.1, 0.7, 1]
 
   llm_model = st.sidebar.selectbox(
@@ -168,12 +174,28 @@ so we have added a separate configuration for them.
   if llm_model.startswith("gpt-") or llm_model.startswith("o-"):
       count_tokens()
  
-The prompt to summarize text.
+Prompts
+-------
 
 ::
 
-  prompt = """You will be provided with statements in markdown, 
+  prompt_summary = """You will be provided with statements in markdown, 
   and your task is to summarize the content you are provided."""
+
+  prompt_summary_2 = """You will be provided with statements in markdown, 
+  and your task is to summarize the key topics and entities you are provided."""
+
+  prompt_questions = """
+  You will be provided with context in markdown, 
+  and your task is to generate 3 questions this context can provide 
+  specific answers to which are unlikely to be found elsewhere.
+
+  Higher-level summaries of surrounding context may be provided 
+  as well. Try using these summaries to generate better questions 
+  that this context can answer.
+  """
+
+  prompt = prompt_summary
 
 Call OpenAI API.
 
@@ -215,13 +237,28 @@ Call Gemini.
           )
       return response.choices[0]
     
-Click button.
+  def call_gemma():
+      messages = [
+          {"role": "user", "content": f"<prompt>{prompt}</prompt>\n<query>{text}</query>"},
+      ]
+      response = g_client.chat.completions.create(
+              model=llm_model,
+              messages=messages
+          )
+      return response.choices[0]
+    
+Buttons.
 
 ::
 
-  if st.sidebar.button('Summarize', type='primary', use_container_width=True):
+  def call_llm():
+      st.write(prompt)
+      st.write('---')
+    
       if llm_model.startswith("gemini"):
           choice = call_gemini()
+      elif llm_model.startswith("gemma"): 
+          choice = call_gemma()
       else:
           choice = call_openai()
         
@@ -240,6 +277,18 @@ Click button.
     
       pyperclip.copy(out_text)
       st.write(f'Copied to clipboard')
+    
+  if st.sidebar.button('Summarize', type='primary', use_container_width=True):
+      prompt = prompt_summary
+      call_llm()
+
+  if st.sidebar.button('Ask questions', use_container_width=True):
+      prompt = prompt_questions
+      call_llm()
+    
+  if st.sidebar.button('Summarize v.2', use_container_width=True):
+      prompt = prompt_summary_2
+      call_llm()
     
   if "openai_result" in st.session_state and st.button('Copy to clipboard', use_container_width=True):
       pyperclip.copy(st.session_state.openai_result)

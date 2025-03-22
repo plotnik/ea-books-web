@@ -489,6 +489,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel3">
 <li><a href="#_understanding_the_simple_text_splitters">Understanding the simple text splitters</a></li>
 <li><a href="#_using_more_advanced_node_parsers">Using more advanced node parsers</a></li>
+<li><a href="#_practical_ways_of_using_these_node_creation_models">Practical ways of using these node creation models</a></li>
+</ul>
+</li>
+<li><a href="#_working_with_metadata_to_improve_the_context">Working with metadata to improve the context</a>
+<ul class="sectlevel3">
+<li><a href="#_summaryextractor">SummaryExtractor</a></li>
 </ul>
 </li>
 </ul>
@@ -632,7 +638,7 @@ https://github.com/run-llama/llama_index</a>
 <h3 id="_starting_our_pits_project_hands_on_exercise">Starting our PITS project – hands-on exercise</h3>
 <div class="exampleblock">
 <div class="content">
-<a href="PITS_APP/global_settings.py" target="_blank">
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/PITS_APP/global_settings.py" target="_blank">
 PITS_APP/global_settings.py</a>
 <hr>
 <a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/PITS_APP/session_functions.py" target="_blank">
@@ -868,13 +874,53 @@ ch4/sample_parser_JSONNodeParser.py</a>
 </ul>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_practical_ways_of_using_these_node_creation_models">Practical ways of using these node creation models</h4>
+<div class="paragraph">
+<p>The provided text outlines three main ways to implement node parsers or text splitters in LlamaIndex:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Standalone Usage:</strong> Directly calling <code>get_nodes_from_documents()</code> on a parser instance. This allows for explicit control and inspection of the generated nodes and their metadata.</p>
+</li>
+<li>
+<p><strong>Configuring in <code>Settings</code>:</strong> Setting a custom <code>text_splitter</code> in <code>Settings</code> makes it the default for all subsequent operations that rely on text splitting.</p>
+</li>
+<li>
+<p><strong>Ingestion Pipeline:</strong> Defining the parser as a transformation step within an ingestion pipeline, which is a structured process for data ingestion. This will be explained later in the chapter.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_working_with_metadata_to_improve_the_context">Working with metadata to improve the context</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/run-llama/llama_index/blob/main/llama-index-core/llama_index/core/extractors/metadata_extractors.py" target="_blank">
+llama-index-core/llama_index/core/extractors/metadata_extractors.py</a>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_summaryextractor">SummaryExtractor</h4>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch4/sample_extractor_SummaryExtractor.py" target="_blank">
+ch4/sample_extractor_SummaryExtractor.py</a>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>SummaryExtractor</code> in LlamaIndex generates concise summaries of nodes and their adjacent nodes ("prev", "self", "next"). This is useful in RAG architectures to improve retrieval by allowing search to consider summaries instead of full document content.  It can be customized by specifying which summaries to generate and defining a custom prompt template. A practical use case is summarizing customer support issues and resolutions to quickly retrieve relevant past cases for new support requests.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-03-18 23:08:46 +0200
+Last updated 2025-03-22 12:09:02 +0200
 </div>
 </div>
 </body>
