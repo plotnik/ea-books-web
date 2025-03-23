@@ -193,6 +193,7 @@ model_type = st.sidebar.radio("Model Type", ["Gemini", "OpenAI", "Ollama"])
 if model_type=="Gemini":    
     llm_models = [
         "gemini-2.0-flash", 
+        "gemma-3-27b-it",
     ]
 elif model_type=="OpenAI":    
     llm_models = [
@@ -365,7 +366,25 @@ def call_gemini(prompt, text):
             temperature=llm_temperature,
         )
     return response.choices[0]
-   
+    
+def call_gemma(prompt, text):
+    g_key = os.getenv("GEMINI_API_KEY")
+    g_client = OpenAI(
+        api_key=g_key,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+    )    
+    messages = [
+        {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
+        #{"role": "developer", "content": prompt},
+        {"role": "user", "content": text},
+    ]
+    response = g_client.chat.completions.create(
+            model=openai_model,
+            messages=messages,
+            temperature=llm_temperature,
+        )
+    return response.choices[0]
+    
 # When the user clicks a button to call OpenAI:
 #
 # - The application sends the selected prompt and user input to the OpenAI API.
@@ -396,7 +415,10 @@ if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_contain
 
     elif openai_model.startswith("gemini"): 
         response = call_gemini(prompt, text)
-
+        
+    elif openai_model.startswith("gemma"): 
+        response = call_gemma(prompt, text)
+        
     elif openai_model.startswith("ollama "): 
         response = call_ollama(prompt, text)
 

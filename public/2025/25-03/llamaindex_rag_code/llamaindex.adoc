@@ -10,7 +10,7 @@ GitHub::
 https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex
 ====
 
-= Part 1: Introduction to Generative AI and LlamaIndex
+== Part 1: Introduction to Generative AI and LlamaIndex
 
 == Chapter 2: LlamaIndex: The Hidden Jewel - An Introduction to the LlamaIndex Ecosystem
 
@@ -44,7 +44,7 @@ The LlamaIndex framework's code, reorganized for modularity and efficiency, is s
 
 Each subfolder within `llama-index-integrations` and `llama-index-packs` represents an individual package that can be installed via pip. For example, to use `llama_index.llms.mistralai`, you must first install the `llama-index-llms-mistralai` package. The book will list necessary packages at the beginning of each chapter.
 
-= Part 2: Starting Your First LlamaIndex Project
+== Part 2: Starting Your First LlamaIndex Project
 
 == Chapter 3: Kickstarting your Journey with LlamaIndex
 
@@ -310,3 +310,255 @@ ch4/sample_extractor_SummaryExtractor.py</a>
 ====
 
 The `SummaryExtractor` in LlamaIndex generates concise summaries of nodes and their adjacent nodes ("prev", "self", "next"). This is useful in RAG architectures to improve retrieval by allowing search to consider summaries instead of full document content.  It can be customized by specifying which summaries to generate and defining a custom prompt template. A practical use case is summarizing customer support issues and resolutions to quickly retrieve relevant past cases for new support requests.
+
+==== QuestionsAnsweredExtractor
+
+The `QuestionsAnsweredExtractor` in LlamaIndex generates a specified number of questions that a given text node can answer. This helps focus retrieval on nodes directly addressing specific inquiries, making it useful for applications like FAQ systems. 
+
+Key features include:
+
+*   **Customizable Question Count:** You can control how many questions are generated.
+*   **Prompt Customization:** The prompt used to generate questions can be modified via the `prompt_template` parameter.
+*   **Embedding Option:**  The `embedding_only` parameter allows controlling whether the generated metadata is used solely for embeddings.
+
+
+=== Estimating the potential cost of using metadata extractors
+
+==== Estimate your maximal costs before running the actual extractors
+
+This section explains how to estimate LLM costs before running extractors on a real LLM using LlamaIndex tools.
+
+1.  **MockLLM:** A stand-in LLM that simulates LLM behavior locally without API calls. It uses a `max_tokens` parameter to mimic token generation limits for cost prediction. The actual cost will likely be lower than the `max_tokens` value.
+2.  **CallbackManager and TokenCountingHandler:** `CallbackManager` is a debugging tool, used here with `TokenCountingHandler` to count tokens used in LLM operations.
+3.  **Tokenizer:** Converts text into tokens for LLMs. It's crucial to use a tokenizer compatible with the specific LLM for accurate cost predictions. LlamaIndex defaults to `CL100K` (GPT-4 tokenizer) but can be customized.
+4.  **Workflow:** The extractor uses `MockLLM` locally. `TokenCountingHandler` intercepts the prompt and response to count tokens.
+5.  **Multiple Extractors:** Use `token_counter.reset_counts()` to estimate costs for multiple extractors individually in the same run.
+6.  **Key Takeaway:** Metadata extraction costs should be estimated and optimized to avoid high operating costs.
+
+
+=== Hands-on – ingesting study materials into our PITS
+
+====
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/PITS_APP/document_uploader.py" target="_blank">
+PITS_APP/document_uploader.py</a>
+++++
+====
+
+This text details the creation of a `document_uploader.py` module designed to ingest and prepare study materials for a tutoring project. Here's a summary:
+
+* **Purpose:** The module handles uploading books, documentation, and articles to provide context for the tutor.
+* **Key Function: `ingest_documents()`** This function is the core of the module. It:
+    * **Loads Documents:** Reads files from a designated `STORAGE_PATH` (defined in `global_settings.py`).
+    * **Logs Uploads:** Records each uploaded file using a logging function.
+    * **Utilizes Caching:** Checks for a pre-existing cache file (`CACHE_FILE`) to speed up processing. If found, it uses the cached data; otherwise, it processes the documents from scratch.
+    * **Ingestion Pipeline:** Employs an `IngestionPipeline` with three transformations:
+        * **TokenTextSplitter:**  Splits documents into chunks.
+        * **SummaryExtractor:** Summarizes each chunk.
+        * **OpenAIEmbedding:** Generates embeddings (explained in a later chapter).
+    * **Saves Cache:**  Persists the processed data to the cache file for future use.
+    * **Returns Nodes:** Returns the processed data as "nodes."
+
+The module aims to streamline document processing and improve efficiency through caching, preparing the study materials for indexing in the next step of the project.
+
+== Chapter 5: Indexing with LlamaIndex
+
+=== Indexing data – a bird’s-eye view
+
+==== Common features of all Index types
+
+LlamaIndex's index types share common features inherited from the `BaseIndex` class, allowing for customization across all index types. These shared features include:
+
+*   **Nodes:** Indexes are built upon nodes, which can be customized and dynamically updated through insertion and deletion. Indexes can be built from pre-existing nodes or from documents, with settings available to customize underlying mechanics.
+*   **Storage Context:** This defines how and where data is stored, crucial for efficient data management.
+*   **Progress Display:** The `show_progress` option uses `tqdm` to display progress bars for long operations.
+*   **Retrieval Modes:** Indexes offer pre-defined retrieval modes and customizable Retriever classes for query processing.
+*   **Asynchronous Operations:** The `use_async` parameter enables asynchronous processing for performance optimization.
+
+Indexing may involve LLM calls, potentially raising cost and privacy concerns.
+
+=== Understanding the VectorStoreIndex
+
+==== A simple usage example for the VectorStoreIndex
+
+The `VectorStoreIndex` in LlamaIndex provides a simple way to ingest documents and make them searchable. It automatically handles node parsing (breaking down documents into chunks) using default or customizable parameters like chunk size and overlap. 
+
+Here's a breakdown of the process:
+
+1. **Ingestion:** Documents are loaded using `SimpleDirectoryReader`.
+2. **Node Creation:** Documents are split into nodes (chunks of text).
+3. **Embedding:** These nodes are converted into high-dimensional vectors using a language model.
+4. **Storage:** The vectors are stored in a vector store.
+5. **Querying:**  Incoming queries are also embedded, and their similarity to the stored vectors is calculated using cosine similarity.
+6. **Retrieval:** The most similar vectors (and their corresponding document chunks) are returned as the query result.
+
+**Key Parameters:**
+
+*   `use_async`: Enables asynchronous calls (default: `False`).
+*   `show_progress`: Displays progress bars during index construction (default: `False`).
+*   `store_nodes_override`: Forces storage of Node objects (default: `False`).
+
+The index utilizes **fixed-size chunking** by default, but performance can be optimized by testing different chunk sizes. The core strength of this index lies in its ability to perform **semantic search** by leveraging vector similarity.
+
+==== Understanding embeddings
+
+Vector embeddings are a way to translate data (text, images, sounds, etc.) into a numerical format that Large Language Models (LLMs) can understand. Think of them as converting information into a "standard language" for the LLM. 
+
+Here's a breakdown of the key ideas:
+
+* **Numerical Representation:** Embeddings represent data as lists of numbers (vectors). These numbers capture the *meaning* of the data.
+* **Semantic Understanding:**  LLMs use these numbers to understand relationships between concepts – like synonyms or different meanings of the same word (e.g., "bank" as a riverbank vs. a financial institution).
+* **Similarity Search:** Embeddings allow LLMs to find data that is *similar* in meaning. This is done by calculating the "distance" between vectors.  A process called "top-k similarity search" finds the *k* most similar pieces of data.
+* **Context is Key:** The size of the text chunks used to create embeddings matters. Too small, and context is lost; too large, and meaning can be diluted.
+
+
+
+Essentially, vector embeddings allow LLMs to "see" and "think" about data in a structured way, enabling them to process information and generate relevant responses. They are fundamental to how LLMs work with and understand the world around them.
+
+==== Understanding similarity search
+
+This text discusses the importance of **similarity search** in machine learning, particularly with the rise of **embeddings** which capture semantic meaning in vector form. Identifying similar vectors allows machines to understand relationships in data and is crucial for applications like recommendation systems and information retrieval.
+
+The document focuses on three methods LlamaIndex uses to measure vector similarity:
+
+*   **Cosine Similarity:** Measures the angle between two vectors – a smaller angle indicates higher similarity. It's less sensitive to vector length and is the default method in LlamaIndex.
+*   **Dot Product:** Calculates similarity based on the alignment and length of vectors. Higher values indicate greater similarity, but it *is* sensitive to vector length, potentially biasing results towards longer documents.
+*   **Euclidean Distance:** Measures the actual distance between vector values, useful when vector dimensions represent real-world measurements.
+
+The key difference lies in how each method approaches similarity: cosine similarity and dot product focus on *direction*, while Euclidean distance focuses on *magnitude/distance*. Understanding these differences is important for choosing the right method for a specific Retrieval-Augmented Generation (RAG) scenario. 
+
+==== OK, but how does LlamaIndex generate these embeddings?
+
+LlamaIndex defaults to using OpenAI’s `text-embedding-ada-002` model for creating text embeddings, which are crucial for tasks like semantic search. However, it offers flexibility to use alternative models due to cost, privacy, or specialization needs. 
+
+**Key takeaways:**
+
+* **Alternatives to OpenAI:** LlamaIndex supports various embedding models beyond OpenAI, including local models and those from other providers.
+* **Hugging Face Integration:**  A popular option is using models from **Hugging Face**, a community-driven platform for AI models (particularly in NLP).  The `llama-index-embeddings-huggingface` package enables this, with `BAAI/bge-small-en-v1.5` as a well-balanced default local model.
+* **Custom Models:** Advanced users can create and integrate their own custom embedding models by extending LlamaIndex’s `BaseEmbedding` class.
+* **Further Integrations:** LlamaIndex also integrates with Langchain, Azure, CohereAI, and other providers, expanding the range of available embedding models. 
+
+In essence, LlamaIndex provides a versatile system for handling text embeddings, allowing users to choose the model that best fits their requirements and constraints.
+
+==== How do I decide which embedding model I should use?
+
+Choosing the right embedding model is crucial for a successful Retrieval-Augmented Generation (RAG) application, impacting performance, quality, and cost. Key considerations include:
+
+* **Performance:** Both qualitative (semantic understanding, domain specificity) and quantitative (semantic similarity, benchmarks like **MTEB Leaderboard** - <https://huggingface.co/spaces/mteb/leaderboard> are important.
+* **Speed & Efficiency:** Latency and throughput matter for real-time applications, as queries need to be embedded quickly. Consider input chunk size limitations.
+* **Language Support:** Choose a model that supports the languages your application requires.
+* **Resources & Cost:** Balance embedding accuracy with computational costs, storage, and API usage fees.
+* **Accessibility:** Consider availability (API vs. local install) and ease of integration.
+* **Privacy & Connectivity:** Local models offer privacy and offline functionality.
+
+**LlamaIndex** offers flexibility and supports many embedding models (see <https://docs.llamaindex.ai/en/stable/module_guides/models/embeddings.html#list-of-supported-embeddings>. 
+
+While **OpenAI’s `text-embedding-ada-002`** is a good default choice, benchmarking different models is recommended to optimize for specific application needs. Resources like <https://blog.getzep.com/text-embedding-latency-a-semi-scientific-look/> can help evaluate model performance.
+
+=== Persisting and reusing Indexes
+
+====
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch5/sample_persist.py" target="_blank">
+ch5/sample_persist.py</a>
+++++
+
+---
+++++
+<a href="https://github.com/PacktPublishing/Building-Data-Driven-Applications-with-LlamaIndex/blob/main/ch5/sample_persist_reload.py" target="_blank">
+ch5/sample_persist_reload.py</a>
+++++
+====
+
+This text discusses the importance of storing vector embeddings generated by LlamaIndex to avoid redundant computation and ensure consistent query results. Here's a summary:
+
+* **Why persist embeddings?** Re-embedding documents is computationally expensive and slow. Storing embeddings allows for faster processing, lower costs, and consistent query accuracy.
+* **Vector Stores in LlamaIndex:** LlamaIndex uses vector stores for efficient storage and retrieval of these embeddings. It defaults to in-memory storage, but offers persistence via the `.persist()` method.
+* **How to persist and load:**
+    *  Use `index.storage_context.persist(persist_dir="index_cache")` to save the index data to disk.
+    *  Use `StorageContext.from_defaults()` and `load_index_from_storage()` to reload the index from the saved directory in future sessions, avoiding re-indexing.
+
+In essence, the text explains how to save and reload LlamaIndex indexes to disk for efficiency and consistency.
+
+==== Understanding the StorageContext
+
+The `StorageContext` in LlamaIndex is a central component for managing data storage during indexing and querying. It encompasses four key stores:
+
+*   **Document Store:** Stores documents locally in `docstore.json`.
+*   **Index Store:** Stores index structures locally in `index_store.json`.
+*   **Vector Stores:** Manages multiple vector stores (locally in `vector_store.json` by default).
+*   **Graph Store:** Stores graph data structures in `graph_store.json`.
+
+LlamaIndex automatically creates these local storage files when using the `persist()` method, but allows for custom persistence locations.  
+
+While basic local stores are provided, the `StorageContext` is designed to be flexible, supporting integrations with more robust solutions like AWS S3, Pinecone, and MongoDB.
+
+The example demonstrates customizing vector storage using **ChromaDB**:
+
+1.  Install `chromadb` via pip.
+2.  Initialize a Chroma client and create a collection (`my_chroma_store`).
+3.  Create a `ChromaVectorStore` instance linked to the Chroma collection.
+4.  Integrate the `ChromaVectorStore` into the `StorageContext`.
+5.  Build an index using the customized `StorageContext`.
+
+This approach simplifies working with vector databases, abstracting away complexity and allowing developers to focus on application logic.  LlamaIndex offers a scalable solution, ranging from simple in-memory storage to cloud-hosted databases, with easy component swapping.
+
+=== Exploring other index types in LlamaIndex
+
+==== The SummaryIndex
+
+The `SummaryIndex` is a simple and efficient indexing method in LlamaIndex, differing from the `VectorStoreIndex` by storing data in a sequential list of nodes *without* using embeddings or a vector store. This makes it faster and less resource-intensive. 
+
+**Key features and use cases:**
+
+* **Simple Structure:** Data is stored as a list of chunks from ingested documents.
+* **No LLM or Embeddings:** Operates locally without requiring large language models or embedding models during indexing.
+* **Linear Scan:**  Retrieval involves scanning the list sequentially for relevant information.
+* **Suitable for:** Documentation search, scenarios with resource constraints, or when complex semantic search isn't necessary.
+* **Usage:** Easily created using `SummaryIndex.from_documents()`.
+* **Refinement Process:** Uses a "create and refine" approach during queries, building an initial response and then refining it with additional context.
+* **Retrievers:** Compatible with different retrievers (`SummaryIndexRetriever`, `SummaryIndexEmbeddingRetriever`, `SummaryIndexLLMRetriever`) for varied search mechanisms.
+
+
+
+In essence, the `SummaryIndex` provides a straightforward way to index and search data when speed and simplicity are prioritized over complex semantic understanding.
+
+==== The DocumentSummaryIndex
+
+The `DocumentSummaryIndex` is a specialized indexing tool within LlamaIndex designed for efficient document retrieval, particularly useful for large datasets where quick access to specific documents is needed. 
+
+**Key Features & Functionality:**
+
+* **Summarization:** It works by summarizing each document and linking these summaries to the document's underlying nodes.
+* **Efficient Retrieval:**  These summaries act as a quick filter, identifying relevant documents before deeper analysis.
+* **Use Case:** Ideal for knowledge management systems within organizations dealing with extensive documentation (reports, policies, manuals, etc.). It avoids issues with embedding-based retrieval on entire datasets with similar text chunks.
+* **Customization:** Offers parameters to control:
+    * `response_synthesizer`:  How summaries are generated.
+    * `summary_query`: The prompt used for summarization.
+    * `show_progress`: Display progress bars during indexing.
+    * `embed_summaries`:  Embed summaries for similarity-based searches (default is `True`).
+* **Retrieval Methods:** Supports both embedding-based and LLM-based retrievers.
+
+**Basic Usage:**
+
+Creating a `DocumentSummaryIndex` involves loading documents, summarizing them, and associating the summaries with the document nodes.  The `get_document_summary()` method allows access to the generated summaries for individual documents. 
+
+In essence, the `DocumentSummaryIndex` prioritizes speed and relevance by leveraging document summaries to narrow the search space, making it a valuable tool for specific retrieval scenarios.
+
+==== The KeywordTableIndex
+
+The `KeywordTableIndex` in LlamaIndex is an efficient index structure designed for rapid, targeted factual lookup based on keyword matching. It functions similarly to a glossary, creating a keyword-to-node mapping for quick retrieval of relevant information. 
+
+**Key Features:**
+
+* **Keyword-Based:**  Instead of relying on complex embedding spaces, it uses a straightforward keyword table.
+* **Efficient Search:** Enables fast retrieval by directly matching keywords in queries to those in the index.
+* **Customizable:** Offers parameters like `keyword_extract_template` (for prompt customization), `max_keywords_per_chunk` (to manage table size), and `use_async` (for performance).
+* **Keyword Extraction:**  Extracts keywords from documents using an LLM and a defined prompt, linking them to the source text chunks.
+* **Retrieval Modes:** Supports simple keyword matching, RAKE, and LLM-based keyword extraction/matching.
+* **Alternatives:** Offers `SimpleKeywordTableIndex` (regex-based) and `RAKEKeywordTableIndex` (using `rake_nltk`) as LLM-free options.
+* **Create and Refine:** Like `SummaryIndex`, it uses a create and refine approach for final response synthesis.
+
+
+
+The index is particularly useful when precise keyword matching is crucial, and provides a versatile tool for applications requiring keyword precision.  A simple example demonstrates its ease of use, automatically extracting keywords and setting up the retrieval system.

@@ -42,6 +42,39 @@ Print banner.
 
   print_banner()
 
+Prompts
+-------
+
+::
+
+  prompt_summary = """You will be provided with statements in markdown, 
+  and your task is to summarize the content you are provided."""
+
+  prompt_summary_v2 = """You will be provided with statements in markdown, 
+  and your task is to summarize the key topics and entities you are provided."""
+
+  prompt_questions = """
+  You will be provided with context in markdown, 
+  and your task is to generate 3 questions this context can provide 
+  specific answers to which are unlikely to be found elsewhere.
+
+  Higher-level summaries of surrounding context may be provided 
+  as well. Try using these summaries to generate better questions 
+  that this context can answer.
+  """
+
+  prompt_questions_v2 = """
+  Given the provided context, generate 3 highly specific questions that:
+
+  - Can be answered precisely using only this context.
+  - Are unlikely to have answers easily found elsewhere.
+  - Benefit from any provided higher-level summaries of surrounding context.
+
+  Prioritize specificity and uniqueness in each question.
+  """
+
+  prompt = prompt_summary
+
 Select OpenAI LLM.
 
 ::
@@ -174,28 +207,6 @@ so we have added a separate configuration for them.
   if llm_model.startswith("gpt-") or llm_model.startswith("o-"):
       count_tokens()
  
-Prompts
--------
-
-::
-
-  prompt_summary = """You will be provided with statements in markdown, 
-  and your task is to summarize the content you are provided."""
-
-  prompt_summary_2 = """You will be provided with statements in markdown, 
-  and your task is to summarize the key topics and entities you are provided."""
-
-  prompt_questions = """
-  You will be provided with context in markdown, 
-  and your task is to generate 3 questions this context can provide 
-  specific answers to which are unlikely to be found elsewhere.
-
-  Higher-level summaries of surrounding context may be provided 
-  as well. Try using these summaries to generate better questions 
-  that this context can answer.
-  """
-
-  prompt = prompt_summary
 
 Call OpenAI API.
 
@@ -252,8 +263,8 @@ Buttons.
 ::
 
   def call_llm():
-      st.write(prompt)
-      st.write('---')
+      st.write('')
+      st.info(prompt, icon="🤔")
     
       if llm_model.startswith("gemini"):
           choice = call_gemini()
@@ -286,8 +297,14 @@ Buttons.
       prompt = prompt_questions
       call_llm()
     
-  if st.sidebar.button('Summarize v.2', use_container_width=True):
-      prompt = prompt_summary_2
+  st.sidebar.write('---')
+
+  if st.sidebar.button(f' `Summarize` {"&nbsp;"*8} :test_tube: `v.2`'):
+      prompt = prompt_summary_v2
+      call_llm()
+    
+  if st.sidebar.button(f'`Ask questions` :test_tube: `v.2`'):
+      prompt = prompt_questions_v2
       call_llm()
     
   if "openai_result" in st.session_state and st.button('Copy to clipboard', use_container_width=True):
