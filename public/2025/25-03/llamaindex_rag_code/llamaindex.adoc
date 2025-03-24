@@ -562,3 +562,120 @@ The `KeywordTableIndex` in LlamaIndex is an efficient index structure designed f
 
 
 The index is particularly useful when precise keyword matching is crucial, and provides a versatile tool for applications requiring keyword precision.  A simple example demonstrates its ease of use, automatically extracting keywords and setting up the retrieval system.
+
+==== The TreeIndex
+
+The `TreeIndex` is a hierarchical data structure within LlamaIndex designed for efficient information organization and retrieval, particularly useful for complex datasets. Unlike a flat index, it organizes data in a tree format where each node summarizes its children, created recursively using LLMs and customizable summarization prompts. 
+
+**Key Features & Parameters:**
+
+*   **Hierarchical Structure:** Data is organized in a tree, allowing for abstraction and efficient querying.
+*   **Customizable Parameters:**
+    *   `summary_template`: Prompt for summarization during index construction.
+    *   `insert_prompt`: Prompt for integrating new nodes into the tree.
+    *   `num_children`: Maximum number of child nodes per node (default is 10).
+    *   `build_tree`:  Determines if the tree is built during index construction or query time.
+    *   `use_async`: Enables asynchronous operation for faster processing of large datasets.
+*   **Retrieval Modes:** Offers various retrieval strategies including `TreeSelectLeafRetriever`, `TreeSelectLeafEmbeddingRetriever`, `TreeRootRetriever`, and `TreeAllLeafRetriever`.
+*   **Query Process:** Queries traverse the tree, identifying relevant keywords in node summaries to pinpoint relevant leaf nodes.
+
+**Usage:**
+
+The `TreeIndex` is created from documents and used with a query engine to retrieve information. A simple example demonstrates loading documents and querying the index.
+
+**Drawbacks:**
+
+While powerful, `TreeIndex` has potential drawbacks:
+
+*   **Increased Computation:** Building and maintaining the tree is computationally intensive.
+*   **Recursive Retrieval:** Querying involves recursive tree traversal, which can be slow.
+*   **Summarization Overhead:** Summarizing nodes adds to the processing cost.
+*   **Storage Requirements:** Requires more storage than flat indexes.
+*   **Maintenance:** Updates and insertions can be complex.
+
+**Overall:**
+
+The `TreeIndex` is a valuable tool for RAG applications dealing with large, complex datasets where context and relationships are important. However, its computational and storage costs should be carefully considered against the benefits of improved retrieval performance. It excels in scenarios needing efficient, context-aware retrieval, particularly within organizations managing hierarchical data.
+
+==== The KnowledgeGraphIndex
+
+The `KnowledgeGraphIndex` in LlamaIndex is a tool for enhancing query processing by building a **knowledge graph (KG)** from text data. It primarily uses an LLM to extract **triplets** (subject-predicate-object) from text, but allows for custom extraction functions. 
+
+**Key Features & Benefits:**
+
+*   **Relationship Focus:** Excels at understanding complex relationships between entities and concepts, providing context-aware responses. Ideal for multifaceted questions.
+*   **Use Cases:** Suitable for applications like news aggregation, where tracking entities and their relationships over time is valuable.
+*   **Customization:** Offers several customizable parameters:
+    *   `kg_triple_extract_template`:  Controls how triplets are identified.
+    *   `max_triplets_per_chunk`: Limits triplets per text chunk.
+    *   `graph_store`: Defines graph storage type.
+    *   `include_embeddings`:  Adds embeddings for enhanced retrieval.
+    *   `max_object_length`: Limits the length of the object in a triplet.
+    *   `kg_triplet_extract_fn`: Allows for custom triplet extraction.
+*   **Construction:** Builds the KG by either using a default LLM-based triplet extraction method or a user-provided custom function. Embeddings can be included for each triplet.
+*   **Querying:** Utilizes three distinct retrievers (`KGTableRetriever`, `KnowledgeGraphRAGRetriever`, and a hybrid mode) to retrieve relevant information from the KG.
+
+
+
+In essence, the `KnowledgeGraphIndex` transforms text into a structured knowledge representation, enabling more intelligent and contextually relevant query responses.
+
+=== Building Indexes on top of other Indexes with ComposableGraph
+
+The `ComposableGraph` in LlamaIndex is a method for structuring information by **hierarchically stacking Indexes**. It allows you to build lower-level Indexes within individual documents (like `TreeIndex`) and then aggregate those into higher-level Indexes over a collection of documents (like `SummaryIndex`). 
+
+**Key features and functionality:**
+
+*   **Hierarchical Structure:** Enables organization of detailed information within documents and summarization across collections.
+*   **Construction:** Built using `ComposableGraph.from_indices()`, requiring a root Index class (e.g., `SummaryIndex`), child Indexes (e.g., `TreeIndex`), and summaries for each child Index.
+*   **Querying:**  A `ComposableGraphQueryEngine` recursively traverses the hierarchy, starting from the root summary Index, to retrieve relevant information from lower-level Indexes.
+*   **Customization:** Allows for custom query engines at each Index level for tailored retrieval strategies.
+*   **Summaries:**  Summaries can be manually defined or automatically generated using queries or `SummaryExtractor`.
+
+**Benefits:**
+
+*   Efficient retrieval of information from both high-level summaries and detailed, low-level Indexes.
+*   Comprehensive understanding of complex datasets.
+*   Deep, hierarchical understanding of data.
+
+
+
+In essence, `ComposableGraph` provides a powerful way to organize and query complex information by leveraging a layered indexing approach.
+
+=== Estimating the potential cost of building and querying Indexes
+
+
+This text details the potential costs and privacy concerns associated with using Indexes in LlamaIndex, primarily due to their reliance on Large Language Models (LLMs) for building and querying. 
+
+**Key takeaways:**
+
+* **Cost Considerations:** Repeated LLM calls, especially during index construction (like `TreeIndex` or `KeywordTableIndex`) and embedding generation (like `VectorStoreIndex`), can quickly become expensive.
+* **Best Practices for Cost Reduction:**
+    * Utilize Indexes that minimize LLM calls during building (e.g., `SummaryIndex`, `SimpleKeywordTableIndex`).
+    * Employ cheaper LLM models when full accuracy isn't essential.
+    * Cache and reuse existing Indexes to avoid redundant building.
+    * Optimize query parameters (e.g., `similarity_top_k`) to reduce LLM calls.
+    * Use local LLM and embedding models for cost control and enhanced data privacy.
+* **Cost Estimation:** The text provides practical examples using `MockLLM` and `MockEmbedding` with `TokenCountingHandler` to estimate LLM and embedding token usage *before* building and querying indexes. This allows for proactive cost management.
+* **RAG & Smaller Models:** Retrieval-Augmented Generation (RAG) enhances the performance of smaller models by providing access to external knowledge, mitigating the need for excessively large, costly models.
+* **Importance of Prediction:**  Always estimate token usage before indexing large datasets to avoid unexpected expenses.
+
+
+
+In essence, the document advocates for a proactive approach to cost and privacy management when using LlamaIndex Indexes, emphasizing estimation, optimization, and the potential benefits of local models.
+
+=== Indexing our PITS study materials – hands-on
+
+This text details the implementation of an `index_builder.py` module for a tutoring application using LlamaIndex. The module is responsible for creating and loading indexes for efficient data retrieval. 
+
+Here's a summary of the key points:
+
+* **Two Index Types:** The module creates two types of indexes: a `VectorStoreIndex` and a `TreeIndex`.
+* **Persistence:** The code first attempts to load existing indexes from a specified storage location (`INDEX_STORAGE`). This avoids rebuilding the indexes if they already exist, saving time and resources.
+* **Index IDs:** When multiple indexes are stored in the same location, `index_id` is used to differentiate and correctly load them.
+* **Building New Indexes:** If the indexes are not found in storage, they are built from provided `nodes` (presumably document chunks). Each index is assigned a unique ID (`"vector"` and `"tree"`) using `set_index_id`.
+* **Storage:** Newly created indexes are persisted to the `INDEX_STORAGE` directory for future use.
+* **Return Value:** The `build_indexes` function returns both the `vector_index` and `tree_index` objects.
+
+
+
+The code provides a basic implementation with potential for improvement, and the next step (covered in Chapter 6) will focus on querying the data using these indexes.
