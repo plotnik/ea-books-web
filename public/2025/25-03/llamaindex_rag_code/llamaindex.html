@@ -537,6 +537,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_indexing_our_pits_study_materials_hands_on">Indexing our PITS study materials – hands-on</a></li>
 </ul>
 </li>
+<li><a href="#_part_3_retrieving_and_working_with_indexed_data">Part 3: Retrieving and Working with Indexed Data</a></li>
+<li><a href="#_chapter_6_querying_our_data_part_1_context_retrieval">Chapter 6: Querying Our Data, Part 1 – Context Retrieval</a>
+<ul class="sectlevel2">
+<li><a href="#_understanding_the_basic_retrievers">Understanding the basic retrievers</a>
+<ul class="sectlevel3">
+<li><a href="#_the_vectorstoreindex_retrievers">The VectorStoreIndex retrievers</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1741,10 +1751,128 @@ ch5/sample_persist_reload.py</a>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_part_3_retrieving_and_working_with_indexed_data">Part 3: Retrieving and Working with Indexed Data</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chapter_6_querying_our_data_part_1_context_retrieval">Chapter 6: Querying Our Data, Part 1 – Context Retrieval</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_understanding_the_basic_retrievers">Understanding the basic retrievers</h3>
+<div class="paragraph">
+<p>This text explains <strong>retrieval mechanisms</strong> within the LlamaIndex RAG (Retrieval-Augmented Generation) system. Here&#8217;s a summary:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Core Function:</strong> Retrievers find relevant information ("nodes") from an index to provide context for generating responses. They return results as <code>NodeWithScore</code> objects, which include a relevance score (though not all retrievers provide a score).</p>
+</li>
+<li>
+<p><strong>Construction Methods:</strong> Retrievers can be created in two main ways:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>From an Index:</strong> Using the <code>as_retriever()</code> method of an index object (e.g., <code>summary_index.as_retriever()</code>).</p>
+</li>
+<li>
+<p><strong>Direct Instantiation:</strong> Directly creating a retriever object (e.g., <code>SummaryIndexEmbeddingRetriever(index=summary_index)</code>).</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p><strong>Upcoming Information:</strong> The text previews a detailed list of available retriever options for each index type within LlamaIndex, intended as a reference for building applications.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_the_vectorstoreindex_retrievers">The VectorStoreIndex retrievers</h4>
+<div class="paragraph">
+<p>This document details various retriever options available within the LlamaIndex framework for different index types, focusing on how they function and their customization options.</p>
+</div>
+<div class="paragraph">
+<p><strong>1. VectorIndex Retrievers:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>VectorIndexRetriever</code>:</strong> The default retriever for <code>VectorStoreIndex</code>, it uses vector similarity search. Key customizable parameters include:</p>
+</li>
+<li>
+<p><code>similarity_top_k</code>: Number of top results returned.</p>
+</li>
+<li>
+<p><code>vector_store_query_mode</code>:  Query mode for the vector store (e.g., Pinecone, OpenSearch).</p>
+</li>
+<li>
+<p><code>filters</code>, <code>doc_ids</code>, <code>node_ids</code>:  Methods for narrowing search scope using metadata or IDs.</p>
+</li>
+<li>
+<p><code>alpha</code>, <code>sparse_top_k</code>: Parameters for hybrid (sparse &amp; dense) search.</p>
+</li>
+<li>
+<p><code>vector_store_kwargs</code>:  For passing specific arguments to the vector store.</p>
+</li>
+<li>
+<p><strong><code>VectorIndexAutoRetriever</code>:</strong> A more advanced retriever that uses an LLM to automatically optimize query parameters based on content description and metadata, useful for complex or ambiguous data.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>2. SummaryIndex Retrievers:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>SummaryIndexRetriever</code>:</strong> Returns <strong>all</strong> nodes in the index without filtering or sorting – useful for a complete data view.</p>
+</li>
+<li>
+<p><strong><code>SummaryIndexEmbeddingRetriever</code>:</strong> Uses embeddings (created dynamically) to find the most relevant nodes based on similarity to the query, returning nodes with a relevance score (<code>NodeWithScore</code>).</p>
+</li>
+<li>
+<p><strong><code>SummaryIndexLLMRetriever</code>:</strong> Leverages an LLM and a prompt to select relevant nodes.  Customizable via:</p>
+</li>
+<li>
+<p><code>choice_select_prompt</code>: Override the default prompt.</p>
+</li>
+<li>
+<p><code>choice_batch_size</code>: Batch size for query processing.</p>
+</li>
+<li>
+<p><code>format_node_batch_fn</code>, <code>parse_choice_select_answer_fn</code>: Functions for formatting node batches and parsing LLM responses (including relevance score calculation).</p>
+</li>
+<li>
+<p><code>service_context</code>: Allows customization of the LLM used.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>General Considerations:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Security:</strong> Filtering information early in the RAG process (at the retriever stage) is a secure design principle.</p>
+</li>
+<li>
+<p><strong>Cost:</strong> Reducing the amount of information processed by the LLM (through filtering) can lower costs.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The document emphasizes choosing the appropriate retriever based on the data&#8217;s structure, the user&#8217;s familiarity with the data, and the desired level of control over the search process.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-03-24 10:04:44 +0200
+Last updated 2025-03-25 09:53:34 +0200
 </div>
 </div>
 </body>
