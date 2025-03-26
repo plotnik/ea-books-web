@@ -728,3 +728,25 @@ This document details various retriever options available within the LlamaIndex 
 
 The document emphasizes choosing the appropriate retriever based on the data's structure, the user's familiarity with the data, and the desired level of control over the search process.
 
+==== The DocumentSummaryIndex retrievers
+
+The text details two retrieval options for a `DocumentSummaryIndex`: `DocumentSummaryIndexLLMRetriever` and `DocumentSummaryIndexEmbeddingRetriever`.
+
+*   Uses an LLM to select relevant summaries from document summaries.
+*   Processes queries in batches, configurable with `choice_batch_size`.
+*   Allows custom prompts (`choice_select_prompt`) and functions for formatting nodes for the LLM (`format_node_batch_fn`) and parsing the LLM's response (`parse_choice_select_answer_fn`).
+*   Returns results sorted by relevance *and* includes a relevance score for each node.
+*   **Note:** Experimentation showed LLM-assigned relevance scores tend to be consistently high, potentially requiring prompt adjustments for nuanced differentiation.
+
+**`DocumentSummaryIndexEmbeddingRetriever`:**
+
+*   Relies on embeddings to find summaries with the highest similarity to the query.
+*   Requires the index to be built with `embed_summaries=True`.
+*   Uses `similarity_top_k` to specify the number of summaries to return.
+*   **Does not** return a relevance score.
+*   Effective for finding relevant summaries based on embedding similarity.
+
+
+
+In essence, the LLM retriever leverages natural language understanding for more sophisticated relevance assessment (with scores), while the embedding retriever uses a faster, similarity-based approach.
+
