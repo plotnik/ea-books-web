@@ -544,6 +544,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel3">
 <li><a href="#_the_vectorstoreindex_retrievers">The VectorStoreIndex retrievers</a></li>
 <li><a href="#_the_documentsummaryindex_retrievers">The DocumentSummaryIndex retrievers</a></li>
+<li><a href="#_the_treeindex_retrievers">The TreeIndex retrievers</a></li>
+<li><a href="#_the_keywordtableindex_retrievers">The KeywordTableIndex retrievers</a></li>
+<li><a href="#_the_knowledgegraphindex_retrievers">The KnowledgeGraphIndex retrievers</a></li>
+<li><a href="#_efficient_use_of_retrieval_mechanisms_asynchronous_operation">Efficient use of retrieval mechanisms – asynchronous operation</a></li>
 </ul>
 </li>
 </ul>
@@ -1917,13 +1921,140 @@ ch5/sample_persist_reload.py</a>
 <p>In essence, the LLM retriever leverages natural language understanding for more sophisticated relevance assessment (with scores), while the embedding retriever uses a faster, similarity-based approach.</p>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_the_treeindex_retrievers">The TreeIndex retrievers</h4>
+<div class="paragraph">
+<p>This text details the <code>TreeIndex</code> in LlamaIndex, a complex index type designed for hierarchical data like filesystems or organizational charts. It&#8217;s important to note that <code>TreeIndex</code> builds a <strong>new</strong> hierarchical structure based on summaries of the original data, not simply reflecting existing hierarchies.  Querying this structure can be computationally expensive due to its recursive nature.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a breakdown of the different retrieval methods available for <code>TreeIndex</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>TreeSelectLeafRetriever</code> (Default):</strong> Recursively navigates the tree, using an LLM to identify the most relevant leaf nodes.  The <code>child_branch_factor</code> controls how many child nodes are considered at each level (defaults to 1). Offers customizable prompt templates for query refinement. Doesn&#8217;t return relevance scores.</p>
+</li>
+<li>
+<p><strong><code>TreeSelectLeafEmbeddingRetriever</code>:</strong> Similar to <code>TreeSelectLeafRetriever</code>, but uses embedding similarity to select nodes instead of an LLM. Includes an <code>embed_model</code> parameter for specifying the embedding model. Doesn&#8217;t return relevance scores.</p>
+</li>
+<li>
+<p><strong><code>TreeAllLeafRetriever</code>:</strong>  Retrieves <strong>all</strong> leaf nodes, regardless of hierarchy, and sorts them.  Fastest option, useful for ensuring no information is missed, but doesn&#8217;t provide relevance scores.</p>
+</li>
+<li>
+<p><strong><code>TreeRootRetriever</code>:</strong> Retrieves responses directly from the root nodes of the tree, assuming answers are pre-computed and stored there.  Efficient when information is already summarized at the top level. Doesn&#8217;t return relevance scores.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Practical Use Case:</strong> The text highlights a clinical decision support system (CDSS) as a good example, where pre-computed answers to common medical questions are stored in root nodes for quick retrieval.</p>
+</div>
+<div class="paragraph">
+<p>In essence, <code>TreeIndex</code> offers flexibility in how you navigate and retrieve information from hierarchical data, with trade-offs between speed, computational cost, and the need for relevance scoring.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the_keywordtableindex_retrievers">The KeywordTableIndex retrievers</h4>
+<div class="paragraph">
+<p>The <code>KeywordTableIndex</code> retrieves information by first <strong>extracting keywords from a query</strong>. This extraction method varies depending on the retriever used. Once keywords are extracted, the retriever <strong>counts their frequency within the indexed nodes</strong> and <strong>sorts nodes by matching keyword count</strong> (typically descending, indicating relevance). Results are returned as <code>NodeWithScore</code> objects, though <strong>relevance scores are not directly provided by the index itself</strong>.</p>
+</div>
+<div class="paragraph">
+<p>There are three main retriever options:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>KeywordTableGPTRetriever:</strong> Uses an LLM to identify keywords.</p>
+</li>
+<li>
+<p><strong>KeywordTableSimpleRetriever:</strong> Uses a faster, regex-based keyword extraction method.</p>
+</li>
+<li>
+<p><strong>KeywordTableRAKERetriever:</strong> Employs the RAKE method for keyword extraction.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Common arguments for configuring these retrievers include: <code>query_keyword_extract_template</code> (for the default retriever), <code>max_keywords_per_query</code>, and <code>num_chunks_per_query</code> to control query complexity and system performance.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the_knowledgegraphindex_retrievers">The KnowledgeGraphIndex retrievers</h4>
+<div class="paragraph">
+<p>This text details two types of retrievers used with Knowledge Graph Indices in LlamaIndex: <code>KGTableRetriever</code> and <code>KnowledgeGraphRAGRetriever</code>. Both extract relevant information (nodes) from a knowledge graph based on user queries, which are structured as triplets (subject, predicate, object).</p>
+</div>
+<div class="paragraph">
+<p><strong>KGTableRetriever:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Is the default retriever and operates in three modes:</p>
+</li>
+<li>
+<p><strong>Keyword:</strong> Uses keywords from the query to find matching nodes (case-sensitive).</p>
+</li>
+<li>
+<p><strong>Embedding:</strong> Converts the query to an embedding and finds similar nodes.</p>
+</li>
+<li>
+<p><strong>Hybrid:</strong> Combines keyword and embedding searches for precision and semantic understanding.</p>
+</li>
+<li>
+<p>Offers several customizable parameters to control keyword extraction, query refinement, and the amount of information retrieved (e.g., <code>max_keywords_per_query</code>, <code>similarity_top_k</code>).</p>
+</li>
+<li>
+<p>Returns a default score of 1000 for retrieved nodes.</p>
+</li>
+<li>
+<p>If no nodes are found, returns a placeholder node indicating "No relationships found".</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>KnowledgeGraphRAGRetriever:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Identifies key entities in the query and uses them to navigate the graph.</p>
+</li>
+<li>
+<p>Utilizes entity extraction and synonym expansion to broaden the query context.</p>
+</li>
+<li>
+<p>Traverses the graph to a specified depth (<code>graph_traversal_depth</code>).</p>
+</li>
+<li>
+<p>Also operates in keyword, embedding, and hybrid modes (though as of January 2024, only keyword mode was fully implemented in v0.9.25).</p>
+</li>
+<li>
+<p>Includes a <code>with_nl2graphquery</code> option to convert natural language queries into graph queries.</p>
+</li>
+<li>
+<p>Offers parameters to control entity/synonym limits, expansion policies, and verbosity.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Both retrievers share the ability to customize prompts using <code>BasePromptTemplate</code> objects (detailed in a later chapter). They both aim to retrieve relevant knowledge sequences to answer user queries, balancing information quality and quantity through parameters like <code>max_knowledge_sequence</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_efficient_use_of_retrieval_mechanisms_asynchronous_operation">Efficient use of retrieval mechanisms – asynchronous operation</h4>
+<div class="paragraph">
+<p>This text discusses the benefits of using <strong>asynchronous execution</strong> in LlamaIndex, as opposed to the previously used <strong>synchronous methods</strong>. While synchronous methods are simpler to understand, asynchronous operations improve <strong>performance, reduce latency, and enhance user experience</strong>—especially in applications with frequent, complex queries and large datasets.</p>
+</div>
+<div class="paragraph">
+<p>The provided code example demonstrates how to run two retrievers in <strong>parallel</strong> using <code>asyncio.gather()</code>. Although the performance gain is minimal with a small dataset, the benefits become significant in real-world applications. The text then indicates it will move on to discussing more advanced retrieval methods.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-03-26 09:27:01 +0200
+Last updated 2025-03-28 09:18:58 +0200
 </div>
 </div>
 </body>
