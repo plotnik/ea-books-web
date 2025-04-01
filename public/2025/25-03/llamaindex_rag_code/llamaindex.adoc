@@ -810,3 +810,25 @@ Both retrievers share the ability to customize prompts using `BasePromptTemplate
 This text discusses the benefits of using **asynchronous execution** in LlamaIndex, as opposed to the previously used **synchronous methods**. While synchronous methods are simpler to understand, asynchronous operations improve **performance, reduce latency, and enhance user experience**—especially in applications with frequent, complex queries and large datasets. 
 
 The provided code example demonstrates how to run two retrievers in **parallel** using `asyncio.gather()`. Although the performance gain is minimal with a small dataset, the benefits become significant in real-world applications. The text then indicates it will move on to discussing more advanced retrieval methods.
+
+=== Building more advanced retrieval mechanisms
+
+==== Implementing metadata filters
+
+This text demonstrates how to implement a retrieval system using LlamaIndex that filters results based on **metadata**, specifically to handle situations where the same term has different meanings depending on the user's context (in this case, their department).
+
+Here's a breakdown:
+
+* **The Problem:** Different departments within an organization may have differing definitions for the same concepts (e.g., "incident").
+* **The Solution:**  Use metadata filtering to retrieve only the definition relevant to the current user's department.
+* **Implementation:**
+    - **Define User Departments:** A dictionary maps users to their respective departments.
+    - **Create Nodes with Metadata:**  Text nodes are created, each containing a definition and metadata specifying the relevant department.
+    - **Filtering Function:** A function `show_report` uses `MetadataFilters` to retrieve nodes matching the user's department.
+    - **Retrieval:** The `as_retriever` method is used with the filters to create a retriever that only returns relevant nodes.
+* **Example:**  Running the same query ("What is an incident?") for users "Alice" (Security) and "Bob" (IT) returns different definitions tailored to their departments.
+* **Advanced Filtering:** While the default vector store in LlamaIndex only supports equality (`EQ`) filtering, more sophisticated vector stores (like Pinecone or ChromaDB) support a wider range of operators (greater than, less than, in, not in, etc.) for more complex filtering scenarios, such as access control based on clearance levels.
+
+
+
+In essence, the text showcases a practical application of metadata filtering in LlamaIndex to achieve a form of "polymorphism" in information retrieval, delivering contextually appropriate results to different users.

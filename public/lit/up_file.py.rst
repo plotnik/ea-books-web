@@ -40,7 +40,7 @@ Save the uploaded zip file in the specified directory.
           f.write(uploadedfile.getbuffer())
       st.write(f"Saved file: `{uploadedfile.name}` to `{SAVE_PATH}`")
 
-  up_type = st.radio("Upload type:", ["jpg", "zip", "md"])
+  up_type = st.radio("Upload type:", ["jpg", "webp", "zip", "md"])
 
   uploaded_file = st.file_uploader(f"Choose {up_type} file", type=up_type)
   if uploaded_file is not None:
