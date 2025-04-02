@@ -554,6 +554,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_building_more_advanced_retrieval_mechanisms">Building more advanced retrieval mechanisms</a>
 <ul class="sectlevel3">
 <li><a href="#_implementing_metadata_filters">Implementing metadata filters</a></li>
+<li><a href="#_using_selectors_for_more_advanced_decision_logic">Using selectors for more advanced decision logic</a></li>
+<li><a href="#_understanding_tools">Understanding tools</a></li>
+<li><a href="#_transforming_and_rewriting_queries">Transforming and rewriting queries</a></li>
+<li><a href="#_creating_more_specific_sub_queries">Creating more specific sub-queries</a></li>
 </ul>
 </li>
 </ul>
@@ -2104,13 +2108,150 @@ ch5/sample_persist_reload.py</a>
 <p>In essence, the text showcases a practical application of metadata filtering in LlamaIndex to achieve a form of "polymorphism" in information retrieval, delivering contextually appropriate results to different users.</p>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_using_selectors_for_more_advanced_decision_logic">Using selectors for more advanced decision logic</h4>
+<div class="paragraph">
+<p>This text discusses the importance of <strong>selectors</strong> in advanced Retrieval-Augmented Generation (RAG) applications, particularly when dealing with diverse user queries. Because users may ask specific questions, seek general information, or request summaries/comparisons, a RAG system needs a way to dynamically choose the <strong>best</strong> retrieval method.</p>
+</div>
+<div class="paragraph">
+<p>Selectors act as this decision-making component, implementing conditional logic to route queries to the appropriate tool (retriever, parser, index, etc.). LlamaIndex offers five types of selectors: <code>LLMSingleSelector</code>, <code>LLMMultiSelector</code>, <code>EmbeddingSingleSelector</code>, <code>PydanticSingleSelector</code>, and <code>PydanticMultiSelector</code>, which differ in how they make their selections (LLM reasoning, similarity calculations, or Pydantic objects).</p>
+</div>
+<div class="paragraph">
+<p>The example provided demonstrates a simple <code>LLMSingleSelector</code> that uses an LLM to choose from a predefined list of options based on a user query, returning both the selected option and the reasoning behind the choice.  The text emphasizes that selectors are a generic mechanism applicable to various conditional logic scenarios within a RAG application, not just retrievers. It then introduces the concept of <code>ToolMetadata</code> as a more advanced selection method, setting the stage for further explanation.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_understanding_tools">Understanding tools</h4>
+<div class="paragraph">
+<p>This text explains how to implement an <strong>adaptive retrieval mechanism</strong> using LlamaIndex, enabling an application to intelligently choose the best retriever for a given query.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a summary of the key concepts and steps:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Agentic Functionality &amp; Tool Containers:</strong> The core idea is to use a generic container holding different functionalities (retrievers in this case) that can be selected at runtime based on context.</p>
+</li>
+<li>
+<p><strong>LlamaHub Tools:</strong> LlamaHub provides a collection of pre-built tools for various tasks.</p>
+</li>
+<li>
+<p><strong><code>RetrieverTool</code>:</strong> This class encapsulates a retriever and a textual description, allowing a selector to understand its purpose.</p>
+</li>
+<li>
+<p><strong><code>RouterRetriever</code>:</strong> This object uses a selector to decide which <code>RetrieverTool</code> to use for a given query. It takes the selector and a list of <code>RetrieverTool</code> objects as input.</p>
+</li>
+<li>
+<p><strong>Selectors (<code>PydanticMultiSelector</code>):</strong>  These determine which retriever(s) to use. <code>PydanticMultiSelector</code> can select multiple retrievers simultaneously, handling complex queries that require information from multiple sources. <code>PydanticSingleSelector</code> would only choose one.</p>
+</li>
+<li>
+<p><strong>Implementation:</strong> The example code demonstrates creating two retrievers (one for Ancient Rome, one for dogs), wrapping them in <code>RetrieverTool</code> objects with descriptive text, and then combining them into a <code>RouterRetriever</code>.  Queries are then passed to the <code>RouterRetriever</code>, which dynamically selects the appropriate retriever based on the query&#8217;s content.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The text sets the stage for further discussion of more advanced retrieval and query engine techniques in later chapters.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_transforming_and_rewriting_queries">Transforming and rewriting queries</h4>
+<div class="paragraph">
+<p>This text introduces <code>QueryTransform</code> as a powerful tool for Retrieval-Augmented Generation (RAG) applications. It allows for the modification and rewriting of queries <strong>before</strong> they are used to search an index, improving retrieval relevance and accuracy.</p>
+</div>
+<div class="paragraph">
+<p><strong>Key takeaways:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Purpose:</strong> To refine user queries into more effective search terms. A practical example given is a technical support chatbot where vague user descriptions can be transformed into specific technical queries.</p>
+</li>
+<li>
+<p><strong>Variations:</strong> Several <code>QueryTransform</code> types exist, each with a specific function:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>IdentityQueryTransform</code>:</strong>  No modification – maintains default behavior.</p>
+</li>
+<li>
+<p><strong><code>HyDEQueryTransform</code>:</strong> Generates hypothetical documents to improve relevance.</p>
+</li>
+<li>
+<p><strong><code>DecomposeQueryTransform</code>:</strong> Breaks down complex queries into simpler subqueries.</p>
+</li>
+<li>
+<p><strong><code>ImageOutputQueryTransform</code>:</strong> Formats results for image output (e.g., generating <code>&lt;img&gt;</code> tags).</p>
+</li>
+<li>
+<p><strong><code>StepDecomposeQueryTransform</code>:</strong>  Decomposes queries while considering previous reasoning/context.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Example:</strong> The provided Python code demonstrates <code>DecomposeQueryTransform</code> taking a broad query ("Tell me about buildings in ancient Rome") and refining it into a more focused one ("What were some famous buildings in ancient Rome?"). This illustrates how transformation can lead to more accurate retrieval.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In essence, <code>QueryTransform</code> enhances RAG systems by bridging the gap between how users ask questions and how the index best understands and responds to them.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_creating_more_specific_sub_queries">Creating more specific sub-queries</h4>
+<div class="paragraph">
+<p>This text explains how to improve query performance in LlamaIndex by <strong>breaking down complex questions into simpler sub-queries</strong> using the <code>OpenAIQuestionGenerator</code>.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a summary of the key points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Problem:</strong> Ambiguous or complex questions can lead to poor results from information retrieval systems.</p>
+</li>
+<li>
+<p><strong>Solution:</strong>  <code>OpenAIQuestionGenerator</code> automatically generates more specific sub-questions from an initial query.</p>
+</li>
+<li>
+<p><strong>How it works:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>It utilizes LLMs (specifically OpenAI&#8217;s by default) to understand the query and available tools.</p>
+</li>
+<li>
+<p><code>ToolMetadata</code> is used to describe each retrieval tool (e.g., a vector index for Ancient Rome, a summary index for dogs).</p>
+</li>
+<li>
+<p>The generator receives a list of tools and the original query, then outputs a list of <code>SubQuestion</code> objects, each containing a <code>tool_name</code> and a refined <code>sub_question</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Benefits:</strong> More specific queries lead to better context for retrieval and higher-quality answers.</p>
+</li>
+<li>
+<p><strong>Alternatives:</strong> <code>LLMQuestionGenerator</code> (allows use of any LLM) and <code>GuidanceQuestionGenerator</code> (guides query processing order) are also available.</p>
+</li>
+<li>
+<p><strong>Next Steps:</strong> These sub-queries are used with a <code>SubQuestionQueryEngine</code> (discussed in a later chapter) to process the information.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In essence, the text demonstrates a technique for enhancing query accuracy by strategically decomposing complex requests into manageable, focused sub-questions.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-01 08:57:46 +0300
+Last updated 2025-04-02 09:59:47 +0300
 </div>
 </div>
 </body>
