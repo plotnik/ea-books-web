@@ -560,6 +560,20 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_creating_more_specific_sub_queries">Creating more specific sub-queries</a></li>
 </ul>
 </li>
+<li><a href="#_understanding_the_concepts_of_dense_and_sparse_retrieval">Understanding the concepts of dense and sparse retrieval</a>
+<ul class="sectlevel3">
+<li><a href="#_implementing_sparse_retrieval_in_llamaindex">Implementing sparse retrieval in LlamaIndex</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_chapter_7_querying_our_data_part_2_postprocessing_and_response_synthesis">Chapter 7: Querying Our Data, Part 2 – Postprocessing and Response Synthesis</a>
+<ul class="sectlevel2">
+<li><a href="#_re_ranking_transforming_and_filtering_nodes_using_postprocessors">Re-ranking, transforming, and filtering nodes using postprocessors</a>
+<ul class="sectlevel3">
+<li><a href="#_similaritypostprocessor">SimilarityPostprocessor</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -2246,12 +2260,92 @@ ch5/sample_persist_reload.py</a>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_understanding_the_concepts_of_dense_and_sparse_retrieval">Understanding the concepts of dense and sparse retrieval</h3>
+<div class="sect3">
+<h4 id="_implementing_sparse_retrieval_in_llamaindex">Implementing sparse retrieval in LlamaIndex</h4>
+<div class="paragraph">
+<p>This document details sparse retrieval methods within the LlamaIndex framework, contrasting them with dense retrieval and outlining scenarios for their optimal use.</p>
+</div>
+<div class="paragraph">
+<p><strong>Key Takeaways:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Sparse Retrieval Basics:</strong> Constructs like <code>KeywordTableIndex</code> are basic forms of sparse retrieval. LlamaIndex offers more advanced options like <code>BM25Retriever</code>, which refines TF-IDF by considering term frequency <strong>and</strong> document length for more accurate relevance scoring.  Installation requires <code>rank-bm25</code> and <code>llama-index-retrievers-bm25</code>.</p>
+</li>
+<li>
+<p><strong>Sparse vs. Dense Retrieval:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Sparse Retrieval excels with:</strong> Precise queries containing specific keywords, citations, or phrases (e.g., legal documents). It efficiently handles structured data and direct references.</p>
+</li>
+<li>
+<p><strong>Dense Retrieval excels with:</strong> Understanding semantic context and handling variations in phrasing (e.g., customer support chatbots). It&#8217;s better when users don&#8217;t use the exact keywords found in the knowledge base.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Hybrid Approach:</strong> Combining sparse and dense retrieval offers the benefits of both.  LlamaIndex&#8217;s selectors and routers can facilitate this.</p>
+</li>
+<li>
+<p><strong>Handling Empty Results:</strong>  Retrievers can return empty results if no relevant content is found. Strategies to address this include fallback mechanisms, query expansion, and relevance scoring.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In essence, the document advocates for choosing the right retrieval method based on the nature of the data and the expected user queries, and highlights the possibility of combining both approaches for improved performance.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chapter_7_querying_our_data_part_2_postprocessing_and_response_synthesis">Chapter 7: Querying Our Data, Part 2 – Postprocessing and Response Synthesis</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_re_ranking_transforming_and_filtering_nodes_using_postprocessors">Re-ranking, transforming, and filtering nodes using postprocessors</h3>
+<div class="sect3">
+<h4 id="_similaritypostprocessor">SimilarityPostprocessor</h4>
+<div class="paragraph">
+<p>The <code>SimilarityPostprocessor</code> is a tool in LlamaIndex designed to refine the nodes retrieved for a query by filtering them based on a similarity score. It works by comparing each node&#8217;s similarity score to a user-defined <code>similarity_cutoff</code> threshold. Nodes with scores below this threshold (or with a score of <code>None</code>) are removed, ensuring that only the most relevant and semantically similar content is passed on to the language model for generating a response.</p>
+</div>
+<div class="paragraph">
+<p><strong>Key features and benefits:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Improves Response Relevance:</strong> By filtering out irrelevant nodes, it increases the likelihood of the LLM producing a more focused and meaningful answer.</p>
+</li>
+<li>
+<p><strong>Configurable Threshold:</strong> The <code>similarity_cutoff</code> parameter allows users to control the stringency of the filtering process.</p>
+</li>
+<li>
+<p><strong>Simple Implementation:</strong>  It&#8217;s easily integrated into a retrieval pipeline, as demonstrated by the provided Python example.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Use Case:</strong></p>
+</div>
+<div class="paragraph">
+<p>The example highlights its usefulness in customer support chatbots, where it can distinguish between highly relevant information (like return policies for damaged items) and irrelevant content (like product advertisements) when responding to user queries.</p>
+</div>
+<div class="paragraph">
+<p>In essence, the <code>SimilarityPostprocessor</code> acts as a quality control step, ensuring that the LLM receives only the most pertinent information for accurate and effective response generation.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-02 09:59:47 +0300
+Last updated 2025-04-04 09:44:15 +0300
 </div>
 </div>
 </body>
