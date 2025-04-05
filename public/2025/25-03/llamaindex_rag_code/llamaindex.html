@@ -572,6 +572,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_re_ranking_transforming_and_filtering_nodes_using_postprocessors">Re-ranking, transforming, and filtering nodes using postprocessors</a>
 <ul class="sectlevel3">
 <li><a href="#_similaritypostprocessor">SimilarityPostprocessor</a></li>
+<li><a href="#_keywordnodepostprocessor">KeywordNodePostprocessor</a></li>
 </ul>
 </li>
 </ul>
@@ -2339,13 +2340,60 @@ ch5/sample_persist_reload.py</a>
 <p>In essence, the <code>SimilarityPostprocessor</code> acts as a quality control step, ensuring that the LLM receives only the most pertinent information for accurate and effective response generation.</p>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_keywordnodepostprocessor">KeywordNodePostprocessor</h4>
+<div class="paragraph">
+<p>The <code>KeywordNodePostprocessor</code> is a tool used in Retrieval-Augmented Generation (RAG) systems to refine node selection based on keywords. It filters nodes retrieved by a retriever, either <strong>requiring</strong> the presence of specific keywords or <strong>excluding</strong> nodes containing unwanted keywords. This enhances the relevance and accuracy of RAG responses, particularly useful for scenarios like corporate data access where sensitive information needs to be protected.</p>
+</div>
+<div class="paragraph">
+<p><strong>Key Features &amp; Functionality:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Filtering Logic:</strong> Uses <code>required_keywords</code> (must contain) and <code>exclude_keywords</code> (must not contain) lists.</p>
+</li>
+<li>
+<p><strong>Dependency:</strong> Requires the <code>spaCy</code> library for Natural Language Processing (NLP). Installation via <code>pip install spacy</code>.</p>
+</li>
+<li>
+<p><strong>Input:</strong> Takes a list of <code>NodeWithScore</code> objects as input.</p>
+</li>
+<li>
+<p><strong>Customization:</strong> Offers parameters for:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>required_keywords</code>: Keywords that <strong>must</strong> be present.</p>
+</li>
+<li>
+<p><code>exclude_keywords</code>: Keywords that trigger exclusion.</p>
+</li>
+<li>
+<p><code>lang</code>: Specifies the language for <code>spaCy</code> processing (default is English - "en").</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Case Sensitivity:</strong> Keyword matching is case-sensitive; consider converting text to a consistent case for reliable results.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Practical Use Case:</strong> The provided example demonstrates filtering log entries to exclude those marked as <code>&lt;SECRET&gt;</code> or <code>&lt;RESTRICTED&gt;</code>, ensuring confidential data isn&#8217;t included in retrieval results.</p>
+</div>
+<div class="paragraph">
+<p>In essence, <code>KeywordNodePostprocessor</code> provides a flexible and powerful way to control the content included in a RAG system&#8217;s responses, improving both relevance and security.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-04 09:44:15 +0300
+Last updated 2025-04-05 11:40:11 +0300
 </div>
 </div>
 </body>

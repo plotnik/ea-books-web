@@ -499,7 +499,7 @@ Step 1: Install Miniconda
 =========================
 
 First, you need to install Miniconda. Visit the `Miniconda
-website <https://docs.conda.io/en/latest/miniconda.html>`__ and follow
+website <https://www.anaconda.com/docs/getting-started/miniconda/install>`__ and follow
 the installation instructions for your operating system.
 
 Step 2: Configure Your Environment
@@ -521,9 +521,10 @@ Step 2: Configure Your Environment
         - openai
         - tiktoken
         - streamlit
-        - ollama
         - pyperclip
-
+        - pip:
+          - ollama
+          
 2. **Select conda-forge Channel**
 
    Open your terminal or command prompt and execute the following

@@ -936,5 +936,24 @@ The example highlights its usefulness in customer support chatbots, where it can
 
 In essence, the `SimilarityPostprocessor` acts as a quality control step, ensuring that the LLM receives only the most pertinent information for accurate and effective response generation.
 
+==== KeywordNodePostprocessor
 
+The `KeywordNodePostprocessor` is a tool used in Retrieval-Augmented Generation (RAG) systems to refine node selection based on keywords. It filters nodes retrieved by a retriever, either **requiring** the presence of specific keywords or **excluding** nodes containing unwanted keywords. This enhances the relevance and accuracy of RAG responses, particularly useful for scenarios like corporate data access where sensitive information needs to be protected.
+
+**Key Features & Functionality:**
+
+*   **Filtering Logic:** Uses `required_keywords` (must contain) and `exclude_keywords` (must not contain) lists.
+*   **Dependency:** Requires the `spaCy` library for Natural Language Processing (NLP). Installation via `pip install spacy`.
+*   **Input:** Takes a list of `NodeWithScore` objects as input.
+*   **Customization:** Offers parameters for:
+    -   `required_keywords`: Keywords that *must* be present.
+    -   `exclude_keywords`: Keywords that trigger exclusion.
+    -   `lang`: Specifies the language for `spaCy` processing (default is English - "en").
+*   **Case Sensitivity:** Keyword matching is case-sensitive; consider converting text to a consistent case for reliable results.
+
+**Practical Use Case:** The provided example demonstrates filtering log entries to exclude those marked as `<SECRET>` or `<RESTRICTED>`, ensuring confidential data isn't included in retrieval results.
+
+
+
+In essence, `KeywordNodePostprocessor` provides a flexible and powerful way to control the content included in a RAG system's responses, improving both relevance and security.
 

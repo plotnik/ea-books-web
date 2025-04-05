@@ -106,7 +106,7 @@ def read_list_from_file(filename):
     except Exception as e:
         print(f"Error reading {filename}: {e}")
         return []
-      
+    
 # Write a list of strings to a text file
 #
 # ::
@@ -118,14 +118,14 @@ def write_list_to_file(filename, list_of_strings):
                 file.write(string + '\n') 
     except Exception as e:
         print(f"Error writing {filename}: {e}")
-      
+    
 # Removes specified strings from a list of strings.  
 #
 # ::
 
 def remove_strings_from_list(string_list, strings_to_remove):
   return [s for s in string_list if s not in strings_to_remove]
-       
+     
 # Collect all tags into a single set
 #
 # ::
@@ -134,10 +134,10 @@ tags_file = "openai_tags.txt"
 
 def sort_by_pattern(all_tags):
     tags_order = read_list_from_file(tags_file)
-  
+
     # Create a mapping from tag to priority index for known tags.
     tag_priority = { tag: index for index, tag in enumerate(tags_order) }
-  
+
     # Sort the all_tags list.
     # For tags in tags_order, the key is (0, priority) and for others (1, tag)
     sorted_tags = sorted(all_tags,
@@ -164,7 +164,7 @@ def get_prompt(name):
         if entry['name'] == name:
             return entry.get('note')
     return None
-  
+
 if tag_name == "all":
     prompt_names = [item['name'] for item in prompts]
 else:    
@@ -207,7 +207,7 @@ else:
     llm_models = [
         "ollama llama3.2",
     ]
-  
+
 llm_temperatures = [0, 0.1, 0.7, 1]
 
 openai_model = st.sidebar.selectbox(
@@ -241,7 +241,7 @@ if model_type=="OpenAI":
 
     encoding = tiktoken.encoding_for_model("gpt-4o-mini")
     tokens = encoding.encode(text)
-  
+
     openai_prices = {
         "gpt-4o-mini": 0.15, 
         "o3-mini": 1.10,
@@ -366,7 +366,7 @@ def call_gemini(prompt, text):
             temperature=llm_temperature,
         )
     return response.choices[0]
-    
+  
 def call_gemma(prompt, text):
     g_key = os.getenv("GEMINI_API_KEY")
     g_client = OpenAI(
@@ -384,7 +384,7 @@ def call_gemma(prompt, text):
             temperature=llm_temperature,
         )
     return response.choices[0]
-    
+  
 # When the user clicks a button to call OpenAI:
 #
 # - The application sends the selected prompt and user input to the OpenAI API.
@@ -403,7 +403,7 @@ def call_gemma(prompt, text):
    
 def concat_request(prompt, text):
     return prompt + "\n\n```\n" + text + "\n```\n"
-  
+
 
 st.sidebar.write('---')
 if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
@@ -415,10 +415,10 @@ if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_contain
 
     elif openai_model.startswith("gemini"): 
         response = call_gemini(prompt, text)
-        
+      
     elif openai_model.startswith("gemma"): 
         response = call_gemma(prompt, text)
-        
+      
     elif openai_model.startswith("ollama "): 
         response = call_ollama(prompt, text)
 
@@ -437,7 +437,7 @@ if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_contain
     all_tags = remove_strings_from_list(all_tags, ["all", tag_name])
     all_tags.insert(0, tag_name)
     write_list_to_file(tags_file, all_tags)
-  
+
     if platform.system() == 'Darwin':
         os.system("afplay /System/Library/Sounds/Glass.aiff")
     st.rerun()
@@ -499,7 +499,7 @@ if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
 # =========================
 #
 # First, you need to install Miniconda. Visit the `Miniconda
-# website <https://docs.conda.io/en/latest/miniconda.html>`__ and follow
+# website <https://www.anaconda.com/docs/getting-started/miniconda/install>`__ and follow
 # the installation instructions for your operating system.
 #
 # Step 2: Configure Your Environment
@@ -521,9 +521,10 @@ if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
 #         - openai
 #         - tiktoken
 #         - streamlit
-#         - ollama
 #         - pyperclip
-#
+#         - pip:
+#           - ollama
+#          
 # 2. **Select conda-forge Channel**
 #
 #    Open your terminal or command prompt and execute the following
@@ -572,17 +573,17 @@ if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
 #      note: Improve style of the content you are provided.
 #      tags:
 #        - text
-#       
+#      
 #    - name: summarize_md
 #      note: You will be provided with statements in markdown, and your task is to summarize the content.
 #      tags:
 #        - text
-#       
+#      
 #    - name: explain_python
 #      note: Explain Python code you are provided.
 #      tags:
 #        - python
-#       
+#      
 #    - name: write_python
 #      note: Write Python code to satisfy the description you are provided.
 #      tags:
