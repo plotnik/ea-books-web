@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Pandoc UI &#8212; lit  documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
@@ -55,15 +55,15 @@
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">streamlit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">st</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 </pre></div>
 </div>
 <p>Print banner.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
-<span class="k">def</span> <span class="nf">print_banner</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                                ,--.                            ,--.</span>
 <span class="s2">       ,---.  ,--,--.,--,--,  ,-|  | ,---.  ,---.,-----.,--.,--.`--&#39;</span>
@@ -85,7 +85,7 @@
     <span class="s2">&quot;.adoc&quot;</span><span class="p">:</span> <span class="s2">&quot;AsciiDoc&quot;</span>
 <span class="p">}</span>
 
-<span class="k">def</span> <span class="nf">ext_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ext_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">ext_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
 <span class="n">i_ext</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span>
@@ -138,7 +138,7 @@ We can use a <strong>custom Lua filter</strong> in Pandoc to transform the code 
 
 <span class="n">text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;Input text&quot;</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">text_area_height</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">run_pandoc</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_pandoc</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
         <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
@@ -154,7 +154,7 @@ We can use a <strong>custom Lua filter</strong> in Pandoc to transform the code 
 
     <span class="k">return</span> <span class="n">result</span>
 
-<span class="k">def</span> <span class="nf">convert_text</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_text</span><span class="p">():</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">run_pandoc</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">o_ext</span> <span class="o">==</span> <span class="s2">&quot;.adoc&quot;</span><span class="p">:</span>
@@ -164,7 +164,7 @@ We can use a <strong>custom Lua filter</strong> in Pandoc to transform the code 
 </pre></div>
 </div>
 <p>Remove lines that contain Pandoc’s anchor markup: <code class="docutils literal notranslate"><span class="pre">[[something]]</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">asciidoc_headers</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">asciidoc_headers</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
     <span class="c1"># This will remove the entire line if it matches, including the newline.</span>
     <span class="n">cleaned_content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\[\[.*?\]\]\s*\n&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cleaned_content</span>
@@ -267,7 +267,7 @@ We can use a <strong>custom Lua filter</strong> in Pandoc to transform the code 
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
