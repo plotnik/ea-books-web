@@ -591,6 +591,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
+<li><a href="#_chapter_8_building_chatbots_and_agents_with_llamaindex">Chapter 8: Building Chatbots and Agents with LlamaIndex</a>
+<ul class="sectlevel2">
+<li><a href="#_understanding_chatbots_and_agents">Understanding chatbots and agents</a>
+<ul class="sectlevel3">
+<li><a href="#_understanding_the_different_chat_modes">Understanding the different chat modes</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -2632,10 +2641,71 @@ ch5/sample_persist_reload.py</a>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_chapter_8_building_chatbots_and_agents_with_llamaindex">Chapter 8: Building Chatbots and Agents with LlamaIndex</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_understanding_chatbots_and_agents">Understanding chatbots and agents</h3>
+<div class="sect3">
+<h4 id="_understanding_the_different_chat_modes">Understanding the different chat modes</h4>
+<div class="paragraph">
+<p>This document details how to initialize and utilize various chat engine types within LlamaIndex, focusing on managing chat history and leveraging different approaches to interact with data.</p>
+</div>
+<div class="paragraph">
+<p><strong>Key Concepts:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Chat Memory:</strong> LlamaIndex uses <code>ChatMemoryBuffer</code> to efficiently store chat history while respecting LLM token limits. This allows for persistent conversations.</p>
+</li>
+<li>
+<p><strong>Chat Stores:</strong>  Chat history can be stored in-memory (<code>SimpleChatStore</code>) or in a Redis database (<code>RedisChatStore</code>) for persistence.  <code>BaseChatStore</code> provides a modular approach to storage. <code>chat_store_key</code> uniquely identifies conversations within a store.</p>
+</li>
+<li>
+<p><strong>Conversation History Persistence:</strong> The example code demonstrates saving and loading chat history using <code>SimpleChatStore</code> to a JSON file.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Chat Engine Types:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Simple Mode:</strong>  A basic chat engine with a direct connection to the LLM, without utilizing proprietary data. Initialized with <code>SimpleChatEngine.from_defaults()</code>.</p>
+</li>
+<li>
+<p><strong>Context Mode:</strong>  Enhances chat by retrieving relevant text from an index based on user input, integrating it into the prompt, and generating a response. Initialized with <code>ContextChatEngine</code>. Key parameters include <code>retriever</code>, <code>llm</code>, and <code>memory</code>.</p>
+</li>
+<li>
+<p><strong>Condense Question Mode:</strong> Condenses the conversation and user message into a standalone question, then queries the data for a response.  Maintains conversation focus and relies on proprietary data. Initialized with <code>CondenseQuestionChatEngine</code>.</p>
+</li>
+<li>
+<p><strong>Condense and Context Mode:</strong> Combines condensation and context retrieval for comprehensive responses. Condenses the conversation, retrieves context, and then generates a response. Initialized with <code>CondensePlusContextChatEngine</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Initialization:</strong></p>
+</div>
+<div class="paragraph">
+<p>Chat engines can be initialized directly from an index (e.g., <code>index.as_chat_engine(chat_mode="&#8230;&#8203;")</code>) or standalone, providing necessary components like retrievers and LLMs.</p>
+</div>
+<div class="paragraph">
+<p><strong>Overall:</strong></p>
+</div>
+<div class="paragraph">
+<p>The document provides a comprehensive overview of LlamaIndex&#8217;s chat engine capabilities, emphasizing the importance of chat memory management and the advantages of different chat modes for various use cases.  The choice of chat mode depends on the desired level of context awareness, reliance on proprietary data, and complexity of the conversation.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-06 11:36:03 +0300
+Last updated 2025-04-07 10:41:40 +0300
 </div>
 </div>
 </body>

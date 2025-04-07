@@ -1057,3 +1057,32 @@ This text details the variety of advanced query engines available within the Lla
 
 
 In essence, the document serves as a guide to the advanced querying capabilities of LlamaIndex, emphasizing the flexibility and power available for building sophisticated RAG (Retrieval-Augmented Generation) applications.
+
+== Chapter 8: Building Chatbots and Agents with LlamaIndex
+
+=== Understanding chatbots and agents
+
+==== Understanding the different chat modes
+
+This document details how to initialize and utilize various chat engine types within LlamaIndex, focusing on managing chat history and leveraging different approaches to interact with data.
+
+**Key Concepts:**
+
+* **Chat Memory:** LlamaIndex uses `ChatMemoryBuffer` to efficiently store chat history while respecting LLM token limits. This allows for persistent conversations.
+* **Chat Stores:**  Chat history can be stored in-memory (`SimpleChatStore`) or in a Redis database (`RedisChatStore`) for persistence.  `BaseChatStore` provides a modular approach to storage. `chat_store_key` uniquely identifies conversations within a store.
+* **Conversation History Persistence:** The example code demonstrates saving and loading chat history using `SimpleChatStore` to a JSON file.
+
+**Chat Engine Types:**
+
+1. **Simple Mode:**  A basic chat engine with a direct connection to the LLM, without utilizing proprietary data. Initialized with `SimpleChatEngine.from_defaults()`.
+2. **Context Mode:**  Enhances chat by retrieving relevant text from an index based on user input, integrating it into the prompt, and generating a response. Initialized with `ContextChatEngine`. Key parameters include `retriever`, `llm`, and `memory`.
+3. **Condense Question Mode:** Condenses the conversation and user message into a standalone question, then queries the data for a response.  Maintains conversation focus and relies on proprietary data. Initialized with `CondenseQuestionChatEngine`.
+4. **Condense and Context Mode:** Combines condensation and context retrieval for comprehensive responses. Condenses the conversation, retrieves context, and then generates a response. Initialized with `CondensePlusContextChatEngine`.
+
+**Initialization:**
+
+Chat engines can be initialized directly from an index (e.g., `index.as_chat_engine(chat_mode="...")`) or standalone, providing necessary components like retrievers and LLMs.
+
+**Overall:**
+
+The document provides a comprehensive overview of LlamaIndex's chat engine capabilities, emphasizing the importance of chat memory management and the advantages of different chat modes for various use cases.  The choice of chat mode depends on the desired level of context awareness, reliance on proprietary data, and complexity of the conversation.
