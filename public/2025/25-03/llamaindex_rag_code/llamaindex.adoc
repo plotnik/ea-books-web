@@ -1086,3 +1086,19 @@ Chat engines can be initialized directly from an index (e.g., `index.as_chat_eng
 **Overall:**
 
 The document provides a comprehensive overview of LlamaIndex's chat engine capabilities, emphasizing the importance of chat memory management and the advantages of different chat modes for various use cases.  The choice of chat mode depends on the desired level of context awareness, reliance on proprietary data, and complexity of the conversation.
+
+=== Implementing agentic strategies in our apps
+
+==== Building tools and ToolSpec classes for our agents
+
+This text details how to expand the capabilities of LlamaIndex agents using **tools** and **tool specifications**. 
+
+Here's a breakdown:
+
+* **Tools:** These allow agents to perform actions beyond simple data querying. They can wrap query engines, user-defined functions, or call external APIs. There are two main types:
+    - **`QueryEngineTool`:** For read-only access to data (covered in Chapter 6).
+    - **`FunctionTool`:**  Wraps any user-defined Python function, requiring clear **docstrings** for the agent to understand its purpose.
+* **`ToolSpec`:**  A collection of tools designed for a specific service (like a complete API).  LlamaHub (https://llamahub.ai/?tab=tools) provides a growing library of pre-built `ToolSpec` classes for integrations with services like Gmail, Slack, and databases.
+* **Example: `DatabaseToolSpec`:** This tool spec (available via `pip install llama-index-tools-database`) utilizes SQLAlchemy to interact with databases, offering tools to list tables, describe schemas, and load data via SQL queries.  It's initialized, converted to a list of tools using `.to_tool_list()`, and then passed to an agent.
+
+Essentially, tools and tool specifications empower LlamaIndex agents to interact with the outside world and perform more complex tasks by providing them with a defined set of capabilities.  The key to successful tool integration is clear documentation (docstrings) so the agent can understand *how* and *when* to use each tool.
