@@ -1125,3 +1125,23 @@ This text details the **OpenAIAgent**, a specialized agent within the LlamaIndex
 
 
 In essence, OpenAIAgent is a powerful tool for building intelligent chat experiences that require integrating external tools and performing complex operations, but it's best suited for scenarios where the pre-trained capabilities of the function calling API are sufficient.
+
+=== Hands-on – implementing conversation tracking for PITS
+
+This text details the implementation of a conversational engine for a personal tutoring project called PITS, built using LlamaIndex and Streamlit. The engine, housed in `conversation_engine.py`, aims to provide a persistent, context-aware conversational experience for students. 
+
+Here's a breakdown of the key components and functions:
+
+* **Core Features:** The engine handles conversation history, understands the learning topic, maintains context, and persists conversations across sessions.
+* **Key Functions:**
+    - `load_chat_store()`: Loads previous conversation history from a file, creating a new store if none exists.
+    - `display_messages()`:  Displays the conversation history in the Streamlit interface.
+    - `initialize_chatbot()`: Loads training materials, sets up a query engine, initializes the `OpenAIAgent` with a system prompt (including user name, study topic, and current slide content), and displays existing messages.
+    - `chat_interface()`: Handles the ongoing conversation – takes user input, generates a response using the agent, displays the interaction, and persists the conversation.
+* **Technology Stack:** The implementation utilizes `llama_index`, `openai`, `streamlit`, and standard Python libraries like `os` and `json`.  It leverages `ChatMemoryBuffer` for memory management and `QueryEngineTool` to access study materials.
+* **Persistence:** Conversation history is stored in a file specified by `CONVERSATION_FILE`.
+* **Agent Context:** The `OpenAIAgent` is initialized with a system prompt that provides context about its role (PITS, a personal tutor), the user, the study subject, and the current slide content.
+
+
+
+In essence, this section describes how to build a chatbot capable of engaging in a continuous, informed conversation with a student, remembering past interactions and leveraging relevant study materials.

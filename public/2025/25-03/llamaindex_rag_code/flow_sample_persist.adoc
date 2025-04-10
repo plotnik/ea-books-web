@@ -1,4 +1,8 @@
 = Diagram - Persisting and reusing Indexes
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
 
 ++++
 <div class="mermaid">
@@ -11,17 +15,189 @@ Sample ->> VectorStoreIndex: from_documents
 </div>
 ++++
 
+++++
+<script src="http://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+++++
+
 ---
 
-link:https://github.com/run-llama/llama_index/blob/main/docs/docs/module_guides/indexing/vector_store_index.md[
-Using VectorStoreIndex - Guide]
+link:llamaindex.html#_persisting_and_reusing_indexes[
+Persisting and reusing Indexes - Book]
+
 
 link:https://github.com/run-llama/llama_index/tree/main/llama-index-core/llama_index/core/indices/vector_store/base.py[
 VectorStoreIndex - Source]
 
 ---
 
-++++
-<script src="http://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true});</script>
-++++
+== Using VectorStoreIndex
+
+link:https://github.com/run-llama/llama_index/blob/main/docs/docs/module_guides/indexing/vector_store_index.md[
+Using VectorStoreIndex - Guide]
+
+
+This document details the `VectorStoreIndex` in LlamaIndex, a core component for Retrieval-Augmented Generation (RAG). Here's a breakdown:
+
+**Core Functionality:**
+
+*   `VectorStoreIndex` builds an index from a list of `Node` objects (text chunks with metadata).
+*   It's fundamental to most LlamaIndex applications, used directly or indirectly.
+
+**Loading Data & Creating the Index:**
+
+*   **Basic Usage:**  The simplest method uses `from_documents` to load documents and automatically create the index.
+*   **Ingestion Pipeline:** Offers more control over indexing by customizing chunking, metadata, and embedding using a pipeline of transformations.
+*   **Manual Node Creation:**  Allows complete control by creating and defining `Node` objects directly before passing them to the index.  Includes methods for handling updates (insertion, deletion, update, refresh).
+*   **Batch Size:** The `insert_batch_size` parameter can be adjusted for memory management, especially when using remote vector databases.
+
+**Storing the Index:**
+
+*   LlamaIndex supports numerous vector stores.
+*   You specify the desired vector store using a `StorageContext`, which includes the `vector_store` argument (e.g., Pinecone).
+
+**Advanced Features:**
+
+*   **Composable Retrieval:** The index can retrieve not just nodes, but also query engines, retrievers, and query pipelines, automatically executing them when retrieved.
+
+
+
+**Resources:**
+
+*   Links are provided to further documentation on loading, ingestion pipelines, node usage, metadata extraction, document management, vector stores, and example notebooks.
+
+
+
+== VectorStoreIndex Code
+
+This code defines a `+VectorStoreIndex+` class, which is a type of index
+in the LlamaIndex library designed to work with vector stores. Here's a
+breakdown of the code, section by section:
+
+*1. Imports:*
+
+* A variety of modules are imported from the `+llama_index+` library,
+covering asynchronous operations, base classes for retrievers and
+indices, data structures, embedding utilities, schema definitions
+(nodes, metadata), settings, storage, and vector store types.
+* `+asyncio+` is imported for asynchronous programming.
+* `+logging+` is used for logging messages.
+* `+typing+` is used for type hinting.
+
+*2. `+VectorStoreIndex+` Class Definition:*
+
+* *Inheritance:* The `+VectorStoreIndex+` class inherits from
+`+BaseIndex[IndexDict]+`. This means it's a specialized type of index
+that uses an `+IndexDict+` to store its internal structure.
+* *`+index_struct_cls+`:* This class attribute is set to `+IndexDict+`,
+specifying the type of index structure to be used.
+* *`+__init__+` Method (Constructor):*
+** This method initializes the `+VectorStoreIndex+` object.
+** It takes several arguments, including:
+*** `+nodes+`: A list of `+BaseNode+` objects representing the data to
+be indexed.
+*** `+use_async+`: A boolean flag to enable asynchronous operations.
+*** `+store_nodes_override+`: A flag to control whether to always store
+`+Node+` objects in the index and document store, even if the vector
+store already stores the text.
+*** `+embed_model+`: The embedding model to use for generating vector
+embeddings.
+*** `+insert_batch_size+`: The number of nodes to process in each batch
+during insertion.
+*** Other arguments related to the parent `+BaseIndex+` class.
+** It initializes instance variables (e.g., `+_use_async+`,
+`+_embed_model+`, `+_insert_batch_size+`) based on the input arguments.
+** It calls the `+__init__+` method of the parent `+BaseIndex+` class to
+perform common initialization tasks.
+* *`+from_vector_store+` Class Method:*
+** This is a class method (indicated by the `+@classmethod+` decorator)
+that creates a `+VectorStoreIndex+` from an existing
+`+BasePydanticVectorStore+`.
+** It checks if the vector store stores text. If not, it raises a
+`+ValueError+`.
+** It creates a `+StorageContext+` from the vector store.
+** It returns a new `+VectorStoreIndex+` object initialized with the
+vector store and other parameters.
+* *`+vector_store+` Property:*
+** This property provides access to the underlying
+`+BasePydanticVectorStore+` object.
+* *`+as_retriever+` Method:*
+** This method returns a `+BaseRetriever+` object that can be used to
+retrieve data from the index.
+** It creates a `+VectorIndexRetriever+` object, passing in the index
+itself, the node IDs, and other relevant parameters.
+* *`+_get_node_with_embedding+` Method:*
+** This method takes a list of `+BaseNode+` objects and generates
+embeddings for them using the specified embedding model.
+** It uses the `+embed_nodes+` function to perform the embedding in
+batches.
+** It creates a new list of `+BaseNode+` objects, each with its
+embedding added.
+* *`+_aget_node_with_embedding+` Method:*
+** This is an asynchronous version of `+_get_node_with_embedding+`. It
+uses `+async_embed_nodes+` to generate embeddings asynchronously.
+* *`+_async_add_nodes_to_index+` Method:*
+** This is an asynchronous method that adds nodes to the index.
+** It processes nodes in batches using `+iter_batch+`.
+** It generates embeddings for each batch of nodes using
+`+_aget_node_with_embedding+`.
+** It adds the nodes to the vector store using
+`+self._vector_store.async_add+`.
+** It handles the storage of nodes in the index struct and document
+store based on whether the vector store stores text and the
+`+_store_nodes_override+` flag.
+* *`+_add_nodes_to_index+` Method:*
+** This is the synchronous version of `+_async_add_nodes_to_index+`. It
+performs the same operations but without using asynchronous calls.
+* *`+_build_index_from_nodes+` Method:*
+** This method builds the index from a list of nodes.
+** It creates an `+IndexDict+` object.
+** It calls either `+_async_add_nodes_to_index+` or
+`+_add_nodes_to_index+` based on the `+_use_async+` flag.
+** It returns the created `+IndexDict+` object.
+* *`+build_index_from_nodes+` Method:*
+** This method builds the index from nodes, filtering out nodes without
+content.
+* *`+_insert+` Method:*
+** This method inserts nodes into the index.
+* *`+insert_nodes+` Method:*
+** This method inserts nodes into the index, handling potential errors
+and updating the storage context.
+* *`+_delete_node+` Method:*
+** Placeholder for deleting a single node.
+* *`+delete_nodes+` Method:*
+** This method deletes a list of nodes from the index. It deletes from
+the vector store and, optionally, from the document store.
+* *`+_delete_from_index_struct+` Method:*
+** Deletes nodes from the index structure.
+* *`+_delete_from_docstore+` Method:*
+** Deletes nodes from the document store.
+* *`+delete_ref_doc+` Method:*
+** Deletes a document and its associated nodes using a reference
+document ID.
+* *`+_adelete_from_index_struct+` Method:*
+** Asynchronous version of `+_delete_from_index_struct+`.
+* *`+_adelete_from_docstore+` Method:*
+** Asynchronous version of `+_delete_from_docstore+`.
+* *`+adelete_ref_doc+` Method:*
+** Asynchronous version of `+delete_ref_doc+`.
+* *`+ref_doc_info+` Property:*
+** Retrieves information about ingested documents and their nodes.
+
+*3. `+GPTVectorStoreIndex = VectorStoreIndex+`:*
+
+* This line creates an alias `+GPTVectorStoreIndex+` that points to the
+`+VectorStoreIndex+` class. This is likely done for compatibility or to
+provide a more specific name for a particular use case.
+
+*In Summary:*
+
+The `+VectorStoreIndex+` class provides a way to build an index on top
+of an existing vector store. It handles the process of embedding nodes,
+adding them to the vector store, and managing the index structure. It
+supports both synchronous and asynchronous operations and provides
+methods for inserting, deleting, and retrieving data. The class is
+designed to be flexible and adaptable to different vector store
+implementations. The `+store_nodes_override+` parameter is a key feature
+that allows control over how nodes are stored, especially when the
+vector store itself doesn't store the original text content.

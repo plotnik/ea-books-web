@@ -433,12 +433,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
 <h1>Diagram - Persisting and reusing Indexes</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_using_vectorstoreindex">Using VectorStoreIndex</a></li>
+<li><a href="#_vectorstoreindex_code">VectorStoreIndex Code</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
 <div class="mermaid">
 sequenceDiagram
 
@@ -447,22 +457,483 @@ actor Sample
 Sample ->> VectorStoreIndex: from_documents
 
 </div>
+<script src="http://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
 <hr>
 <div class="paragraph">
-<p><a href="https://github.com/run-llama/llama_index/blob/main/docs/docs/module_guides/indexing/vector_store_index.md">
-Using VectorStoreIndex - Guide</a></p>
+<p><a href="llamaindex.html#_persisting_and_reusing_indexes">
+Persisting and reusing Indexes - Book</a></p>
 </div>
 <div class="paragraph">
 <p><a href="https://github.com/run-llama/llama_index/tree/main/llama-index-core/llama_index/core/indices/vector_store/base.py">
 VectorStoreIndex - Source</a></p>
 </div>
 <hr>
-<script src="http://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true});</script>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_using_vectorstoreindex">Using VectorStoreIndex</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://github.com/run-llama/llama_index/blob/main/docs/docs/module_guides/indexing/vector_store_index.md">
+Using VectorStoreIndex - Guide</a></p>
+</div>
+<div class="paragraph">
+<p>This document details the <code>VectorStoreIndex</code> in LlamaIndex, a core component for Retrieval-Augmented Generation (RAG). Here&#8217;s a breakdown:</p>
+</div>
+<div class="paragraph">
+<p><strong>Core Functionality:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>VectorStoreIndex</code> builds an index from a list of <code>Node</code> objects (text chunks with metadata).</p>
+</li>
+<li>
+<p>It&#8217;s fundamental to most LlamaIndex applications, used directly or indirectly.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Loading Data &amp; Creating the Index:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Basic Usage:</strong>  The simplest method uses <code>from_documents</code> to load documents and automatically create the index.</p>
+</li>
+<li>
+<p><strong>Ingestion Pipeline:</strong> Offers more control over indexing by customizing chunking, metadata, and embedding using a pipeline of transformations.</p>
+</li>
+<li>
+<p><strong>Manual Node Creation:</strong>  Allows complete control by creating and defining <code>Node</code> objects directly before passing them to the index.  Includes methods for handling updates (insertion, deletion, update, refresh).</p>
+</li>
+<li>
+<p><strong>Batch Size:</strong> The <code>insert_batch_size</code> parameter can be adjusted for memory management, especially when using remote vector databases.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Storing the Index:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>LlamaIndex supports numerous vector stores.</p>
+</li>
+<li>
+<p>You specify the desired vector store using a <code>StorageContext</code>, which includes the <code>vector_store</code> argument (e.g., Pinecone).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Advanced Features:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Composable Retrieval:</strong> The index can retrieve not just nodes, but also query engines, retrievers, and query pipelines, automatically executing them when retrieved.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Resources:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Links are provided to further documentation on loading, ingestion pipelines, node usage, metadata extraction, document management, vector stores, and example notebooks.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vectorstoreindex_code">VectorStoreIndex Code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This code defines a <code>VectorStoreIndex</code> class, which is a type of index
+in the LlamaIndex library designed to work with vector stores. Here&#8217;s a
+breakdown of the code, section by section:</p>
+</div>
+<div class="paragraph">
+<p><strong>1. Imports:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A variety of modules are imported from the <code>llama_index</code> library,
+covering asynchronous operations, base classes for retrievers and
+indices, data structures, embedding utilities, schema definitions
+(nodes, metadata), settings, storage, and vector store types.</p>
+</li>
+<li>
+<p><code>asyncio</code> is imported for asynchronous programming.</p>
+</li>
+<li>
+<p><code>logging</code> is used for logging messages.</p>
+</li>
+<li>
+<p><code>typing</code> is used for type hinting.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>2. <code>VectorStoreIndex</code> Class Definition:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Inheritance:</strong> The <code>VectorStoreIndex</code> class inherits from
+<code>BaseIndex[IndexDict]</code>. This means it&#8217;s a specialized type of index
+that uses an <code>IndexDict</code> to store its internal structure.</p>
+</li>
+<li>
+<p><strong><code>index_struct_cls</code>:</strong> This class attribute is set to <code>IndexDict</code>,
+specifying the type of index structure to be used.</p>
+</li>
+<li>
+<p><strong><code>__init__</code> Method (Constructor):</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This method initializes the <code>VectorStoreIndex</code> object.</p>
+</li>
+<li>
+<p>It takes several arguments, including:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>nodes</code>: A list of <code>BaseNode</code> objects representing the data to
+be indexed.</p>
+</li>
+<li>
+<p><code>use_async</code>: A boolean flag to enable asynchronous operations.</p>
+</li>
+<li>
+<p><code>store_nodes_override</code>: A flag to control whether to always store
+<code>Node</code> objects in the index and document store, even if the vector
+store already stores the text.</p>
+</li>
+<li>
+<p><code>embed_model</code>: The embedding model to use for generating vector
+embeddings.</p>
+</li>
+<li>
+<p><code>insert_batch_size</code>: The number of nodes to process in each batch
+during insertion.</p>
+</li>
+<li>
+<p>Other arguments related to the parent <code>BaseIndex</code> class.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>It initializes instance variables (e.g., <code>_use_async</code>,
+<code>_embed_model</code>, <code>_insert_batch_size</code>) based on the input arguments.</p>
+</li>
+<li>
+<p>It calls the <code>__init__</code> method of the parent <code>BaseIndex</code> class to
+perform common initialization tasks.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>from_vector_store</code> Class Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This is a class method (indicated by the <code>@classmethod</code> decorator)
+that creates a <code>VectorStoreIndex</code> from an existing
+<code>BasePydanticVectorStore</code>.</p>
+</li>
+<li>
+<p>It checks if the vector store stores text. If not, it raises a
+<code>ValueError</code>.</p>
+</li>
+<li>
+<p>It creates a <code>StorageContext</code> from the vector store.</p>
+</li>
+<li>
+<p>It returns a new <code>VectorStoreIndex</code> object initialized with the
+vector store and other parameters.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>vector_store</code> Property:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This property provides access to the underlying
+<code>BasePydanticVectorStore</code> object.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>as_retriever</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This method returns a <code>BaseRetriever</code> object that can be used to
+retrieve data from the index.</p>
+</li>
+<li>
+<p>It creates a <code>VectorIndexRetriever</code> object, passing in the index
+itself, the node IDs, and other relevant parameters.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_get_node_with_embedding</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This method takes a list of <code>BaseNode</code> objects and generates
+embeddings for them using the specified embedding model.</p>
+</li>
+<li>
+<p>It uses the <code>embed_nodes</code> function to perform the embedding in
+batches.</p>
+</li>
+<li>
+<p>It creates a new list of <code>BaseNode</code> objects, each with its
+embedding added.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_aget_node_with_embedding</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This is an asynchronous version of <code>_get_node_with_embedding</code>. It
+uses <code>async_embed_nodes</code> to generate embeddings asynchronously.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_async_add_nodes_to_index</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This is an asynchronous method that adds nodes to the index.</p>
+</li>
+<li>
+<p>It processes nodes in batches using <code>iter_batch</code>.</p>
+</li>
+<li>
+<p>It generates embeddings for each batch of nodes using
+<code>_aget_node_with_embedding</code>.</p>
+</li>
+<li>
+<p>It adds the nodes to the vector store using
+<code>self._vector_store.async_add</code>.</p>
+</li>
+<li>
+<p>It handles the storage of nodes in the index struct and document
+store based on whether the vector store stores text and the
+<code>_store_nodes_override</code> flag.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_add_nodes_to_index</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This is the synchronous version of <code>_async_add_nodes_to_index</code>. It
+performs the same operations but without using asynchronous calls.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_build_index_from_nodes</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This method builds the index from a list of nodes.</p>
+</li>
+<li>
+<p>It creates an <code>IndexDict</code> object.</p>
+</li>
+<li>
+<p>It calls either <code>_async_add_nodes_to_index</code> or
+<code>_add_nodes_to_index</code> based on the <code>_use_async</code> flag.</p>
+</li>
+<li>
+<p>It returns the created <code>IndexDict</code> object.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>build_index_from_nodes</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This method builds the index from nodes, filtering out nodes without
+content.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_insert</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This method inserts nodes into the index.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>insert_nodes</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This method inserts nodes into the index, handling potential errors
+and updating the storage context.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_delete_node</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Placeholder for deleting a single node.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>delete_nodes</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This method deletes a list of nodes from the index. It deletes from
+the vector store and, optionally, from the document store.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_delete_from_index_struct</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Deletes nodes from the index structure.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_delete_from_docstore</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Deletes nodes from the document store.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>delete_ref_doc</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Deletes a document and its associated nodes using a reference
+document ID.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_adelete_from_index_struct</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Asynchronous version of <code>_delete_from_index_struct</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>_adelete_from_docstore</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Asynchronous version of <code>_delete_from_docstore</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>adelete_ref_doc</code> Method:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Asynchronous version of <code>delete_ref_doc</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>ref_doc_info</code> Property:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Retrieves information about ingested documents and their nodes.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>3. <code>GPTVectorStoreIndex = VectorStoreIndex</code>:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>This line creates an alias <code>GPTVectorStoreIndex</code> that points to the
+<code>VectorStoreIndex</code> class. This is likely done for compatibility or to
+provide a more specific name for a particular use case.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>In Summary:</strong></p>
+</div>
+<div class="paragraph">
+<p>The <code>VectorStoreIndex</code> class provides a way to build an index on top
+of an existing vector store. It handles the process of embedding nodes,
+adding them to the vector store, and managing the index structure. It
+supports both synchronous and asynchronous operations and provides
+methods for inserting, deleting, and retrieving data. The class is
+designed to be flexible and adaptable to different vector store
+implementations. The <code>store_nodes_override</code> parameter is a key feature
+that allows control over how nodes are stored, especially when the
+vector store itself doesn&#8217;t store the original text content.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-09 10:33:13 +0300
+Last updated 2025-04-10 08:32:25 +0300
 </div>
 </div>
 </body>

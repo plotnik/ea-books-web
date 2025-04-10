@@ -604,6 +604,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_openaiagent">OpenAIAgent</a></li>
 </ul>
 </li>
+<li><a href="#_hands_on_implementing_conversation_tracking_for_pits">Hands-on – implementing conversation tracking for PITS</a></li>
 </ul>
 </li>
 </ul>
@@ -2784,12 +2785,59 @@ flow_sample_persist</a>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_hands_on_implementing_conversation_tracking_for_pits">Hands-on – implementing conversation tracking for PITS</h3>
+<div class="paragraph">
+<p>This text details the implementation of a conversational engine for a personal tutoring project called PITS, built using LlamaIndex and Streamlit. The engine, housed in <code>conversation_engine.py</code>, aims to provide a persistent, context-aware conversational experience for students.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a breakdown of the key components and functions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Core Features:</strong> The engine handles conversation history, understands the learning topic, maintains context, and persists conversations across sessions.</p>
+</li>
+<li>
+<p><strong>Key Functions:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>load_chat_store()</code>: Loads previous conversation history from a file, creating a new store if none exists.</p>
+</li>
+<li>
+<p><code>display_messages()</code>:  Displays the conversation history in the Streamlit interface.</p>
+</li>
+<li>
+<p><code>initialize_chatbot()</code>: Loads training materials, sets up a query engine, initializes the <code>OpenAIAgent</code> with a system prompt (including user name, study topic, and current slide content), and displays existing messages.</p>
+</li>
+<li>
+<p><code>chat_interface()</code>: Handles the ongoing conversation – takes user input, generates a response using the agent, displays the interaction, and persists the conversation.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Technology Stack:</strong> The implementation utilizes <code>llama_index</code>, <code>openai</code>, <code>streamlit</code>, and standard Python libraries like <code>os</code> and <code>json</code>.  It leverages <code>ChatMemoryBuffer</code> for memory management and <code>QueryEngineTool</code> to access study materials.</p>
+</li>
+<li>
+<p><strong>Persistence:</strong> Conversation history is stored in a file specified by <code>CONVERSATION_FILE</code>.</p>
+</li>
+<li>
+<p><strong>Agent Context:</strong> The <code>OpenAIAgent</code> is initialized with a system prompt that provides context about its role (PITS, a personal tutor), the user, the study subject, and the current slide content.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In essence, this section describes how to build a chatbot capable of engaging in a continuous, informed conversation with a student, remembering past interactions and leveraging relevant study materials.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-09 10:34:35 +0300
+Last updated 2025-04-10 08:11:48 +0300
 </div>
 </div>
 </body>
