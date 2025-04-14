@@ -194,6 +194,7 @@ if model_type=="Gemini":
     llm_models = [
         "gemini-2.0-flash", 
         "gemma-3-27b-it",
+        "gemini-2.5-pro-exp-03-25",
     ]
 elif model_type=="OpenAI":    
     llm_models = [

@@ -106,7 +106,7 @@ Read a list of strings from a file
       except Exception as e:
           print(f"Error reading {filename}: {e}")
           return []
-      
+    
 Write a list of strings to a text file
 
 ::
@@ -118,14 +118,14 @@ Write a list of strings to a text file
                   file.write(string + '\n') 
       except Exception as e:
           print(f"Error writing {filename}: {e}")
-      
+    
 Removes specified strings from a list of strings.  
 
 ::
 
   def remove_strings_from_list(string_list, strings_to_remove):
     return [s for s in string_list if s not in strings_to_remove]
-       
+     
 Collect all tags into a single set
 
 ::
@@ -134,10 +134,10 @@ Collect all tags into a single set
 
   def sort_by_pattern(all_tags):
       tags_order = read_list_from_file(tags_file)
-  
+
       # Create a mapping from tag to priority index for known tags.
       tag_priority = { tag: index for index, tag in enumerate(tags_order) }
-  
+
       # Sort the all_tags list.
       # For tags in tags_order, the key is (0, priority) and for others (1, tag)
       sorted_tags = sorted(all_tags,
@@ -164,7 +164,7 @@ Select the Prompt
           if entry['name'] == name:
               return entry.get('note')
       return None
-  
+
   if tag_name == "all":
       prompt_names = [item['name'] for item in prompts]
   else:    
@@ -194,6 +194,7 @@ Select OpenAI LLM
       llm_models = [
           "gemini-2.0-flash", 
           "gemma-3-27b-it",
+          "gemini-2.5-pro-exp-03-25",
       ]
   elif model_type=="OpenAI":    
       llm_models = [
@@ -207,7 +208,7 @@ Select OpenAI LLM
       llm_models = [
           "ollama llama3.2",
       ]
-  
+
   llm_temperatures = [0, 0.1, 0.7, 1]
 
   openai_model = st.sidebar.selectbox(
@@ -241,7 +242,7 @@ If a button in the sidebar is clicked, the application counts the number of toke
 
       encoding = tiktoken.encoding_for_model("gpt-4o-mini")
       tokens = encoding.encode(text)
-  
+
       openai_prices = {
           "gpt-4o-mini": 0.15, 
           "o3-mini": 1.10,
@@ -366,7 +367,7 @@ Call Gemini
               temperature=llm_temperature,
           )
       return response.choices[0]
-    
+  
   def call_gemma(prompt, text):
       g_key = os.getenv("GEMINI_API_KEY")
       g_client = OpenAI(
@@ -384,7 +385,7 @@ Call Gemini
               temperature=llm_temperature,
           )
       return response.choices[0]
-    
+  
 When the user clicks a button to call OpenAI:
 
 - The application sends the selected prompt and user input to the OpenAI API.
@@ -403,7 +404,7 @@ Concatenate request
    
   def concat_request(prompt, text):
       return prompt + "\n\n```\n" + text + "\n```\n"
-  
+
 
   st.sidebar.write('---')
   if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
@@ -415,10 +416,10 @@ Concatenate request
 
       elif openai_model.startswith("gemini"): 
           response = call_gemini(prompt, text)
-        
+      
       elif openai_model.startswith("gemma"): 
           response = call_gemma(prompt, text)
-        
+      
       elif openai_model.startswith("ollama "): 
           response = call_ollama(prompt, text)
 
@@ -437,7 +438,7 @@ Concatenate request
       all_tags = remove_strings_from_list(all_tags, ["all", tag_name])
       all_tags.insert(0, tag_name)
       write_list_to_file(tags_file, all_tags)
-  
+
       if platform.system() == 'Darwin':
           os.system("afplay /System/Library/Sounds/Glass.aiff")
       st.rerun()
@@ -524,7 +525,7 @@ Step 2: Configure Your Environment
         - pyperclip
         - pip:
           - ollama
-          
+         
 2. **Select conda-forge Channel**
 
    Open your terminal or command prompt and execute the following
@@ -573,17 +574,17 @@ Here’s an example of how to structure the contents:
      note: Improve style of the content you are provided.
      tags:
        - text
-      
+     
    - name: summarize_md
      note: You will be provided with statements in markdown, and your task is to summarize the content.
      tags:
        - text
-      
+     
    - name: explain_python
      note: Explain Python code you are provided.
      tags:
        - python
-      
+     
    - name: write_python
      note: Write Python code to satisfy the description you are provided.
      tags:

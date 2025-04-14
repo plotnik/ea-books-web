@@ -13,6 +13,9 @@ Literate Programs
    ai_note.py
    ai_obsidian.py
    o_ed.py
+   o_chat.py
+   book_lc.py
+   book_chat.py
    li_extract.py
    L1_Router_Engine.py   
    udemy.py
@@ -32,7 +35,7 @@ Literate Programs
    jira_stats.py
    grafana_stats.py
    google_search.py
-   llama_chat.py
+   ollama_chat.py
    cmp_props.py
    pi_keys.py
    albums.py

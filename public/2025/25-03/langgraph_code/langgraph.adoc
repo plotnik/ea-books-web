@@ -1,0 +1,32 @@
+= Learning LangChain: Building AI and LLM Applications with LangChain and LangGraph
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+Mayo Oshin
+
+== Chapter 1. LLM Fundamentals with LangChain
+
+=== Using LLMs in LangChain
+
+This document details how to interact with Large Language Models (LLMs) using the LangChain framework, focusing on two primary interfaces: **LLMs** and **Chat Models**.
+
+**LLM Interface:** This interface takes a simple string prompt, sends it to the LLM provider (like OpenAI), and returns the model's prediction.  Key parameters for configuration include `model` (specifying the underlying LLM), `temperature` (controlling output randomness/creativity), and `max_tokens` (limiting output length/cost).
+
+**Chat Model Interface:** This interface is designed for conversational interactions. It differentiates messages by `role`:
+* **System:** Instructions for the model.
+* **User:** The user's input/query.
+* **Assistant:** The model's response.
+
+LangChain provides message classes like `HumanMessage`, `AIMessage`, `SystemMessage`, and `ChatMessage` to manage these roles. Using `SystemMessage` allows pre-configuring the AI's behavior, ensuring more predictable responses.
+
+**Key Takeaways:**
+
+* **LangChain simplifies LLM interaction.** It provides consistent interfaces regardless of the underlying provider.
+* **Choosing between LLM and Chat Model depends on the application.**  Simple prompts use the LLM interface, while conversations benefit from the Chat Model interface.
+* **Parameters like `temperature` and `max_tokens` are crucial for controlling LLM behavior and cost.**
+* **`SystemMessage` is powerful for guiding the model's responses.**
+
+
+
+The document includes code examples in both Python and JavaScript demonstrating how to use both interfaces with OpenAI's `gpt-3.5-turbo` model.
