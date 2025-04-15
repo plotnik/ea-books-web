@@ -447,7 +447,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_chapter_1_llm_fundamentals_with_langchain">Chapter 1. LLM Fundamentals with LangChain</a>
 <ul class="sectlevel2">
+<li><a href="#_getting_set_up_with_langchain">Getting Set Up with LangChain</a></li>
 <li><a href="#_using_llms_in_langchain">Using LLMs in LangChain</a></li>
+<li><a href="#_making_llm_prompts_reusable">Making LLM Prompts Reusable</a></li>
 </ul>
 </li>
 </ul>
@@ -458,7 +460,43 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_chapter_1_llm_fundamentals_with_langchain">Chapter 1. LLM Fundamentals with LangChain</h2>
 <div class="sectionbody">
 <div class="sect2">
+<h3 id="_getting_set_up_with_langchain">Getting Set Up with LangChain</h3>
+<div class="paragraph">
+<p>The chapter recommends setting up LangChain on your computer to follow along with the examples. First, create an OpenAI account and generate an API key from the OpenAI website. LangChain supports both Python and JavaScript, and the book provides equivalent code examples in both languages.</p>
+</div>
+<div class="paragraph">
+<p>For Python users:
+- Ensure Python is installed.
+- Optionally install Jupyter Notebook (<code>pip install notebook</code>).
+- Install LangChain and related libraries via pip.
+- Set the OpenAI API key in your terminal environment.
+- Launch Jupyter Notebook to run the examples.</p>
+</div>
+<div class="paragraph">
+<p>For JavaScript users:
+- Set the OpenAI API key in your terminal environment.
+- Install Node.js if needed.
+- Install LangChain and related packages via npm.
+- Save code examples as <code>.js</code> files and run them using Node.js.</p>
+</div>
+<div class="paragraph">
+<p>This setup ensures you can run the provided LangChain code examples smoothly throughout the book.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_using_llms_in_langchain">Using LLMs in LangChain</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/langchain-ai/learning-langchain/blob/master/ch1/py/a-llm.py" target="_blank">
+ch1/py/a-llm.py</a>
+<hr>
+<a href="https://github.com/langchain-ai/learning-langchain/blob/master/ch1/py/b-chat.py" target="_blank">
+ch1/py/b-chat.py</a>
+<hr>
+<a href="https://github.com/langchain-ai/learning-langchain/blob/master/ch1/py/c-system.py" target="_blank">
+ch1/py/c-system.py</a>
+</div>
+</div>
 <div class="paragraph">
 <p>This document details how to interact with Large Language Models (LLMs) using the LangChain framework, focusing on two primary interfaces: <strong>LLMs</strong> and <strong>Chat Models</strong>.</p>
 </div>
@@ -466,10 +504,20 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><strong>LLM Interface:</strong> This interface takes a simple string prompt, sends it to the LLM provider (like OpenAI), and returns the model&#8217;s prediction.  Key parameters for configuration include <code>model</code> (specifying the underlying LLM), <code>temperature</code> (controlling output randomness/creativity), and <code>max_tokens</code> (limiting output length/cost).</p>
 </div>
 <div class="paragraph">
-<p><strong>Chat Model Interface:</strong> This interface is designed for conversational interactions. It differentiates messages by <code>role</code>:
-* <strong>System:</strong> Instructions for the model.
-* <strong>User:</strong> The user&#8217;s input/query.
-* <strong>Assistant:</strong> The model&#8217;s response.</p>
+<p><strong>Chat Model Interface:</strong> This interface is designed for conversational interactions. It differentiates messages by <code>role</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>System:</strong> Instructions for the model.</p>
+</li>
+<li>
+<p><strong>User:</strong> The user&#8217;s input/query.</p>
+</li>
+<li>
+<p><strong>Assistant:</strong> The model&#8217;s response.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>LangChain provides message classes like <code>HumanMessage</code>, <code>AIMessage</code>, <code>SystemMessage</code>, and <code>ChatMessage</code> to manage these roles. Using <code>SystemMessage</code> allows pre-configuring the AI&#8217;s behavior, ensuring more predictable responses.</p>
@@ -497,12 +545,40 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>The document includes code examples in both Python and JavaScript demonstrating how to use both interfaces with OpenAI&#8217;s <code>gpt-3.5-turbo</code> model.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_making_llm_prompts_reusable">Making LLM Prompts Reusable</h3>
+<div class="paragraph">
+<p>The content explains how prompt instructions shape the output of language models by providing context and guiding responses. It demonstrates creating detailed prompts with dynamic inputs (like context and question) using LangChain’s <code>PromptTemplate</code> and <code>ChatPromptTemplate</code> interfaces in both Python and JavaScript. These templates allow placeholders (e.g., <code>{context}</code>, <code>{question}</code>) to be filled at runtime, enabling flexible prompt construction.</p>
+</div>
+<div class="paragraph">
+<p>Examples show:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Defining a prompt template with placeholders.</p>
+</li>
+<li>
+<p>Invoking the template with specific context and question values.</p>
+</li>
+<li>
+<p>Passing the formatted prompt to an LLM (OpenAI) to generate answers.</p>
+</li>
+<li>
+<p>Using <code>ChatPromptTemplate</code> for chat-based interactions with role-based messages (<code>system</code>, <code>human</code>).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The key takeaway is that LangChain simplifies building reusable, dynamic prompts that can be integrated with LLMs for question answering or chat applications, ensuring prompts are structured and adaptable to user inputs.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-14 10:09:53 +0300
+Last updated 2025-04-15 10:48:08 +0300
 </div>
 </div>
 </body>

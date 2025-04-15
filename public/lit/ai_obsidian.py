@@ -21,6 +21,7 @@ import os
 import tiktoken
 from openai import OpenAI
 import pyperclip
+from typing import List
 
 # Print banner.
 #
@@ -75,27 +76,71 @@ Prioritize specificity and uniqueness in each question.
 
 prompt = prompt_summary
 
-# Select OpenAI LLM.
+# Select LLM
+# ----------
 #
 # ::
 
-llm_models = [
-    "gemma-3-27b-it",
-    "gemini-2.0-flash", 
-    "gemini-2.0-flash-lite",
-    "gpt-4o-mini", 
-    "gpt-4o"
-]
+llm_prices = {
+    "gemma-3-27b-it": 0.0,
+    "gemini-2.0-flash": 0.0,
+    "gpt-4.1-mini": 0.4,
+    "gpt-4.1-nano": 0.1,
+    "gpt-4.1": 2.0,
+    "gpt-4o-mini": 0.15,
+    "o3-mini": 1.10,
+    "gpt-4o": 2.5,
+    "o1": 15.0,
+}
+
+# Remember which LLM was used last time
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+llm_names_file = ".o-ai"
+
+# Writes a list of strings to a file, one per line.
+
+def write_list_to_file(filename: str, lines: List[str]) -> None:
+    with open(filename, 'w', encoding='utf-8') as file:
+        file.write('\n'.join(lines) + '\n')
+        
+# Reads non-empty, stripped lines from a text file into a list.
+# Returns an empty list if the file does not exist or an error occurs.
+
+def read_list_from_file(filename: str) -> None:
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            return [line.strip() for line in file if line.strip()]
+    except FileNotFoundError:
+        return []
+        
+# Compare two lists of strings for equality based on their sorted versions
+
+def lists_are_equal(a: List[str], b: List[str]) -> bool:
+    return sorted(a) == sorted(b)
+    
+# Removes all occurrences of ``string_to_remove`` from ``lst``.   
+
+def remove_string(lines: List[str], string_to_remove: str) -> List[str]:
+    return [s for s in lines if s != string_to_remove]
+    
+# Select LLM
+
+llm_models = list(llm_prices.keys())
+llm_names = read_list_from_file(llm_names_file) 
+if lists_are_equal(llm_models, llm_names):
+    llm_models = llm_names
+
 llm_temperatures = [0, 0.1, 0.7, 1]
 
 llm_model = st.sidebar.selectbox(
-   "OpenAI Model",
+   "LLM Model",
    llm_models,
    index = 0
 )
 
 llm_temperature = st.sidebar.select_slider(
-   "OpenAI Temperature",
+   "LLM Temperature",
    options = llm_temperatures,
    value = 0.1
 )
@@ -177,7 +222,10 @@ note_name = st.selectbox(
 file_path = os.path.join(note_home, note_name)
 with open(file_path, 'r', encoding='utf-8') as file:
     text = file.read()
-
+    
+# Tokens & Price
+# --------------
+#
 # Certain models are not compatible with ``tiktoken 0.7.0``, 
 # so we have added a separate configuration for them.
 # 
@@ -189,14 +237,7 @@ def count_tokens():
     encoding = tiktoken.encoding_for_model(llm_model_tiktoken)
     tokens = encoding.encode(text)
     
-    openai_prices = {
-        "gpt-4o-mini": 0.15,
-        "o3-mini": 1.10,
-        "gpt-4o": 2.5,
-        "o1": 15.0,
-    }
-        
-    cents = round(len(tokens) * openai_prices[llm_model]/10000, 5)
+    cents = round(len(tokens) * llm_prices[llm_model]/10000, 5)
 
     st.sidebar.write(f'''
         | Characters | Tokens | Cents |
@@ -204,8 +245,8 @@ def count_tokens():
         | {len(text)} | {len(tokens)} | {cents} |
         ''')
     
-if llm_model.startswith("gpt-") or llm_model.startswith("o-"):
-    count_tokens()
+#if llm_model.startswith("gpt-") or llm_model.startswith("o-"):
+count_tokens()
  
 
 # Call OpenAI API.
@@ -266,6 +307,13 @@ def call_llm():
     st.write('')
     st.info(prompt, icon="🤔")
     
+    # Remember which LLM was used last time
+    global llm_models
+    llm_models = remove_string(llm_models, llm_model)
+    llm_models.insert(0, llm_model)
+    write_list_to_file(llm_names_file, llm_models)
+    
+    # Call LLM
     if llm_model.startswith("gemini"):
         choice = call_gemini()
     elif llm_model.startswith("gemma"): 
@@ -273,21 +321,26 @@ def call_llm():
     else:
         choice = call_openai()
         
+    # Save result in session    
     out_text = choice.message.content    
     st.session_state.openai_result = out_text
 
+    # Print result
     st.write('---')
     st.write(out_text)
     st.write('---')
     st.write(f'finish_reason: `{choice.finish_reason}`')
 
-    out_file = 'ai_obsidian.txt'
-    with open(out_file, 'w') as file:
-        file.write(out_text)
-    st.write(f'Result saved: `{out_file}`')    
+    # Save result in file   
+    # out_file = 'ai_obsidian.txt'
+    # with open(out_file, 'w') as file:
+    #    file.write(out_text)
+    # st.write(f'Result saved: `{out_file}`')    
     
+    # Save result to clipboard  
     pyperclip.copy(out_text)
     st.write(f'Copied to clipboard')
+    
     
 # Buttons here
 #

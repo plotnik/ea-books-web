@@ -121,6 +121,7 @@ if os.path.exists(index_folder):
 else:
     if st.sidebar.button(':construction: &nbsp; Create Index', type='primary', use_container_width=True):
         create_index(book_html, index_folder)
+        st.rerun()
     else:
         st.stop()
 
@@ -148,7 +149,7 @@ if st.button(":question: &nbsp; Ask", use_container_width=True):
     st.rerun()
 
 if "response" in st.session_state:
-    st.write(st.session_state.response)
+    st.write(st.session_state.response["result"])
     if st.sidebar.button(":clipboard: &nbsp; Copy to clipboard", use_container_width=True):
-        pyperclip.copy(st.session_state.response)
+        pyperclip.copy(st.session_state.response["result"])
         st.toast(f'Copied to clipboard')

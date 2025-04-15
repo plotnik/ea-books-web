@@ -74,6 +74,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">tiktoken</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pyperclip</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 </pre></div>
 </div>
 <p>Print banner.</p>
@@ -125,24 +126,69 @@
 <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_summary</span>
 </pre></div>
 </div>
-<p>Select OpenAI LLM.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;gemma-3-27b-it&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gemini-2.0-flash-lite&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4o&quot;</span>
-<span class="p">]</span>
+</section>
+<section id="select-llm">
+<h2>Select LLM<a class="headerlink" href="#select-llm" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;gemma-3-27b-it&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4.1-mini&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4.1-nano&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4.1&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="s2">&quot;o3-mini&quot;</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o&quot;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
+    <span class="s2">&quot;o1&quot;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="remember-which-llm-was-used-last-time">
+<h3>Remember which LLM was used last time<a class="headerlink" href="#remember-which-llm-was-used-last-time" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_names_file</span> <span class="o">=</span> <span class="s2">&quot;.o-ai&quot;</span>
+</pre></div>
+</div>
+<p>Writes a list of strings to a file, one per line.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">write_list_to_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Reads non-empty, stripped lines from a text file into a list.
+Returns an empty list if the file does not exist or an error occurs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">read_list_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>Compare two lists of strings for equality based on their sorted versions</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">lists_are_equal</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">b</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Removes all occurrences of <code class="docutils literal notranslate"><span class="pre">string_to_remove</span></code> from <code class="docutils literal notranslate"><span class="pre">lst</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">remove_string</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">string_to_remove</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">s</span> <span class="o">!=</span> <span class="n">string_to_remove</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Select LLM</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">llm_prices</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="n">llm_names</span> <span class="o">=</span> <span class="n">read_list_from_file</span><span class="p">(</span><span class="n">llm_names_file</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">lists_are_equal</span><span class="p">(</span><span class="n">llm_models</span><span class="p">,</span> <span class="n">llm_names</span><span class="p">):</span>
+    <span class="n">llm_models</span> <span class="o">=</span> <span class="n">llm_names</span>
+
 <span class="n">llm_temperatures</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 
 <span class="n">llm_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-   <span class="s2">&quot;OpenAI Model&quot;</span><span class="p">,</span>
+   <span class="s2">&quot;LLM Model&quot;</span><span class="p">,</span>
    <span class="n">llm_models</span><span class="p">,</span>
    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="p">)</span>
 
 <span class="n">llm_temperature</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">select_slider</span><span class="p">(</span>
-   <span class="s2">&quot;OpenAI Temperature&quot;</span><span class="p">,</span>
+   <span class="s2">&quot;LLM Temperature&quot;</span><span class="p">,</span>
    <span class="n">options</span> <span class="o">=</span> <span class="n">llm_temperatures</span><span class="p">,</span>
    <span class="n">value</span> <span class="o">=</span> <span class="mf">0.1</span>
 <span class="p">)</span>
@@ -216,6 +262,10 @@
     <span class="n">text</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="tokens-price">
+<h2>Tokens &amp; Price<a class="headerlink" href="#tokens-price" title="Link to this heading">¶</a></h2>
 <p>Certain models are not compatible with <code class="docutils literal notranslate"><span class="pre">tiktoken</span> <span class="pre">0.7.0</span></code>,
 so we have added a separate configuration for them.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">count_tokens</span><span class="p">():</span>
@@ -224,14 +274,7 @@ so we have added a separate configuration for them.</p>
     <span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="n">llm_model_tiktoken</span><span class="p">)</span>
     <span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
-    <span class="n">openai_prices</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
-        <span class="s2">&quot;o3-mini&quot;</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">,</span>
-        <span class="s2">&quot;gpt-4o&quot;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
-        <span class="s2">&quot;o1&quot;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
-    <span class="p">}</span>
-
-    <span class="n">cents</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">*</span> <span class="n">openai_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">]</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">cents</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">*</span> <span class="n">llm_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">]</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
     <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        | Characters | Tokens | Cents |</span>
@@ -239,8 +282,8 @@ so we have added a separate configuration for them.</p>
 <span class="s1">        | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">cents</span><span class="si">}</span><span class="s1"> |</span>
 <span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gpt-&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;o-&quot;</span><span class="p">):</span>
-    <span class="n">count_tokens</span><span class="p">()</span>
+<span class="c1">#if llm_model.startswith(&quot;gpt-&quot;) or llm_model.startswith(&quot;o-&quot;):</span>
+<span class="n">count_tokens</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Call OpenAI API.</p>
@@ -289,11 +332,18 @@ so we have added a separate configuration for them.</p>
     <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Buttons.</p>
+<p>Generic LLM call.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">call_llm</span><span class="p">():</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;🤔&quot;</span><span class="p">)</span>
 
+    <span class="c1"># Remember which LLM was used last time</span>
+    <span class="k">global</span> <span class="n">llm_models</span>
+    <span class="n">llm_models</span> <span class="o">=</span> <span class="n">remove_string</span><span class="p">(</span><span class="n">llm_models</span><span class="p">,</span> <span class="n">llm_model</span><span class="p">)</span>
+    <span class="n">llm_models</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">llm_model</span><span class="p">)</span>
+    <span class="n">write_list_to_file</span><span class="p">(</span><span class="n">llm_names_file</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
+
+    <span class="c1"># Call LLM</span>
     <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemini&quot;</span><span class="p">):</span>
         <span class="n">choice</span> <span class="o">=</span> <span class="n">call_gemini</span><span class="p">()</span>
     <span class="k">elif</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemma&quot;</span><span class="p">):</span>
@@ -301,29 +351,39 @@ so we have added a separate configuration for them.</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">choice</span> <span class="o">=</span> <span class="n">call_openai</span><span class="p">()</span>
 
+    <span class="c1"># Save result in session</span>
     <span class="n">out_text</span> <span class="o">=</span> <span class="n">choice</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span> <span class="o">=</span> <span class="n">out_text</span>
 
+    <span class="c1"># Print result</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_text</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;finish_reason: `</span><span class="si">{</span><span class="n">choice</span><span class="o">.</span><span class="n">finish_reason</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
 
-    <span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;ai_obsidian.txt&#39;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_text</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result saved: `</span><span class="si">{</span><span class="n">out_file</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
+    <span class="c1"># Save result in file</span>
+    <span class="c1"># out_file = &#39;ai_obsidian.txt&#39;</span>
+    <span class="c1"># with open(out_file, &#39;w&#39;) as file:</span>
+    <span class="c1">#    file.write(out_text)</span>
+    <span class="c1"># st.write(f&#39;Result saved: `{out_file}`&#39;)</span>
 
+    <span class="c1"># Save result to clipboard</span>
     <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">out_text</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Summarize&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>Buttons here</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:bulb: &amp;nbsp; Summarize&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_summary</span>
     <span class="n">call_llm</span><span class="p">()</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Ask questions&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:question: &amp;nbsp; Ask questions&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_questions</span>
     <span class="n">call_llm</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="s2">&quot;openai_result&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:clipboard: &amp;nbsp; Copy to clipboard&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span>
 
 <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
 
@@ -334,9 +394,6 @@ so we have added a separate configuration for them.</p>
 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`Ask questions` :test_tube: `v.2`&#39;</span><span class="p">):</span>
     <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_questions_v2</span>
     <span class="n">call_llm</span><span class="p">()</span>
-
-<span class="k">if</span> <span class="s2">&quot;openai_result&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Copy to clipboard&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -373,6 +430,8 @@ so we have added a separate configuration for them.</p>
 <li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Obsidian-AI</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#prompts">Prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#select-llm">Select LLM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tokens-price">Tokens &amp; Price</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>

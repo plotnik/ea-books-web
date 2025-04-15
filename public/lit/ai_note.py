@@ -197,13 +197,18 @@ if model_type=="Gemini":
         "gemini-2.5-pro-exp-03-25",
     ]
 elif model_type=="OpenAI":    
-    llm_models = [
-        "gpt-4o-mini", 
-        "o3-mini",
-        "gpt-4o", 
-        "o1", 
-        "gpt-4.5-preview",
-    ]    
+    openai_prices = {
+        "gpt-4.1-mini": 0.4,
+        "gpt-4.1-nano": 0.1,
+        "gpt-4.1": 2.0,
+        "gpt-4o-mini": 0.15, 
+        "o3-mini": 1.10,
+        "gpt-4o": 2.5, 
+        "o1": 15.0, 
+    }    
+    
+    llm_models = list(openai_prices.keys())
+    
 else:    
     llm_models = [
         "ollama llama3.2",
@@ -243,13 +248,6 @@ if model_type=="OpenAI":
     encoding = tiktoken.encoding_for_model("gpt-4o-mini")
     tokens = encoding.encode(text)
 
-    openai_prices = {
-        "gpt-4o-mini": 0.15, 
-        "o3-mini": 1.10,
-        "gpt-4o": 2.5, 
-        "o1": 15.0, 
-        "gpt-4.5-preview": 75.0,
-    }
     cents = round(len(tokens) * openai_prices[openai_model]/10000, 5)
 
     st.sidebar.write(f'''
