@@ -452,6 +452,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_making_llm_prompts_reusable">Making LLM Prompts Reusable</a></li>
 </ul>
 </li>
+<li><a href="#_chapter_2_rag_part_i_indexing_your_data">Chapter 2. RAG Part I: Indexing Your Data</a>
+<ul class="sectlevel2">
+<li><a href="#_splitting_your_text_into_chunks">Splitting Your Text into Chunks</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -575,10 +580,58 @@ ch1/py/c-system.py</a>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_chapter_2_rag_part_i_indexing_your_data">Chapter 2. RAG Part I: Indexing Your Data</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_splitting_your_text_into_chunks">Splitting Your Text into Chunks</h3>
+<div class="paragraph">
+<p>The content explains how LangChain&#8217;s <code>RecursiveCharacterTextSplitter</code> helps split large texts into semantically meaningful chunks by recursively splitting text using a prioritized list of separators (paragraphs, lines, words) to respect chunk size limits. It outputs chunks as <code>Document</code> objects with metadata and position info.</p>
+</div>
+<div class="paragraph">
+<p>Key points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Default separators: paragraphs (<code>\n\n</code>), lines (<code>\n</code>), words (space).</p>
+</li>
+<li>
+<p>Splitting starts with largest separator and moves to smaller ones if chunks exceed size.</p>
+</li>
+<li>
+<p>Supports chunk size and overlap to maintain context.</p>
+</li>
+<li>
+<p>Can split raw text strings or documents loaded from files.</p>
+</li>
+<li>
+<p>Specialized splitting for code and Markdown using language-specific separators to keep semantic units (e.g., function bodies) intact.</p>
+</li>
+<li>
+<p>LangChain provides built-in separators for many languages (Python, JS, Markdown, HTML).</p>
+</li>
+<li>
+<p><code>from_language</code> method creates splitter instances tailored to specific languages.</p>
+</li>
+<li>
+<p><code>create_documents</code> method splits raw text strings into documents, optionally attaching metadata per chunk.</p>
+</li>
+<li>
+<p>Metadata is preserved and attached to each chunk, useful for tracking source or provenance.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Examples show usage in Python and JavaScript for plain text, Python code, and Markdown, demonstrating how chunks align with natural text/code boundaries and how metadata is propagated.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-15 10:48:08 +0300
+Last updated 2025-04-16 09:48:09 +0300
 </div>
 </div>
 </body>

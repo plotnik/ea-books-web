@@ -82,3 +82,23 @@ Examples show:
 - Using `ChatPromptTemplate` for chat-based interactions with role-based messages (`system`, `human`).
 
 The key takeaway is that LangChain simplifies building reusable, dynamic prompts that can be integrated with LLMs for question answering or chat applications, ensuring prompts are structured and adaptable to user inputs.
+
+== Chapter 2. RAG Part I: Indexing Your Data
+
+=== Splitting Your Text into Chunks
+
+The content explains how LangChain's `RecursiveCharacterTextSplitter` helps split large texts into semantically meaningful chunks by recursively splitting text using a prioritized list of separators (paragraphs, lines, words) to respect chunk size limits. It outputs chunks as `Document` objects with metadata and position info.
+
+Key points:
+
+- Default separators: paragraphs (`\n\n`), lines (`\n`), words (space).
+- Splitting starts with largest separator and moves to smaller ones if chunks exceed size.
+- Supports chunk size and overlap to maintain context.
+- Can split raw text strings or documents loaded from files.
+- Specialized splitting for code and Markdown using language-specific separators to keep semantic units (e.g., function bodies) intact.
+- LangChain provides built-in separators for many languages (Python, JS, Markdown, HTML).
+- `from_language` method creates splitter instances tailored to specific languages.
+- `create_documents` method splits raw text strings into documents, optionally attaching metadata per chunk.
+- Metadata is preserved and attached to each chunk, useful for tracking source or provenance.
+
+Examples show usage in Python and JavaScript for plain text, Python code, and Markdown, demonstrating how chunks align with natural text/code boundaries and how metadata is propagated.
