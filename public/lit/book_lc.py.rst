@@ -32,15 +32,39 @@ Prints a stylized banner to the console when the application starts.
 
   print_banner()
 
+Get ``GEMINI_API_KEY``
+
+::
+
+  g_key = os.getenv("GEMINI_API_KEY")
+
+Select Embeddings
+
+::
+
+  embed_model_names = [
+      "gemini-embedding-exp-03-07", # March 2025
+      "text-embedding-004", # April 2024
+      "embedding-001", # December 2023
+  ]
+  embed_model_name = st.sidebar.selectbox("Embedding Model", embed_model_names)
+
+  embedding = GoogleGenerativeAIEmbeddings(model=f"models/{embed_model_name}", google_api_key=g_key)
+
 Folder to save index
 
 ::
 
-  index_folder = "vectors/langchain"
-  book_html = "html/index.html"
-  history_file = index_folder + "/history.txt"
+  index_folder = f"vectors/book-lc-{embed_model_name}"
 
-Print current folder
+Input HTML file with the book's contents and a log of the questions asked.
+
+::
+
+  book_html = "html/index.html"
+  history_file = "vectors/history.txt"
+
+Print current folder name as a title
 
 ::
 
@@ -51,27 +75,14 @@ Select LLM
 
 ::
 
-  g_key = os.getenv("GEMINI_API_KEY")
-
   llm_models = [
+      "gemini-2.5-pro-exp-03-25",
       "gemini-2.0-flash",
       "gemma-3-27b-it",
   ]
   llm_model = st.sidebar.selectbox("LLM Model", llm_models)
 
   llm = ChatGoogleGenerativeAI(model=llm_model, google_api_key=g_key)
-
-Select Embeddings
-
-::
-
-  embed_model_names = [
-      "models/embedding-001",  
-      "models/text-embedding-004",
-  ]
-  embed_model_name = st.sidebar.selectbox("Embedding Model", embed_model_names)
-
-  embedding = GoogleGenerativeAIEmbeddings(model=embed_model_name, google_api_key=g_key)
 
 Load history
 

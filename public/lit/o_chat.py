@@ -1,15 +1,18 @@
-# Obsidian Chat
-# =============
+# Obsidian Chat (LI)
+# ==================
 #
-# .. csv-table:: LlamaImdex Links
+# Obsidian Chat using LlamaIndex
+#
+#
+# .. csv-table:: LlamaIndex Links
 #    :header: "Name", "URL"
 #    :widths: 10 30
-#  
+# 
 #    "LlamaIndex Google GenAI Embeddings", https://github.com/run-llama/llama_index/blob/main/docs/docs/examples/embeddings/google_genai.ipynb  
 #    "Google Embeddings", https://ai.google.dev/gemini-api/docs/embeddings
 #    "Using VectorStoreIndex - Guide", https://github.com/run-llama/llama_index/blob/main/docs/docs/module_guides/indexing/vector_store_index.md
 #    "Gemini Model variants", https://ai.google.dev/gemini-api/docs/models/gemini#model-variations
-#  
+#
 # ::
 
 import streamlit as st
@@ -114,6 +117,8 @@ note_home =  book_folders[0]
 st.title(note_home)
 
 # File change detection based on modified timestamps
+#
+# ::
 
 timestamp_file = os.path.join(index_folder, ".file_timestamps.json")
 
@@ -140,7 +145,7 @@ def get_changed_files(current, previous):
             changed.append(path)
     return changed
 
-    
+  
 # Create Index
 # ------------
 #
@@ -158,19 +163,21 @@ def create_index(input_dir, persist_dir):
     st.session_state.index = VectorStoreIndex.from_documents(documents)
     st.session_state.index.storage_context.persist(persist_dir=persist_dir)
     # print(f"Index created and saved successfully!")  
-    
+  
     # Save initial timestamps
     current_timestamps = get_all_file_timestamps(input_dir)
     save_timestamps(current_timestamps)
 
 
 # Loads an existing index and refreshes it with current documents.
+#
+# ::
 
 def load_and_refresh_index(input_dir, persist_dir):
     # print("Loading existing index...")
     try:
         storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
-        
+      
         st.session_state.index = load_index_from_storage(storage_context)
         # print("Index loaded successfully!")
 
@@ -180,11 +187,11 @@ def load_and_refresh_index(input_dir, persist_dir):
             recursive=False # Match the setting used during creation
         )
         current_documents = reader.load_data()
-        
+      
         current_timestamps = get_all_file_timestamps(note_home)
         previous_timestamps = load_previous_timestamps()
         changed_files = get_changed_files(current_timestamps, previous_timestamps)
-    
+  
         if changed_files:
             changed_docs = SimpleDirectoryReader(input_files=changed_files).load_data()
             st.session_state.index.refresh_ref_docs(changed_docs) # Pass the newly loaded docs
@@ -197,13 +204,15 @@ def load_and_refresh_index(input_dir, persist_dir):
 
     except Exception as e:
         st.sidebar.error(f"Error loading or refreshing index: {e}")
-  
+
 # Update or create index
+#
+# ::
 
 if os.path.exists(index_folder):
     if "index" not in st.session_state:
         load_and_refresh_index(note_home, index_folder)
-    
+  
 else:
     if st.sidebar.button('Create Index', type='primary', use_container_width=True):
         # Create the index from scratch if it doesn't exist
@@ -212,7 +221,7 @@ else:
     else:
         st.stop()
 
-    
+  
 # Query
 # -----
 #
@@ -220,13 +229,13 @@ else:
 
 if "query_engine" not in st.session_state:
     st.session_state.query_engine = st.session_state.index.as_query_engine()
-    
+  
 question = st.text_area(f"Question", height=200)
-    
+  
 if st.button('Ask', type='primary', use_container_width=True):
     response = st.session_state.query_engine.query(question)
     st.write(response.response)
-    
+  
 if st.sidebar.button('Update Index', use_container_width=True):
     del st.session_state['index']
     load_and_refresh_index(note_home, index_folder)

@@ -1,7 +1,10 @@
-Obsidian Chat
-=============
+Obsidian Chat (LI)
+==================
 
-.. csv-table:: LlamaImdex Links
+Obsidian Chat using LlamaIndex
+
+
+.. csv-table:: LlamaIndex Links
    :header: "Name", "URL"
    :widths: 10 30
  
@@ -9,7 +12,7 @@ Obsidian Chat
    "Google Embeddings", https://ai.google.dev/gemini-api/docs/embeddings
    "Using VectorStoreIndex - Guide", https://github.com/run-llama/llama_index/blob/main/docs/docs/module_guides/indexing/vector_store_index.md
    "Gemini Model variants", https://ai.google.dev/gemini-api/docs/models/gemini#model-variations
- 
+
 ::
 
   import streamlit as st

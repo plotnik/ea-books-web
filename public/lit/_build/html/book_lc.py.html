@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Book Chat (LlamaIndex)" href="book_chat.py.html" />
-    <link rel="prev" title="Obsidian Chat" href="o_chat.py.html" />
+    <link rel="prev" title="Obsidian Chat (LI)" href="o_chat.py.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -62,37 +62,44 @@ This script will then analyze the HTML content using RAG (Retrieval-Augmented Ge
 <span class="n">print_banner</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Folder to save index</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">index_folder</span> <span class="o">=</span> <span class="s2">&quot;vectors/langchain&quot;</span>
-<span class="n">book_html</span> <span class="o">=</span> <span class="s2">&quot;html/index.html&quot;</span>
-<span class="n">history_file</span> <span class="o">=</span> <span class="n">index_folder</span> <span class="o">+</span> <span class="s2">&quot;/history.txt&quot;</span>
+<p>Get <code class="docutils literal notranslate"><span class="pre">GEMINI_API_KEY</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Print current folder</p>
+<p>Select Embeddings</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">embed_model_names</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;gemini-embedding-exp-03-07&quot;</span><span class="p">,</span> <span class="c1"># March 2025</span>
+    <span class="s2">&quot;text-embedding-004&quot;</span><span class="p">,</span> <span class="c1"># April 2024</span>
+    <span class="s2">&quot;embedding-001&quot;</span><span class="p">,</span> <span class="c1"># December 2023</span>
+<span class="p">]</span>
+<span class="n">embed_model_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;Embedding Model&quot;</span><span class="p">,</span> <span class="n">embed_model_names</span><span class="p">)</span>
+
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">GoogleGenerativeAIEmbeddings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;models/</span><span class="si">{</span><span class="n">embed_model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Folder to save index</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">index_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;vectors/book-lc-</span><span class="si">{</span><span class="n">embed_model_name</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Input HTML file with the book’s contents and a log of the questions asked.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">book_html</span> <span class="o">=</span> <span class="s2">&quot;html/index.html&quot;</span>
+<span class="n">history_file</span> <span class="o">=</span> <span class="s2">&quot;vectors/history.txt&quot;</span>
+</pre></div>
+</div>
+<p>Print current folder name as a title</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">current_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;### </span><span class="si">{</span><span class="n">current_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Select LLM</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY&quot;</span><span class="p">)</span>
-
-<span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;gemini-2.5-pro-exp-03-25&quot;</span><span class="p">,</span>
     <span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">,</span>
     <span class="s2">&quot;gemma-3-27b-it&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 <span class="n">llm_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;LLM Model&quot;</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
 
 <span class="n">llm</span> <span class="o">=</span> <span class="n">ChatGoogleGenerativeAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Select Embeddings</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">embed_model_names</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;models/embedding-001&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;models/text-embedding-004&quot;</span><span class="p">,</span>
-<span class="p">]</span>
-<span class="n">embed_model_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;Embedding Model&quot;</span><span class="p">,</span> <span class="n">embed_model_names</span><span class="p">)</span>
-
-<span class="n">embedding</span> <span class="o">=</span> <span class="n">GoogleGenerativeAIEmbeddings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">embed_model_name</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Load history</p>
@@ -199,7 +206,7 @@ This script will then analyze the HTML content using RAG (Retrieval-Augmented Ge
 <li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="o_chat.py.html">Obsidian Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_chat.py.html">Obsidian Chat (LI)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Book Chat (LangChain)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_chat.py.html">Book Chat (LlamaIndex)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="li_extract.py.html">LlamaIndex Extractors</a></li>
@@ -231,7 +238,7 @@ This script will then analyze the HTML content using RAG (Retrieval-Augmented Ge
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="o_chat.py.html" title="previous chapter">Obsidian Chat</a></li>
+      <li>Previous: <a href="o_chat.py.html" title="previous chapter">Obsidian Chat (LI)</a></li>
       <li>Next: <a href="book_chat.py.html" title="next chapter">Book Chat (LlamaIndex)</a></li>
   </ul></li>
 </ul>
