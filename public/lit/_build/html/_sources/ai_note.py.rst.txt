@@ -60,6 +60,7 @@ Prints a stylized banner to the console when the application starts.
       return 1
 
   print_banner()
+  st.logo("https://ea-books.netlify.app/lit/ai_note.svg")
 
 An instance of the OpenAI client is created to facilitate communication with the `OpenAI API`_.
 

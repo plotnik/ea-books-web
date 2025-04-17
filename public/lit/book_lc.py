@@ -31,6 +31,7 @@ def print_banner():
     return 1
 
 print_banner()
+st.logo("https://ea-books.netlify.app/lit/book_lc.svg")
 
 # Get ``GEMINI_API_KEY``
 
