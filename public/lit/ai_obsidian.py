@@ -1,16 +1,28 @@
 # Obsidian-AI
 # ===========
 #
+# Summarize Obsidian_ page.
+#
+# - Get `Python Source`_.
+#
+# Script is written in `literate programming`_.
+#
+# - See `PyLit Tutorial`_
+# - See `reStructuredText Primer`_
+#
+# .. _Obsidian: https://obsidian.md/
+# .. _Python Source: ../../ai_obsidian.py
+# .. _literate programming: https://en.wikipedia.org/wiki/Literate_programming
+# .. _reStructuredText Primer: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
+# .. _PyLit Tutorial: https://slott56.github.io/PyLit-3/_build/html/tutorial/index.html
+#
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
 #    :widths: 10 30
 #
-#    "Obsidian", https://obsidian.md/
 #    "OpenAI API Examples", https://platform.openai.com/examples
 #    "OpenAI Models", https://platform.openai.com/docs/models
 #    "How to count tokens with tiktoken", https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
-#    "reStructuredText Primer", https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
-#    "PyLit Tutorial", https://slott56.github.io/PyLit-3/_build/html/tutorial/index.html
 #
 # ::
 
@@ -30,18 +42,16 @@ from typing import List
 @st.cache_data
 def print_banner():
     print("""
-                             d8b 
-                             Y8P 
-                                 
-     .d88b.          8888b.  888 
-    d88""88b            "88b 888 
-    888  888 888888 .d888888 888 
-    Y88..88P        888  888 888 
-     "Y88P"         "Y888888 888                                          
+       dBBBBP       dBBBBBb     dBP
+      dB'.BP             BB        
+     dB'.BP          dBP BB   dBP  
+    dB'.BP dBBBBBP  dBP  BB  dBP   
+   dBBBBP          dBBBBBBB dBP                                                                          
     """)
     return 1
 
 print_banner()
+st.logo("https://ea-books.netlify.app/lit/ai_obsidian.svg")
 
 # Prompts
 # -------
@@ -95,17 +105,23 @@ llm_prices = {
 
 # Remember which LLM was used last time
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# ::
 
 llm_names_file = ".o-ai"
 
 # Writes a list of strings to a file, one per line.
+#
+# ::
 
 def write_list_to_file(filename: str, lines: List[str]) -> None:
     with open(filename, 'w', encoding='utf-8') as file:
         file.write('\n'.join(lines) + '\n')
-        
+      
 # Reads non-empty, stripped lines from a text file into a list.
 # Returns an empty list if the file does not exist or an error occurs.
+#
+# ::
 
 def read_list_from_file(filename: str) -> None:
     try:
@@ -113,18 +129,24 @@ def read_list_from_file(filename: str) -> None:
             return [line.strip() for line in file if line.strip()]
     except FileNotFoundError:
         return []
-        
+      
 # Compare two lists of strings for equality based on their sorted versions
+#
+# ::
 
 def lists_are_equal(a: List[str], b: List[str]) -> bool:
     return sorted(a) == sorted(b)
-    
+  
 # Removes all occurrences of ``string_to_remove`` from ``lst``.   
+#
+# ::
 
 def remove_string(lines: List[str], string_to_remove: str) -> List[str]:
     return [s for s in lines if s != string_to_remove]
-    
+  
 # Select LLM
+#
+# ::
 
 llm_models = list(llm_prices.keys())
 llm_names = read_list_from_file(llm_names_file) 
@@ -216,27 +238,27 @@ note_name = st.selectbox(
 )
 
 # Get the number of tokens.
-# 
+#
 # ::
 
 file_path = os.path.join(note_home, note_name)
 with open(file_path, 'r', encoding='utf-8') as file:
     text = file.read()
-    
+  
 # Tokens & Price
 # --------------
 #
 # Certain models are not compatible with ``tiktoken 0.7.0``, 
 # so we have added a separate configuration for them.
-# 
+#
 # ::
 
 def count_tokens():
     llm_model_tiktoken = "gpt-4o-mini"
-    
+  
     encoding = tiktoken.encoding_for_model(llm_model_tiktoken)
     tokens = encoding.encode(text)
-    
+  
     cents = round(len(tokens) * llm_prices[llm_model]/10000, 5)
 
     st.sidebar.write(f'''
@@ -244,7 +266,7 @@ def count_tokens():
         |---|---|---|
         | {len(text)} | {len(tokens)} | {cents} |
         ''')
-    
+  
 #if llm_model.startswith("gpt-") or llm_model.startswith("o-"):
 count_tokens()
  
@@ -266,7 +288,7 @@ def call_openai():
         )
 
     return response.choices[0]
-    
+  
 # Call Gemini.
 #
 # ::
@@ -288,7 +310,7 @@ def call_gemini():
             temperature=llm_temperature,
         )
     return response.choices[0]
-    
+  
 def call_gemma():
     messages = [
         {"role": "user", "content": f"<prompt>{prompt}</prompt>\n<query>{text}</query>"},
@@ -298,7 +320,7 @@ def call_gemma():
             messages=messages
         )
     return response.choices[0]
-    
+  
 # Generic LLM call.
 #
 # ::
@@ -306,13 +328,13 @@ def call_gemma():
 def call_llm():
     st.write('')
     st.info(prompt, icon="🤔")
-    
+  
     # Remember which LLM was used last time
     global llm_models
     llm_models = remove_string(llm_models, llm_model)
     llm_models.insert(0, llm_model)
     write_list_to_file(llm_names_file, llm_models)
-    
+  
     # Call LLM
     if llm_model.startswith("gemini"):
         choice = call_gemini()
@@ -320,7 +342,7 @@ def call_llm():
         choice = call_gemma()
     else:
         choice = call_openai()
-        
+      
     # Save result in session    
     out_text = choice.message.content    
     st.session_state.openai_result = out_text
@@ -336,12 +358,12 @@ def call_llm():
     # with open(out_file, 'w') as file:
     #    file.write(out_text)
     # st.write(f'Result saved: `{out_file}`')    
-    
+  
     # Save result to clipboard  
     pyperclip.copy(out_text)
     st.write(f'Copied to clipboard')
-    
-    
+  
+  
 # Buttons here
 #
 # ::    
@@ -354,20 +376,20 @@ if st.button(':bulb: &nbsp; Summarize', type='primary', use_container_width=True
 if st.sidebar.button(':question: &nbsp; Ask questions', use_container_width=True):
     prompt = prompt_questions
     call_llm()
-    
+  
 if "openai_result" in st.session_state and st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
     pyperclip.copy(st.session_state.openai_result)
-          
+        
 st.sidebar.write('---')
 
 if st.sidebar.button(f' `Summarize` {"&nbsp;"*8} :test_tube: `v.2`'):
     prompt = prompt_summary_v2
     call_llm()
-    
+  
 if st.sidebar.button(f'`Ask questions` :test_tube: `v.2`'):
     prompt = prompt_questions_v2
     call_llm()
-    
   
-    
-    
+
+  
+  

@@ -1,5 +1,5 @@
-Book Chat (LlamaIndex)
-======================
+Book Chat (LI)
+==============
 
 Use Calibre to convert EPUB files into HTML format. 
 This script will then analyze the HTML content using RAG (Retrieval-Augmented Generation) with LlamaIndex.
@@ -122,14 +122,14 @@ Update or create index
   if os.path.exists(index_folder):
       if "index" not in st.session_state:
           load_index(book_html, index_folder)
-    
+  
   else:
       if st.sidebar.button('Create Index', type='primary', use_container_width=True):
           create_index(book_html, index_folder)
       else:
           st.stop()
 
-    
+  
 Query
 -----
 
@@ -137,9 +137,9 @@ Query
 
   if "query_engine" not in st.session_state:
       st.session_state.query_engine = st.session_state.index.as_query_engine()
-    
+  
   question = st.text_area(f"Question", height=200)
-    
+  
   if st.button('Ask', type='primary', use_container_width=True):
       response = st.session_state.query_engine.query(question)
       st.write(response.response)

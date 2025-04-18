@@ -1,16 +1,28 @@
 Obsidian-AI
 ===========
 
+Summarize Obsidian_ page.
+
+- Get `Python Source`_.
+
+Script is written in `literate programming`_.
+
+- See `PyLit Tutorial`_
+- See `reStructuredText Primer`_
+
+.. _Obsidian: https://obsidian.md/
+.. _Python Source: ../../ai_obsidian.py
+.. _literate programming: https://en.wikipedia.org/wiki/Literate_programming
+.. _reStructuredText Primer: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
+.. _PyLit Tutorial: https://slott56.github.io/PyLit-3/_build/html/tutorial/index.html
+
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
 
-   "Obsidian", https://obsidian.md/
    "OpenAI API Examples", https://platform.openai.com/examples
    "OpenAI Models", https://platform.openai.com/docs/models
    "How to count tokens with tiktoken", https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
-   "reStructuredText Primer", https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
-   "PyLit Tutorial", https://slott56.github.io/PyLit-3/_build/html/tutorial/index.html
 
 ::
 
@@ -30,18 +42,16 @@ Print banner.
   @st.cache_data
   def print_banner():
       print("""
-                               d8b 
-                               Y8P 
-                                 
-       .d88b.          8888b.  888 
-      d88""88b            "88b 888 
-      888  888 888888 .d888888 888 
-      Y88..88P        888  888 888 
-       "Y88P"         "Y888888 888                                          
+         dBBBBP       dBBBBBb     dBP
+        dB'.BP             BB        
+       dB'.BP          dBP BB   dBP  
+      dB'.BP dBBBBBP  dBP  BB  dBP   
+     dBBBBP          dBBBBBBB dBP                                                                          
       """)
       return 1
 
   print_banner()
+  st.logo("https://ea-books.netlify.app/lit/ai_obsidian.svg")
 
 Prompts
 -------

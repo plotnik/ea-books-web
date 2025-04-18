@@ -1,5 +1,5 @@
-# Book Chat (LlamaIndex)
-# ======================
+# Book Chat (LI)
+# ==============
 #
 # Use Calibre to convert EPUB files into HTML format. 
 # This script will then analyze the HTML content using RAG (Retrieval-Augmented Generation) with LlamaIndex.

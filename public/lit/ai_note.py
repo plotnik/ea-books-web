@@ -11,6 +11,14 @@
 # .. _Miniconda: https://docs.conda.io/projects/miniconda/en/latest/
 # .. _Python Source: ../../ai_note.py
 #
+# .. csv-table:: Useful Links
+#    :header: "Name", "URL"
+#    :widths: 10 30
+#   
+#    "GPT-4.1 Prompting Guide", https://cookbook.openai.com/examples/gpt4-1_prompting_guide 
+#    "OpenAI Cookbook", https://cookbook.openai.com/
+#    "OpenAI Resources and guides", https://openai.com/business/guides-and-resources/
+#   
 # .. contents::
 #
 # The provided Python code is a Streamlit_ application designed to interact with `OpenAI's language models`_, allowing users to generate and save notes based on prompts. 
@@ -107,7 +115,7 @@ def read_list_from_file(filename):
     except Exception as e:
         print(f"Error reading {filename}: {e}")
         return []
-    
+  
 # Write a list of strings to a text file
 #
 # ::
@@ -119,14 +127,14 @@ def write_list_to_file(filename, list_of_strings):
                 file.write(string + '\n') 
     except Exception as e:
         print(f"Error writing {filename}: {e}")
-    
+  
 # Removes specified strings from a list of strings.  
 #
 # ::
 
 def remove_strings_from_list(string_list, strings_to_remove):
   return [s for s in string_list if s not in strings_to_remove]
-     
+   
 # Collect all tags into a single set
 #
 # ::
@@ -207,9 +215,9 @@ elif model_type=="OpenAI":
         "gpt-4o": 2.5, 
         "o1": 15.0, 
     }    
-    
+  
     llm_models = list(openai_prices.keys())
-    
+  
 else:    
     llm_models = [
         "ollama llama3.2",
@@ -366,7 +374,7 @@ def call_gemini(prompt, text):
             temperature=llm_temperature,
         )
     return response.choices[0]
-  
+
 def call_gemma(prompt, text):
     g_key = os.getenv("GEMINI_API_KEY")
     g_client = OpenAI(
@@ -384,7 +392,7 @@ def call_gemma(prompt, text):
             temperature=llm_temperature,
         )
     return response.choices[0]
-  
+
 # When the user clicks a button to call OpenAI:
 #
 # - The application sends the selected prompt and user input to the OpenAI API.
@@ -415,10 +423,10 @@ if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_contain
 
     elif openai_model.startswith("gemini"): 
         response = call_gemini(prompt, text)
-      
+    
     elif openai_model.startswith("gemma"): 
         response = call_gemma(prompt, text)
-      
+    
     elif openai_model.startswith("ollama "): 
         response = call_ollama(prompt, text)
 
@@ -524,7 +532,7 @@ if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
 #         - pyperclip
 #         - pip:
 #           - ollama
-#          
+#         
 # 2. **Select conda-forge Channel**
 #
 #    Open your terminal or command prompt and execute the following
@@ -573,17 +581,17 @@ if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
 #      note: Improve style of the content you are provided.
 #      tags:
 #        - text
-#      
+#     
 #    - name: summarize_md
 #      note: You will be provided with statements in markdown, and your task is to summarize the content.
 #      tags:
 #        - text
-#      
+#     
 #    - name: explain_python
 #      note: Explain Python code you are provided.
 #      tags:
 #        - python
-#      
+#     
 #    - name: write_python
 #      note: Write Python code to satisfy the description you are provided.
 #      tags:

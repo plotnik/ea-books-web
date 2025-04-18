@@ -1,5 +1,5 @@
-# Book Chat (LangChain)
-# =====================
+# Book Chat (LC)
+# ==============
 #
 # Use Calibre to convert EPUB files into HTML format. 
 # This script will then analyze the HTML content using RAG (Retrieval-Augmented Generation) with LangChain.
@@ -44,7 +44,7 @@ embed_model_names = [
     "text-embedding-004", # April 2024
     "embedding-001", # December 2023
 ]
-embed_model_name = st.sidebar.selectbox("Embedding Model", embed_model_names)
+embed_model_name = st.sidebar.selectbox("Embedding", embed_model_names)
 
 embedding = GoogleGenerativeAIEmbeddings(model=f"models/{embed_model_name}", google_api_key=g_key)
 
@@ -75,7 +75,7 @@ llm_models = [
     "gemini-2.0-flash",
     "gemma-3-27b-it",
 ]
-llm_model = st.sidebar.selectbox("LLM Model", llm_models)
+llm_model = st.sidebar.selectbox("LLM", llm_models)
 
 llm = ChatGoogleGenerativeAI(model=llm_model, google_api_key=g_key)
 

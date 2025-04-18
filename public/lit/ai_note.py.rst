@@ -11,6 +11,14 @@ This is kind of Notepad editor with AI functions.
 .. _Miniconda: https://docs.conda.io/projects/miniconda/en/latest/
 .. _Python Source: ../../ai_note.py
 
+.. csv-table:: Useful Links
+   :header: "Name", "URL"
+   :widths: 10 30
+   
+   "GPT-4.1 Prompting Guide", https://cookbook.openai.com/examples/gpt4-1_prompting_guide 
+   "OpenAI Cookbook", https://cookbook.openai.com/
+   "OpenAI Resources and guides", https://openai.com/business/guides-and-resources/
+   
 .. contents::
 
 The provided Python code is a Streamlit_ application designed to interact with `OpenAI's language models`_, allowing users to generate and save notes based on prompts. 
