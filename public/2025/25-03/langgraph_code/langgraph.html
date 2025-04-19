@@ -456,6 +456,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_splitting_your_text_into_chunks">Splitting Your Text into Chunks</a></li>
 <li><a href="#_generating_text_embeddings">Generating Text Embeddings</a></li>
+<li><a href="#_storing_embeddings_in_a_vector_store">Storing Embeddings in a Vector Store</a></li>
+<li><a href="#_tracking_changes_to_your_documents">Tracking Changes to Your Documents</a></li>
+<li><a href="#_indexing_optimization">Indexing Optimization</a>
+<ul class="sectlevel3">
+<li><a href="#_multivectorretriever">MultiVectorRetriever</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -678,12 +685,136 @@ ch1/py/c-system.py</a>
 <p>The example code is provided in both Python and JavaScript. After generating embeddings, the next step is to store them in a vector store database for further use.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_storing_embeddings_in_a_vector_store">Storing Embeddings in a Vector Store</h3>
+<div class="paragraph">
+<p>The chapter explains vector stores—databases optimized for storing vectors and performing similarity calculations like cosine similarity, especially for unstructured data such as text and images. Unlike traditional structured-data databases, vector stores support CRUD and search operations on vector embeddings, enabling AI-powered applications like querying large documents.</p>
+</div>
+<div class="paragraph">
+<p>There are many vector store providers, each with different features (multitenancy, filtering, performance, cost, scalability). However, vector stores are relatively new, can be complex to manage, and add system complexity.</p>
+</div>
+<div class="paragraph">
+<p>To address this, PostgreSQL supports vector storage via the <code>pgvector</code> extension, allowing users to manage both traditional relational data and vector embeddings in one familiar database.</p>
+</div>
+<div class="paragraph">
+<p>The setup involves running a Docker container with Postgres + pgvector, then connecting via a connection string.</p>
+</div>
+<div class="paragraph">
+<p>Examples in Python and JavaScript show how to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Load and split documents into chunks</p>
+</li>
+<li>
+<p>Generate embeddings using OpenAIEmbeddings (or other models)</p>
+</li>
+<li>
+<p>Store embeddings and documents in PGVector (Postgres)</p>
+</li>
+<li>
+<p>Perform similarity searches to retrieve relevant documents</p>
+</li>
+<li>
+<p>Add new documents with metadata and UUIDs</p>
+</li>
+<li>
+<p>Delete documents by ID</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The process includes embedding queries, searching for nearest vectors in Postgres, and returning documents sorted by similarity.</p>
+</div>
+<div class="paragraph">
+<p>This integration simplifies vector search by leveraging a popular relational database, reducing the need for separate vector store infrastructure while enabling scalable AI applications.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tracking_changes_to_your_documents">Tracking Changes to Your Documents</h3>
+<div class="paragraph">
+<p>The content explains how LangChain&#8217;s indexing API helps manage vector stores with frequently changing data by avoiding costly re-indexing and duplicate embeddings. It uses a <code>RecordManager</code> class to track documents via hashes, write times, and source IDs. The API supports cleanup modes to control deletion of outdated documents:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>None</code>: no automatic cleanup.</p>
+</li>
+<li>
+<p><code>Incremental</code>: deletes previous versions if content changes.</p>
+</li>
+<li>
+<p><code>Full</code>: deletes previous versions and any documents not in the current batch.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Examples in Python and JavaScript demonstrate setting up a Postgres-backed vector store and record manager, creating documents, and indexing them with incremental cleanup to prevent duplicates. When documents are modified, the API replaces old versions sharing the same source ID. This approach keeps the vector store synchronized efficiently by only updating changed documents.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_indexing_optimization">Indexing Optimization</h3>
+<div class="sect3">
+<h4 id="_multivectorretriever">MultiVectorRetriever</h4>
+<div class="paragraph">
+<p>The document explains a method to handle documents containing both text and tables for retrieval-augmented generation (RAG) without losing table data. Instead of embedding raw text chunks (which can omit tables), it proposes a two-level indexing approach:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Summarize table elements</strong> using an LLM, generating summaries that include an ID referencing the full raw table.</p>
+</li>
+<li>
+<p><strong>Store summaries in a vector store</strong> for efficient similarity search.</p>
+</li>
+<li>
+<p><strong>Store full raw tables separately</strong> in a document store (docstore) keyed by the summary IDs.</p>
+</li>
+<li>
+<p>When a query retrieves a summary, <strong>fetch the full referenced raw table</strong> from the docstore and pass it as context to the LLM for answer synthesis.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This decoupling allows retrieval of concise summaries for fast search while preserving access to complete table data for accurate answers.</p>
+</div>
+<div class="paragraph">
+<p>The document provides detailed Python and JavaScript code examples demonstrating:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Loading and splitting documents into chunks.</p>
+</li>
+<li>
+<p>Using an LLM to generate summaries of chunks.</p>
+</li>
+<li>
+<p>Indexing summaries in a vector store (Postgres PGVector).</p>
+</li>
+<li>
+<p>Storing original chunks in an in-memory docstore.</p>
+</li>
+<li>
+<p>Using a <code>MultiVectorRetriever</code> to first retrieve summaries by similarity, then fetch full original chunks by ID.</p>
+</li>
+<li>
+<p>Querying the retriever to get relevant full context documents for downstream LLM prompting.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This approach ensures that tables and other complex document structures are not lost during chunking and embedding, enabling richer and more accurate retrieval and answer synthesis.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-18 08:58:37 +0300
+Last updated 2025-04-19 11:32:47 +0300
 </div>
 </div>
 </body>

@@ -116,3 +116,60 @@ An end-to-end example shows how to:
 3. Generate embeddings for each chunk using an embeddings model (e.g., `OpenAIEmbeddings`).
 
 The example code is provided in both Python and JavaScript. After generating embeddings, the next step is to store them in a vector store database for further use.
+
+=== Storing Embeddings in a Vector Store
+
+The chapter explains vector stores—databases optimized for storing vectors and performing similarity calculations like cosine similarity, especially for unstructured data such as text and images. Unlike traditional structured-data databases, vector stores support CRUD and search operations on vector embeddings, enabling AI-powered applications like querying large documents.
+
+There are many vector store providers, each with different features (multitenancy, filtering, performance, cost, scalability). However, vector stores are relatively new, can be complex to manage, and add system complexity.
+
+To address this, PostgreSQL supports vector storage via the `pgvector` extension, allowing users to manage both traditional relational data and vector embeddings in one familiar database.
+
+The setup involves running a Docker container with Postgres + pgvector, then connecting via a connection string.
+
+Examples in Python and JavaScript show how to:
+
+- Load and split documents into chunks
+- Generate embeddings using OpenAIEmbeddings (or other models)
+- Store embeddings and documents in PGVector (Postgres)
+- Perform similarity searches to retrieve relevant documents
+- Add new documents with metadata and UUIDs
+- Delete documents by ID
+
+The process includes embedding queries, searching for nearest vectors in Postgres, and returning documents sorted by similarity.
+
+This integration simplifies vector search by leveraging a popular relational database, reducing the need for separate vector store infrastructure while enabling scalable AI applications.
+
+=== Tracking Changes to Your Documents
+
+The content explains how LangChain's indexing API helps manage vector stores with frequently changing data by avoiding costly re-indexing and duplicate embeddings. It uses a `RecordManager` class to track documents via hashes, write times, and source IDs. The API supports cleanup modes to control deletion of outdated documents:
+
+- `None`: no automatic cleanup.
+- `Incremental`: deletes previous versions if content changes.
+- `Full`: deletes previous versions and any documents not in the current batch.
+
+Examples in Python and JavaScript demonstrate setting up a Postgres-backed vector store and record manager, creating documents, and indexing them with incremental cleanup to prevent duplicates. When documents are modified, the API replaces old versions sharing the same source ID. This approach keeps the vector store synchronized efficiently by only updating changed documents.
+
+=== Indexing Optimization
+
+==== MultiVectorRetriever
+
+The document explains a method to handle documents containing both text and tables for retrieval-augmented generation (RAG) without losing table data. Instead of embedding raw text chunks (which can omit tables), it proposes a two-level indexing approach:
+
+1. **Summarize table elements** using an LLM, generating summaries that include an ID referencing the full raw table.
+2. **Store summaries in a vector store** for efficient similarity search.
+3. **Store full raw tables separately** in a document store (docstore) keyed by the summary IDs.
+4. When a query retrieves a summary, **fetch the full referenced raw table** from the docstore and pass it as context to the LLM for answer synthesis.
+
+This decoupling allows retrieval of concise summaries for fast search while preserving access to complete table data for accurate answers.
+
+The document provides detailed Python and JavaScript code examples demonstrating:
+
+- Loading and splitting documents into chunks.
+- Using an LLM to generate summaries of chunks.
+- Indexing summaries in a vector store (Postgres PGVector).
+- Storing original chunks in an in-memory docstore.
+- Using a `MultiVectorRetriever` to first retrieve summaries by similarity, then fetch full original chunks by ID.
+- Querying the retriever to get relevant full context documents for downstream LLM prompting.
+
+This approach ensures that tables and other complex document structures are not lost during chunking and embedding, enabling richer and more accurate retrieval and answer synthesis.
