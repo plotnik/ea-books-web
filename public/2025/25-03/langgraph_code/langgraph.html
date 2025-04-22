@@ -461,6 +461,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_indexing_optimization">Indexing Optimization</a>
 <ul class="sectlevel3">
 <li><a href="#_multivectorretriever">MultiVectorRetriever</a></li>
+<li><a href="#_colbert_optimizing_embeddings">ColBERT Optimizing Embeddings</a></li>
 </ul>
 </li>
 </ul>
@@ -808,13 +809,41 @@ ch1/py/c-system.py</a>
 <p>This approach ensures that tables and other complex document structures are not lost during chunking and embedding, enabling richer and more accurate retrieval and answer synthesis.</p>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_colbert_optimizing_embeddings">ColBERT Optimizing Embeddings</h4>
+<div class="paragraph">
+<p>The text discusses a challenge with embedding models that compress documents into fixed-length vectors, which can include irrelevant or redundant content and cause hallucinations in LLM outputs. A more granular approach involves generating contextual embeddings for each token in both the query and document, scoring token-level similarities, and summing maximum similarity scores to rank documents. The ColBERT embedding model implements this solution effectively.</p>
+</div>
+<div class="paragraph">
+<p>An example Python workflow using the RAGatouille library demonstrates how to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Retrieve full Wikipedia page text via API,</p>
+</li>
+<li>
+<p>Index the document with ColBERT embeddings,</p>
+</li>
+<li>
+<p>Perform similarity search queries,</p>
+</li>
+<li>
+<p>And integrate with LangChain retrievers for improved document retrieval.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Using ColBERT in this way enhances the relevance of documents retrieved as context for large language models, reducing hallucinations and improving output quality.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-19 11:32:47 +0300
+Last updated 2025-04-20 11:34:26 +0300
 </div>
 </div>
 </body>

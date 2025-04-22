@@ -211,6 +211,7 @@ elif model_type=="OpenAI":
         "gpt-4.1-nano": 0.1,
         "gpt-4.1": 2.0,
         "gpt-4o-mini": 0.15, 
+        "o4-mini": 1.10,
         "o3-mini": 1.10,
         "gpt-4o": 2.5, 
         "o1": 15.0, 
@@ -268,18 +269,6 @@ if model_type=="OpenAI":
 # Call OpenAI API
 # ---------------
 #
-# ``openai_result`` is cached in a `session_state`_.
-#
-# .. _session_state: https://docs.streamlit.io/get-started/fundamentals/advanced-concepts#session-state
-#
-# ::
-
-if "openai_result" not in st.session_state:
-    st.session_state.openai_result = ''
-
-st.write('---')
-st.write(st.session_state.openai_result)
-
 # Call ``o`` model
 # ================
 #
@@ -412,13 +401,14 @@ def call_gemma(prompt, text):
 def concat_request(prompt, text):
     return prompt + "\n\n```\n" + text + "\n```\n"
 
-
-st.sidebar.write('---')
-if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
+if st.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
 
     start_time = time.time()
-
-    if openai_model.startswith(("o1", "o3")):
+    
+    if openai_model.startswith("ollama "): 
+        response = call_ollama(prompt, text)
+        
+    elif openai_model.startswith("o"):
         response = call_o_model(prompt, text)
 
     elif openai_model.startswith("gemini"): 
@@ -426,9 +416,6 @@ if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_contain
     
     elif openai_model.startswith("gemma"): 
         response = call_gemma(prompt, text)
-    
-    elif openai_model.startswith("ollama "): 
-        response = call_ollama(prompt, text)
 
     else:
         response = call_gpt_model(prompt, text)
@@ -449,6 +436,19 @@ if st.sidebar.button(':thinking_face: &nbsp; Query', type="primary", use_contain
     if platform.system() == 'Darwin':
         os.system("afplay /System/Library/Sounds/Glass.aiff")
     st.rerun()
+
+# ``openai_result`` is cached in a `session_state`_.
+#
+# .. _session_state: https://docs.streamlit.io/get-started/fundamentals/advanced-concepts#session-state
+#
+# ::
+
+if "openai_result" not in st.session_state:
+    st.session_state.openai_result = ''
+else:
+    st.write('---')
+    st.write(st.session_state.openai_result)
+
 
 # Save note
 # ---------

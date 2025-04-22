@@ -13,9 +13,10 @@ Literate Programs
    ai_note.py
    ai_obsidian.py
    o_ed.py
-   o_chat.py
+   explain_java.py
    book_lc.py
    book_chat.py
+   o_chat.py
    li_extract.py
    L1_Router_Engine.py   
    udemy.py

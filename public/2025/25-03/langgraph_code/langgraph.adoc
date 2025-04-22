@@ -173,3 +173,17 @@ The document provides detailed Python and JavaScript code examples demonstrating
 - Querying the retriever to get relevant full context documents for downstream LLM prompting.
 
 This approach ensures that tables and other complex document structures are not lost during chunking and embedding, enabling richer and more accurate retrieval and answer synthesis.
+
+==== ColBERT Optimizing Embeddings
+
+The text discusses a challenge with embedding models that compress documents into fixed-length vectors, which can include irrelevant or redundant content and cause hallucinations in LLM outputs. A more granular approach involves generating contextual embeddings for each token in both the query and document, scoring token-level similarities, and summing maximum similarity scores to rank documents. The ColBERT embedding model implements this solution effectively.
+
+An example Python workflow using the RAGatouille library demonstrates how to:
+
+- Retrieve full Wikipedia page text via API,
+- Index the document with ColBERT embeddings,
+- Perform similarity search queries,
+- And integrate with LangChain retrievers for improved document retrieval.
+
+Using ColBERT in this way enhances the relevance of documents retrieved as context for large language models, reducing hallucinations and improving output quality.
+
