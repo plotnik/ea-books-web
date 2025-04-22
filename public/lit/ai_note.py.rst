@@ -214,7 +214,7 @@ Select OpenAI LLM
           "o4-mini": 1.10,
           "o3-mini": 1.10,
           "gpt-4o": 2.5, 
-          "o1": 15.0, 
+          "o3": 10.0, 
       }    
   
       llm_models = list(openai_prices.keys())
