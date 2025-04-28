@@ -52,6 +52,10 @@ import os
 import ollama
 import pyperclip
 
+st.set_page_config(
+    page_title="Note-AI",
+)
+
 # Prints a stylized banner to the console when the application starts.
 #
 # ::

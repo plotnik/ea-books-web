@@ -31,11 +31,11 @@ Example Input
    24.03.2025 23:29:38
    ; TASK-1234 Estimate new features
    24.03.2025 22:50:13
-  
+ 
    25.03.2025 10:15:00
    ; TASK-1234 Implement feature A
    25.03.2025 09:00:00
-  
+ 
    26.03.2025 12:00:00
    ; TASK-5678 Bug fixing
    26.03.2025 11:00:00
@@ -55,7 +55,11 @@ Processing Steps
   import pandas as pd
   import re
   from datetime import datetime
-  
+
+  st.set_page_config(
+      page_title="T-Int",
+  )
+
 Print banner
 
 ::
@@ -69,12 +73,12 @@ Print banner
           |  |    |______|  | |  . `  |     |  |             
           |  |           |  | |  |\\   |     |  |            
           |__|           |__| |__| \\__|     |__|            
-                                                                                        
+                                                                                      
       """)
       return 1
 
   print_banner()
-  
+
 Input data
 
 ::
@@ -138,7 +142,7 @@ Display results
 
       st.write("### Grouped DataFrame (Total Duration by Task):")
       st.table(grouped_df)
-      
+    
 Click button
 
 ::

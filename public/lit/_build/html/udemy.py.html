@@ -35,7 +35,9 @@
             
   <section id="udemy">
 <h1><a class="toc-backref" href="#id2" role="doc-backlink">Udemy</a><a class="headerlink" href="#udemy" title="Link to this heading">¶</a></h1>
-<p>Summarize Udemy Transcript</p>
+<p>Summarize Udemy Transcript.</p>
+<p>Similar to <a class="reference external" href="ai_obsidian.py.html">Obsidian-AI</a>, but directly from the book folder.
+Also can remove newlines from Udemy transcripts.</p>
 <table class="docutils align-default" id="id1">
 <caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
 <colgroup>
@@ -81,10 +83,15 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pyperclip</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 </pre></div>
 </div>
 <p>Print banner.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;Udemy&quot;</span>
+<span class="p">)</span>
+
+<span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">     _____  _____      __</span>
@@ -105,8 +112,29 @@
 </pre></div>
 </div>
 <p>Select OpenAI LLM.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span> <span class="s2">&quot;o3-mini&quot;</span><span class="p">]</span>
-<span class="n">openai_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;LLM Models&quot;</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;o4-mini&quot;</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">,</span>
+    <span class="s2">&quot;o3-mini&quot;</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">,</span>
+    <span class="s2">&quot;gemini-2.5-pro-exp-03-25&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">&quot;gemma-3-27b-it&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4.1-mini&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4.1-nano&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4.1&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o&quot;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">reset_execution_time</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s2">&quot;execution_time&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;execution_time&quot;</span><span class="p">]</span>
+
+<span class="n">llm_models</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">llm_prices</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="n">openai_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span>
+    <span class="s2">&quot;LLM Models&quot;</span><span class="p">,</span>
+    <span class="n">llm_models</span><span class="p">,</span>
+    <span class="n">on_change</span><span class="o">=</span><span class="n">reset_execution_time</span>
+<span class="p">)</span>
 
 <span class="n">is_gemini</span> <span class="o">=</span> <span class="n">openai_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemini&quot;</span><span class="p">)</span>
 </pre></div>
@@ -188,26 +216,23 @@
 </section>
 <section id="tokens-price">
 <h2><a class="toc-backref" href="#id6" role="doc-backlink">Tokens &amp; price</a><a class="headerlink" href="#tokens-price" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">is_gemini</span><span class="p">:</span>
-    <span class="n">tiktoken_model</span> <span class="o">=</span> <span class="s2">&quot;o200k_base&quot;</span>
-    <span class="c1">#encoding = tiktoken.get_encoding(tiktoken_model)</span>
-    <span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">)</span>
-    <span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tiktoken_model</span> <span class="o">=</span> <span class="s2">&quot;o200k_base&quot;</span>
+<span class="c1">#encoding = tiktoken.get_encoding(tiktoken_model)</span>
+<span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">)</span>
+<span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Calculate price in cents.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">pricing</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="s2">&quot;o3-mini&quot;</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">}</span>
-    <span class="n">cents</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">*</span> <span class="n">pricing</span><span class="p">[</span><span class="n">openai_model</span><span class="p">]</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cents</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">*</span> <span class="n">llm_prices</span><span class="p">[</span><span class="n">openai_model</span><span class="p">]</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">        | Characters | Tokens | Cents |</span>
-<span class="s1">        |---|---|---|</span>
-<span class="s1">        | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">cents</span><span class="si">}</span><span class="s1"> |</span>
-<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
-
-<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">divider</span><span class="p">()</span>
+<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    | Characters | Tokens | Cents |</span>
+<span class="s1">    |---|---|---|</span>
+<span class="s1">    | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">cents</span><span class="si">}</span><span class="s1"> |</span>
+<span class="s1">    &#39;&#39;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>st.sidebar.divider()</p>
 </section>
 <section id="buttons-to-update-text">
 <h2><a class="toc-backref" href="#id7" role="doc-backlink">Buttons to update text</a><a class="headerlink" href="#buttons-to-update-text" title="Link to this heading">¶</a></h2>
@@ -215,25 +240,31 @@
 <li><p>Replace newlines with spaces, and</p></li>
 <li><p>Remove empty lines from text</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">replace_newlines_with_spaces</span><span class="p">(</span><span class="n">input_string</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">input_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">remove_empty_lines</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">remove_empty_lines_and_leading_hyphens</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
     <span class="n">non_empty_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
-    <span class="n">cleaned_text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">non_empty_lines</span><span class="p">)</span>
+
+    <span class="c1"># Remove leading hyphens</span>
+    <span class="n">stripped</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">line</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">non_empty_lines</span>
+    <span class="p">]</span>
+
+    <span class="n">cleaned_text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stripped</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cleaned_text</span>
 
+<span class="k">def</span><span class="w"> </span><span class="nf">replace_newlines_with_spaces</span><span class="p">(</span><span class="n">input_string</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">input_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:red_circle: &amp;nbsp; **Replace newlines with spaces**&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">replace_newlines_with_spaces</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">remove_empty_lines_and_leading_hyphens</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># st.button(&#39;:small_red_triangle_down: &amp;nbsp; ~~Remove empty lines~~&#39;, use_container_width=True):</span>
-  <span class="n">text</span> <span class="o">=</span> <span class="n">remove_empty_lines</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+  <span class="n">text</span> <span class="o">=</span> <span class="n">remove_empty_lines_and_leading_hyphens</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
   <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
       <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
   <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
@@ -291,7 +322,10 @@
 <span class="c1"># st.write(&#39;---&#39;)</span>
 
 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:sparkles: &amp;nbsp; Summarize&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">call_openai</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -300,6 +334,11 @@
     <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:clipboard: &amp;nbsp; Copy to clipboard&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Show last execution time</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;execution_time&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution time: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">` sec&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

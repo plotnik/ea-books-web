@@ -39,6 +39,10 @@ from typing import List
 #
 # ::
 
+st.set_page_config(
+    page_title="O-AI"
+)
+
 @st.cache_data
 def print_banner():
     print("""

@@ -1,7 +1,13 @@
 Udemy
 =====
 
-Summarize Udemy Transcript
+Summarize Udemy Transcript.
+
+Similar to `Obsidian-AI`_, but directly from the book folder. 
+Also can remove newlines from Udemy transcripts.
+
+
+.. _Obsidian-AI: ai_obsidian.py.html
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
@@ -12,7 +18,7 @@ Summarize Udemy Transcript
    "Model Pricing", https://platform.openai.com/docs/pricing#latest-models
 
 .. contents::
-  
+ 
 ::
 
   import streamlit as st
@@ -22,10 +28,15 @@ Summarize Udemy Transcript
   from openai import OpenAI
   import platform
   import pyperclip
+  import time
 
 Print banner.
 
 ::
+
+  st.set_page_config(
+      page_title="Udemy"
+  )
 
   @st.cache_data
   def print_banner():
@@ -52,8 +63,29 @@ Select OpenAI LLM.
 
 ::
 
-  llm_models = ["gemini-2.0-flash", "gpt-4o-mini", "o3-mini"]
-  openai_model = st.sidebar.radio("LLM Models", llm_models)
+  llm_prices = {
+      "o4-mini": 1.10,
+      "o3-mini": 1.10,
+      "gemini-2.5-pro-exp-03-25": 0.0,
+      "gemma-3-27b-it": 0.0,
+      "gemini-2.0-flash": 0.0,
+      "gpt-4.1-mini": 0.4,
+      "gpt-4.1-nano": 0.1,
+      "gpt-4.1": 2.0,
+      "gpt-4o-mini": 0.15,
+      "gpt-4o": 2.5,
+  }
+
+  def reset_execution_time():
+      if "execution_time" in st.session_state:
+          del st.session_state["execution_time"]
+    
+  llm_models = list(llm_prices.keys())
+  openai_model = st.sidebar.radio(
+      "LLM Models", 
+      llm_models,
+      on_change=reset_execution_time
+  )
 
   is_gemini = openai_model.startswith("gemini")
 
@@ -71,7 +103,7 @@ Find the Obsidian folder, which is the first subfolder within the current folder
   if (len(book_folders)==0):
       st.error('The folder should contain a subfolder with a name that ends with " Book".')
       st.stop()
-    
+  
   note_home =  book_folders[0]
   # print("OBSIDIAN_HOME: " + note_home)
 
@@ -149,26 +181,25 @@ Tokens & price
 
 ::
 
-  if not is_gemini:
-      tiktoken_model = "o200k_base"
-      #encoding = tiktoken.get_encoding(tiktoken_model) 
-      encoding = tiktoken.encoding_for_model("gpt-4o-mini")
-      tokens = encoding.encode(text)
-    
+
+  tiktoken_model = "o200k_base"
+  #encoding = tiktoken.get_encoding(tiktoken_model) 
+  encoding = tiktoken.encoding_for_model("gpt-4o-mini")
+  tokens = encoding.encode(text)
+  
 Calculate price in cents.
 
 ::
 
-      pricing = {"gpt-4o-mini": 0.15, "o3-mini": 1.10}
-      cents = round(len(tokens) * pricing[openai_model]/10000, 5)
+  cents = round(len(tokens) * llm_prices[openai_model]/10000, 5)
 
-      st.sidebar.write(f'''
-          | Characters | Tokens | Cents |
-          |---|---|---|
-          | {len(text)} | {len(tokens)} | {cents} |
-          ''')  
-
-  st.sidebar.divider()
+  st.sidebar.write(f'''
+      | Characters | Tokens | Cents |
+      |---|---|---|
+      | {len(text)} | {len(tokens)} | {cents} |
+      ''')  
+       
+st.sidebar.divider()
 
 
 Buttons to update text
@@ -179,25 +210,31 @@ Buttons to update text
 
 ::
     
+  def remove_empty_lines_and_leading_hyphens(text):
+      lines = text.splitlines()
+      non_empty_lines = [line for line in lines if line.strip()]
+    
+      # Remove leading hyphens
+      stripped = [
+          line[1:].lstrip() if line.startswith('-') else line
+          for line in non_empty_lines
+      ]
+    
+      cleaned_text = '\n'.join(stripped)
+      return cleaned_text
+
   def replace_newlines_with_spaces(input_string):
       return input_string.replace('\n', ' ')
  
-  def remove_empty_lines(text):
-      lines = text.splitlines()
-      non_empty_lines = [line for line in lines if line.strip()]
-      cleaned_text = '\n'.join(non_empty_lines)
-      return cleaned_text
-
-
   if st.button(':red_circle: &nbsp; **Replace newlines with spaces**', use_container_width=True):
-      text = replace_newlines_with_spaces(text)
+      text = remove_empty_lines_and_leading_hyphens(text)
       with open(file_path, 'w', encoding='utf-8') as file:
           file.write(text)
       st.rerun()    
 
 
   if False: # st.button(':small_red_triangle_down: &nbsp; ~~Remove empty lines~~', use_container_width=True):
-    text = remove_empty_lines(text)
+    text = remove_empty_lines_and_leading_hyphens(text)
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(text)
     st.rerun()  
@@ -258,7 +295,10 @@ Show OpenAI result.
   # st.write('---')
 
   if st.sidebar.button(':sparkles: &nbsp; Summarize', type='primary', use_container_width=True):
+      start_time = time.time()
       call_openai(text, prompt)
+      end_time = time.time()
+      st.session_state.execution_time = end_time - start_time
       st.rerun()
 
 Copy to clipboard
@@ -270,8 +310,13 @@ Copy to clipboard
           pyperclip.copy(st.session_state.openai_result)
           st.sidebar.write(f'Copied to clipboard')
 
+Show last execution time
 
+::
 
+  if "execution_time" in st.session_state:
+      st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
+ 
 
 
 

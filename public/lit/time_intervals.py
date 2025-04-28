@@ -56,6 +56,10 @@ import pandas as pd
 import re
 from datetime import datetime
 
+st.set_page_config(
+    page_title="T-Int",
+)
+
 # Print banner
 #
 # ::

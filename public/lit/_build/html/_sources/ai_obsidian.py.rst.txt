@@ -39,6 +39,10 @@ Print banner.
 
 ::
 
+  st.set_page_config(
+      page_title="O-AI"
+  )
+
   @st.cache_data
   def print_banner():
       print("""
@@ -117,7 +121,7 @@ Writes a list of strings to a file, one per line.
   def write_list_to_file(filename: str, lines: List[str]) -> None:
       with open(filename, 'w', encoding='utf-8') as file:
           file.write('\n'.join(lines) + '\n')
-        
+      
 Reads non-empty, stripped lines from a text file into a list.
 Returns an empty list if the file does not exist or an error occurs.
 
@@ -129,21 +133,21 @@ Returns an empty list if the file does not exist or an error occurs.
               return [line.strip() for line in file if line.strip()]
       except FileNotFoundError:
           return []
-        
+      
 Compare two lists of strings for equality based on their sorted versions
 
 ::
 
   def lists_are_equal(a: List[str], b: List[str]) -> bool:
       return sorted(a) == sorted(b)
-    
+  
 Removes all occurrences of ``string_to_remove`` from ``lst``.   
 
 ::
 
   def remove_string(lines: List[str], string_to_remove: str) -> List[str]:
       return [s for s in lines if s != string_to_remove]
-    
+  
 Select LLM
 
 ::
@@ -244,7 +248,7 @@ Get the number of tokens.
   file_path = os.path.join(note_home, note_name)
   with open(file_path, 'r', encoding='utf-8') as file:
       text = file.read()
-    
+  
 Tokens & Price
 --------------
 
@@ -255,10 +259,10 @@ so we have added a separate configuration for them.
 
   def count_tokens():
       llm_model_tiktoken = "gpt-4o-mini"
-    
+  
       encoding = tiktoken.encoding_for_model(llm_model_tiktoken)
       tokens = encoding.encode(text)
-    
+  
       cents = round(len(tokens) * llm_prices[llm_model]/10000, 5)
 
       st.sidebar.write(f'''
@@ -266,7 +270,7 @@ so we have added a separate configuration for them.
           |---|---|---|
           | {len(text)} | {len(tokens)} | {cents} |
           ''')
-    
+  
   #if llm_model.startswith("gpt-") or llm_model.startswith("o-"):
   count_tokens()
  
@@ -288,7 +292,7 @@ Call OpenAI API.
           )
 
       return response.choices[0]
-    
+  
 Call Gemini.
 
 ::
@@ -310,7 +314,7 @@ Call Gemini.
               temperature=llm_temperature,
           )
       return response.choices[0]
-    
+  
   def call_gemma():
       messages = [
           {"role": "user", "content": f"<prompt>{prompt}</prompt>\n<query>{text}</query>"},
@@ -320,7 +324,7 @@ Call Gemini.
               messages=messages
           )
       return response.choices[0]
-    
+  
 Generic LLM call.
 
 ::
@@ -328,13 +332,13 @@ Generic LLM call.
   def call_llm():
       st.write('')
       st.info(prompt, icon="🤔")
-    
+  
       # Remember which LLM was used last time
       global llm_models
       llm_models = remove_string(llm_models, llm_model)
       llm_models.insert(0, llm_model)
       write_list_to_file(llm_names_file, llm_models)
-    
+  
       # Call LLM
       if llm_model.startswith("gemini"):
           choice = call_gemini()
@@ -342,7 +346,7 @@ Generic LLM call.
           choice = call_gemma()
       else:
           choice = call_openai()
-        
+      
       # Save result in session    
       out_text = choice.message.content    
       st.session_state.openai_result = out_text
@@ -358,12 +362,12 @@ Generic LLM call.
       # with open(out_file, 'w') as file:
       #    file.write(out_text)
       # st.write(f'Result saved: `{out_file}`')    
-    
+  
       # Save result to clipboard  
       pyperclip.copy(out_text)
       st.write(f'Copied to clipboard')
-    
-    
+  
+  
 Buttons here
 
 ::    
@@ -376,20 +380,20 @@ Buttons here
   if st.sidebar.button(':question: &nbsp; Ask questions', use_container_width=True):
       prompt = prompt_questions
       call_llm()
-    
+  
   if "openai_result" in st.session_state and st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
       pyperclip.copy(st.session_state.openai_result)
-          
+        
   st.sidebar.write('---')
 
   if st.sidebar.button(f' `Summarize` {"&nbsp;"*8} :test_tube: `v.2`'):
       prompt = prompt_summary_v2
       call_llm()
-    
+  
   if st.sidebar.button(f'`Ask questions` :test_tube: `v.2`'):
       prompt = prompt_questions_v2
       call_llm()
-    
   
-    
-    
+
+  
+  
