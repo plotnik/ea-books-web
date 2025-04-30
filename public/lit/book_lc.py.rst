@@ -9,6 +9,8 @@ This script will then analyze the HTML content using RAG (Retrieval-Augmented Ge
   import streamlit as st
   import os
   import pyperclip
+  import time
+
   from langchain.chains import RetrievalQA
   from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
   from langchain_community.document_loaders import UnstructuredHTMLLoader
@@ -18,15 +20,26 @@ Prints a stylized banner to the console when the application starts.
 
 ::
 
+  st.set_page_config(
+      page_title="Book-Chat",
+  )
+
   @st.cache_data
   def print_banner():
-      print("""
-          ___.                  __                    .__            __   
-          \\_ |__   ____   ____ |  | __           ____ |  |__ _____ _/  |_ 
-           | __ \\ /  _ \\ /  _ \\|  |/ /  ______ _/ ___\\|  |  \\\\__  \\\\   __\\
-           | \\_\\ (  <_> |  <_> )    <  /_____/ \\  \\___|   Y  \\/ __ \\|  |  
-           |___  /\\____/ \\____/|__|_ \\          \\___  >___|  (____  /__|  
-               \\/                   \\/              \\/     \\/     \\/                                                    
+      print("""                                                                            
+          ,---,.                           ,-.             ,----..    ,---,                   ___     
+        ,'  .'  \\                      ,--/ /|            /   /   \\ ,--.' |                 ,--.'|_   
+      ,---.' .' |   ,---.     ,---.  ,--. :/ |     ,---,.|   :     :|  |  :                 |  | :,'  
+      |   |  |: |  '   ,'\\   '   ,'\\ :  : ' /    ,'  .' |.   |  ;. /:  :  :                 :  : ' :  
+      :   :  :  / /   /   | /   /   ||  '  /   ,---.'   ,.   ; /--` :  |  |,--.  ,--.--.  .;__,'  /   
+      :   |    ; .   ; ,. :.   ; ,. :'  |  :   |   |    |;   | ;    |  :  '   | /       \\ |  |   |    
+      |   :     \\'   | |: :'   | |: :|  |   \\  :   :  .' |   : |    |  |   /' :.--.  .-. |:__,'| :    
+      |   |   . |'   | .; :'   | .; :'  : |. \\ :   |.'   .   | '___ '  :  | | | \\__\\/: . .  '  : |__  
+      '   :  '; ||   :    ||   :    ||  | ' \\ \\`---'     '   ; : .'||  |  ' | : ,\" .--.; |  |  | '.'| 
+      |   |  | ;  \\   \\  /  \\   \\  / '  : |--'           '   | '/  :|  :  :_:,'/  /  ,.  |  ;  :    ; 
+      |   :   /    `----'    `----'  ;  |,'              |   :    / |  | ,'   ;  :   .'   \\ |  ,   /  
+      |   | ,'                       '--'                 \\   \\ .'  `--''     |  ,     .-./  ---`-'   
+      `----'                                               `---`               `--`---'                                             
       """)
       return 1
 
@@ -157,7 +170,10 @@ Ask a question
 
   if st.button(":question: &nbsp; Ask", use_container_width=True):
       update_history(question + "\n\n---\n")
+      start_time = time.time()
       st.session_state.response = st.session_state.qa.invoke(question)
+      end_time = time.time()
+      st.session_state.execution_time = end_time - start_time
       st.rerun()
 
   if "response" in st.session_state:
@@ -165,3 +181,10 @@ Ask a question
       if st.sidebar.button(":clipboard: &nbsp; Copy to clipboard", use_container_width=True):
           pyperclip.copy(st.session_state.response["result"])
           st.toast(f'Copied to clipboard')
+
+Show last execution time
+
+::
+
+  if "execution_time" in st.session_state:
+      st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")

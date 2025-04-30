@@ -466,6 +466,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
+<li><a href="#_chapter_3_rag_part_ii_chatting_with_your_data">Chapter 3. RAG Part II: Chatting with Your Data</a>
+<ul class="sectlevel2">
+<li><a href="#_introducing_retrieval_augmented_generation">Introducing Retrieval-Augmented Generation</a>
+<ul class="sectlevel3">
+<li><a href="#_retrieving_relevant_documents">Retrieving Relevant Documents</a></li>
+<li><a href="#_generating_llm_predictions_using_relevant_documents">Generating LLM Predictions Using Relevant Documents</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -840,10 +850,77 @@ ch1/py/c-system.py</a>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_chapter_3_rag_part_ii_chatting_with_your_data">Chapter 3. RAG Part II: Chatting with Your Data</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_introducing_retrieval_augmented_generation">Introducing Retrieval-Augmented Generation</h3>
+<div class="paragraph">
+<p>The text explains Retrieval-Augmented Generation (RAG), a technique that improves the accuracy of large language models (LLMs) by providing them with up-to-date external context. Without RAG, LLMs rely solely on pretrained data, which can be outdated, leading to incorrect answers—as illustrated by ChatGPT incorrectly naming France as the latest FIFA World Cup winner instead of Argentina (2022). By appending relevant, current information (e.g., from Wikipedia) as context to the prompt, the LLM can generate accurate responses. However, manually adding such context is impractical for real-world applications, highlighting the need for automated systems that retrieve and supply relevant information dynamically to LLMs during generation.</p>
+</div>
+<div class="sect3">
+<h4 id="_retrieving_relevant_documents">Retrieving Relevant Documents</h4>
+<div class="paragraph">
+<p>The content explains the three core stages of a Retrieval-Augmented Generation (RAG) system for AI applications:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Indexing</strong>: Preprocess external data by loading documents, splitting them into chunks, embedding these chunks into vector representations, and storing them in a vector store for efficient retrieval. Code examples in Python and JavaScript demonstrate loading a text file, splitting it, embedding chunks using OpenAI embeddings, and storing them in a PostgreSQL-backed vector store (PGVector).</p>
+</li>
+<li>
+<p><strong>Retrieval</strong>: When a user query is received, it is converted into embeddings and compared against stored embeddings using similarity metrics (e.g., cosine similarity) to find the most relevant document chunks. The vector store provides an <code>as_retriever</code> method to abstract query embedding and similarity search. The number of documents retrieved can be controlled by a parameter <code>k</code> to balance relevance, performance, and prompt size. Code examples show how to retrieve relevant documents using this method.</p>
+</li>
+<li>
+<p><strong>Generation</strong>: The final stage involves combining the original user prompt with the retrieved relevant documents to form a comprehensive prompt that is sent to the language model for generating a prediction or answer.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Figures referenced illustrate the flow of indexing and retrieval processes, including similarity calculations using structures like Hierarchical Navigable Small World (HNSW) graphs.</p>
+</div>
+<div class="paragraph">
+<p>Overall, the chapter emphasizes practical implementation of RAG with LangChain libraries, highlighting the importance of efficient indexing, controlled retrieval, and prompt synthesis for effective AI applications.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_generating_llm_predictions_using_relevant_documents">Generating LLM Predictions Using Relevant Documents</h4>
+<div class="paragraph">
+<p>The content explains how to build a Retrieval-Augmented Generation (RAG) system by integrating relevant documents retrieved from a vector store into a prompt for a large language model (LLM) to generate informed answers. It provides Python and JavaScript code examples demonstrating:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Creating a dynamic prompt template with context and question variables.</p>
+</li>
+<li>
+<p>Using a retriever to fetch relevant documents based on a user query.</p>
+</li>
+<li>
+<p>Composing a chain that pipes the prompt output into the LLM.</p>
+</li>
+<li>
+<p>Invoking the chain with retrieved documents and the user question to generate a final answer.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Further, it shows how to encapsulate this retrieval and generation logic into a reusable function or runnable (<code>qa</code>) that takes a question, fetches documents, formats the prompt, and returns the answer—optionally including the retrieved documents for inspection.</p>
+</div>
+<div class="paragraph">
+<p>The text highlights that while this basic RAG system works for personal use, production-ready systems require addressing challenges such as handling variable user input quality, routing queries across multiple data sources, translating natural language to query languages, and optimizing indexing (embedding and text splitting).</p>
+</div>
+<div class="paragraph">
+<p>Finally, it previews upcoming discussion on research-backed strategies to optimize RAG system accuracy, summarized in an accompanying figure.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-20 11:34:26 +0300
+Last updated 2025-04-30 09:03:26 +0300
 </div>
 </div>
 </body>

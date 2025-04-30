@@ -187,3 +187,37 @@ An example Python workflow using the RAGatouille library demonstrates how to:
 
 Using ColBERT in this way enhances the relevance of documents retrieved as context for large language models, reducing hallucinations and improving output quality.
 
+== Chapter 3. RAG Part II: Chatting with Your Data
+
+=== Introducing Retrieval-Augmented Generation
+
+The text explains Retrieval-Augmented Generation (RAG), a technique that improves the accuracy of large language models (LLMs) by providing them with up-to-date external context. Without RAG, LLMs rely solely on pretrained data, which can be outdated, leading to incorrect answers—as illustrated by ChatGPT incorrectly naming France as the latest FIFA World Cup winner instead of Argentina (2022). By appending relevant, current information (e.g., from Wikipedia) as context to the prompt, the LLM can generate accurate responses. However, manually adding such context is impractical for real-world applications, highlighting the need for automated systems that retrieve and supply relevant information dynamically to LLMs during generation.
+
+==== Retrieving Relevant Documents
+
+The content explains the three core stages of a Retrieval-Augmented Generation (RAG) system for AI applications:
+
+1. **Indexing**: Preprocess external data by loading documents, splitting them into chunks, embedding these chunks into vector representations, and storing them in a vector store for efficient retrieval. Code examples in Python and JavaScript demonstrate loading a text file, splitting it, embedding chunks using OpenAI embeddings, and storing them in a PostgreSQL-backed vector store (PGVector).
+
+2. **Retrieval**: When a user query is received, it is converted into embeddings and compared against stored embeddings using similarity metrics (e.g., cosine similarity) to find the most relevant document chunks. The vector store provides an `as_retriever` method to abstract query embedding and similarity search. The number of documents retrieved can be controlled by a parameter `k` to balance relevance, performance, and prompt size. Code examples show how to retrieve relevant documents using this method.
+
+3. **Generation**: The final stage involves combining the original user prompt with the retrieved relevant documents to form a comprehensive prompt that is sent to the language model for generating a prediction or answer.
+
+Figures referenced illustrate the flow of indexing and retrieval processes, including similarity calculations using structures like Hierarchical Navigable Small World (HNSW) graphs.
+
+Overall, the chapter emphasizes practical implementation of RAG with LangChain libraries, highlighting the importance of efficient indexing, controlled retrieval, and prompt synthesis for effective AI applications.
+
+==== Generating LLM Predictions Using Relevant Documents
+
+The content explains how to build a Retrieval-Augmented Generation (RAG) system by integrating relevant documents retrieved from a vector store into a prompt for a large language model (LLM) to generate informed answers. It provides Python and JavaScript code examples demonstrating:
+
+- Creating a dynamic prompt template with context and question variables.
+- Using a retriever to fetch relevant documents based on a user query.
+- Composing a chain that pipes the prompt output into the LLM.
+- Invoking the chain with retrieved documents and the user question to generate a final answer.
+
+Further, it shows how to encapsulate this retrieval and generation logic into a reusable function or runnable (`qa`) that takes a question, fetches documents, formats the prompt, and returns the answer—optionally including the retrieved documents for inspection.
+
+The text highlights that while this basic RAG system works for personal use, production-ready systems require addressing challenges such as handling variable user input quality, routing queries across multiple data sources, translating natural language to query languages, and optimizing indexing (embedding and text splitting).
+
+Finally, it previews upcoming discussion on research-backed strategies to optimize RAG system accuracy, summarized in an accompanying figure.

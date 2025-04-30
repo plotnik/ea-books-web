@@ -224,20 +224,17 @@ def remove_empty_lines_and_leading_hyphens(text):
     return cleaned_text
 
 def replace_newlines_with_spaces(input_string):
+    # An inexpensive method to remove empty lines without using extra logic such as leading hyphens.
     return input_string.replace('\n', ' ')
  
-if st.button(':red_circle: &nbsp; **Replace newlines with spaces**', use_container_width=True):
+if st.button(':small_red_triangle_down: &nbsp; **Replace newlines with spaces**', use_container_width=True):
     text = remove_empty_lines_and_leading_hyphens(text)
+    
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(text)
+        
     st.rerun()    
 
-
-if False: # st.button(':small_red_triangle_down: &nbsp; ~~Remove empty lines~~', use_container_width=True):
-  text = remove_empty_lines_and_leading_hyphens(text)
-  with open(file_path, 'w', encoding='utf-8') as file:
-      file.write(text)
-  st.rerun()  
 
 # Call OpenAI API
 # ---------------
@@ -273,11 +270,6 @@ def call_openai(text, prompt):
     st.session_state.openai_result = out_text
 
     st.write(st.session_state.openai_result)
-
-    # st.write(f'finish_reason: `{choice.finish_reason}`')
-    # print("--- " + response.model)
-    # print(response)
-    # st.write(f'Choices: {len(response.choices)}')
 
     with open(out_file, 'w') as file:
         file.write(out_text)
