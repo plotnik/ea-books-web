@@ -34,6 +34,7 @@ import tiktoken
 from openai import OpenAI
 import pyperclip
 from typing import List
+import time
 
 # Print banner.
 #
@@ -330,6 +331,8 @@ def call_gemma():
 # ::
 
 def call_llm():
+    start_time = time.time()
+    
     st.write('')
     st.info(prompt, icon="🤔")
   
@@ -347,28 +350,31 @@ def call_llm():
     else:
         choice = call_openai()
       
-    # Save result in session    
-    out_text = choice.message.content    
-    st.session_state.openai_result = out_text
-
-    # Print result
-    st.write('---')
-    st.write(out_text)
-    st.write('---')
-    st.write(f'finish_reason: `{choice.finish_reason}`')
-
-    # Save result in file   
-    # out_file = 'ai_obsidian.txt'
-    # with open(out_file, 'w') as file:
-    #    file.write(out_text)
-    # st.write(f'Result saved: `{out_file}`')    
-  
+    # Save result in session       
+    st.session_state.llm_result = choice.message.content 
+    
     # Save result to clipboard  
-    pyperclip.copy(out_text)
+    pyperclip.copy(st.session_state.llm_result)
     st.write(f'Copied to clipboard')
-  
-  
-# Buttons here
+    
+    end_time = time.time()
+    st.session_state.execution_time = end_time - start_time
+    
+    st.rerun()
+    
+# Print result
+#
+# ::
+
+if "llm_result" in st.session_state:
+    st.write('---')
+    st.write(st.session_state.llm_result)
+    st.write('---')  
+    
+if "execution_time" in st.session_state:
+    st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 1)}` sec")    
+    
+# Sidebar buttons
 #
 # ::    
 
@@ -381,8 +387,8 @@ if st.sidebar.button(':question: &nbsp; Ask questions', use_container_width=True
     prompt = prompt_questions
     call_llm()
   
-if "openai_result" in st.session_state and st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
-    pyperclip.copy(st.session_state.openai_result)
+if "llm_result" in st.session_state and st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
+    pyperclip.copy(st.session_state.llm_result)
         
 st.sidebar.write('---')
 

@@ -474,6 +474,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_generating_llm_predictions_using_relevant_documents">Generating LLM Predictions Using Relevant Documents</a></li>
 </ul>
 </li>
+<li><a href="#_query_transformation">Query Transformation</a>
+<ul class="sectlevel3">
+<li><a href="#_rewrite_retrieve_read">Rewrite-Retrieve-Read</a></li>
+<li><a href="#_multi_query_retrieval">Multi-Query Retrieval</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -885,6 +891,12 @@ ch1/py/c-system.py</a>
 </div>
 <div class="sect3">
 <h4 id="_generating_llm_predictions_using_relevant_documents">Generating LLM Predictions Using Relevant Documents</h4>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/langchain-ai/learning-langchain/blob/master/ch3/py/a-basic-rag.py" target="_blank">
+ch3/py/a-basic-rag.py</a>
+</div>
+</div>
 <div class="paragraph">
 <p>The content explains how to build a Retrieval-Augmented Generation (RAG) system by integrating relevant documents retrieved from a vector store into a prompt for a large language model (LLM) to generate informed answers. It provides Python and JavaScript code examples demonstrating:</p>
 </div>
@@ -915,12 +927,77 @@ ch1/py/c-system.py</a>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_query_transformation">Query Transformation</h3>
+<div class="sect3">
+<h4 id="_rewrite_retrieve_read">Rewrite-Retrieve-Read</h4>
+<div class="paragraph">
+<p>The Rewrite-Retrieve-Read (RRR) strategy improves question answering by first prompting a large language model (LLM) to rewrite a user&#8217;s poorly phrased or distracted query into a clearer, more focused search query. This rewritten query is then used to retrieve relevant documents, which are subsequently passed along with the original question to the LLM to generate an answer.</p>
+</div>
+<div class="paragraph">
+<p>An example shows that a distracted user query containing irrelevant details leads to a failure in retrieving useful information and thus no answer. By contrast, applying the RRR approach—where the LLM rewrites the query before retrieval—results in fetching relevant documents and producing a meaningful answer.</p>
+</div>
+<div class="paragraph">
+<p>This method can be implemented in various programming languages (Python, JavaScript) and works with any retrieval system, including vector stores or web search tools. The main trade-off is increased latency due to the extra LLM call required for rewriting the query.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_multi_query_retrieval">Multi-Query Retrieval</h4>
+<div class="paragraph">
+<p>The multi-query retrieval strategy enhances information retrieval by generating multiple related queries from a user&#8217;s initial question using an LLM. These queries are run in parallel against a data source, and the retrieved documents are combined and deduplicated to form a comprehensive context. This approach helps overcome limitations of single-query retrieval, especially when answers require multiple perspectives.</p>
+</div>
+<div class="paragraph">
+<p>Key points include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Using a prompt template to generate several query variations from the original question.</p>
+</li>
+<li>
+<p>Running all queries in parallel with a <code>.batch</code> method to retrieve relevant documents.</p>
+</li>
+<li>
+<p>Deduplicating documents by their content to avoid repetition.</p>
+</li>
+<li>
+<p>Combining the retrieved documents as context for a final prompt to the LLM to generate a comprehensive answer.</p>
+</li>
+<li>
+<p>Encapsulating the multi-query retrieval logic in a standalone chain (<code>retrieval_chain</code>) for modularity and ease of integration.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Code examples in Python and JavaScript illustrate:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Generating multiple queries.</p>
+</li>
+<li>
+<p>Parallel retrieval and deduplication of documents.</p>
+</li>
+<li>
+<p>Constructing a prompt with combined context.</p>
+</li>
+<li>
+<p>Producing the final answer using the LLM.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This strategy is particularly useful for complex questions requiring diverse information sources and can be integrated seamlessly into existing QA workflows.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-30 09:03:26 +0300
+Last updated 2025-05-02 09:30:36 +0300
 </div>
 </div>
 </body>

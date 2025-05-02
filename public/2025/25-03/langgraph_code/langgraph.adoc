@@ -209,6 +209,13 @@ Overall, the chapter emphasizes practical implementation of RAG with LangChain l
 
 ==== Generating LLM Predictions Using Relevant Documents
 
+====
+++++
+<a href="https://github.com/langchain-ai/learning-langchain/blob/master/ch3/py/a-basic-rag.py" target="_blank">
+ch3/py/a-basic-rag.py</a>
+++++
+====
+
 The content explains how to build a Retrieval-Augmented Generation (RAG) system by integrating relevant documents retrieved from a vector store into a prompt for a large language model (LLM) to generate informed answers. It provides Python and JavaScript code examples demonstrating:
 
 - Creating a dynamic prompt template with context and question variables.
@@ -221,3 +228,35 @@ Further, it shows how to encapsulate this retrieval and generation logic into a 
 The text highlights that while this basic RAG system works for personal use, production-ready systems require addressing challenges such as handling variable user input quality, routing queries across multiple data sources, translating natural language to query languages, and optimizing indexing (embedding and text splitting).
 
 Finally, it previews upcoming discussion on research-backed strategies to optimize RAG system accuracy, summarized in an accompanying figure.
+
+=== Query Transformation
+
+==== Rewrite-Retrieve-Read
+
+The Rewrite-Retrieve-Read (RRR) strategy improves question answering by first prompting a large language model (LLM) to rewrite a user's poorly phrased or distracted query into a clearer, more focused search query. This rewritten query is then used to retrieve relevant documents, which are subsequently passed along with the original question to the LLM to generate an answer.
+
+An example shows that a distracted user query containing irrelevant details leads to a failure in retrieving useful information and thus no answer. By contrast, applying the RRR approach—where the LLM rewrites the query before retrieval—results in fetching relevant documents and producing a meaningful answer.
+
+This method can be implemented in various programming languages (Python, JavaScript) and works with any retrieval system, including vector stores or web search tools. The main trade-off is increased latency due to the extra LLM call required for rewriting the query.
+
+
+==== Multi-Query Retrieval
+
+The multi-query retrieval strategy enhances information retrieval by generating multiple related queries from a user's initial question using an LLM. These queries are run in parallel against a data source, and the retrieved documents are combined and deduplicated to form a comprehensive context. This approach helps overcome limitations of single-query retrieval, especially when answers require multiple perspectives.
+
+Key points include:
+
+- Using a prompt template to generate several query variations from the original question.
+- Running all queries in parallel with a `.batch` method to retrieve relevant documents.
+- Deduplicating documents by their content to avoid repetition.
+- Combining the retrieved documents as context for a final prompt to the LLM to generate a comprehensive answer.
+- Encapsulating the multi-query retrieval logic in a standalone chain (`retrieval_chain`) for modularity and ease of integration.
+
+Code examples in Python and JavaScript illustrate:
+
+- Generating multiple queries.
+- Parallel retrieval and deduplication of documents.
+- Constructing a prompt with combined context.
+- Producing the final answer using the LLM.
+
+This strategy is particularly useful for complex questions requiring diverse information sources and can be integrated seamlessly into existing QA workflows.
