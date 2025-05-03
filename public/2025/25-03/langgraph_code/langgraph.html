@@ -478,6 +478,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel3">
 <li><a href="#_rewrite_retrieve_read">Rewrite-Retrieve-Read</a></li>
 <li><a href="#_multi_query_retrieval">Multi-Query Retrieval</a></li>
+<li><a href="#_rag_fusion">RAG-Fusion</a></li>
 </ul>
 </li>
 </ul>
@@ -991,13 +992,41 @@ ch3/py/a-basic-rag.py</a>
 <p>This strategy is particularly useful for complex questions requiring diverse information sources and can be integrated seamlessly into existing QA workflows.</p>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_rag_fusion">RAG-Fusion</h4>
+<div class="paragraph">
+<p>The RAG-Fusion strategy enhances multi-query retrieval by adding a final reranking step using the Reciprocal Rank Fusion (RRF) algorithm. RRF combines ranked document lists from multiple queries into a single unified ranking by scoring documents based on their positions across all lists, effectively promoting the most relevant documents to the top. This approach handles differences in score scales across queries and allows lower-ranked documents to influence the final ranking through a tunable parameter k.</p>
+</div>
+<div class="paragraph">
+<p>The process involves:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Generating multiple search queries from a single user query using a language model prompt.</p>
+</li>
+<li>
+<p>Retrieving relevant documents for each query.</p>
+</li>
+<li>
+<p>Applying the RRF algorithm to fuse and rerank these documents into one consolidated list.</p>
+</li>
+<li>
+<p>Using the reranked documents as context to answer the original question with a language model.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Code examples in Python and JavaScript demonstrate how to implement query generation, document retrieval, RRF reranking, and final question answering in a pipeline. RAG-Fusion improves retrieval by capturing diverse user intents, handling complex queries, and broadening document coverage to enable serendipitous discovery.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-02 09:30:36 +0300
+Last updated 2025-05-03 11:37:09 +0300
 </div>
 </div>
 </body>

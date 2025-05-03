@@ -216,7 +216,7 @@ if "qa" not in st.session_state:
 #
 # ::
 
-question = st.text_area(f"Question", height=200)
+question = st.text_area(f"Question")
 
 if st.button(":question: &nbsp; Ask", use_container_width=True):
     update_history(question + "\n\n---\n")
@@ -237,4 +237,4 @@ if "response" in st.session_state:
 # ::
 
 if "execution_time" in st.session_state:
-    st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
+    st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 1)}` sec")

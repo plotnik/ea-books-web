@@ -31,6 +31,7 @@ Print current folder name as a title
   current_folder = os.path.basename(os.getcwd())
   st.write(f"### {current_folder}")
   overwrite_files = True # st.toggle("Overwrite files")
+  hide_source_panel = st.toggle("Hide source panel", value=True)
   st.write("---")
 
 Prints a stylized banner to the console when the application starts.
@@ -523,15 +524,22 @@ Original java file and LLM explanation
 
 ::
 
-  col1j, col2j = st.columns(2)
-
-  with col1j:
-      if len(java_code) > 0:
-          st.write(f"```java\n{java_code}\n```\n")
-
-  with col2j:
+  if hide_source_panel:
       try:
           markdown = load_markdown(package_name, class_name, method_name)
           st.write(markdown)
       except Exception as e: 
-          pass    
+          pass        
+  else:    
+      col1j, col2j = st.columns(2)
+    
+      with col1j:
+          if len(java_code) > 0:
+              st.write(f"```java\n{java_code}\n```\n")
+    
+      with col2j:
+          try:
+              markdown = load_markdown(package_name, class_name, method_name)
+              st.write(markdown)
+          except Exception as e: 
+              pass    

@@ -73,6 +73,7 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">current_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;### </span><span class="si">{</span><span class="n">current_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">overwrite_files</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># st.toggle(&quot;Overwrite files&quot;)</span>
+<span class="n">hide_source_panel</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">&quot;Hide source panel&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -531,18 +532,25 @@
 </pre></div>
 </div>
 <p>Original java file and LLM explanation</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">col1j</span><span class="p">,</span> <span class="n">col2j</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="n">col1j</span><span class="p">:</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">java_code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;```java</span><span class="se">\n</span><span class="si">{</span><span class="n">java_code</span><span class="si">}</span><span class="se">\n</span><span class="s2">```</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="n">col2j</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">hide_source_panel</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">markdown</span> <span class="o">=</span> <span class="n">load_markdown</span><span class="p">(</span><span class="n">package_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">pass</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">col1j</span><span class="p">,</span> <span class="n">col2j</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">col1j</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">java_code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;```java</span><span class="se">\n</span><span class="si">{</span><span class="n">java_code</span><span class="si">}</span><span class="se">\n</span><span class="s2">```</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">col2j</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">markdown</span> <span class="o">=</span> <span class="n">load_markdown</span><span class="p">(</span><span class="n">package_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span>
 </pre></div>
 </div>
 </section>

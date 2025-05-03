@@ -21,7 +21,7 @@ Book Chat (LC)
    :widths: 10 30
 
    "Using Chroma in LangChain", https://python.langchain.com/docs/integrations/vectorstores/chroma/
-  
+ 
 ::
 
   import streamlit as st
@@ -79,7 +79,7 @@ Select Embeddings
 
    "Gemini Models", https://ai.google.dev/gemini-api/docs/models
    "Gemini Rate Limits", https://ai.google.dev/gemini-api/docs/rate-limits
- 
+
 ::
 
   embedding_models = [
@@ -133,17 +133,17 @@ Load history
   def update_history(new_text):
       with open(history_file, 'w', encoding="utf-8") as file:
           file.write(new_text + history)
-      
+    
   if os.path.exists(history_file):
       with open(history_file, "r", encoding="utf-8") as fin:
           history = fin.read()
-  
+
   history = st.sidebar.text_area(f"History", value=history.strip(), height=200)
 
   if st.sidebar.button(":recycle: &nbsp; Update history", use_container_width=True):
       update_history("")
       st.toast(f'History updated')   
-    
+  
 Chroma    
 ------
 
@@ -154,13 +154,13 @@ Create or load index
   def create_index(input_file, persist_dir):
       loader = UnstructuredHTMLLoader(input_file)
       docs = loader.load()
-    
+  
       # split into 1,000‐char chunks with 200‐char overlap
       text_splitter = RecursiveCharacterTextSplitter(
           chunk_size=1000,
           chunk_overlap=200,
       )  
-    
+  
       chunks = text_splitter.split_documents(docs) 
 
       # Create a *persistent* Chroma collection in one step
@@ -170,7 +170,7 @@ Create or load index
           persist_directory=persist_dir,     # <- where it lives on disk
           collection_name="book"             # any name you like
       )
-  
+
       st.session_state.vstore = vectorstore
 
   def load_index(persist_dir):
@@ -216,7 +216,7 @@ Ask a question
 
 ::
 
-  question = st.text_area(f"Question", height=200)
+  question = st.text_area(f"Question")
 
   if st.button(":question: &nbsp; Ask", use_container_width=True):
       update_history(question + "\n\n---\n")
@@ -237,4 +237,4 @@ Show last execution time
 ::
 
   if "execution_time" in st.session_state:
-      st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
+      st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 1)}` sec")
