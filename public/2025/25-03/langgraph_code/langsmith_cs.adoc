@@ -1,0 +1,270 @@
+= LangSmith Cheat Sheet 🚀
+:source-highlighter: pygments
+:icons: font
+:toc: right
+:toclevels: 4
+
+====
+LangSmith Docs::
+https://docs.smith.langchain.com/
+
+LangChain Cheat Sheet 🚀::
+link:../../../2023/23-12/langchain_code/lc_cs.html[2023/23-12/langchain_code/lc_cs.html]
+====
+
+=== 1 · Quick Start
+
+[source,bash]
+----
+# Install the Python SDK
+pip install langsmith    # or: npm i @langchain/smith
+
+# Minimum environment vars
+export LANGCHAIN_TRACING_V2="true"       # enable tracing
+export LANGCHAIN_API_KEY="sk‑..."        # get from smith.langchain.com
+export LANGCHAIN_PROJECT="my‑project"    # logical bucket for traces
+# Optional
+export LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
+export LANGCHAIN_HIDE_INPUTS="true"      # redact PII
+----
+
+'''''
+
+=== 2 · Core Concepts
+
+[cols=",",options="header",]
+|===
+|Concept |What it is
+|*Project* |Top‑level bucket that groups runs/traces.
+
+|*Run / Span* |Single invocation (chain, LLM, tool) recorded with
+metadata.
+
+|*Dataset* |Collection of input → expected output pairs, used for eval &
+fine‑tuning.
+
+|*Evaluation* |Programmatic or LLM‑as‑judge scoring of a chain/LLM on a
+dataset.
+
+|*Monitor* |Dashboard card that tracks latency, cost, quality, etc.,
+over time.
+
+|*Prompt Canvas* |GUI for prompt versioning, diffing, and collaboration.
+|===
+
+'''''
+
+=== 3 · Tracing & Observability
+
+==== Python (one‑off)
+
+[source,python]
+----
+from langchain.callbacks import tracing_v2_enabled
+
+with tracing_v2_enabled(project_name="demo"):
+    result = chain.invoke({"input": "Hi"})
+----
+
+==== JS/TS (global)
+
+[source,ts]
+----
+import { traceable } from "@langchain/core/tracing";
+await traceable.run(chain, { input: "Hello" }, { projectName: "demo" });
+----
+
+*Tips*
+
+* Tag runs: `+chain.invoke(..., tags=["prod","user123"])+`
+* Add custom metadata: `+run.extra = {"order_id": 42}+`.
+* Log user feedback:
+`+client.create_feedback(run_id, score=1, comment="👍")+`.
+
+'''''
+
+=== 4 · CLI Reference  (npm i -g langsmith)
+
+[source,bash]
+----
+langsmith login                         # OAuth or API key
+langsmith projects list                 # show all projects
+langsmith logs -p my-project            # tail live traces
+langsmith dataset create -n eval1       # make dataset from runs
+langsmith eval run -d eval1 --chain app.py --evals qa embed_distance faithfulness
+----
+
+'''''
+
+=== 5 · Python Client Snippets
+
+[source,python]
+----
+from langsmith import Client
+client = Client()
+
+# Read a run
+a_run = client.read_run("<run-id>")
+
+# Create dataset + examples
+set = client.create_dataset("orders-test", description="Edge cases")
+client.create_example(
+    inputs={"query": "Where's my order?"},
+    outputs={"answer": "Your order ships tomorrow."},
+    dataset_id=set.id,
+)
+
+# Evaluate chain on dataset
+client.run_on_dataset(
+    dataset_name="orders-test",
+    llm_or_chain_factory=lambda: chain,
+    evaluation="qa",
+)
+----
+
+'''''
+
+=== 6 · JS/TS Snippets
+
+[source,ts]
+----
+import { Client } from "@langchain/smith";
+const client = new Client();
+
+const run = await client.readRun(runId);
+----
+
+'''''
+
+=== 7 · Evaluators Deep Dive
+
+==== Built‑in evaluators
+
+[cols=",,,",options="header",]
+|===
+|Evaluator |Metric |Ideal Use Cases |Key Kwargs
+|*qa* |LLM‑as‑judge (0–1) correctness vs reference |Q&A, summarization,
+generation quality |`+model_name+`, `+threshold+`
+
+|*string_distance* |Levenshtein / Rouge‑L / BLEU |Deterministic text
+comparison |`+distance+`
+
+|*embed_distance* |Cosine similarity in embedding space |Semantic
+similarity, retrieval |`+embedding_model+`
+
+|*faithfulness* |Context‑grounded hallucination score |RAG answers,
+citation compliance |`+context_key+`
+
+|*json_diff* |Structural diff of JSON |Tool responses & structured data
+|`+ignore_paths+`
+
+|*toxicity* |Perspective API score |Content safety & moderation
+|`+threshold+`
+|===
+
+'''''
+
+==== Running evaluators
+
+[source,python]
+----
+client.run_on_dataset(
+    dataset_name="orders-test",
+    llm_or_chain_factory=lambda: chain,
+    evaluation=["qa", "embed_distance", "faithfulness"],
+    max_examples=100,
+)
+----
+
+CLI equivalent:
+
+[source,bash]
+----
+langsmith eval run -d orders-test --chain app.py --evals qa embed_distance faithfulness --max-examples 100
+----
+
+'''''
+
+==== Custom evaluator skeleton
+
+[source,python]
+----
+from langsmith.evaluation import StringEvaluator, EvalResult
+import re
+
+class RegexPassFail(StringEvaluator):
+    def __init__(self, pattern: str):
+        self.pattern = re.compile(pattern)
+
+    def _score_string(self, prediction: str, reference: str | None = None) -> EvalResult:
+        ok = bool(self.pattern.search(prediction))
+        return EvalResult(score=int(ok), comment="✅" if ok else "❌")
+
+client.register_evaluator("regex_pass", RegexPassFail(r"order_\\d+"))
+----
+
+'''''
+
+==== Interpreting results
+
+* *score*: float 0–1; `+None+` means skipped or errored.
+* *comment*: model or evaluator reasoning—view in _Evals_ tab.
+* Dashboards automatically aggregate p50, p90, pass‑rate.
+
+'''''
+
+==== Tips & tricks
+
+* Start with string/embedding metrics; layer LLM judges for samples that
+pass.
+* Weight metrics to blend: `+--weights qa:0.7 faithfulness:0.3+`.
+* Cache expensive LLM calls by setting
+`+LANGCHAIN_CACHE="redis://host:6379"+`.
+* Publish evaluators to workspace registry → reuse via UI “Add Metric”.
+
+'''''
+
+=== 8 · Monitoring Dashboards
+
+* Go to *Monitor → Charts* in any project.
+* Windows: 1h • 24h • 7d.
+* Charts: Token usage, latency p95, error rate, evaluation score.
+
+'''''
+
+=== 9 · Security & Self‑Hosting
+
+[cols=",",options="header",]
+|===
+|Option |Purpose
+|`+LANGCHAIN_REDACT="field1,field2"+` |Masks sensitive JSON keys.
+|`+LANGCHAIN_PUBLIC="true"+` |Share a read‑only project link.
+|*Self‑host* |Deploy OSS stack via Docker‑compose ().
+|===
+
+'''''
+
+=== 10 · Troubleshooting FAQ
+
+[cols=",",options="header",]
+|===
+|Symptom |Fix
+|No runs appear |Verify `+LANGCHAIN_TRACING_V2+` and project name.
+
+|403 errors |Check API key scopes & workspace membership.
+
+|Duplicate traces |Remove legacy callback handlers or disable DEBUG
+logs.
+|===
+
+'''''
+
+=== 11 · Resources
+
+* Docs & Quick Start → _docs.smith.langchain.com_
+* Evaluator library → _docs.smith.langchain.com/evaluation_
+* GitHub SDK → _github.com/langchain-ai/langsmith_
+* Community Help → _discord.gg/langchain_
+
+'''''
+

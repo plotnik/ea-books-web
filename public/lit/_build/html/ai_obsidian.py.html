@@ -145,8 +145,7 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<section id="remember-which-llm-was-used-last-time">
-<h3>Remember which LLM was used last time<a class="headerlink" href="#remember-which-llm-was-used-last-time" title="Link to this heading">¶</a></h3>
+<p>Remember which LLM was used last time</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_names_file</span> <span class="o">=</span> <span class="s2">&quot;.o-ai&quot;</span>
 </pre></div>
 </div>
@@ -198,7 +197,13 @@ Returns an empty list if the file does not exist or an error occurs.</p>
 </pre></div>
 </div>
 <p>Select Obsidian folder from recent vaults.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">home_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">reset_llm_result</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s2">&quot;llm_result&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;llm_result&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;note_name&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;note_name&quot;</span><span class="p">]</span>
+
+<span class="n">home_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
 <span class="n">obsidian_json_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">home_folder</span><span class="si">}</span><span class="s2">/Library/Application Support/obsidian/obsidian.json&quot;</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">obsidian_json_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
     <span class="n">obsidian_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
@@ -214,6 +219,7 @@ Returns an empty list if the file does not exist or an error occurs.</p>
 <span class="n">note_home</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
    <span class="s2">&quot;Obsidian folder&quot;</span><span class="p">,</span>
    <span class="n">obsidian_folders</span><span class="p">,</span>
+   <span class="n">on_change</span><span class="o">=</span><span class="n">reset_llm_result</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -256,6 +262,7 @@ Returns an empty list if the file does not exist or an error occurs.</p>
 <span class="n">note_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
    <span class="s2">&quot;Note&quot;</span><span class="p">,</span>
    <span class="n">newest_files</span><span class="p">,</span>
+   <span class="n">on_change</span><span class="o">=</span><span class="n">reset_llm_result</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -265,7 +272,6 @@ Returns an empty list if the file does not exist or an error occurs.</p>
     <span class="n">text</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 </pre></div>
 </div>
-</section>
 </section>
 <section id="tokens-price">
 <h2>Tokens &amp; Price<a class="headerlink" href="#tokens-price" title="Link to this heading">¶</a></h2>
@@ -358,6 +364,7 @@ so we have added a separate configuration for them.</p>
 
     <span class="c1"># Save result in session</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_result</span> <span class="o">=</span> <span class="n">choice</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">note_name</span> <span class="o">=</span> <span class="n">note_name</span>
 
     <span class="c1"># Save result to clipboard</span>
     <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_result</span><span class="p">)</span>
@@ -469,6 +476,7 @@ so we have added a separate configuration for them.</p>
 <li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
+<li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
 </ul>
 
 <div class="relations">

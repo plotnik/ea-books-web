@@ -40,4 +40,5 @@ Literate Programs
    cmp_props.py
    pi_keys.py
    albums.py
+   youtube_transcript.py
 

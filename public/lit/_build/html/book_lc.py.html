@@ -56,7 +56,16 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Using Chroma in LangChain</p></td>
+<tr class="row-even"><td><p>LangGraph Studio</p></td>
+<td><p><a class="reference external" href="https://studio.langchain.com/">https://studio.langchain.com/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Trace with LangSmith</p></td>
+<td><p><a class="reference external" href="https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langchain">https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langchain</a></p></td>
+</tr>
+<tr class="row-even"><td><p>tracers - LangChain documentation</p></td>
+<td><p><a class="reference external" href="https://python.langchain.com/api_reference/core/tracers.html">https://python.langchain.com/api_reference/core/tracers.html</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Using Chroma in LangChain</p></td>
 <td><p><a class="reference external" href="https://python.langchain.com/docs/integrations/vectorstores/chroma/">https://python.langchain.com/docs/integrations/vectorstores/chroma/</a></p></td>
 </tr>
 </tbody>
@@ -71,6 +80,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_community.document_loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnstructuredHTMLLoader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_chroma</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chroma</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain.text_splitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecursiveCharacterTextSplitter</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.tracers.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">tracing_v2_enabled</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">nullcontext</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tiktoken</span>
 </pre></div>
 </div>
 <p>Prints a stylized banner to the console when the application starts.</p>
@@ -99,6 +112,11 @@
 
 <span class="n">print_banner</span><span class="p">()</span>
 <span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">&quot;https://ea-books.netlify.app/lit/book_lc.svg&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>LangSmith tracing</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">langsmith_tracing</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">&quot;LangSmith Tracing&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">tracing_context</span> <span class="o">=</span> <span class="n">tracing_v2_enabled</span><span class="p">()</span> <span class="k">if</span> <span class="n">langsmith_tracing</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Get <code class="docutils literal notranslate"><span class="pre">GEMINI_API_KEY</span></code></p>
@@ -182,7 +200,7 @@
 <section id="id1">
 <h2>Chroma<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <p>Create or load index</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_index</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">persist_dir</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_doc_chunks</span><span class="p">(</span><span class="n">input_file</span><span class="p">):</span>
     <span class="n">loader</span> <span class="o">=</span> <span class="n">UnstructuredHTMLLoader</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
     <span class="n">docs</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 
@@ -193,7 +211,9 @@
     <span class="p">)</span>
 
     <span class="n">chunks</span> <span class="o">=</span> <span class="n">text_splitter</span><span class="o">.</span><span class="n">split_documents</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">chunks</span>
 
+<span class="k">def</span><span class="w"> </span><span class="nf">create_index</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">persist_dir</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
     <span class="c1"># Create a *persistent* Chroma collection in one step</span>
     <span class="n">vectorstore</span> <span class="o">=</span> <span class="n">Chroma</span><span class="o">.</span><span class="n">from_documents</span><span class="p">(</span>
         <span class="n">chunks</span><span class="p">,</span>
@@ -222,8 +242,22 @@
     <span class="k">if</span> <span class="s2">&quot;vstore&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
         <span class="n">load_index</span><span class="p">(</span><span class="n">index_folder</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
+    <span class="c1"># No index folder</span>
+    <span class="n">chunks</span> <span class="o">=</span> <span class="n">create_doc_chunks</span><span class="p">(</span><span class="n">book_html</span><span class="p">)</span>
+
+    <span class="n">enc</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">&quot;gpt-4o-nano&quot;</span><span class="p">)</span>
+    <span class="n">total_tokens</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">enc</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">page_content</span><span class="p">))</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">)</span>
+    <span class="n">cents</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        | Chunks | Tokens | Cents |</span>
+<span class="s1">        |---|---|---|</span>
+<span class="s1">        | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">total_tokens</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">cents</span><span class="si">}</span><span class="s1"> |</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:construction: &amp;nbsp; Create Index&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">create_index</span><span class="p">(</span><span class="n">book_html</span><span class="p">,</span> <span class="n">index_folder</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">tracing_context</span><span class="p">:</span>
+            <span class="n">create_index</span><span class="p">(</span><span class="n">book_html</span><span class="p">,</span> <span class="n">index_folder</span><span class="p">,</span> <span class="n">chunks</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
@@ -247,7 +281,8 @@
 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;:question: &amp;nbsp; Ask&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">update_history</span><span class="p">(</span><span class="n">question</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">qa</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tracing_context</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">qa</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
@@ -329,6 +364,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
+<li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
 </ul>
 
 <div class="relations">

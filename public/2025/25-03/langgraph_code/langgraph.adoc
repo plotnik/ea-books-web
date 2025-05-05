@@ -273,3 +273,153 @@ The process involves:
 4. Using the reranked documents as context to answer the original question with a language model.
 
 Code examples in Python and JavaScript demonstrate how to implement query generation, document retrieval, RRF reranking, and final question answering in a pipeline. RAG-Fusion improves retrieval by capturing diverse user intents, handling complex queries, and broadening document coverage to enable serendipitous discovery.
+
+==== Hypothetical Document Embeddings
+
+The document explains the Hypothetical Document Embeddings (HyDE) technique for improving document retrieval in RAG (Retrieval-Augmented Generation) systems. HyDE works by first generating a hypothetical document that answers the user's query using a large language model (LLM). This generated passage is then embedded and used to retrieve relevant documents based on vector similarity, as it tends to be closer in embedding space to relevant documents than the original query.
+
+The process involves:
+
+1. Defining a prompt to generate the hypothetical document from the query.
+2. Passing the generated document to a retriever to find similar documents in a vector store.
+3. Using the retrieved documents as context in a final prompt to the LLM to produce the answer.
+
+Code examples in Python and JavaScript illustrate how to implement each step using LangChain and OpenAI APIs.
+
+The document also discusses query transformation strategies, which involve rewriting or decomposing the original user query to improve retrieval. Techniques include removing irrelevant text, grounding queries with conversation history, broadening the search with related queries, and breaking complex questions into simpler ones. The choice of rewriting strategy depends on the use case.
+
+Finally, the text hints at the next topic: routing queries to retrieve relevant data from multiple sources to build a robust RAG system.
+
+Reference: Gao et al., “Precise Zero-Shot Dense Retrieval Without Relevance Labels,” arXiv, 2022.
+
+=== Query Routing
+
+==== Logical Routing
+
+The text explains the concept of **logical routing** in LLM applications, where the model is given knowledge of multiple data sources and decides which one to use based on the user's query. This is achieved using function-calling models like GPT-3.5 Turbo, which generate structured outputs conforming to a predefined schema to classify queries.
+
+Key points include:
+
+- Defining a schema (e.g., with Python's Pydantic or JavaScript's Zod) that specifies possible data sources (like "python_docs" or "js_docs").
+- Using a prompt that instructs the LLM to route queries based on the programming language referenced.
+- Invoking the LLM to produce JSON outputs indicating the chosen data source.
+- Passing the LLM's output into further logic (e.g., a function) to select the appropriate processing chain.
+- Implementing resilience by using case-insensitive substring matching rather than exact string comparisons to handle slight deviations in LLM output.
+- Logical routing is ideal when there is a fixed set of data sources (vector stores, databases, APIs) to choose from for accurate information retrieval.
+
+Overall, logical routing leverages structured function calls to enable LLMs to reason about and select the most relevant data source for a given query, improving the accuracy and reliability of multi-source applications.
+
+==== Semantic Routing
+
+The content explains **semantic routing**, a method that routes user queries to the most relevant data source by embedding both the query and various prompt templates, then using vector similarity (cosine similarity) to select the closest matching prompt. This approach contrasts with logical routing by leveraging semantic meaning rather than fixed rules.
+
+Two example prompts are given—one for physics questions and one for math questions. Both prompts are embedded using OpenAI embeddings. When a user query arrives, it is embedded and compared to the prompt embeddings to find the most similar prompt. The selected prompt is then used to generate a response via a language model (ChatOpenAI).
+
+Code examples in Python and JavaScript illustrate this process:
+
+- Embedding prompts and queries
+- Calculating cosine similarity
+- Selecting the best prompt based on similarity
+- Passing the routed prompt to a chat model for answering
+
+The section concludes by transitioning to the next topic: transforming natural language queries into the query language of the target data source in retrieval-augmented generation (RAG) systems.
+
+=== Query Construction
+
+==== Text-to-Metadata Filter
+
+The content explains how to perform metadata-filtered vector searches using LangChain's `SelfQueryRetriever`. When embedding data into a vector store, metadata key-value pairs can be attached to vectors. Later, queries can specify filters on this metadata to narrow search results.
+
+LangChain’s `SelfQueryRetriever` simplifies this by leveraging an LLM to convert natural language queries into structured metadata filters and semantic search queries. Users define the metadata schema (fields with names, descriptions, and types), which is included in the prompt to the LLM.
+
+The retriever workflow is:
+
+1. The LLM receives the user query plus metadata schema and generates a rewritten search query plus metadata filters.
+2. The filters are parsed and translated into the vector store’s filter format.
+3. A similarity search is performed on the vector store, applying the metadata filters to restrict results.
+
+Code examples in Python and JavaScript demonstrate defining metadata fields (e.g., genre, year, director, rating), initializing the retriever with an LLM and database, and invoking it with a natural language query like “What’s a highly rated (above 8.5) science fiction film?”
+
+This approach enables combining semantic search with precise metadata filtering automatically derived from user queries.
+
+==== Text-to-SQL
+
+The text discusses strategies for translating natural language queries into SQL using large language models (LLMs), emphasizing the importance of grounding SQL generation with accurate database descriptions and few-shot examples. Key points include:
+
+- **Database Description:** Providing the LLM with detailed `CREATE TABLE` statements (including column names and types) and sample rows helps it generate accurate SQL queries.
+
+- **Few-shot Examples:** Including example question-to-SQL pairs in the prompt improves query generation accuracy by guiding the model on expected outputs.
+
+- **Implementation:** Code examples in Python and JavaScript demonstrate how to create a chain that converts user questions into SQL queries and executes them on a database (e.g., SQLite with the Chinook sample database) using LangChain and OpenAI’s GPT-4.
+
+- **Security Considerations:** Running LLM-generated SQL queries directly on production databases poses risks. Recommended precautions include:
+
+  - Using read-only database users.
+  - Restricting access to only necessary tables.
+  - Implementing query timeouts to prevent resource exhaustion.
+
+The text highlights that security for LLM-driven database querying is an evolving area requiring ongoing attention.
+
+== Chapter 4. Using LangGraph to Add Memory to Your Chatbot
+
+=== Building a Chatbot Memory System
+
+The text discusses two fundamental design decisions for building a robust chatbot memory system: how to store state and how to query it. A simple approach is to store the entire chat history as a list of messages, updating it by appending new messages after each turn, and including this history in the prompt to the model. This method enables context-aware responses, as demonstrated with example code in Python and JavaScript using LangChain, where previous conversation messages are passed to the model to answer follow-up questions effectively.
+
+However, while this simple memory system works, scaling it for production introduces challenges such as ensuring atomic updates of memory after each interaction, storing memories in durable storage like databases, controlling which and how many messages are retained and used, and enabling inspection and modification of the stored state outside of LLM calls. The text hints at introducing better tooling to address these challenges in subsequent sections.
+
+=== Introducing LangGraph
+
+The chapter introduces LangGraph, an open-source library by LangChain designed to build multiactor, multistep, stateful cognitive architectures called "graphs." These graphs enable complex applications by coordinating multiple specialized actors (e.g., LLM prompts, search engines) working together, much like a team of specialists collaborating.
+
+Key concepts explained include:
+
+- **Multiactor:** Multiple actors (nodes) collaborate, passing work among themselves (edges), requiring a coordination layer to define actors, manage handoffs, and schedule execution deterministically.
+
+- **Multistep:** Interactions occur over multiple discrete steps, tracking the order and frequency of actor calls, with each handoff scheduling the next computation step until completion.
+
+- **Stateful:** A central shared state tracks data across steps, allowing snapshotting, pausing/resuming execution, error recovery, and human-in-the-loop controls.
+
+A LangGraph graph consists of:
+
+- **State:** Data input and modified during execution.
+
+- **Nodes:** Functions representing steps that receive and update state.
+
+- **Edges:** Connections between nodes, either fixed or conditional, defining execution flow.
+
+LangGraph provides visualization and debugging tools and supports scalable production deployment. Installation instructions for Python and JavaScript are given.
+
+To demonstrate LangGraph, the chapter plans to build a simple chatbot that responds directly to user messages, illustrating core LangGraph concepts with a single LLM call.
+
+=== Creating a StateGraph
+
+The content explains how to build a simple chatbot using LangGraph by defining a state, adding a node for an LLM call, connecting nodes with edges, and running the graph.
+
+Key steps:
+
+1. **Define the Graph State**  
+   - The state is a schema describing the data the graph manages.  
+   - Here, the state has a single key `messages`, a list of chat messages.  
+   - A reducer function (`add_messages`) is used to append new messages instead of overwriting the list.  
+   - This is shown in both Python (using `Annotated` and `TypedDict`) and JavaScript (using `Annotation` with a reducer).
+
+2. **Add a Chatbot Node**  
+   - Nodes represent units of work, typically functions.  
+   - The `chatbot` node takes the current state, calls an LLM (`ChatOpenAI`), and returns new messages to append.  
+   - This updates the state by adding the LLM’s response to the `messages` list.
+
+3. **Add Edges to Define Execution Flow**  
+   - Edges connect nodes and define the start and end of the graph execution.  
+   - The graph starts at `START`, runs the `chatbot` node, then ends at `END`.  
+   - The graph is compiled into a runnable object with `invoke` and `stream` methods.
+
+4. **Visualize the Graph**  
+   - The graph can be visualized using a Mermaid diagram.
+
+5. **Run the Graph**  
+   - Input is provided as a dictionary/object matching the state shape (e.g., `{"messages": [HumanMessage('hi!')]}`).  
+   - The `stream()` method runs the graph and streams state updates after each step.  
+   - Output shows the chatbot’s AI message appended to the messages list.
+
+Overall, this example demonstrates how to build a simple chatbot workflow with LangGraph by defining state, nodes, edges, and running the graph with streaming output.

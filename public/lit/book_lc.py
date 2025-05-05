@@ -20,8 +20,11 @@
 #    :header: "Name", "URL"
 #    :widths: 10 30
 #
+#    "LangGraph Studio", https://studio.langchain.com/
+#    "Trace with LangSmith", https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langchain
+#    "tracers - LangChain documentation", https://python.langchain.com/api_reference/core/tracers.html
 #    "Using Chroma in LangChain", https://python.langchain.com/docs/integrations/vectorstores/chroma/
-#  
+#
 # ::
 
 import streamlit as st
@@ -34,6 +37,10 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 from langchain_community.document_loaders import UnstructuredHTMLLoader
 from langchain_chroma import Chroma 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+from langchain_core.tracers.context import tracing_v2_enabled
+from contextlib import nullcontext
+import tiktoken
 
 # Prints a stylized banner to the console when the application starts.
 #
@@ -65,6 +72,13 @@ def print_banner():
 print_banner()
 st.logo("https://ea-books.netlify.app/lit/book_lc.svg")
 
+# LangSmith tracing
+#
+# ::
+
+langsmith_tracing = st.sidebar.toggle("LangSmith Tracing", value=False)
+tracing_context = tracing_v2_enabled() if langsmith_tracing else nullcontext()
+
 # Get ``GEMINI_API_KEY``
 #
 # ::
@@ -79,7 +93,7 @@ g_key = os.getenv("GEMINI_API_KEY")
 #
 #    "Gemini Models", https://ai.google.dev/gemini-api/docs/models
 #    "Gemini Rate Limits", https://ai.google.dev/gemini-api/docs/rate-limits
-# 
+#
 # ::
 
 embedding_models = [
@@ -133,7 +147,7 @@ history = ""
 def update_history(new_text):
     with open(history_file, 'w', encoding="utf-8") as file:
         file.write(new_text + history)
-    
+
 if os.path.exists(history_file):
     with open(history_file, "r", encoding="utf-8") as fin:
         history = fin.read()
@@ -143,7 +157,7 @@ history = st.sidebar.text_area(f"History", value=history.strip(), height=200)
 if st.sidebar.button(":recycle: &nbsp; Update history", use_container_width=True):
     update_history("")
     st.toast(f'History updated')   
-  
+
 # Chroma    
 # ------
 #
@@ -151,18 +165,20 @@ if st.sidebar.button(":recycle: &nbsp; Update history", use_container_width=True
 #
 # ::
 
-def create_index(input_file, persist_dir):
+def create_doc_chunks(input_file):
     loader = UnstructuredHTMLLoader(input_file)
     docs = loader.load()
-  
+
     # split into 1,000‐char chunks with 200‐char overlap
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=200,
     )  
-  
-    chunks = text_splitter.split_documents(docs) 
 
+    chunks = text_splitter.split_documents(docs) 
+    return chunks
+  
+def create_index(input_file, persist_dir, chunks):
     # Create a *persistent* Chroma collection in one step
     vectorstore = Chroma.from_documents(
         chunks,
@@ -193,8 +209,22 @@ if os.path.exists(index_folder):
     if "vstore" not in st.session_state:
         load_index(index_folder)
 else:
+    # No index folder
+    chunks = create_doc_chunks(book_html)
+
+    enc = tiktoken.encoding_for_model("gpt-4o-nano")
+    total_tokens = sum(len(enc.encode(chunk.page_content)) for chunk in chunks)
+    cents = 0
+    
+    st.sidebar.write(f'''
+        | Chunks | Tokens | Cents |
+        |---|---|---|
+        | {len(chunks)} | {total_tokens} | {cents} |
+        ''')  
+    
     if st.sidebar.button(':construction: &nbsp; Create Index', type='primary', use_container_width=True):
-        create_index(book_html, index_folder)
+        with tracing_context:
+            create_index(book_html, index_folder, chunks)
         st.rerun()
     else:
         st.stop()
@@ -221,7 +251,8 @@ question = st.text_area(f"Question")
 if st.button(":question: &nbsp; Ask", use_container_width=True):
     update_history(question + "\n\n---\n")
     start_time = time.time()
-    st.session_state.response = st.session_state.qa.invoke(question)
+    with tracing_context:
+        st.session_state.response = st.session_state.qa.invoke(question)
     end_time = time.time()
     st.session_state.execution_time = end_time - start_time
     st.rerun()

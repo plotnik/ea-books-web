@@ -109,7 +109,6 @@ Select LLM
   }
 
 Remember which LLM was used last time
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -176,6 +175,12 @@ Select Obsidian folder from recent vaults.
 
 ::
 
+  def reset_llm_result():
+      if "llm_result" in st.session_state:
+          del st.session_state["llm_result"]
+      if "note_name" in st.session_state:
+          del st.session_state["note_name"]
+        
   home_folder = os.path.expanduser('~')
   obsidian_json_path = f"{home_folder}/Library/Application Support/obsidian/obsidian.json"
   with open(obsidian_json_path, "r") as json_file:
@@ -192,6 +197,7 @@ Select Obsidian folder from recent vaults.
   note_home = st.selectbox(
      "Obsidian folder",
      obsidian_folders,
+     on_change=reset_llm_result
   )
 
 Load LLM prompts.
@@ -235,13 +241,14 @@ Get ``num_files`` newest files from the provided ``directory``.
 Select ``note_name`` from 5 newest notes.
 
 ::
-
+        
   newest_files = get_newest_files(note_home, 5)
   note_name = st.selectbox(
      "Note",
      newest_files,
+     on_change=reset_llm_result
   )
-
+    
 Get the number of tokens.
 
 ::
@@ -352,6 +359,7 @@ Generic LLM call.
       
       # Save result in session       
       st.session_state.llm_result = choice.message.content 
+      st.session_state.note_name = note_name
     
       # Save result to clipboard  
       pyperclip.copy(st.session_state.llm_result)
