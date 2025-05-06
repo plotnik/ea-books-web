@@ -105,6 +105,7 @@ Also can remove newlines from Udemy transcripts.</p>
     <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">print_banner</span><span class="p">()</span>
+<span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">&quot;https://ea-books.netlify.app/lit/udemy.svg&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Output file to save response.</p>
@@ -269,10 +270,13 @@ Also can remove newlines from Udemy transcripts.</p>
 </section>
 <section id="call-openai-api">
 <h2><a class="toc-backref" href="#id8" role="doc-backlink">Call OpenAI API</a><a class="headerlink" href="#call-openai-api" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_summarize</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
 <span class="s2">and your task is to summarize the content you are provided.</span>
 <span class="s2">&quot;&quot;&quot;</span>
-<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+
+<span class="n">prompt_improve</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
+<span class="s2">and your task is to improve the content you are provided.</span>
+<span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">g_client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span>
     <span class="n">api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">,</span>
@@ -314,7 +318,14 @@ Also can remove newlines from Udemy transcripts.</p>
 
 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:sparkles: &amp;nbsp; Summarize&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">call_openai</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+    <span class="n">call_openai</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt_summarize</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;👍 &amp;nbsp; Improve&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">call_openai</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt_improve</span><span class="p">)</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
@@ -322,7 +333,7 @@ Also can remove newlines from Udemy transcripts.</p>
 </div>
 <p>Copy to clipboard</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:clipboard: &amp;nbsp; Copy to clipboard&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:clipboard: &amp;nbsp; Copy to clipboard&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
 </pre></div>

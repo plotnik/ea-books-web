@@ -1,6 +1,8 @@
 YouTube Transcript
 ==================
 
+.. contents::
+
 ::
 
   import streamlit as st
@@ -31,6 +33,8 @@ Prints a stylized banner to the console when the application starts.
             |_| \\___/ \\_,_|       |_|                                 
           """)
       return 1
+
+  print_banner()
 
 Get transcript from YouTube URL
 
@@ -96,28 +100,74 @@ Get trunscript summary
   }
   llm_models = list(llm_prices.keys())
 
-GenericLLM
+            
+MultiModel
 ----------
 
 ::
 
-  class GenericLLM:
+  class MultiModel:
+      """
+      Wrapper for multiple LLM APIs (OpenAI, Gemini, Gemma).
+      """
 
-      def __init__(self, llm_model: str) -> None:
+      def __init__(self, llm_model: str, llm_temperature = 0.1) -> None:
           self.llm_model = llm_model
+          self.llm_temperature = llm_temperature
 
-          self.client = OpenAI()
-          self.llm_temperature = 0.1
+          vendor = self._get_vendor(llm_model)
+          if vendor == "google":
+              self.client = OpenAI(
+                  api_key=os.getenv("GEMINI_API_KEY"),
+                  base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+              )
+          else:
+              self.client = OpenAI()
 
-          self.g_key = os.getenv("GEMINI_API_KEY")
-          self.g_client = OpenAI(
-              api_key=self.g_key,
-              base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-          )
+      @staticmethod
+      def _get_vendor(llm_model: str) -> str:
+          """
+          Determines the vendor based on the model name.
+          """
+          if llm_model.lower().startswith(("gemini", "gemma")):
+              return "google"
+          return "openai"
 
-      def _call_o_model(self, prompt, text):
+      def _call_gpt(self, prompt: str, text: str):
+          """
+          Calls a GPT-like model with standard message format and temperature.
+          """
           messages = [
-              {"role": "developer", "content": prompt},
+              {"role": "system", "content": prompt},
+              {"role": "user", "content": text},
+          ]
+          response = self.client.chat.completions.create(
+              model=self.llm_model,
+              messages=messages,
+              temperature=self.llm_temperature,
+          )
+          return response.choices[0]
+
+      def _call_gemma(self, prompt: str, text: str):
+          """
+          Calls a Gemma model with custom message format and temperature.
+          """
+          messages = [
+              {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
+          ]
+          response = self.client.chat.completions.create(
+              model=self.llm_model,
+              messages=messages,
+              temperature=self.llm_temperature,
+          )
+          return response.choices[0]
+
+      def _call_o_model(self, prompt: str, text: str):
+          """
+          Calls an 'o'-prefixed model with standard message format, no temperature.
+          """
+          messages = [
+              {"role": "system", "content": prompt},
               {"role": "user", "content": text},
           ]
           response = self.client.chat.completions.create(
@@ -126,61 +176,20 @@ GenericLLM
           )
           return response.choices[0]
 
-      def _call_gpt(self, prompt, text):
-          messages = [
-              {"role": "developer", "content": prompt},
-              {"role": "user", "content": text},
-          ]
-          response = self.client.chat.completions.create(
-                  model=self.llm_model,
-                  messages=messages,
-                  temperature=self.llm_temperature,
-              )
-          return response.choices[0]
-
-      def _call_gemini(self, prompt, text):
-          messages = [
-              {"role": "developer", "content": prompt},
-              {"role": "user", "content": text},
-          ]
-          response = self.g_client.chat.completions.create(
-                  model=self.llm_model,
-                  messages=messages,
-                  temperature=self.llm_temperature,
-              )
-          return response.choices[0]
-
-      def _call_gemma(self, prompt, text):
-          messages = [
-              {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
-              {"role": "user", "content": text},
-          ]
-          response = self.g_client.chat.completions.create(
-                  model=self.llm_model,
-                  messages=messages,
-                  temperature=self.llm_temperature,
-              )
-          return response.choices[0]
-
-      def call_llm(self, prompt, text):
-
-          if self.llm_model.startswith("gemini"):
-              response = self._call_gemini(prompt, text)
-
-          elif self.llm_model.startswith("gemma"):
-              response = self._call_gemma(prompt, text)
-
-          elif self.llm_model.startswith("gpt"):
-              response = self._call_gpt(prompt, text)
-
-          elif self._llm_model.startswith("o"):
-              response = self._call_o_model(prompt, text)
-
+      def call_llm(self, prompt: str, text: str):
+          """
+          Calls the appropriate LLM based on the model name.
+          """
+          model = self.llm_model.lower()
+          if model.startswith(("gemini", "gpt")):
+              return self._call_gpt(prompt, text)
+          elif model.startswith("gemma"):
+              return self._call_gemma(prompt, text)
+          elif model.startswith("o"):
+              return self._call_o_model(prompt, text)
           else:
-              response = None
-
-          return response
-
+              raise ValueError(f"Unknown model prefix for: {self.llm_model}")
+            
 Select LLM
 
 ::
@@ -191,7 +200,7 @@ Select LLM
       with open(transcript_file, 'r', encoding='utf-8') as file:
           transcript = file.read()
 
-      llm = GenericLLM(llm_model) 
+      llm = MultiModel(llm_model) 
       summary = llm.call_llm(prompt_summary, transcript)
 
       return summary.message.content

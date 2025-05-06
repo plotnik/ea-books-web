@@ -52,6 +52,7 @@ Print banner.
       return 1
 
   print_banner()
+  st.logo("https://ea-books.netlify.app/lit/udemy.svg")
 
 Output file to save response.
 
@@ -241,10 +242,13 @@ Call OpenAI API
 
 ::
     
-  prompt = """You will be provided with statements in markdown, 
+  prompt_summarize = """You will be provided with statements in markdown, 
   and your task is to summarize the content you are provided.
   """
-  st.sidebar.write(prompt)
+
+  prompt_improve = """You will be provided with statements in markdown, 
+  and your task is to improve the content you are provided.
+  """
 
   g_client = OpenAI(
       api_key=g_key,
@@ -288,17 +292,24 @@ Show OpenAI result.
 
   if st.sidebar.button(':sparkles: &nbsp; Summarize', type='primary', use_container_width=True):
       start_time = time.time()
-      call_openai(text, prompt)
+      call_openai(text, prompt_summarize)
       end_time = time.time()
       st.session_state.execution_time = end_time - start_time
       st.rerun()
 
+  if st.sidebar.button('👍 &nbsp; Improve', use_container_width=True):
+      start_time = time.time()
+      call_openai(text, prompt_improve)
+      end_time = time.time()
+      st.session_state.execution_time = end_time - start_time
+      st.rerun()
+    
 Copy to clipboard
 
 ::
 
   if len(st.session_state.openai_result) > 0:
-      if st.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
+      if st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
           pyperclip.copy(st.session_state.openai_result)
           st.sidebar.write(f'Copied to clipboard')
 
