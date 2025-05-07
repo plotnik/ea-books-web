@@ -55,11 +55,6 @@ def print_banner():
 print_banner()
 st.logo("https://ea-books.netlify.app/lit/udemy.svg")
 
-# Output file to save response.
-#
-# ::
-
-out_file = 'udemy.txt'
 
 # Select OpenAI LLM.
 #
@@ -108,6 +103,18 @@ if (len(book_folders)==0):
   
 note_home =  book_folders[0]
 # print("OBSIDIAN_HOME: " + note_home)
+
+# Output file to save response.
+#
+# ::
+
+home_directory = os.path.expanduser("~")
+output_folder = os.path.join(home_directory, ".a-services")
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+    
+out_file = os.path.join(output_folder, 'udemy.txt')
+adoc_file = os.path.join(output_folder, 'udemy.adoc')
 
 # Get Gemini API key.
 #
@@ -310,7 +317,6 @@ if st.sidebar.button('👍 &nbsp; Improve', use_container_width=True):
 # ::
 
 def convert_to_asciidoc(markdown):
-    adoc_file = "udemy.adoc"
     subprocess.run(["pandoc", "-f", "gfm", "-s", out_file, "-o", adoc_file], check=True)
     with open(adoc_file, "r", encoding="utf-8") as fin:
         result = fin.read()    

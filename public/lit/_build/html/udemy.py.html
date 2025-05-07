@@ -109,10 +109,6 @@ Also can remove newlines from Udemy transcripts.</p>
 <span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">&quot;https://ea-books.netlify.app/lit/udemy.svg&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Output file to save response.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;udemy.txt&#39;</span>
-</pre></div>
-</div>
 <p>Select OpenAI LLM.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;o4-mini&quot;</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">,</span>
@@ -154,6 +150,16 @@ Also can remove newlines from Udemy transcripts.</p>
 
 <span class="n">note_home</span> <span class="o">=</span>  <span class="n">book_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="c1"># print(&quot;OBSIDIAN_HOME: &quot; + note_home)</span>
+</pre></div>
+</div>
+<p>Output file to save response.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">home_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span>
+<span class="n">output_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home_directory</span><span class="p">,</span> <span class="s2">&quot;.a-services&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_folder</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_folder</span><span class="p">)</span>
+
+<span class="n">out_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s1">&#39;udemy.txt&#39;</span><span class="p">)</span>
+<span class="n">adoc_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s1">&#39;udemy.adoc&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Get Gemini API key.</p>
@@ -334,7 +340,6 @@ Also can remove newlines from Udemy transcripts.</p>
 </div>
 <p>Convert to Asciidoc</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">convert_to_asciidoc</span><span class="p">(</span><span class="n">markdown</span><span class="p">):</span>
-    <span class="n">adoc_file</span> <span class="o">=</span> <span class="s2">&quot;udemy.adoc&quot;</span>
     <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;pandoc&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="s2">&quot;gfm&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">adoc_file</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">adoc_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
