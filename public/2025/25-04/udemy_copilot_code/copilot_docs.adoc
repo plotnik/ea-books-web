@@ -1,0 +1,170 @@
+= Copilot Docs
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+:experimental:
+
+== Use ask mode in VS Code
+
+> https://code.visualstudio.com/docs/copilot/chat/chat-ask-mode
+
+Visual Studio Code’s Copilot Chat *“Ask mode”* lets you query your
+codebase and general tech topics in plain English. Here’s how it works:
+
+[arabic]
+. Enabling Ask mode +
+• Open the Chat view (Copilot menu or kbd:[Ctrl + ⌘ I]). +
+• Choose “Ask” from the mode dropdown. +
+• Type your question and press Enter.
+. Adding context +
+• Click “Add Context” or type “#” to reference files, folders, or
+`+#codebase+`. +
+• Drag-and-drop files into the chat to include them.
+. Receiving and applying responses +
+• Answers can include code blocks, terminal commands, links, etc. +
+• Hover a code block and choose *Apply in Editor* to merge it smartly. +
+• Shell commands can be inserted into the integrated terminal with
+*Insert into Terminal*.
+. Quick Chat +
+• For one-off questions, open *Quick Chat* from the Copilot menu. +
+• Promote a quick exchange to the full Chat view with *Open in Chat
+View*.
+. Special keywords +
+• @participants (e.g. `+@workspace+`, `+@terminal+`, `+@github+`) let
+you tap domain-specific helpers. +
+• /slash-commands (e.g. `+/fix+`, `+/explain+`) trigger common
+actions. +
+• #variables (e.g. `+#file+`, `+#codebase+`) reference context directly
+in your prompt.
+
+With Ask mode, you can explore design patterns, understand or refactor
+code, generate snippets, and more—all without leaving VS Code.
+
+
+== Use edit mode in VS Code
+
+> https://code.visualstudio.com/docs/copilot/chat/copilot-edits
+
+Here’s a concise overview of VS Code’s Copilot Chat “edit mode” and how
+to use it:
+
+• What it is +
+– A natural-language interface for making code edits across one or more
+files +
+– Edits stream directly into the editor so you can see them in context
+
+• How to get started
+
+[arabic]
+. Open the Chat view (kbd:[⌃⌘I] or *Open Chat* in the Copilot menu)
+. Switch the mode dropdown to *Edit*
+. Click *Add Context* to include files or folders (or use `#codebase` if
+you’ve enabled code search)
+. Enter your edit prompt (e.g. _“Refactor calculate() for performance”_)
+. Copilot will suggest inline changes—navigate them with the overlay
+controls
+
+• Reviewing edits +
+– The Chat view lists changed files; tabs and Explorer items show
+pending edits +
+– Use *Keep* / *Undo* (or *Accept All* / *Discard All*) to apply or
+reject edits +
+– An auto-accept delay can be configured; you can hover to cancel the
+countdown
+
+• Reverting and redoing +
+– *Undo Last Edit* and *Redo Last Edit* buttons in the Chat view revert
+or reapply the most recent request +
+– You can also undo all edits from a specific request via the “x”
+control in the request list
+
+• Key settings +
+– `chat.editing.autoAcceptDelay`: milliseconds before auto-accept (0 to
+disable) +
+– `chat.editing.confirmEditRequestRemoval/Retry`: prompt before
+undo/redo +
+– `github.copilot.chat.codesearch.enabled` (preview): power `#codebase`
+file finding +
+– `chat.implicitContext.enabled` (experimental) for auto-adding the active
+editor as context
+
+• Useful keyboard shortcuts +
+– kbd:[⇧⌘I]: open Copilot Edits view +
+– kbd:[⌥⌘Enter]: send prompt to edit mode +
+– kbd:[⌘/]: attach context +
+– kbd:[⌘Enter] / kbd:[⌘Backspace]: accept/discard all edits +
+– kbd:[⇧⌥F5] / kbd:[⌥F5]: navigate edits within a file
+
+• Limitations +
+– No simultaneous edit sessions or project scaffolding with
+`+@workspace /new+` in edit mode +
+– Custom and binary file formats aren’t supported or tested +
+– `#codebase` results can vary—experiment with explicit context or the
+code-search preview
+
+• When to choose edit mode vs. agent mode +
+– Edit mode is best for targeted code changes when you know the scope +
+– Agent mode can discover context and iterate more autonomously but may
+be slower and less predictable
+
+== Use agent mode in VS Code
+
+> https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode
+
+Here’s a concise overview of Copilot’s “agent mode” in VS Code:
+
+[arabic]
+. What Agent Mode Is +
+• An autonomous editing session where Copilot: +
+– Plans what to do +
+– Picks relevant files and context +
+– Makes code changes and runs tools/commands +
+– Monitors results, runs tests, and iterates to fix errors
+. Getting Started +
+• Enable agent mode via the chat.agent.enabled setting (VS Code 1.99+) +
+• Open the Chat view (kbd:[⌃⌘I]) and pick “Agent” from the mode dropdown +
+• Type a high-level request (e.g. _“Create a React/Node meal-planner”_)—no
+need to name files
+. How It Works +
+• Copilot decides which built-in, MCP, or extension-provided tools to
+invoke (file listing, editing, terminal, etc.) +
+• You confirm any tool or terminal commands before they run +
+• You can configure tool approvals per session, workspace, or always;
+reset approvals via *“Chat: Reset Tool Confirmations”* +
+• Optionally auto-approve all tools with the experimental
+chat.tools.autoApprove setting
+. Reviewing & Accepting Changes +
+• Suggested edits appear directly in the editor; changed files are
+listed in the Chat view and Explorer +
+• Use the overlay controls (kbd:[Up/Down] arrows) to navigate hunks +
+• Click “Keep” or “Undo” per hunk, file, or all edits +
+• You can set `chat.editing.autoAcceptDelay` to auto-accept after a delay
+. Undo/Redo & Revert +
+• “Undo Last Edit” and “Redo Last Edit” in the Chat view let you step
+backward/forward through requests +
+• Hover over a specific request to “Undo Edits (Delete)” from that point
+onward
+. Interrupting a Request +
+• “Pause” halts processing and lets you continue or enter a new prompt +
+• “Cancel” stops the run but retains edits made so far, which you can
+still accept or reject
+. Key Settings +
+• `chat.agent.enabled`: on/off (default false) +
+• `chat.agent.maxRequests`: max backend calls per prompt (default 5-15) +
+• `github.copilot.chat.agent.runTasks`: whether to run workspace tasks
+(default true) +
+• `chat.mcp.discovery.enabled`: MCP server discovery (default true) +
+• `chat.tools.autoApprove` (experimental): auto-approve all tools (default
+false)
+. When to Use Agent vs. Edit Mode +
+• Agent Mode: best for complex, multi-file tasks that may need builds,
+tests or external tools, and self-healing workflows +
+• Edit Mode: quicker for simple, scoped edits when you know exactly
+which file/region to change
+
+By following these steps and controls, agent mode lets Copilot take
+end-to-end responsibility for planning, applying, and validating code
+changes in your workspace.
+
+

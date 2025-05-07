@@ -29,6 +29,7 @@ Also can remove newlines from Udemy transcripts.
   import platform
   import pyperclip
   import time
+  import subprocess
 
 Print banner.
 
@@ -303,7 +304,18 @@ Show OpenAI result.
       end_time = time.time()
       st.session_state.execution_time = end_time - start_time
       st.rerun()
-    
+ 
+Convert to Asciidoc
+
+::
+
+  def convert_to_asciidoc(markdown):
+      adoc_file = "udemy.adoc"
+      subprocess.run(["pandoc", "-f", "gfm", "-s", out_file, "-o", adoc_file], check=True)
+      with open(adoc_file, "r", encoding="utf-8") as fin:
+          result = fin.read()    
+      return result
+
 Copy to clipboard
 
 ::
@@ -312,7 +324,16 @@ Copy to clipboard
       if st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
           pyperclip.copy(st.session_state.openai_result)
           st.sidebar.write(f'Copied to clipboard')
+        
+Copy Asciidoc to clipboard
 
+::
+
+  if len(st.session_state.openai_result) > 0:
+      if st.sidebar.button(':clipboard: &nbsp; Copy Asciidoc to clipboard', use_container_width=True):
+          pyperclip.copy(convert_to_asciidoc(st.session_state.openai_result))
+          st.sidebar.write(f'Copied to clipboard')
+        
 Show last execution time
 
 ::

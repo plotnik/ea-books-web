@@ -196,3 +196,253 @@ e.g. removing redundant logging, consolidating exception blocks, etc.
 By explicitly tagging files or symbols, you ensure Copilot Chat has
 exactly the code you want it to analyze, leading to more accurate and
 actionable optimization tips.
+
+=== Adding Additional Participants For Enhanced Sidebar Chat Context
+
+When you’re chatting in VS Code—whether in the main sidebar or
+inline—two types of shortcuts let you pull in extra context or helper
+“participants”:
+
+[arabic]
+. *Hashtag shortcuts (`+#+`)* +
+Bring in files or code fragments from your workspace. +
+• Example: +
+– Type `+#utils.js+` to reference the `+utils.js+` file. +
+– The AI will see its contents and can generate or modify code based on
+it.
+. *At-symbol shortcuts (`+@+`)* +
+Invite built-in assistants or services into the conversation. Common
+ones include: +
+• `+@VS Code+` – Ask general questions about editor settings (e.g.
+“Where do I tweak the code font size?”). +
+• `+@Terminal+` – Get help with command-line tasks. +
+• `+@Workspace+` – Query details about your entire project (structure,
+configs, dependencies). +
+• `+@GitHub+` – (If you’ve pushed your repo) lets the AI perform live
+web searches and GitHub-specific checks.
+
+'''''
+
+==== Examples
+
+*1. Referring to another file*
+
+In inline chat, you might write:
+
+....
+Generate a function in this file that uses #dataProcessor.js
+....
+
+The AI then reads `+dataProcessor.js+` to inform its response.
+
+*2. Asking about VS Code settings*
+
+In the sidebar chat:
+
+....
+@VS Code: How can I change my editor’s bracket color?
+....
+
+You’ll get pointer links right into your `+settings.json+` UI.
+
+*3. Checking code style with GitHub search*
+
+First, push your code to GitHub. Then in a new chat:
+
+....
+@GitHub #main.py  
+Does this follow common Python style best practices?
+....
+
+The AI will pull in both the file and any relevant web references to
+reply.
+
+'''''
+
+*Key Takeaways*
+
+* Use *`+#<filename>+`* to inject specific files or code blocks.
+* Use *`+@<assistant>+`* to bring in contextual helpers like VS Code,
+Terminal, Workspace, or GitHub.
+* Combining both gives the AI maximum context for accurate, tailored
+answers.
+
+=== Running Terminal Commands Efficiently With AI
+
+==== 1. Chat in the Editor: Asking about Terminal Commands
+
+[arabic]
+. Open the editor-sidebar chat.
+. Ask any terminal-related question, for example:
+* “How can I use Git to manage this project?”
+* “How do I run this Python code?”
+. The chat will propose the exact command. +
+– If it uses a placeholder (e.g. `+python file.py+`), simply clarify: +
+“No—I need the command to run the file I have open.” +
+– It will detect your open file (e.g. `+db_backup.py+`) and update the
+command.
+. Click the “Insert into Terminal” button.
+. *Always review* the command before hitting Enter—this avoids
+accidental destructive operations.
+
+==== 2. Inline Chat in the Terminal
+
+Instead of switching back to the sidebar, you can invoke the inline chat
+directly inside your terminal:
+
+[arabic]
+. Open your terminal and trigger the inline chat shortcut (depends on
+your setup).
+. Type your request, for example:
++
+....
+run this Python file
+....
+. If it doesn’t pick up the right filename or interpreter, refine your
+prompt:
++
+....
+run db_backup.py with Python 3
+....
+. The chat will show the exact command:
++
+....
+python3 db_backup.py
+....
+. You can either insert it into the prompt or execute immediately—again,
+double-check before you run.
+
+'''''
+
+==== Why This Helps
+
+* *Context-aware*: Knows which file you’re editing.
+* *Saves time*: No need to Google or remember obscure flags.
+* *Flexible*: Works both in the sidebar and inline in your terminal.
+
+By leveraging both modes, you streamline your workflow and spend less
+time hunting for commands—and more time coding.
+
+=== Mastering GitHub Copilot Slash Commands - Explain, Fix & More
+
+
+Beyond adding context or participants to your chat, GitHub Copilot Chat
+provides a set of slash commands to invoke various features quickly. You
+can use these commands both in the terminal and inline within your
+editor.
+
+'''''
+
+==== 1. Terminal Slash Commands
+
+Type `+/+` in the integrated terminal to see all available commands. For
+example:
+
+* `+/explain+` +
+Explains the currently selected or typed command.
++
+[source,bash]
+----
+# Suppose you have this command in your terminal:
+git rebase --interactive HEAD~3
+
+# Simply type
+/explain
+----
++
+Copilot will pop up a brief explanation. If you prefer a full dialog,
+click *View in Chat* to see the explanation in the main chat window.
+
+'''''
+
+==== 2. Inline Chat Slash Commands
+
+You can also select a block of code in your editor, press `+/+`, and
+choose a command that operates on that selection. Common inline commands
+include:
+
+* `+/explain+` +
+Automatically explains the selected code block.
+* `+/fix+` +
+Attempts to fix issues in the selected code. You can add a free-form
+instruction, e.g., “Use print instead of the logging package,” or just
+run `+/fix+` and let Copilot infer your intent.
+* `+/tests+` +
+Generates unit tests or test scaffolding for the selected code (covered
+in the next lecture).
+
+===== Example: Explaining Code Inline
+
+[arabic]
+. Select your code snippet.
+. Press `+/+` and choose */explain*.
+. A small preview appears. Click *View in Chat* for the full
+explanation.
+
+===== Example: Fixing Code Inline
+
+[arabic]
+. Select the code you want to modify.
+. Press `+/+` and choose */fix*.
+. Optionally type a comment, e.g., “Don’t use the `+logging+` package.”
+. Review Copilot’s suggestion and *Accept* or *Discard*.
+
+'''''
+
+==== 3. Best Practices
+
+* *Be explicit with slash commands.* +
+While you could simply ask Copilot to “fix this code,” using `+/fix+`
+signals your intention more clearly.
+* *Add minimal but sufficient context.* +
+Short comments (e.g., “Make this function pure”) help Copilot tailor its
+suggestions without overwhelming it.
+* *Iterate interactively.* +
+If the first suggestion isn’t quite right, refine your instruction or
+try a different slash command.
+* *Use “View in Chat”* +
+For longer explanations or multi‐step refactorings, opening the full
+chat window gives you more space to review and interact.
+
+'''''
+
+==== 4. What’s Next?
+
+In the next lecture, we’ll deep-dive into `+/tests+`—how to
+automatically generate and run unit tests using GitHub Copilot Chat.
+
+=== Multi-File Edits with Copilot Edits
+
+You’re already familiar with Copilot’s inline chat and its sidebar chat:
+both let you ask questions, generate code, reference files, and
+collaborate. Copilot Edits is a third, specialized mode in the sidebar
+designed specifically for multi-file editing sessions. Here’s what makes
+it different:
+
+[arabic]
+. Purpose-built for multi-file edits +
+• Instead of returning one long answer that you must copy-and-paste into
+different files, Copilot Edits organizes and applies changes across your
+project. +
+• It can suggest creating entirely new files when needed and will
+propose the exact edits in each affected file.
+. How it works +
+• Ask your usual questions—e.g., _“Add user authentication”_ — and use *“Add
+Files”* to bring in any relevant source files. +
+• When you submit your prompt, Copilot Edits analyzes the context,
+determines which files to modify (or create), and presents a set of
+coordinated changes. +
+• You review and approve these edits in one place, rather than juggling
+snippets across multiple windows.
+. Key benefits +
+• Streamlines large refactorings or feature additions that span several
+modules or packages +
+• Reduces manual overhead—no more copying code between files +
+• Maintains consistency by handling imports, references, and file
+creation for you
+
+Copilot Edits takes inspiration from Cursor’s Composer feature (which
+we’ll cover later in the course) but is fully integrated into GitHub
+Copilot. If you’re about to tackle any change that touches multiple
+files, give Copilot Edits a try—it could save you a lot of time and
+errors.
