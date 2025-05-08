@@ -1,0 +1,402 @@
+= AI For Developers With GitHub Copilot, Cursor AI & ChatGPT - *Chapter 2. Leverage GitHub Copilot Suggestions & Chat* - V2
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+Maximilian Schwarzmüller
+
+https://www.udemy.com/course/ai-for-developers-with-github-copilot-cursor-ai-chatgpt/
+
+== Chapter 2: Leverage GitHub Copilot Suggestions & Chat
+
+In this chapter, we explore how to write, refactor, and manage code efficiently using GitHub Copilot’s inline suggestions, chat interfaces, slash commands, and multi-file edits. You’ll learn best practices for prompting, configuring Copilot, and integrating it into your daily workflow.
+
+=== 2.1 Using AI-Powered Code Suggestions
+
+GitHub Copilot provides real-time, context-aware suggestions as you type.
+
+==== 2.1.1 Basic Usage in VS Code
+
+1. Install and sign in to the GitHub Copilot extension.
+2. Open a file (e.g., Python).
+3. Start typing a function signature:
++
+[source,python]
+----
+def fahrenheit_to_celsius(fahrenheit):
+   |
+----
+4. Copilot will display an inline suggestion. Press `Tab` to accept it.
+
+==== 2.1.2 Key Takeaways
+
+- Suggestion Variability
+  Copilot’s output can change over time or between users. Be explicit in your code comments or function names to guide it.
+
+- Multiple Suggestions
+  • Pause after typing to trigger alternate completions.
+  • Open the Completions Panel (⇧⌥I) to browse options.
+
+- Accepting Suggestions
+  • `Tab` accepts the full suggestion.
+  • Use word-by-word acceptance (e.g., `Ctrl`+`]` on Windows/Linux).
+
+TIP: If you miss a suggestion, move the cursor up one line and back down to retrigger Copilot.
+
+=== 2.2 “Next Edit Suggestions”
+
+Copilot’s *Next Edit Suggestions* predicts your next change.
+
+1. In VS Code settings, search “GitHub Copilot” → enable **Next Edit Suggestions**.
+2. Rename a variable (e.g., `F` → `Fahrenheit`).
+3. Copilot suggests renaming other occurrences—accept with `Tab` or reject with `Esc`.
+
+TIP: Use this for bulk refactorings without manual search-and-replace.
+
+=== 2.3 Mastering Prompts: Using Comments as AI Prompts
+
+Instead of choosing perfect function names, write clear comments:
+
+[source,python]
+----
+# Function that takes either a Celsius or Fahrenheit temperature
+# and converts it to the other scale.
+----
+Copilot reads the comment and generates the function body.
+
+Key tips:
+
+- Treat comments as prompts—describe *what* you want in plain English.
+- Use the Completions Panel (⇧⌥I) for more suggestions.
+- Place prompt comments anywhere: top-of-file, inside functions, etc.
+
+=== 2.4 Building a Full Python Backup Script
+
+We’ll combine Copilot’s suggestions and manual edits to create a CLI tool that backs up and restores an SQLite database.
+
+==== 2.4.1 Setup Variables
+
+[source,python]
+----
+import shutil
+
+DB_FILE = "app.db"
+BACKUP_FILE = "backup.db"
+----
+
+Copilot suggests `BACKUP_FILE`, rename to your preference.
+
+==== 2.4.2 Generating Functions
+
+- `backup_database()`
+- `restore_database()`
+
+Copilot also adds `import shutil` if needed.
+
+==== 2.4.3 Implementing Main Logic
+
+Copilot’s initial suggestion may not match your flow. Manually scaffold:
+
+[source,python]
+----
+def main():
+    print("1) Backup database")
+    print("2) Restore database")
+    print("3) Exit")
+    choice = input("Select an option: ")
+    if choice == "1":
+        backup_database()
+    elif choice == "2":
+        restore_database()
+    else:
+        print("Goodbye!")
+----
+
+Add `if __name__ == "__main__": main()` manually if Copilot does not suggest it.
+
+==== 2.4.4 Key Takeaways
+
+- Copilot excels at boilerplate code and imports.
+- Always review and adapt generated code.
+- For higher-level logic, you may need to write manually.
+
+=== 2.5 Using the Inline Chat for Error Handling
+
+Copilot Chat in VS Code lets you ask for specific edits on selected code.
+
+==== 2.5.1 Opening Inline Chat
+
+- Mac: ⇧⌘I
+- Windows/Linux: Ctrl+I
+
+==== 2.5.2 Adding Error Handling
+
+1. Select the code block.
+2. Invoke Inline Chat → type “Add error handling around backup_database”.
+3. Copilot shows a diff:
+   - Dark green = unchanged
+   - Light green = additions
+   - Red = removals
+4. Accept or discard the changes.
+
+TIP: You can attach screenshots or use voice prompts if configured.
+
+=== 2.6 Configuring GitHub Copilot
+
+Customize Copilot’s behavior in VS Code:
+
+- **Enable/Disable by Language**
+  In settings, search for “Copilot: Languages”.
+
+- **Repository-wide Instructions**
+  Create `.github/copilot-instructions.md` with concise guidelines (e.g., coding style, test framework).
+
+- **Temporal Context**
+  Allow Copilot to read recently edited files for richer suggestions.
+
+NOTE: Review these settings periodically as new features arrive.
+
+=== 2.7 Taking Advantage of Code Actions
+
+When VS Code detects issues or opportunities, lightbulb icons offer:
+
+- **Rewrite or Optimize with Copilot**
+- **Open Inline Chat for deeper edits**
+
+These act as a second opinion to improve code quality.
+
+=== 2.8 Inline Chat vs Sidebar Chat
+
+==== 2.8.1 When to Use Each
+
+. **Inline Chat**
+  - Quick fixes in context.
+  - Ideal for single functions or lines.
+. **Sidebar Chat**
+  - Paste larger code snippets.
+  - Get explanations alongside code.
+  - Suitable for brainstorming design changes.
+
+==== 2.8.2 Example: Optimizing a Python Function
+
+1. Open Sidebar Chat (Command Palette → “Open Chat”).
+2. Paste function and ask: “Optimize and add logging.”
+3. Review suggestions, click “Apply to Editor” to merge changes.
+
+=== 2.9 Adding Context with References & Shortcuts
+
+You can explicitly provide context:
+
+. Start a new chat with the `+` button.
+. Copilot auto-detects your open file and project files.
+. Or click “Add context”:
+  * Code base
+  * Current editor
+  * Selection
+  * Symbol
+. Use hashtags in the prompt:
+  * `# file dbBackup.py`
+  * `# symbol backup_database`
+
+Example:
+----
+How can I optimize this file?
+# file dbBackup.py
+----
+
+Copilot will focus on `dbBackup.py`.
+
+=== 2.10 Inviting Additional Participants
+
+Use shortcuts to bring in files or helpers:
+
+. **Hashtag Shortcuts (`#`)**
+  - `# dataProcessor.js` to reference that file.
+. **At-Symbol Shortcuts (`@`)**
+  - `@VS Code` for editor settings.
+  - `@Terminal` for CLI tasks.
+  - `@Workspace` to query project structure.
+  - `@GitHub` to perform live checks if your repo is online.
+
+=== 2.11 Running Terminal Commands with AI
+
+==== 2.11.1 Chat in the Editor
+
+1. Ask “How do I run this Python script?”
+2. Copilot suggests the command.
+3. Click “Insert into Terminal”—but always review before running.
+
+==== 2.11.2 Inline Chat in the Terminal
+
+1. Trigger Inline Chat in the terminal.
+2. Type: `run db_backup.py with Python 3`.
+3. Copilot shows `python3 db_backup.py`.
+4. Insert or execute it manually.
+
+TIP: Avoid destructive operations by reviewing commands first.
+
+=== 2.12 Mastering Slash Commands
+
+Copilot Chat supports slash commands both in the terminal and inline.
+
+==== 2.12.1 Terminal Slash Commands
+
+Type `/` in the integrated terminal to see options:
+
+[source,bash]
+----
+# Example in the terminal
+git rebase --interactive HEAD~3
+/explain
+----
+
+Copilot explains the selected command or opens full chat.
+
+==== 2.12.2 Inline Chat Slash Commands
+
+Select code → press `/` → choose:
+
+- `/explain` – Explains code.
+- `/fix` – Attempts to fix issues.
+- `/tests` – Generates tests (next lecture).
+
+Example:
+. Select code
+. Press `/` → choose `/fix` → review suggestion.
+
+==== 2.12.3 Best Practices
+
+- Be explicit with slash commands.
+- Add minimal context for clarity.
+- Iterate: refine prompts if the first result isn’t perfect.
+- Use “View in Chat” for longer explanations.
+
+=== 2.13 Multi-File Edits with Copilot Edits
+
+Copilot Edits (sidebar) orchestrates changes across multiple files.
+
+- **Purpose-Built**
+  Handles edits in several files or creates new ones.
+- **Workflow**
+  1. Ask a multi-file request (e.g., “Add user authentication”).
+  2. Use “Add Files” to include relevant sources.
+  3. Review coordinated changes in one diff view.
+- **Benefits**
+  - Streamlines large refactorings.
+  - Maintains consistency (imports, file creation).
+
+=== 2.14 Automating Unit Test Generation
+
+Two new slash commands:
+
+. `/doc` – Generates documentation comments (Javadoc, docstrings).
+. `/tests` – Creates unit tests for the selected code:
+
+  1. Select the target code.
+  2. Press `/` → choose `/tests`.
+  3. Copilot suggests a test suite in a new file (e.g., `db_backup_test.py`).
+
+TIP: Provide edge-case instructions (e.g., “focus on error paths”).
+
+=== 2.15 Creating New Projects with `/new`
+
+Scaffold projects instantly:
+
+[source,bash]
+----
+/new "Create a Node.js project using Express"
+----
+Copilot prompts for missing details, then generates:
+
+- `src/`, `tests/` directories
+- `package.json` with Express dependency
+- Starter files
+
+Click **Create Project** and choose a folder to initialize a new workspace.
+
+=== 2.16 Prompt Engineering Essentials
+
+Good prompts = better AI output.
+
+[NOTE]
+====
+• Be Specific
+  State clear goals (e.g., “Write a Python function that validates emails”).
+• Provide Context
+  Mention frameworks, style guides, or environment details.
+• Use Examples
+  Show sample input/output for tricky tasks.
+• Break Down Complex Tasks
+  Divide large features into steps (scaffold → CRUD → validation).
+• Iterate
+  Treat the first response as a draft; refine with follow-ups.
+====
+
+=== 2.17 Improving AI Efficiency with Specificity & Context
+
+Example: Generating Express routes for a reservation API:
+
+. Project has `app.js`; you create `routes/tables.js`.
+. Sidebar Chat Prompt:
+----
+I’m building a restaurant-table reservation API.
+In `routes/tables.js`, generate:
+• POST /new-reservation – {name, numberOfPeople, date, time}
+• DELETE /cancel/:reservationId
+Return only the file contents.
+----
+Copilot returns the complete router code, including `module.exports`.
+
+=== 2.18 Validating Input with Sidebar Chat
+
+Rather than a broad prompt (“Validate input and store in DB”), split tasks:
+
+==== 2.18.1 Adding Validation Only
+
+1. Select your route handler:
++
+[source,js]
+----
+router.post('/reservations', (req, res) => {
+ // validation goes here…
+});
+----
+2. Prompt:
+----
+Add input validation (no external libraries):
+• `partySize`: integer 1–6
+• `time`: 17:00 to 23:00 every 30m
+• `date`: today or future
+Provide error responses.
+----
+3. Review the generated code and integrate.
+
+=== 2.19 Effective Iteration: Balancing AI & Manual Coding
+
+1. You’re in charge – leverage AI for bulk work, not trivial edits.
+2. Use AI for large refactorings (e.g., convert require→import across files).
+3. Iterate: prompt → review diff → manual tweak → accept.
+4. Build a hybrid workflow: AI for scaffolding, you for semantics.
+
+=== 2.20 GitHub Copilot Extensions
+
+Enhance Copilot with domain-specific knowledge.
+
+==== 2.20.1 Copilot-Specific Extensions
+
+Hosted by GitHub (in the Copilot catalog):
+
+- Docker, Terraform, AWS CDK, Kubernetes, etc.
+- Install via https://github.com/features/copilot/extensions
+- In Chat, add participant: `@Docker`.
+
+==== 2.20.2 General VS Code Extensions
+
+Regular VS Code Marketplace extensions that expose chat participants:
+
+1. In Copilot Chat sidebar, type `@` → **Install Chat Extension**.
+2. Search and install (e.g., MongoDB, Azure Tools).
+3. Copilot surfaces new participants (e.g., `@MongoDB`).
+
+TIP: Combine both types for full-stack, context-aware AI assistance.
+
