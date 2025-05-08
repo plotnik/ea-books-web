@@ -345,11 +345,16 @@ Copy to clipboard
       pattern = re.compile(r'^(=+)(?=\s)', re.MULTILINE)
       return pattern.sub(lambda m: prefix + m.group(1), text)
     
+  def asciidoc_headers(content):
+      # This will remove the entire line if it matches, including the newline.
+      cleaned_content = re.sub(r'^\[\[.*?\]\]\s*\n', '', content, flags=re.MULTILINE)
+      return cleaned_content
+    
   bump_headers_n = st.sidebar.number_input("Bump headers", value=0, min_value=0)
 
   if len(st.session_state.openai_result) > 0:
       if st.sidebar.button(':clipboard: &nbsp; Copy Asciidoc to clipboard', use_container_width=True):
-          pyperclip.copy(bump_headers(convert_to_asciidoc(st.session_state.openai_result), bump_headers_n))
+          pyperclip.copy(asciidoc_headers(bump_headers(convert_to_asciidoc(st.session_state.openai_result), bump_headers_n)))
           st.sidebar.write(f'Copied to clipboard')
         
 Show last execution time
