@@ -24,6 +24,7 @@ Also can remove newlines from Udemy transcripts.
   import streamlit as st
   import yaml
   import os
+  import re
   import tiktoken
   from openai import OpenAI
   import platform
@@ -331,13 +332,24 @@ Copy to clipboard
           pyperclip.copy(st.session_state.openai_result)
           st.sidebar.write(f'Copied to clipboard')
         
-Copy Asciidoc to clipboard
-
-::
+  # Copy Asciidoc to clipboard
+  #
+  # ::
+  def bump_headers(text: str, n: int) -> str:
+      """Add n '=' characters to the start of each AsciiDoc header line."""
+      if n == 0:
+          return text
+        
+      prefix = '=' * n
+      # Match lines starting with one or more '=' but not lines with only '=' (adornments)
+      pattern = re.compile(r'^(=+)(?=\s)', re.MULTILINE)
+      return pattern.sub(lambda m: prefix + m.group(1), text)
+    
+  bump_headers_n = st.sidebar.number_input("Bump headers", value=0, min_value=0)
 
   if len(st.session_state.openai_result) > 0:
       if st.sidebar.button(':clipboard: &nbsp; Copy Asciidoc to clipboard', use_container_width=True):
-          pyperclip.copy(convert_to_asciidoc(st.session_state.openai_result))
+          pyperclip.copy(bump_headers(convert_to_asciidoc(st.session_state.openai_result), bump_headers_n))
           st.sidebar.write(f'Copied to clipboard')
         
 Show last execution time

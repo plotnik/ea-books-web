@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
 <meta name="author" content="Maximilian Schwarzmüller">
-<title>AI For Developers With GitHub Copilot, Cursor AI &amp; ChatGPT</title>
+<title>AI For Developers With GitHub Copilot, Cursor AI &amp; ChatGPT - Chapter 2. Leverage GitHub Copilot Suggestions &amp; Chat</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -527,14 +527,12 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>AI For Developers With GitHub Copilot, Cursor AI &amp; ChatGPT</h1>
+<h1>AI For Developers With GitHub Copilot, Cursor AI &amp; ChatGPT - <strong>Chapter 2. Leverage GitHub Copilot Suggestions &amp; Chat</strong></h1>
 <div class="details">
 <span id="author" class="author">Maximilian Schwarzmüller</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_2_leverage_github_copilot_suggestions_chat">2. Leverage GitHub Copilot Suggestions &amp; Chat</a>
 <ul class="sectlevel2">
 <li><a href="#_using_ai_powered_code_suggestions_to_write_code">Using AI Powered Code Suggestions To Write Code</a></li>
 <li><a href="#_using_next_edit_suggestions">Using "Next Edit" Suggestions</a></li>
@@ -571,6 +569,27 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </ul>
 </li>
 <li><a href="#_multi_file_edits_with_copilot_edits">Multi-File Edits with Copilot Edits</a></li>
+<li><a href="#_automating_unit_test_generation_for_selected_code_sections">Automating Unit Test Generation For Selected Code Sections</a></li>
+<li><a href="#_creating_new_projects_with_the_new_command">Creating New Projects With The 'new' Command</a></li>
+<li><a href="#_prompt_engineering_essentials_guidelines_best_practices">Prompt Engineering Essentials - Guidelines &amp; Best Practices</a></li>
+<li><a href="#_how_being_specific_adding_context_improves_ai_code_generation_efficiency">How Being Specific &amp; Adding Context Improves AI Code Generation Efficiency</a></li>
+<li><a href="#_validating_input_with_github_copilot_sidebar_chat">Validating Input With GitHub Copilot Sidebar Chat</a>
+<ul class="sectlevel3">
+<li><a href="#_improving_prompt_specificity_for_validation_and_persistence">Improving Prompt Specificity for Validation and Persistence</a>
+<ul class="sectlevel4">
+<li><a href="#_why_broad_prompts_fail">Why Broad Prompts Fail</a></li>
+<li><a href="#_a_better_workflow">A Better Workflow</a></li>
+<li><a href="#_key_takeaways">Key Takeaways</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_effective_iteration_balancing_ai_manual_coding">Effective Iteration - Balancing AI &amp; Manual Coding</a>
+<ul class="sectlevel3">
+<li><a href="#_1_remember_youre_the_developer">1. Remember: You’re the Developer</a></li>
+<li><a href="#_2_when_to_call_in_ai">2. When to Call in AI</a></li>
+<li><a href="#_3_iterate_but_dont_over_iterate">3. Iterate, but Don’t Over-Iterate</a></li>
+<li><a href="#_4_build_your_ai_augmented_workflow">4. Build Your AI-Augmented Workflow</a></li>
 </ul>
 </li>
 </ul>
@@ -584,9 +603,6 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </div>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_2_leverage_github_copilot_suggestions_chat">2. Leverage GitHub Copilot Suggestions &amp; Chat</h2>
-<div class="sectionbody">
 <div class="sect2">
 <h3 id="_using_ai_powered_code_suggestions_to_write_code">Using AI Powered Code Suggestions To Write Code</h3>
 <div class="paragraph">
@@ -1489,12 +1505,639 @@ files, give Copilot Edits a try—it could save you a lot of time and
 errors.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_automating_unit_test_generation_for_selected_code_sections">Automating Unit Test Generation For Selected Code Sections</h3>
+<div class="paragraph">
+<p>We now have two especially powerful slash-commands in our editor:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>/doc</strong><br>
+Generates documentation comments for the selected code. This is perfect
+for adding Javadoc, Docstrings or similar API documentation without ever
+leaving the editor.</p>
+</li>
+<li>
+<p><strong>/tests</strong><br>
+Automatically creates unit tests for the selected code. You can:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Run it “as is” and let the AI decide which tests make sense,</p>
+</li>
+<li>
+<p>Or provide extra context (e.g. “generate edge-case tests only” or
+“focus on error paths”).</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Once you invoke <strong>/tests</strong>, the AI analyzes your code, proposes a suite of
+tests, and—when you accept—places them in a new file (e.g.
+<code>db_backup_test.go</code> rather than mixing them into your main source).
+This keeps your production code clean and your tests neatly organized.</p>
+</div>
+<div class="paragraph">
+<p>Writing unit tests can be tedious, and many developers postpone or skip
+them altogether. By leveraging AI—already aware of your code’s
+context—you can generate comprehensive, sensible tests in seconds,
+saving you the manual effort and helping ensure better coverage.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_creating_new_projects_with_the_new_command">Creating New Projects With The 'new' Command</h3>
+<div class="paragraph">
+<p>You can use the <code>/new</code> slash command in GitHub Copilot Chat to
+scaffold an entire project in seconds. For example, if you type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>/new “Create a Node.js project using the Express library”</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Copilot will prompt you for any missing details, then generate a
+suggested folder structure and show a “Create Project” button. When you
+click it, you choose a destination folder, and Copilot instantly creates
+a new workspace with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A standard directory layout (e.g., <code>src/</code>, <code>tests/</code>)<br></p>
+</li>
+<li>
+<p>A <code>package.json</code> preconfigured with Express (you’ll still need to run
+<code>npm install</code>)<br></p>
+</li>
+<li>
+<p>Any starter files you requested</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once the files are generated, Copilot even asks if you’d like to open
+the new project right away. This saves you the repetitive setup steps
+and lets you dive straight into writing code—one of the most powerful
+features of GitHub Copilot Chat.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_prompt_engineering_essentials_guidelines_best_practices">Prompt Engineering Essentials - Guidelines &amp; Best Practices</h3>
+<div class="paragraph">
+<p>When you’re using GitHub Copilot Chat or any AI coding assistant, the
+quality of your prompts directly determines the quality of the AI’s
+responses. Good prompt-engineering isn’t hype—it’s a practical skill
+that makes your work faster, more accurate, and less frustrating.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Be Specific<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Only include the information the AI really needs.<br></p>
+</li>
+<li>
+<p>Clearly state your goal (e.g., “Write a Python function that validates
+email addresses using regex”).<br></p>
+</li>
+<li>
+<p>Avoid irrelevant details that can distract the model.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Provide Context<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Mention the environment, framework or coding style you’re using (e.g.,
+“In a React 18 TypeScript project…”).<br></p>
+</li>
+<li>
+<p>Explain any domain-specific requirements (performance constraints,
+security rules, API contracts).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Use Examples When Helpful<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Showing a small input/output example or a snippet of existing code can
+dramatically improve accuracy.<br></p>
+</li>
+<li>
+<p>You don’t need an example every time—but for tricky transformations or
+unusual formats, give the AI a template to follow.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Break Complex Tasks into Steps<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>If you need a large feature or complex algorithm, split it into
+subtasks (e.g., “First, scaffold the data model. Then, write the CRUD
+endpoints. Finally, add validation.”).<br></p>
+</li>
+<li>
+<p>Smaller, focused prompts reduce the chance of hallucinations and make
+debugging easier.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Iterate and Maintain Control<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Treat the AI’s first answer as a draft. Refine it with follow-up
+prompts (“Great, now add JSDoc comments,” or “Refactor this into a
+class.”).<br></p>
+</li>
+<li>
+<p>Always review and test the generated code yourself—remember, you’re
+the developer, not the AI. Know when to stop prompting and take over
+manually.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>What’s Next?<br>
+In the next lecture, we’ll walk through real-world examples of these
+techniques in action—and later in the course we’ll build an entire
+project together, showing how prompt engineering speeds up every stage
+of development.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_how_being_specific_adding_context_improves_ai_code_generation_efficiency">How Being Specific &amp; Adding Context Improves AI Code Generation Efficiency</h3>
+<div class="paragraph">
+<p>Here’s a much tighter, clearer write-up of how to use GitHub Copilot
+Chat to add Express routes to a pre-existing Node/Express
+project—specifically, to build a simple restaurant-table reservation
+API.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Project setup<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You already have a Node + Express project initialized (we’ll call it
+“app.js” at the root).<br></p>
+</li>
+<li>
+<p>In your IDE, create a new file under <code>routes/</code> named <code>tables.js</code>.
+It’s empty for now.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Why use Copilot Chat (vs. inline completions)?<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Inline completions are great for line-by-line coding—but for
+scaffolding multiple routes at once, the chat interface lets you supply
+richer context and get back a cohesive code snippet.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Crafting an effective prompt<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Bring in your workspace (so Copilot knows your file structure).<br></p>
+</li>
+<li>
+<p>Specify what you’re building (“a restaurant-table reservation
+website”).<br></p>
+</li>
+<li>
+<p>Define exactly which routes you need in <code>routes/tables.js</code>: – POST
+/new-reservation (to create a reservation; body includes name,
+numberOfPeople, date, time)<br>
+– DELETE /cancel/:reservationId (to cancel an existing reservation)<br></p>
+</li>
+<li>
+<p>Ask Copilot to generate Express route definitions for <strong>that</strong> file.</p>
+<div class="paragraph">
+<p>Example prompt (in Chat sidebar):</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>I’m building a restaurant table-reservation API.
+In my project’s `routes/tables.js`, please generate two Express routes:
+  • POST /new-reservation – expects { name, numberOfPeople, date, time } in req.body
+  • DELETE /cancel/:reservationId – deletes the reservation by ID
+Return only the contents of `tables.js`.</pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Applying the suggested code<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Copilot will return something like:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// routes/tables.js</span>
+const express = require(<span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>);
+const router = express.Router();
+
+<span class="comment">// Create reservation</span>
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/new-reservation</span><span class="delimiter">'</span></span>, (req, res) =&gt; {
+  const { name, numberOfPeople, date, time } = req.body;
+  <span class="comment">// TODO: add database logic here</span>
+  res.status(<span class="integer">201</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">'</span><span class="content">Reservation created</span><span class="delimiter">'</span></span>, <span class="key">data</span>: { name, numberOfPeople, date, time } });
+});
+
+<span class="comment">// Cancel reservation</span>
+router.<span class="keyword">delete</span>(<span class="string"><span class="delimiter">'</span><span class="content">/cancel/:reservationId</span><span class="delimiter">'</span></span>, (req, res) =&gt; {
+  const { reservationId } = req.params;
+  <span class="comment">// TODO: add database delete logic here</span>
+  res.json({ <span class="key">message</span>: <span class="error">`</span>Reservation <span class="predefined">$</span>{reservationId} canceled<span class="error">`</span> });
+});
+
+module.exports = router;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Accept or paste these changes into <code>routes/tables.js</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Hooking up the routes in app.js<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Copilot may also suggest updating your root file (e.g., <code>app.js</code>) to
+import and mount the new router:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">const tablesRouter = require(<span class="string"><span class="delimiter">'</span><span class="content">./routes/tables</span><span class="delimiter">'</span></span>);
+app.use(<span class="string"><span class="delimiter">'</span><span class="content">/api/tables</span><span class="delimiter">'</span></span>, tablesRouter);</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Feel free to tweak the mount path (<code>/api/tables</code>, <code>/api</code>, etc.) to
+your preference.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Key takeaways<br>
+– Be <strong>specific</strong>: name the file, list the exact HTTP methods and URL
+patterns, and describe request/response shapes.<br>
+– Provide <strong>context</strong>: mention your existing project structure so Copilot
+doesn’t suggest re-initializing the app from scratch.<br>
+– Use the chat interface when you want to generate or refactor
+multi-line code in one shot. Inline suggestions still shine for smaller
+edits.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>By supplying precise intent (“generate these exact routes in this exact
+file”), you maximize the chance that Copilot returns code you can paste
+straight into your project—saving setup time and keeping your focus on
+the business logic.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_validating_input_with_github_copilot_sidebar_chat">Validating Input With GitHub Copilot Sidebar Chat</h3>
+<div class="sect3">
+<h4 id="_improving_prompt_specificity_for_validation_and_persistence">Improving Prompt Specificity for Validation and Persistence</h4>
+<div class="paragraph">
+<p>When building API routes—such as accepting and deleting reservations—you
+often need more than just the route handlers. Two common follow-up tasks
+are:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Validating incoming data</strong> (e.g., date, time, party size)</p>
+</li>
+<li>
+<p><strong>Saving valid data</strong> to a database</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>A single, vague prompt like:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>“Validate the received input and store it in the database.”</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>typically produces incomplete code that:<br>
+• Assumes non-existent models or libraries (e.g. <code>Reservation</code> model,
+<code>express-validator</code>)<br>
+• Omits the actual validation rules<br>
+• Leaves out database connection details</p>
+</div>
+<div class="sect4">
+<h5 id="_why_broad_prompts_fail">Why Broad Prompts Fail</h5>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Multiple concerns at once.</strong> Validation rules and persistence are
+separate problems.</p>
+</li>
+<li>
+<p><strong>Lack of requirements.</strong> What exactly must be validated? Which
+database, schema, or ORM should be used?</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>As a result, generated code often won’t run without you filling in all
+the blanks.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_a_better_workflow">A Better Workflow</h5>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Split tasks</strong> into separate prompts.</p>
+</li>
+<li>
+<p><strong>Define precise rules</strong> for each task.</p>
+</li>
+<li>
+<p><strong>Provide examples</strong> and edge cases to remove ambiguity.</p>
+</li>
+</ol>
+</div>
+<div class="sect5">
+<h6 id="_example_adding_validation_only">Example: Adding Validation Only</h6>
+<div class="paragraph">
+<p><strong>Step 1.</strong> Identify the target code.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// routes/reservations.js</span>
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/reservations</span><span class="delimiter">'</span></span>, (req, res) =&gt; {
+  <span class="comment">// validation goes here…</span>
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Step 2.</strong> Write a focused prompt:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><strong>Add input validation (no external libraries).</strong><br>
+• <code>partySize</code>: integer between 1 and 6<br>
+• <code>time</code>: only 17:00, 17:30, &#8230;&#8203;, 23:00 (every 30 minutes)<br>
+• <code>date</code>: today or in the future<br>
+Provide error responses for invalid input.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p><strong>Step 3.</strong> Review and test the generated code.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_sample_generated_validation">Sample Generated Validation</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// Define allowed time slots</span>
+const validTimes = [];
+<span class="keyword">for</span> (let h = <span class="integer">17</span>; h &lt;= <span class="integer">23</span>; h++) {
+  validTimes.push(<span class="error">`</span><span class="predefined">$</span>{h.toString().padStart(<span class="integer">2</span>,<span class="string"><span class="delimiter">'</span><span class="content">0</span><span class="delimiter">'</span></span>)}:<span class="octal">00</span><span class="error">`</span>);
+  validTimes.push(<span class="error">`</span><span class="predefined">$</span>{h.toString().padStart(<span class="integer">2</span>,<span class="string"><span class="delimiter">'</span><span class="content">0</span><span class="delimiter">'</span></span>)}:<span class="integer">30</span><span class="error">`</span>);
+}
+
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/reservations</span><span class="delimiter">'</span></span>, (req, res) =&gt; {
+  const { partySize, time, date } = req.body;
+
+  <span class="comment">// Validate party size</span>
+  const size = Number(partySize);
+  <span class="keyword">if</span> (!Number.isInteger(size) || size &lt; <span class="integer">1</span> || size &gt; <span class="integer">6</span>) {
+    <span class="keyword">return</span> res.status(<span class="integer">400</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">partySize must be between 1 and 6.</span><span class="delimiter">'</span></span> });
+  }
+
+  <span class="comment">// Validate time</span>
+  <span class="keyword">if</span> (!validTimes.includes(time)) {
+    <span class="keyword">return</span> res
+      .status(<span class="integer">400</span>)
+      .json({ <span class="key">error</span>: <span class="error">`</span>time must be one of: <span class="predefined">$</span>{validTimes.join(<span class="string"><span class="delimiter">'</span><span class="content">, </span><span class="delimiter">'</span></span>)}.<span class="error">`</span> });
+  }
+
+  <span class="comment">// Validate date</span>
+  const today = <span class="keyword">new</span> Date();
+  today.setHours(<span class="integer">0</span>, <span class="integer">0</span>, <span class="integer">0</span>, <span class="integer">0</span>);
+  const inputDate = <span class="keyword">new</span> Date(date);
+  inputDate.setHours(<span class="integer">0</span>, <span class="integer">0</span>, <span class="integer">0</span>, <span class="integer">0</span>);
+
+  <span class="keyword">if</span> (isNaN(inputDate) || inputDate &lt; today) {
+    <span class="keyword">return</span> res
+      .status(<span class="integer">400</span>)
+      .json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">date must be today or in the future.</span><span class="delimiter">'</span></span> });
+  }
+
+  <span class="comment">// At this point, input is valid.</span>
+  <span class="comment">// TODO: store in database.</span>
+  res.status(<span class="integer">201</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">'</span><span class="content">Reservation created.</span><span class="delimiter">'</span></span> });
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This code is:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Self-contained</strong> (no hidden dependencies)</p>
+</li>
+<li>
+<p><strong>Clear</strong> in its rules</p>
+</li>
+<li>
+<p><strong>Easy to test</strong> and adjust</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_key_takeaways">Key Takeaways</h5>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Break down</strong> multi-step problems into individual prompts.</p>
+</li>
+<li>
+<p><strong>Be explicit</strong> about every requirement and edge case.</p>
+</li>
+<li>
+<p><strong>Use examples</strong> to illustrate permissible and impermissible values.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>By engineering your prompts in this way, you’ll get more accurate,
+actionable code with fewer revisions.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_effective_iteration_balancing_ai_manual_coding">Effective Iteration - Balancing AI &amp; Manual Coding</h3>
+<div class="sect3">
+<h4 id="_1_remember_youre_the_developer">1. Remember: You’re the Developer</h4>
+<div class="paragraph">
+<p>AI is a powerful assistant, but you’re still in the driver’s seat.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you spot a trivial change—say renaming a route prefix from <code>/api</code>
+to <code>/tables</code>—just do it yourself.</p>
+</li>
+<li>
+<p>Don’t fall into the trap of having AI redo every little tweak. You’ll
+waste time on back–and–forth prompts instead of coding.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_2_when_to_call_in_ai">2. When to Call in AI</h4>
+<div class="paragraph">
+<p>Use AI for bigger, repetitive refactors rather than one-off edits. For
+example:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Bulk import migration</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Converting dozens of CommonJS <code>require(...)</code> statements into ESM
+<code>import</code> syntax.</p>
+</li>
+<li>
+<p>AI can reliably update all your imports, move them to the top, and
+adjust file extensions in one swoop.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Complex pattern transformations</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Batch renaming variables, reorganizing large blocks, or even
+extracting repeated logic into a helper function.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_3_iterate_but_dont_over_iterate">3. Iterate, but Don’t Over-Iterate</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Prompt</strong> AI to make a change.</p>
+</li>
+<li>
+<p><strong>Review</strong> the diff.</p>
+</li>
+<li>
+<p><strong>Tweak manually</strong> if something’s off (e.g. missing <code>.js</code>).</p>
+</li>
+<li>
+<p><strong>Stop</strong> once you’ve got a correct, compile-and-run solution.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Endless AI prompts for tiny fixes will slow you down. Aim for a healthy
+balance:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>You</strong> handle the simple, clear edits.</p>
+</li>
+<li>
+<p><strong>AI</strong> tackles the heavy, repetitive work.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_build_your_ai_augmented_workflow">4. Build Your AI-Augmented Workflow</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Start with AI to scaffold or refactor large sections.</p>
+</li>
+<li>
+<p>Keep manual control over naming, semantics, and tiny adjustments.</p>
+</li>
+<li>
+<p>Practice this split until it becomes second nature—then you’ll code
+faster and cleaner.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>By combining your developer instincts with AI’s bulk-editing power,
+you’ll iterate efficiently without getting stuck in unnecessary prompt
+loops.</p>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-07 10:00:47 +0300
+Last updated 2025-05-08 10:30:16 +0300
 </div>
 </div>
 </body>

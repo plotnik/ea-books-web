@@ -1,4 +1,4 @@
-= AI For Developers With GitHub Copilot, Cursor AI & ChatGPT
+= AI For Developers With GitHub Copilot, Cursor AI & ChatGPT - *Chapter 2. Leverage GitHub Copilot Suggestions & Chat*
 :source-highlighter: coderay
 :icons: font
 :toc: left
@@ -6,8 +6,6 @@
 Maximilian Schwarzmüller
 
 https://www.udemy.com/course/ai-for-developers-with-github-copilot-cursor-ai-chatgpt/
-
-== 2. Leverage GitHub Copilot Suggestions & Chat
 
 === Using AI Powered Code Suggestions To Write Code
 
@@ -446,3 +444,363 @@ we’ll cover later in the course) but is fully integrated into GitHub
 Copilot. If you’re about to tackle any change that touches multiple
 files, give Copilot Edits a try—it could save you a lot of time and
 errors.
+
+=== Automating Unit Test Generation For Selected Code Sections
+
+We now have two especially powerful slash-commands in our editor:
+
+[arabic]
+. */doc* +
+Generates documentation comments for the selected code. This is perfect
+for adding Javadoc, Docstrings or similar API documentation without ever
+leaving the editor.
+. */tests* +
+Automatically creates unit tests for the selected code. You can:
+* Run it “as is” and let the AI decide which tests make sense,
+* Or provide extra context (e.g. “generate edge-case tests only” or
+“focus on error paths”).
+
+Once you invoke */tests*, the AI analyzes your code, proposes a suite of
+tests, and—when you accept—places them in a new file (e.g.
+`+db_backup_test.go+` rather than mixing them into your main source).
+This keeps your production code clean and your tests neatly organized.
+
+Writing unit tests can be tedious, and many developers postpone or skip
+them altogether. By leveraging AI—already aware of your code’s
+context—you can generate comprehensive, sensible tests in seconds,
+saving you the manual effort and helping ensure better coverage.
+
+=== Creating New Projects With The 'new' Command
+
+You can use the `+/new+` slash command in GitHub Copilot Chat to
+scaffold an entire project in seconds. For example, if you type:
+
+```
+/new “Create a Node.js project using the Express library”
+```
+
+Copilot will prompt you for any missing details, then generate a
+suggested folder structure and show a “Create Project” button. When you
+click it, you choose a destination folder, and Copilot instantly creates
+a new workspace with:
+
+• A standard directory layout (e.g., `+src/+`, `+tests/+`) +
+• A `package.json` preconfigured with Express (you’ll still need to run
+`+npm install+`) +
+• Any starter files you requested
+
+Once the files are generated, Copilot even asks if you’d like to open
+the new project right away. This saves you the repetitive setup steps
+and lets you dive straight into writing code—one of the most powerful
+features of GitHub Copilot Chat.
+
+=== Prompt Engineering Essentials - Guidelines & Best Practices
+
+When you’re using GitHub Copilot Chat or any AI coding assistant, the
+quality of your prompts directly determines the quality of the AI’s
+responses. Good prompt-engineering isn’t hype—it’s a practical skill
+that makes your work faster, more accurate, and less frustrating.
+
+[arabic]
+. Be Specific +
+• Only include the information the AI really needs. +
+• Clearly state your goal (e.g., “Write a Python function that validates
+email addresses using regex”). +
+• Avoid irrelevant details that can distract the model.
+. Provide Context +
+• Mention the environment, framework or coding style you’re using (e.g.,
+“In a React 18 TypeScript project…”). +
+• Explain any domain-specific requirements (performance constraints,
+security rules, API contracts).
+. Use Examples When Helpful +
+• Showing a small input/output example or a snippet of existing code can
+dramatically improve accuracy. +
+• You don’t need an example every time—but for tricky transformations or
+unusual formats, give the AI a template to follow.
+. Break Complex Tasks into Steps +
+• If you need a large feature or complex algorithm, split it into
+subtasks (e.g., “First, scaffold the data model. Then, write the CRUD
+endpoints. Finally, add validation.”). +
+• Smaller, focused prompts reduce the chance of hallucinations and make
+debugging easier.
+. Iterate and Maintain Control +
+• Treat the AI’s first answer as a draft. Refine it with follow-up
+prompts (“Great, now add JSDoc comments,” or “Refactor this into a
+class.”). +
+• Always review and test the generated code yourself—remember, you’re
+the developer, not the AI. Know when to stop prompting and take over
+manually.
+
+What’s Next? +
+In the next lecture, we’ll walk through real-world examples of these
+techniques in action—and later in the course we’ll build an entire
+project together, showing how prompt engineering speeds up every stage
+of development.
+
+=== How Being Specific & Adding Context Improves AI Code Generation Efficiency
+
+Here’s a much tighter, clearer write-up of how to use GitHub Copilot
+Chat to add Express routes to a pre-existing Node/Express
+project—specifically, to build a simple restaurant-table reservation
+API.
+
+[arabic]
+. Project setup +
+• You already have a Node + Express project initialized (we’ll call it
+“app.js” at the root). +
+• In your IDE, create a new file under `+routes/+` named `+tables.js+`.
+It’s empty for now.
+. Why use Copilot Chat (vs. inline completions)? +
+• Inline completions are great for line-by-line coding—but for
+scaffolding multiple routes at once, the chat interface lets you supply
+richer context and get back a cohesive code snippet.
+. Crafting an effective prompt +
+• Bring in your workspace (so Copilot knows your file structure). +
+• Specify what you’re building (“a restaurant-table reservation
+website”). +
+• Define exactly which routes you need in `+routes/tables.js+`: – POST
+/new-reservation (to create a reservation; body includes name,
+numberOfPeople, date, time) +
+– DELETE /cancel/:reservationId (to cancel an existing reservation) +
+• Ask Copilot to generate Express route definitions for *that* file.
++
+Example prompt (in Chat sidebar):
++
+....
+I’m building a restaurant table-reservation API.  
+In my project’s `routes/tables.js`, please generate two Express routes:  
+  • POST /new-reservation – expects { name, numberOfPeople, date, time } in req.body  
+  • DELETE /cancel/:reservationId – deletes the reservation by ID  
+Return only the contents of `tables.js`.  
+....
+. Applying the suggested code +
+• Copilot will return something like:
++
+[source,js]
+----
+// routes/tables.js
+const express = require('express');
+const router = express.Router();
+
+// Create reservation
+router.post('/new-reservation', (req, res) => {
+  const { name, numberOfPeople, date, time } = req.body;
+  // TODO: add database logic here
+  res.status(201).json({ message: 'Reservation created', data: { name, numberOfPeople, date, time } });
+});
+
+// Cancel reservation
+router.delete('/cancel/:reservationId', (req, res) => {
+  const { reservationId } = req.params;
+  // TODO: add database delete logic here
+  res.json({ message: `Reservation ${reservationId} canceled` });
+});
+
+module.exports = router;
+----
++
+• Accept or paste these changes into `+routes/tables.js+`.
+. Hooking up the routes in app.js +
+• Copilot may also suggest updating your root file (e.g., `+app.js+`) to
+import and mount the new router:
++
+[source,js]
+----
+const tablesRouter = require('./routes/tables');
+app.use('/api/tables', tablesRouter);
+----
++
+• Feel free to tweak the mount path (`+/api/tables+`, `+/api+`, etc.) to
+your preference.
+. Key takeaways +
+– Be *specific*: name the file, list the exact HTTP methods and URL
+patterns, and describe request/response shapes. +
+– Provide *context*: mention your existing project structure so Copilot
+doesn’t suggest re-initializing the app from scratch. +
+– Use the chat interface when you want to generate or refactor
+multi-line code in one shot. Inline suggestions still shine for smaller
+edits.
+
+By supplying precise intent (“generate these exact routes in this exact
+file”), you maximize the chance that Copilot returns code you can paste
+straight into your project—saving setup time and keeping your focus on
+the business logic.
+
+=== Validating Input With GitHub Copilot Sidebar Chat
+
+==== Improving Prompt Specificity for Validation and Persistence
+
+When building API routes—such as accepting and deleting reservations—you
+often need more than just the route handlers. Two common follow-up tasks
+are:
+
+[arabic]
+. *Validating incoming data* (e.g., date, time, party size)
+. *Saving valid data* to a database
+
+A single, vague prompt like:
+
+____
+“Validate the received input and store it in the database.”
+____
+
+typically produces incomplete code that: +
+• Assumes non-existent models or libraries (e.g. `+Reservation+` model,
+`+express-validator+`) +
+• Omits the actual validation rules +
+• Leaves out database connection details
+
+===== Why Broad Prompts Fail
+
+* *Multiple concerns at once.* Validation rules and persistence are
+separate problems.
+* *Lack of requirements.* What exactly must be validated? Which
+database, schema, or ORM should be used?
+
+As a result, generated code often won’t run without you filling in all
+the blanks.
+
+===== A Better Workflow
+
+[arabic]
+. *Split tasks* into separate prompts.
+. *Define precise rules* for each task.
+. *Provide examples* and edge cases to remove ambiguity.
+
+====== Example: Adding Validation Only
+
+*Step 1.* Identify the target code.
+
+[source,js]
+----
+// routes/reservations.js
+router.post('/reservations', (req, res) => {
+  // validation goes here…
+});
+----
+
+*Step 2.* Write a focused prompt:
+
+____
+*Add input validation (no external libraries).* +
+• `+partySize+`: integer between 1 and 6 +
+• `+time+`: only 17:00, 17:30, ..., 23:00 (every 30 minutes) +
+• `+date+`: today or in the future +
+Provide error responses for invalid input.
+____
+
+*Step 3.* Review and test the generated code.
+
+====== Sample Generated Validation
+
+[source,js]
+----
+// Define allowed time slots
+const validTimes = [];
+for (let h = 17; h <= 23; h++) {
+  validTimes.push(`${h.toString().padStart(2,'0')}:00`);
+  validTimes.push(`${h.toString().padStart(2,'0')}:30`);
+}
+
+router.post('/reservations', (req, res) => {
+  const { partySize, time, date } = req.body;
+
+  // Validate party size
+  const size = Number(partySize);
+  if (!Number.isInteger(size) || size < 1 || size > 6) {
+    return res.status(400).json({ error: 'partySize must be between 1 and 6.' });
+  }
+
+  // Validate time
+  if (!validTimes.includes(time)) {
+    return res
+      .status(400)
+      .json({ error: `time must be one of: ${validTimes.join(', ')}.` });
+  }
+
+  // Validate date
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const inputDate = new Date(date);
+  inputDate.setHours(0, 0, 0, 0);
+
+  if (isNaN(inputDate) || inputDate < today) {
+    return res
+      .status(400)
+      .json({ error: 'date must be today or in the future.' });
+  }
+
+  // At this point, input is valid.
+  // TODO: store in database.
+  res.status(201).json({ message: 'Reservation created.' });
+});
+----
+
+This code is:
+
+* *Self-contained* (no hidden dependencies)
+* *Clear* in its rules
+* *Easy to test* and adjust
+
+===== Key Takeaways
+
+[arabic]
+. *Break down* multi-step problems into individual prompts.
+. *Be explicit* about every requirement and edge case.
+. *Use examples* to illustrate permissible and impermissible values.
+
+By engineering your prompts in this way, you’ll get more accurate,
+actionable code with fewer revisions.
+
+=== Effective Iteration - Balancing AI & Manual Coding
+
+
+==== 1. Remember: You’re the Developer
+
+AI is a powerful assistant, but you’re still in the driver’s seat.
+
+* If you spot a trivial change—say renaming a route prefix from `+/api+`
+to `+/tables+`—just do it yourself.
+* Don’t fall into the trap of having AI redo every little tweak. You’ll
+waste time on back–and–forth prompts instead of coding.
+
+==== 2. When to Call in AI
+
+Use AI for bigger, repetitive refactors rather than one-off edits. For
+example:
+
+* *Bulk import migration*
+** Converting dozens of CommonJS `+require(...)+` statements into ESM
+`+import+` syntax.
+** AI can reliably update all your imports, move them to the top, and
+adjust file extensions in one swoop.
+* *Complex pattern transformations*
+** Batch renaming variables, reorganizing large blocks, or even
+extracting repeated logic into a helper function.
+
+==== 3. Iterate, but Don’t Over-Iterate
+
+[arabic]
+. *Prompt* AI to make a change.
+. *Review* the diff.
+. *Tweak manually* if something’s off (e.g. missing `+.js+`).
+. *Stop* once you’ve got a correct, compile-and-run solution.
+
+Endless AI prompts for tiny fixes will slow you down. Aim for a healthy
+balance:
+
+* *You* handle the simple, clear edits.
+* *AI* tackles the heavy, repetitive work.
+
+==== 4. Build Your AI-Augmented Workflow
+
+* Start with AI to scaffold or refactor large sections.
+* Keep manual control over naming, semantics, and tiny adjustments.
+* Practice this split until it becomes second nature—then you’ll code
+faster and cleaner.
+
+'''''
+
+By combining your developer instincts with AI’s bulk-editing power,
+you’ll iterate efficiently without getting stuck in unnecessary prompt
+loops.
