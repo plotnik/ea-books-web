@@ -306,7 +306,7 @@ Show OpenAI result.
       st.session_state.execution_time = end_time - start_time
       st.rerun()
 
-  if st.sidebar.button('👍 &nbsp; Improve', use_container_width=True):
+  if st.sidebar.button(':thumbsup: &nbsp; Improve', use_container_width=True):
       start_time = time.time()
       call_openai(text, prompt_improve)
       end_time = time.time()
@@ -332,9 +332,10 @@ Copy to clipboard
           pyperclip.copy(st.session_state.openai_result)
           st.sidebar.write(f'Copied to clipboard')
         
-  # Copy Asciidoc to clipboard
-  #
-  # ::
+Copy Asciidoc to clipboard
+
+::
+
   def bump_headers(text: str, n: int) -> str:
       """Add n '=' characters to the start of each AsciiDoc header line."""
       if n == 0:

@@ -5,21 +5,27 @@ Markdown Viewer
 
   import os
   import streamlit as st
+  import markdown
+  from bs4 import BeautifulSoup
 
 Print banner.
 
 ::
 
+  st.set_page_config(
+      page_title="MD-View",
+  )
+
   @st.cache_data
   def print_banner():
     print("""                                                    
-                   .___              .__                        
-        _____    __| _/        ___  _|__| ______  _  __         
-       /     \\  / __ |  ______ \\  \\/ /  |/ __ \\ \\/ \\/ /   
-      |  Y Y  \\/ /_/ | /_____/  \\   /|  \\  ___/\\     /      
-      |__|_|  /\\____ |           \\_/ |__|\\___  >\\/\\_/      
-            \\/      \\/                       \\/              
-                                                                                        
+      d s   sb d ss         d    b d d sss   d  d  b                   
+      S  S S S S   ~o       S    S S S       S  S  S                   
+      S   S  S S     b      S    S S S       S  S  S                   
+      S      S S     S sSSs S    S S S sSSs  S  S  S                   
+      S      S S     P      S    S S S       S  S  S                   
+      S      S S    S        S   S S S        S  S S                   
+      P      P P ss\"          \"ssS P P sSSss   \"ss\"S                                                                                           
     """)
     return 1
 
@@ -41,7 +47,7 @@ Create radio buttons to select a file
 
 ::
 
-  selected_file = st.sidebar.radio("Select markdown file:", md_files)
+  selected_file = st.sidebar.radio("Markdown file:", md_files)
 
 Adds a prefix to each line of a multi-line string.
 
@@ -75,3 +81,172 @@ Display the contents of the file that has been selected.
 ::
     
   st.write(md_text)    
+
+  html_format = st.sidebar.radio("Output HTML:", options=["Tailwind", "Bootstrap"])
+
+Parse HTML and add Tailwind CSS classes to improve styling.
+
+::
+
+  def enhance_html_with_tailwind(html_text, filename):
+      soup = BeautifulSoup(html_text, 'html.parser')
+
+      # Headings
+      for level in range(1, 7):
+          for tag in soup.find_all(f'h{level}'):
+              size = {
+                  1: 'text-4xl',
+                  2: 'text-3xl',
+                  3: 'text-2xl',
+                  4: 'text-xl',
+                  5: 'text-lg',
+                  6: 'text-base',
+              }[level]
+              tag['class'] = tag.get('class', []) + [size, 'font-bold', 'mt-4', 'mb-2']
+
+      # Paragraphs
+      for p in soup.find_all('p'):
+          p['class'] = p.get('class', []) + ['mb-4', 'leading-relaxed']
+
+      # Links
+      for a in soup.find_all('a'):
+          a['class'] = a.get('class', []) + ['text-blue-600', 'hover:underline']
+          a['target'] = '_blank'
+
+      # Images
+      for img in soup.find_all('img'):
+          img['class'] = img.get('class', []) + ['my-4', 'max-w-full', 'h-auto', 'rounded']
+
+      # Lists
+      for ul in soup.find_all('ul'):
+          ul['class'] = ul.get('class', []) + ['list-disc', 'ml-6', 'mb-4']
+      for ol in soup.find_all('ol'):
+          ol['class'] = ol.get('class', []) + ['list-decimal', 'ml-6', 'mb-4']
+
+      # Code blocks
+      for code in soup.find_all('code'):
+          parent = code.parent
+          # Inline code
+          if parent.name != 'pre':
+              code['class'] = code.get('class', []) + ['bg-gray-100', 'px-1', 'py-0.5', 'rounded']
+      for pre in soup.find_all('pre'):
+          pre['class'] = pre.get('class', []) + ['bg-gray-900', 'text-gray-100', 'p-4', 'rounded', 'overflow-auto', 'mb-4']
+
+      # Blockquotes
+      for bq in soup.find_all('blockquote'):
+          bq['class'] = bq.get('class', []) + ['border-l-4', 'border-gray-300', 'pl-4', 'italic', 'mb-4']
+
+      # Wrap in basic HTML structure
+      return f"""
+              <!DOCTYPE html>
+              <html lang=\"en\">
+              <head>
+                  <meta charset=\"UTF-8\">
+                  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+                  <script src=\"https://cdn.tailwindcss.com\"></script>
+                  <title>{filename}</title>
+              </head>
+              <body class=\"prose mx-auto p-8\">
+              {str(soup)}
+              </body>
+              </html>
+              """
+            
+Parse HTML and add Bootstrap CSS classes to improve styling.
+
+::
+
+  def enhance_html_with_bootstrap(html_text, filename):
+      soup = BeautifulSoup(html_text, 'html.parser')
+
+      # Headings
+      for level in range(1, 7):
+          for tag in soup.find_all(f'h{level}'):
+              # Add Bootstrap display headings
+              display = {
+                  1: 'display-1',
+                  2: 'display-2',
+                  3: 'display-3',
+                  4: 'display-4',
+                  5: 'h1',
+                  6: 'h2',
+              }[level]
+              tag['class'] = tag.get('class', []) + [display, 'mt-4', 'mb-3']
+
+      # Paragraphs
+      for p in soup.find_all('p'):
+          p['class'] = p.get('class', []) + ['mb-3']
+
+      # Links
+      for a in soup.find_all('a'):
+          a['class'] = a.get('class', []) + ['link-primary']
+          a['target'] = '_blank'
+
+      # Images
+      for img in soup.find_all('img'):
+          img['class'] = img.get('class', []) + ['img-fluid', 'my-3', 'rounded']
+
+      # Lists
+      for ul in soup.find_all('ul'):
+          ul['class'] = ul.get('class', []) + ['list-unstyled', 'mb-3']
+      for ol in soup.find_all('ol'):
+          ol['class'] = ol.get('class', []) + ['mb-3']
+
+      # Code blocks
+      for code in soup.find_all('code'):
+          parent = code.parent
+          # Inline code
+          if parent.name != 'pre':
+              code['class'] = code.get('class', []) + ['bg-light', 'px-1', 'py-0', 'rounded']
+      for pre in soup.find_all('pre'):
+          pre['class'] = pre.get('class', []) + ['bg-dark', 'text-light', 'p-3', 'rounded', 'mb-3', 'overflow-auto']
+
+      # Blockquotes
+      for bq in soup.find_all('blockquote'):
+          bq['class'] = bq.get('class', []) + ['blockquote', 'ps-3', 'border-start', 'mb-3']
+
+      return f"""
+          <!DOCTYPE html>
+          <html lang=\"en\">
+          <head>
+              <meta charset=\"UTF-8\">
+              <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+              <!-- Bootstrap CSS -->
+              <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">
+              <title>{filename}</title>
+          </head>
+          <body class=\"container py-5\">
+          {str(soup)}
+          <!-- Bootstrap JS Bundle -->
+          <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js\"></script>
+          </body>
+          </html>
+          """
+        
+Save the markdown text as an HTML file.
+
+::
+
+  def save_html(md_text, filename):
+      html_text = markdown.markdown(md_text, extensions=[
+          'fenced_code',
+          'codehilite',
+          'tables',
+          'toc'
+      ])
+      if html_format == "Bootstrap":
+          html_text = enhance_html_with_bootstrap(html_text, filename)
+      elif html_format == "Tailwind":
+          html_text = enhance_html_with_tailwind(html_text, filename)
+     
+      filename += ".html"
+      with open(filename, 'w', encoding='utf-8') as file:
+          file.write(html_text)
+      st.toast(f"HTML file saved")    
+
+Add a button to save the markdown text as an HTML file
+
+::
+
+  if st.sidebar.button("Save HTML", use_container_width=True):
+      save_html(md_text, selected_file[:-3])

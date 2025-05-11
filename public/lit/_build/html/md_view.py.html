@@ -37,19 +37,25 @@
 <h1>Markdown Viewer<a class="headerlink" href="#markdown-viewer" title="Link to this heading">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">streamlit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">st</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">markdown</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bs4</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeautifulSoup</span>
 </pre></div>
 </div>
 <p>Print banner.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;MD-View&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">                 .___              .__</span>
-<span class="s2">      _____    __| _/        ___  _|__| ______  _  __</span>
-<span class="s2">     /     </span><span class="se">\\</span><span class="s2">  / __ |  ______ </span><span class="se">\\</span><span class="s2">  </span><span class="se">\\</span><span class="s2">/ /  |/ __ </span><span class="se">\\</span><span class="s2"> </span><span class="se">\\</span><span class="s2">/ </span><span class="se">\\</span><span class="s2">/ /</span>
-<span class="s2">    |  Y Y  </span><span class="se">\\</span><span class="s2">/ /_/ | /_____/  </span><span class="se">\\</span><span class="s2">   /|  </span><span class="se">\\</span><span class="s2">  ___/</span><span class="se">\\</span><span class="s2">     /</span>
-<span class="s2">    |__|_|  /</span><span class="se">\\</span><span class="s2">____ |           </span><span class="se">\\</span><span class="s2">_/ |__|</span><span class="se">\\</span><span class="s2">___  &gt;</span><span class="se">\\</span><span class="s2">/</span><span class="se">\\</span><span class="s2">_/</span>
-<span class="s2">          </span><span class="se">\\</span><span class="s2">/      </span><span class="se">\\</span><span class="s2">/                       </span><span class="se">\\</span><span class="s2">/</span>
-
+<span class="s2">    d s   sb d ss         d    b d d sss   d  d  b</span>
+<span class="s2">    S  S S S S   ~o       S    S S S       S  S  S</span>
+<span class="s2">    S   S  S S     b      S    S S S       S  S  S</span>
+<span class="s2">    S      S S     S sSSs S    S S S sSSs  S  S  S</span>
+<span class="s2">    S      S S     P      S    S S S       S  S  S</span>
+<span class="s2">    S      S S    S        S   S S S        S  S S</span>
+<span class="s2">    P      P P ss</span><span class="se">\&quot;</span><span class="s2">          </span><span class="se">\&quot;</span><span class="s2">ssS P P sSSss   </span><span class="se">\&quot;</span><span class="s2">ss</span><span class="se">\&quot;</span><span class="s2">S</span>
 <span class="s2">  &quot;&quot;&quot;</span><span class="p">)</span>
   <span class="k">return</span> <span class="mi">1</span>
 
@@ -65,7 +71,7 @@
 </pre></div>
 </div>
 <p>Create radio buttons to select a file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">selected_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Select markdown file:&quot;</span><span class="p">,</span> <span class="n">md_files</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">selected_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Markdown file:&quot;</span><span class="p">,</span> <span class="n">md_files</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Adds a prefix to each line of a multi-line string.</p>
@@ -91,6 +97,167 @@
 </div>
 <p>Display the contents of the file that has been selected.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">md_text</span><span class="p">)</span>
+
+<span class="n">html_format</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Output HTML:&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Tailwind&quot;</span><span class="p">,</span> <span class="s2">&quot;Bootstrap&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Parse HTML and add Tailwind CSS classes to improve styling.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">enhance_html_with_tailwind</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Headings</span>
+    <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;h</span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;text-4xl&#39;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;text-3xl&#39;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;text-2xl&#39;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;text-xl&#39;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;text-lg&#39;</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;text-base&#39;</span><span class="p">,</span>
+            <span class="p">}[</span><span class="n">level</span><span class="p">]</span>
+            <span class="n">tag</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="n">size</span><span class="p">,</span> <span class="s1">&#39;font-bold&#39;</span><span class="p">,</span> <span class="s1">&#39;mt-4&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-2&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Paragraphs</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">):</span>
+        <span class="n">p</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;mb-4&#39;</span><span class="p">,</span> <span class="s1">&#39;leading-relaxed&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Links</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;text-blue-600&#39;</span><span class="p">,</span> <span class="s1">&#39;hover:underline&#39;</span><span class="p">]</span>
+        <span class="n">a</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;_blank&#39;</span>
+
+    <span class="c1"># Images</span>
+    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;img&#39;</span><span class="p">):</span>
+        <span class="n">img</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;my-4&#39;</span><span class="p">,</span> <span class="s1">&#39;max-w-full&#39;</span><span class="p">,</span> <span class="s1">&#39;h-auto&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Lists</span>
+    <span class="k">for</span> <span class="n">ul</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">):</span>
+        <span class="n">ul</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ul</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;list-disc&#39;</span><span class="p">,</span> <span class="s1">&#39;ml-6&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-4&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">ol</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;ol&#39;</span><span class="p">):</span>
+        <span class="n">ol</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ol</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;list-decimal&#39;</span><span class="p">,</span> <span class="s1">&#39;ml-6&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-4&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Code blocks</span>
+    <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="p">):</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">parent</span>
+        <span class="c1"># Inline code</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;pre&#39;</span><span class="p">:</span>
+            <span class="n">code</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;bg-gray-100&#39;</span><span class="p">,</span> <span class="s1">&#39;px-1&#39;</span><span class="p">,</span> <span class="s1">&#39;py-0.5&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">pre</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">):</span>
+        <span class="n">pre</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;bg-gray-900&#39;</span><span class="p">,</span> <span class="s1">&#39;text-gray-100&#39;</span><span class="p">,</span> <span class="s1">&#39;p-4&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">,</span> <span class="s1">&#39;overflow-auto&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-4&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Blockquotes</span>
+    <span class="k">for</span> <span class="n">bq</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;blockquote&#39;</span><span class="p">):</span>
+        <span class="n">bq</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bq</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;border-l-4&#39;</span><span class="p">,</span> <span class="s1">&#39;border-gray-300&#39;</span><span class="p">,</span> <span class="s1">&#39;pl-4&#39;</span><span class="p">,</span> <span class="s1">&#39;italic&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-4&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Wrap in basic HTML structure</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            &lt;!DOCTYPE html&gt;</span>
+<span class="s2">            &lt;html lang=</span><span class="se">\&quot;</span><span class="s2">en</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">            &lt;head&gt;</span>
+<span class="s2">                &lt;meta charset=</span><span class="se">\&quot;</span><span class="s2">UTF-8</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">                &lt;meta name=</span><span class="se">\&quot;</span><span class="s2">viewport</span><span class="se">\&quot;</span><span class="s2"> content=</span><span class="se">\&quot;</span><span class="s2">width=device-width, initial-scale=1.0</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">                &lt;script src=</span><span class="se">\&quot;</span><span class="s2">https://cdn.tailwindcss.com</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;/script&gt;</span>
+<span class="s2">                &lt;title&gt;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&lt;/title&gt;</span>
+<span class="s2">            &lt;/head&gt;</span>
+<span class="s2">            &lt;body class=</span><span class="se">\&quot;</span><span class="s2">prose mx-auto p-8</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">            </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">            &lt;/body&gt;</span>
+<span class="s2">            &lt;/html&gt;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Parse HTML and add Bootstrap CSS classes to improve styling.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">enhance_html_with_bootstrap</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Headings</span>
+    <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;h</span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
+            <span class="c1"># Add Bootstrap display headings</span>
+            <span class="n">display</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;display-1&#39;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;display-2&#39;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;display-3&#39;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;display-4&#39;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;h1&#39;</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;h2&#39;</span><span class="p">,</span>
+            <span class="p">}[</span><span class="n">level</span><span class="p">]</span>
+            <span class="n">tag</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="n">display</span><span class="p">,</span> <span class="s1">&#39;mt-4&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-3&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Paragraphs</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">):</span>
+        <span class="n">p</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;mb-3&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Links</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;link-primary&#39;</span><span class="p">]</span>
+        <span class="n">a</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;_blank&#39;</span>
+
+    <span class="c1"># Images</span>
+    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;img&#39;</span><span class="p">):</span>
+        <span class="n">img</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;img-fluid&#39;</span><span class="p">,</span> <span class="s1">&#39;my-3&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Lists</span>
+    <span class="k">for</span> <span class="n">ul</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">):</span>
+        <span class="n">ul</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ul</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;list-unstyled&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-3&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">ol</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;ol&#39;</span><span class="p">):</span>
+        <span class="n">ol</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ol</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;mb-3&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Code blocks</span>
+    <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="p">):</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">parent</span>
+        <span class="c1"># Inline code</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;pre&#39;</span><span class="p">:</span>
+            <span class="n">code</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;bg-light&#39;</span><span class="p">,</span> <span class="s1">&#39;px-1&#39;</span><span class="p">,</span> <span class="s1">&#39;py-0&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">pre</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">):</span>
+        <span class="n">pre</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;bg-dark&#39;</span><span class="p">,</span> <span class="s1">&#39;text-light&#39;</span><span class="p">,</span> <span class="s1">&#39;p-3&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-3&#39;</span><span class="p">,</span> <span class="s1">&#39;overflow-auto&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Blockquotes</span>
+    <span class="k">for</span> <span class="n">bq</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;blockquote&#39;</span><span class="p">):</span>
+        <span class="n">bq</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bq</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;blockquote&#39;</span><span class="p">,</span> <span class="s1">&#39;ps-3&#39;</span><span class="p">,</span> <span class="s1">&#39;border-start&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-3&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        &lt;!DOCTYPE html&gt;</span>
+<span class="s2">        &lt;html lang=</span><span class="se">\&quot;</span><span class="s2">en</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">        &lt;head&gt;</span>
+<span class="s2">            &lt;meta charset=</span><span class="se">\&quot;</span><span class="s2">UTF-8</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">            &lt;meta name=</span><span class="se">\&quot;</span><span class="s2">viewport</span><span class="se">\&quot;</span><span class="s2"> content=</span><span class="se">\&quot;</span><span class="s2">width=device-width, initial-scale=1.0</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">            &lt;!-- Bootstrap CSS --&gt;</span>
+<span class="s2">            &lt;link href=</span><span class="se">\&quot;</span><span class="s2">https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css</span><span class="se">\&quot;</span><span class="s2"> rel=</span><span class="se">\&quot;</span><span class="s2">stylesheet</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">            &lt;title&gt;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&lt;/title&gt;</span>
+<span class="s2">        &lt;/head&gt;</span>
+<span class="s2">        &lt;body class=</span><span class="se">\&quot;</span><span class="s2">container py-5</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">        </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">        &lt;!-- Bootstrap JS Bundle --&gt;</span>
+<span class="s2">        &lt;script src=</span><span class="se">\&quot;</span><span class="s2">https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;/script&gt;</span>
+<span class="s2">        &lt;/body&gt;</span>
+<span class="s2">        &lt;/html&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Save the markdown text as an HTML file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">save_html</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="n">html_text</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span>
+        <span class="s1">&#39;fenced_code&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;codehilite&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;tables&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;toc&#39;</span>
+    <span class="p">])</span>
+    <span class="k">if</span> <span class="n">html_format</span> <span class="o">==</span> <span class="s2">&quot;Bootstrap&quot;</span><span class="p">:</span>
+        <span class="n">html_text</span> <span class="o">=</span> <span class="n">enhance_html_with_bootstrap</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">html_format</span> <span class="o">==</span> <span class="s2">&quot;Tailwind&quot;</span><span class="p">:</span>
+        <span class="n">html_text</span> <span class="o">=</span> <span class="n">enhance_html_with_tailwind</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="n">filename</span> <span class="o">+=</span> <span class="s2">&quot;.html&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html_text</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTML file saved&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Add a button to save the markdown text as an HTML file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Save HTML&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">save_html</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>

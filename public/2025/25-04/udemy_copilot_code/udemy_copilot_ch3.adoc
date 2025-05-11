@@ -1,0 +1,142 @@
+= AI For Developers With GitHub Copilot, Cursor AI & ChatGPT - *Chapter 3. Introducing Cursor AI: Smart Suggestions, Chat and Composer*
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+Maximilian Schwarzmüller
+
+https://www.udemy.com/course/ai-for-developers-with-github-copilot-cursor-ai-chatgpt/
+
+== Leveraging The Docs Integration For Better Code Generation
+
+I’ve switched back to the Node.js/Express project from the previous
+section to explore Cursor’s chat features—especially its “Docs”
+integration. Here’s what I did:
+
+[arabic]
+. *Problem Statement* +
+My app has a `+public/+` folder full of static assets (images,
+stylesheets, etc.). I want any incoming HTTP request for those files to
+be served directly by Express, with no extra routing or middleware
+logic.
+. *Naïve Prompt* +
+I could simply ask the chat assistant: +
+_“Add code to serve files from the public folder statically.”_ +
+That might work, but I want to be 100% sure I’m using the correct
+Express API.
+. *Using Cursor’s Docs Feature*
+* Cursor offers built-in documentation for dozens of popular libraries
+(React, AWS SDKs, Django, Node.js core, Express, and more).
+* If your library isn’t listed, you can supply a URL or paste in
+external docs; Cursor will ingest them for future prompts.
+* I selected the official Express.js documentation from Cursor’s Docs
+sidebar.
+. *Generated Solution* +
+After hitting “Generate,” Cursor produced exactly what I needed:
++
+[source,js]
+----
+const path = require('path');
+const express = require('express');
+const app = express();
+
+// Serve all files in /public statically
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ...your other routes and middleware
+----
+. *Why This Matters* +
+AI models often train on older data and might not know the latest
+libraries or APIs. By feeding in up-to-date docs, Cursor can reference
+the exact methods and signatures you need—ensuring the generated code is
+both correct and current.
+
+In short, Cursor’s Docs feature makes it trivial to add—even
+nonstandard—libraries to your chat context, dramatically improving the
+reliability of AI-generated code.
+
+== Editing Multiple Files & Performing More Complex Edits With Cursor Composer Mode
+
+Cursor offers several ways to work with your code:
+
+[arabic]
+. Inline completion suggestions
+. Inline chat (edit mode)
+. External chat panel
+. Composer mode (multi-file edits)
+
+You’ll encounter all of these throughout the course, and you can
+experiment with them in your own projects. Below we’ll focus on Composer
+mode—what it is, how to open it, and why you might choose it.
+
+
+=== 1. Opening Composer Mode
+
+* Default shortcut:
+** macOS: ⌘ + I
+** Windows/Linux: Ctrl + I
+* In newer Cursor versions, it appears as a *sidebar* rather than an
+overlay.
+* You can switch between three sub-modes: +
+• Ask (chat-only) +
+• Agent (powerful; can run commands & create files) +
+• Edit (legacy code-only edits)
+
+==== Which sub-mode to use?
+
+Use *Agent mode*. It:
+
+* Understands and edits your code
+* Runs commands (always asks for confirmation)
+* Creates new files or folders when needed
+
+If you only want suggestions or Q&A without file operations, choose
+*Ask*. If you just need in-place code edits, *Edit* works fine.
+
+=== 2. Composer’s Purpose
+
+Composer streamlines *multi-file*, *complex* changes by letting you:
+
+* Draft a single “big-picture” instruction
+* See, review, and tweak all suggested edits in one place
+* Accept or reject each change as a diff
+* Apply the whole batch atomically
+
+You could do similar work via chat or inline completions, but Composer
+keeps everything organized.
+
+=== 3. Example: Adding Authentication
+
+[arabic]
+. Open Composer (Agent mode).
+. (Optional) Load your entire codebase as context.
+. Enter a clear prompt, for example: +
+```
+Add user authentication. 
+- POST /users/signup for sign-up 
+- POST /users/login for login 
+- Store data in SQLite 
+- Use JWT for tokens
+```
+. Composer analyzes your code and proposes
+* New files (e.g. `+src/routes/users.js+`, `+database.js+`)
+* Updates to existing files (e.g. `+app.js+`, `+tables.js+`)
+. Inspect the diff view—green = additions, red = removals.
+. If you want an adjustment (e.g. _“Initialize DB in a separate file, not
+in `+users.js+`”_), type a follow-up instruction.
+. Composer regenerates its proposed changes. Review again.
+. When you’re satisfied, click *Accept* to apply all edits to your
+project.
+
+
+=== 4. Why Use Composer?
+
+* *Visibility*: See every file change before it happens
+* *Control*: Tweak or reject individual edits
+* *Efficiency*: Batch multi-file refactors in one workflow
+
+That said, you can mix and match tools—inline completions, chat, or
+Composer—depending on your preference and the complexity of the task.
+Composer is simply a convenient way to tackle larger, multi-file edits
+without losing context.
+

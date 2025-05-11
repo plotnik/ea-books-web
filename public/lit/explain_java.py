@@ -15,6 +15,8 @@ import json
 from collections import defaultdict
 import tiktoken
 import platform
+import markdown
+from bs4 import BeautifulSoup
 
 from pathlib import Path
 from typing import List
@@ -285,29 +287,114 @@ except Exception as e:
 #
 # :: 
 
-def file_path(package_name: str, class_name: str, method_name: str):
+def file_path(package_name: str, class_name: str, method_name: str, ext="md"):
     method_suffix = f".{method_name}" if method_name else ""
-    return os.path.join(dir_path(package_name), f"{class_name}{method_suffix}.md")
+    return os.path.join(dir_path(package_name), f"{class_name}{method_suffix}.{ext}")
     
 def load_markdown(package_name: str, class_name: str, method_name: str):
     with open(file_path(package_name, class_name, method_name), 'r', encoding='utf-8') as file:
         markdown = file.read()   
     
-    return markdown  
+    return markdown 
+    
+# Parse HTML and add Tailwind CSS classes to improve styling.
+#
+# ::
 
-def save_markdown(package_name: str, class_name: str, method_name: str, markdown: str, overwrite: bool):
-    f_path = file_path(package_name, class_name, method_name)
+def enhance_html_with_tailwind(html_text, filename):
+    soup = BeautifulSoup(html_text, 'html.parser')
 
-    if (os.path.exists(f_path) and not overwrite):
-        st.toast(f"File exists: {f_path}")
+    # Headings
+    for level in range(1, 7):
+        for tag in soup.find_all(f'h{level}'):
+            size = {
+                1: 'text-4xl',
+                2: 'text-3xl',
+                3: 'text-2xl',
+                4: 'text-xl',
+                5: 'text-lg',
+                6: 'text-base',
+            }[level]
+            tag['class'] = tag.get('class', []) + [size, 'font-bold', 'mt-4', 'mb-2']
+
+    # Paragraphs
+    for p in soup.find_all('p'):
+        p['class'] = p.get('class', []) + ['mb-4', 'leading-relaxed']
+
+    # Links
+    for a in soup.find_all('a'):
+        a['class'] = a.get('class', []) + ['text-blue-600', 'hover:underline']
+        a['target'] = '_blank'
+
+    # Images
+    for img in soup.find_all('img'):
+        img['class'] = img.get('class', []) + ['my-4', 'max-w-full', 'h-auto', 'rounded']
+
+    # Lists
+    for ul in soup.find_all('ul'):
+        ul['class'] = ul.get('class', []) + ['list-disc', 'ml-6', 'mb-4']
+    for ol in soup.find_all('ol'):
+        ol['class'] = ol.get('class', []) + ['list-decimal', 'ml-6', 'mb-4']
+
+    # Code blocks
+    for code in soup.find_all('code'):
+        parent = code.parent
+        # Inline code
+        if parent.name != 'pre':
+            code['class'] = code.get('class', []) + ['bg-gray-100', 'px-1', 'py-0.5', 'rounded']
+    for pre in soup.find_all('pre'):
+        pre['class'] = pre.get('class', []) + ['bg-gray-900', 'text-gray-100', 'p-4', 'rounded', 'overflow-auto', 'mb-4']
+
+    # Blockquotes
+    for bq in soup.find_all('blockquote'):
+        bq['class'] = bq.get('class', []) + ['border-l-4', 'border-gray-300', 'pl-4', 'italic', 'mb-4']
+
+    # Wrap in basic HTML structure
+    return f"""
+            <!DOCTYPE html>
+            <html lang=\"en\">
+            <head>
+                <meta charset=\"UTF-8\">
+                <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+                <script src=\"https://cdn.tailwindcss.com\"></script>
+                <title>{filename}</title>
+            </head>
+            <body class=\"prose mx-auto p-8\">
+            {str(soup)}
+            </body>
+            </html>
+            """
+            
+def convert_to_html(md_text, title):
+    # Convert to HTML
+    html_text = markdown.markdown(
+        md_text,
+        extensions=[
+            'extra',        # tables, fenced code, etc.
+            'codehilite',   # syntax highlighting
+            'toc',          # table of contents
+        ],
+        output_format='html5'
+    )    
+    return enhance_html_with_tailwind(html_text, title)
+    
+def save_markdown(package_name: str, class_name: str, method_name: str, md_text: str, overwrite: bool):
+    md_path = file_path(package_name, class_name, method_name, "md")
+    html_path = file_path(package_name, class_name, method_name, "html")
+
+    if (os.path.exists(md_path) and not overwrite):
+        st.toast(f"File exists: {md_path}")
         return None, None
     
-    # Save the file
-    with open(f_path, 'w', encoding='utf-8') as f:
-        f.write(markdown)
+    # Save markdown
+    with open(md_path, 'w', encoding='utf-8') as f:
+        f.write(md_text)
 
-    # st.toast(f"Saved {class_name}.md in {d_path}")
-    
+    # Save HTML
+    method_suffix = f".{method_name}" if method_name else ""
+    with open(html_path, 'w', encoding='utf-8') as f:
+        f.write(convert_to_html(md_text, class_name + method_suffix))
+        
 # Select LLM    
 # ----------    
 #
