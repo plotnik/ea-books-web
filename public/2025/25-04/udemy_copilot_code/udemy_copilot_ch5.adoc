@@ -1,0 +1,180 @@
+= AI For Developers With GitHub Copilot, Cursor AI & ChatGPT - *Chapter 5. Practice Project: Creating a REST API with AI*
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+Maximilian Schwarzmüller
+
+https://www.udemy.com/course/ai-for-developers-with-github-copilot-cursor-ai-chatgpt/
+
+== Planning the Application Structure with ChatGPT
+
+Here’s a concise, reorganized version of your narrative—suitable for a
+README, slide deck, or blog post—highlighting objectives, AI‐driven
+planning, and next steps.
+
+[arabic]
+. Project Overview +
+• Build a REST API with Node.js & Express +
+• Core features: +
+– User authentication (register, login) +
+– CRUD for events (title, description, date, location, image) +
+– Event registration/unregistration +
+– Image uploads
+. Why Use ChatGPT for Planning? +
+• Capture missing requirements early +
+• Get concrete suggestions for architecture, models, and routes +
+• Validate best practices (e.g. password hashing, token‐based auth) +
+• Stay in control—accept, tweak, or ignore any suggestion
+. Prompt Structure +
+Role assigned: “You’re my technical architect.” +
+Requirements summary: +
+– REST API in Node.js/Express +
+– JWT authentication + bcrypt for passwords +
+– Event model fields + image upload +
+– Registration endpoints +
+Instruction: “Don’t generate code now—just outline building blocks &
+project structure.”
+. Key AI-Generated Suggestions +
+A. Project Structure +
+• src/ +
+– controllers/ +
+– models/ +
+– routes/ +
+– middleware/ +
+– config/ +
+• public/uploads/ (for images) +
+• server.js, .env, package.json +
+B. Authentication +
+• JSON Web Tokens (JWT) for stateless sessions +
+• bcrypt to hash passwords +
+C. Data Models
+[arabic]
+.. User \{ username, email, passwordHash }
+.. Event \{ title, description, date, location, imagePath, creatorId }
+.. Registration \{ userId, eventId, registeredAt } +
+D. Endpoints +
+• POST /auth/register, /auth/login +
+• GET /users/me +
+• GET/POST/PUT/DELETE /events +
+• POST /events/:id/register, DELETE /events/:id/unregister +
+• GET /events/:id/registrations +
+E. Middleware & Utilities +
+• authMiddleware (verify JWT) +
+• errorHandler +
+• uploadMiddleware (e.g. multer)
+. Customizations & Decisions +
+• Move uploads folder to public directory (not under src/) +
+• Skip Mongoose/SQLite—choose preferred ORM or database +
+• Adapt folder names and granularities to team conventions
+. Next Steps
+[arabic]
+.. Switch to Cursor (or your IDE)
+.. Scaffold files and folders per agreed structure
+.. Use GitHub Copilot or AI tools to generate and refine code
+.. Iteratively test auth flows, CRUD operations, and file uploads
+
+With this plan in hand, you’ll hit the ground running—no surprises, no
+forgotten endpoints, and a clear roadmap for implementation.
+
+== Setting Up the Project in Cursor AI
+Here’s a cleaner, more focused step-by-step setup for your
+Node.js/Express REST API project:
+
+[arabic]
+. Create a new project folder +
+mkdir my-rest-api +
+cd my-rest-api
+. Initialize npm
++
+[source,bash]
+----
+npm init -y
+----
++
+This generates a basic package.json.
+. Edit package.json +
+• Set “name”, “author” (your name/company) +
+• Change `+"main"+` to `+"app.js"+` +
+• Add `+"type": "module"+` to enable ES module syntax +
+• Under `+"scripts"+`, replace `+"test"+` with:
++
+[source,json]
+----
+"dev": "node --watch app.js"
+----
++
+This uses Node’s built-in watch mode so your server restarts on file
+changes.
+. Create a .env file +
+Store secrets or configuration there, e.g.:
++
+[source,dotenv]
+----
+JWT_SECRET=your_super_secret_key
+PORT=3000
+----
+. Create a .gitignore
++
+[source,gitignore]
+----
+node_modules/
+.env
+.DS_Store
+----
+. Install Express
++
+[source,bash]
+----
+npm install express
+----
+. Create your entry point: app.js +
+In app.js, start with a minimal Express server:
++
+[source,js]
+----
+import express from 'express';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.send('Hello, world!');
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on http://localhost:${port}`);
+});
+----
+. Scaffold your folder structure +
+At the project root, create these directories: • controllers/ +
+• models/ +
+• routes/ +
+• public/images/
++
+You’ll place route definitions in routes/, business logic in
+controllers/, data schemas or ORM models in models/, and any static
+assets (like uploaded images) in public/.
+. Next steps with AI tooling (optional) +
+Now that the foundation is laid, you can leverage tools like Cursor or
+ChatGPT to generate boilerplate code inside your
+controllers/models/routes folders—saving you from writing every endpoint
+by hand.
+. Run your server
++
+[source,bash]
+----
+npm run dev
+----
++
+Visit http://localhost:3000 to verify it’s up and running.
+
+From here, gradually add your resource routes (e.g. users, products),
+connect to a database, and flesh out controllers and models. This
+structure keeps your code organized and makes collaboration much
+smoother.
