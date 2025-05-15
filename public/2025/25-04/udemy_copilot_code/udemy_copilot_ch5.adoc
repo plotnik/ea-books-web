@@ -178,3 +178,153 @@ From here, gradually add your resource routes (e.g. users, products),
 connect to a database, and flesh out controllers and models. This
 structure keeps your code organized and makes collaboration much
 smoother.
+
+== Writing User Registration & Login Code with Cursor Composer
+
+=== 1. Context & Strategy
+
+I’m building a REST API and want to tackle it in small, manageable
+chunks. +
+My first slice is *user registration & login*. Rather than dumping the
+entire app spec into one prompt, I’ll:
+
+[arabic]
+. Define exactly what I need for authentication (no JWT/database yet).
+. Split that into a clear, targeted prompt for CursorComposer.
+. Review the generated files and refine as needed.
+
+'''''
+
+=== 2. First Prompt to CursorComposer
+
+[source,text]
+----
+This REST API needs user authentication.  
+Users must be able to register (sign up) and log in.  
+
+Requirements:
+- No JWT or database code yet—just the model, routes, and controller stubs.  
+- Use plain functions (not classes).  
+- Place files under:  
+  • models/user.js  
+  • controllers/userController.js  
+  • routes/users.js  
+
+- In models/user.js, export two separate functions: createUser(data) and authenticateUser(data).  
+- In routes/users.js, set up:  
+  • POST /users/signup → calls createUser  
+  • POST /users/login  → calls authenticateUser  
+
+- In controllers/userController.js, export matching functions.  
+- Wire up the routes in app.js under the “/users” prefix.  
+- Include Express’s JSON body-parser middleware.
+
+Don’t add database persistence code yet; we’ll handle that in a later step.
+----
+
+'''''
+
+=== 3. Generated Output (Summary)
+
+CursorComposer gave me:
+
+• `models/user.js` +
+   Exports a single object with two methods (I wanted two functions instead). 
+• `routes/users.js` +
+   Defines `+/signup+` and `+/login+` routes correctly. 
+• `controllers/userController.js` +
+  Exports an object mirroring `models/user`. +
+• `app.js` +
+  Imports `+express.json()+` +
+  Mounts `+routes/users.js+` at `+/users+`
+
+Overall—good structure and folder layout, plus body-parser middleware.
+
+'''''
+
+=== 4. What I’d Tweak Next
+
+[arabic]
+. *Separate Functions* +
+`models/user.js` → export `+createUser()+` and `+authenticateUser()+`
+instead of one object.
+. *Consistent Naming* +
+Align function names between models, controllers, and routes.
+. *Folder Paths* +
+Confirm controllers go into `+/controllers+` (not “controller’s” or
+“controllers folder”).
+. *Error Handling Stub* +
+Add basic `+try/catch+` blocks and `+res.status()+` calls in
+controllers.
+
+'''''
+
+=== 5. Next Prompt Refinement
+
+[source,text]
+----
+Please update the files you generated to:
+
+1. In `models/user.js`:
+   • Export two named functions:  
+     - async function createUser({ email, password })  
+     - async function authenticateUser({ email, password })
+   • Do not wrap them in an object—use separate exports.
+
+2. In `controllers/userController.js`:
+   • Import the two functions by name.
+   • Add try/catch around each call, sending 200 or 400 with JSON messages.
+
+3. Ensure routes/users.js uses:
+   • `const { createUser, authenticateUser } = require('../models/user');`
+   • `const { signup, login } = require('../controllers/userController');`
+   • `router.post('/signup', signup);`
+   • `router.post('/login', login);`
+
+4. No database code yet—just stub responses.
+----
+
+That gives CursorComposer a precise second pass to align everything
+exactly how I need it.
+
+== Providing Follow-Up Feedback To Cursor Composer
+
+[arabic]
+. Goals
+* Keep everything as standalone functions rather than methods on
+objects.
+* Switch from CommonJS (`+require+`/`+module.exports+`) to modern ESM
+(`+import+`/`+export+`).
+. Iteration with the AI assistant (Cursor) +
+• First feedback: _“Don’t wrap methods in objects—export independent functions in every file.”_ +
+• Result:
+* `+createUser(data)+` and `+findUserByEmail(email)+` appeared as
+top-level functions.
+* No database logic was added yet, per earlier instructions. +
+• Second feedback: _“Convert all import/export statements to ESM syntax.”_ +
+• Result:
+* `+export function …+` and `+import { … } from '…'+` replaced CommonJS.
+* Cursor added `+type: "module"+` in `+package.json+` (which I’d already
+set), and tweaked `+.gitignore+`.
+. Accepting/rejecting changes
+* Accepted updates to `+user.js+`, `+users.js+`, and
+`+users.controller.js+`.
+* Rejected the redundant `+package.json+` change.
+* Accepted the minor `+.gitignore+` tweak.
+. Manual refinements
+* Renamed files to match my preferred naming convention.
+* Converted arrow functions to named function declarations for clarity:
++
+[source,js]
+----
+// Before
+export const createUser = (data) => { … }
+// After
+export function createUser(data) { … }
+----
+* Cursor’s autocompletion spotted the pattern and quickly applied the
+same transform to `+findUserByEmail()+` and the controller functions.
+
+Outcome: a clean, ESM-based codebase composed of plain, exported
+functions—ready for the next development steps.
+

@@ -536,6 +536,16 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <ul class="sectlevel1">
 <li><a href="#_planning_the_application_structure_with_chatgpt">Planning the Application Structure with ChatGPT</a></li>
 <li><a href="#_setting_up_the_project_in_cursor_ai">Setting Up the Project in Cursor AI</a></li>
+<li><a href="#_writing_user_registration_login_code_with_cursor_composer">Writing User Registration &amp; Login Code with Cursor Composer</a>
+<ul class="sectlevel2">
+<li><a href="#_1_context_strategy">1. Context &amp; Strategy</a></li>
+<li><a href="#_2_first_prompt_to_cursorcomposer">2. First Prompt to CursorComposer</a></li>
+<li><a href="#_3_generated_output_summary">3. Generated Output (Summary)</a></li>
+<li><a href="#_4_what_id_tweak_next">4. What I’d Tweak Next</a></li>
+<li><a href="#_5_next_prompt_refinement">5. Next Prompt Refinement</a></li>
+</ul>
+</li>
+<li><a href="#_providing_follow_up_feedback_to_cursor_composer">Providing Follow-Up Feedback To Cursor Composer</a></li>
 </ul>
 </div>
 </div>
@@ -898,10 +908,266 @@ smoother.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_writing_user_registration_login_code_with_cursor_composer">Writing User Registration &amp; Login Code with Cursor Composer</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_1_context_strategy">1. Context &amp; Strategy</h3>
+<div class="paragraph">
+<p>I’m building a REST API and want to tackle it in small, manageable
+chunks.<br>
+My first slice is <strong>user registration &amp; login</strong>. Rather than dumping the
+entire app spec into one prompt, I’ll:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Define exactly what I need for authentication (no JWT/database yet).</p>
+</li>
+<li>
+<p>Split that into a clear, targeted prompt for CursorComposer.</p>
+</li>
+<li>
+<p>Review the generated files and refine as needed.</p>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_2_first_prompt_to_cursorcomposer">2. First Prompt to CursorComposer</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="text">This REST API needs user authentication.
+Users must be able to register (sign up) and log in.
+
+Requirements:
+- No JWT or database code yet—just the model, routes, and controller stubs.
+- Use plain functions (not classes).
+- Place files under:
+  • models/user.js
+  • controllers/userController.js
+  • routes/users.js
+
+- In models/user.js, export two separate functions: createUser(data) and authenticateUser(data).
+- In routes/users.js, set up:
+  • POST /users/signup → calls createUser
+  • POST /users/login  → calls authenticateUser
+
+- In controllers/userController.js, export matching functions.
+- Wire up the routes in app.js under the “/users” prefix.
+- Include Express’s JSON body-parser middleware.
+
+Don’t add database persistence code yet; we’ll handle that in a later step.</code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_3_generated_output_summary">3. Generated Output (Summary)</h3>
+<div class="paragraph">
+<p>CursorComposer gave me:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>models/user.js</code><br>
+Exports a single object with two methods (I wanted two functions instead).</p>
+</li>
+<li>
+<p><code>routes/users.js</code><br>
+Defines <code>/signup</code> and <code>/login</code> routes correctly.</p>
+</li>
+<li>
+<p><code>controllers/userController.js</code><br>
+Exports an object mirroring <code>models/user</code>.<br></p>
+</li>
+<li>
+<p><code>app.js</code><br>
+Imports <code>express.json()</code><br>
+Mounts <code>routes/users.js</code> at <code>/users</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall—good structure and folder layout, plus body-parser middleware.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_4_what_id_tweak_next">4. What I’d Tweak Next</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Separate Functions</strong><br>
+<code>models/user.js</code> → export <code>createUser()</code> and <code>authenticateUser()</code>
+instead of one object.</p>
+</li>
+<li>
+<p><strong>Consistent Naming</strong><br>
+Align function names between models, controllers, and routes.</p>
+</li>
+<li>
+<p><strong>Folder Paths</strong><br>
+Confirm controllers go into <code>/controllers</code> (not “controller’s” or
+“controllers folder”).</p>
+</li>
+<li>
+<p><strong>Error Handling Stub</strong><br>
+Add basic <code>try/catch</code> blocks and <code>res.status()</code> calls in
+controllers.</p>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_5_next_prompt_refinement">5. Next Prompt Refinement</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="text">Please update the files you generated to:
+
+1. In `models/user.js`:
+   • Export two named functions:
+     - async function createUser({ email, password })
+     - async function authenticateUser({ email, password })
+   • Do not wrap them in an object—use separate exports.
+
+2. In `controllers/userController.js`:
+   • Import the two functions by name.
+   • Add try/catch around each call, sending 200 or 400 with JSON messages.
+
+3. Ensure routes/users.js uses:
+   • `const { createUser, authenticateUser } = require('../models/user');`
+   • `const { signup, login } = require('../controllers/userController');`
+   • `router.post('/signup', signup);`
+   • `router.post('/login', login);`
+
+4. No database code yet—just stub responses.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That gives CursorComposer a precise second pass to align everything
+exactly how I need it.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_providing_follow_up_feedback_to_cursor_composer">Providing Follow-Up Feedback To Cursor Composer</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Goals</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Keep everything as standalone functions rather than methods on
+objects.</p>
+</li>
+<li>
+<p>Switch from CommonJS (<code>require</code>/<code>module.exports</code>) to modern ESM
+(<code>import</code>/<code>export</code>).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Iteration with the AI assistant (Cursor)<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>First feedback: <em>“Don’t wrap methods in objects—export independent functions in every file.”</em><br></p>
+</li>
+<li>
+<p>Result:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>createUser(data)</code> and <code>findUserByEmail(email)</code> appeared as
+top-level functions.</p>
+</li>
+<li>
+<p>No database logic was added yet, per earlier instructions.<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Second feedback: <em>“Convert all import/export statements to ESM syntax.”</em><br></p>
+</li>
+<li>
+<p>Result:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>export function …</code> and <code>import { … } from '…'</code> replaced CommonJS.</p>
+</li>
+<li>
+<p>Cursor added <code>type: "module"</code> in <code>package.json</code> (which I’d already
+set), and tweaked <code>.gitignore</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Accepting/rejecting changes</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Accepted updates to <code>user.js</code>, <code>users.js</code>, and
+<code>users.controller.js</code>.</p>
+</li>
+<li>
+<p>Rejected the redundant <code>package.json</code> change.</p>
+</li>
+<li>
+<p>Accepted the minor <code>.gitignore</code> tweak.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Manual refinements</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Renamed files to match my preferred naming convention.</p>
+</li>
+<li>
+<p>Converted arrow functions to named function declarations for clarity:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// Before</span>
+<span class="reserved">export</span> const createUser = (data) =&gt; { <span class="error">…</span> }
+<span class="comment">// After</span>
+<span class="reserved">export</span> <span class="keyword">function</span> <span class="function">createUser</span>(data) { <span class="error">…</span> }</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Cursor’s autocompletion spotted the pattern and quickly applied the
+same transform to <code>findUserByEmail()</code> and the controller functions.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Outcome: a clean, ESM-based codebase composed of plain, exported
+functions—ready for the next development steps.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-14 08:52:39 +0300
+Last updated 2025-05-15 09:24:30 +0300
 </div>
 </div>
 </body>
