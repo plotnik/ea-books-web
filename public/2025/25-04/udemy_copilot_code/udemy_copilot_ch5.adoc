@@ -328,3 +328,134 @@ same transform to `+findUserByEmail()+` and the controller functions.
 Outcome: a clean, ESM-based codebase composed of plain, exported
 functions—ready for the next development steps.
 
+== Connecting to A SQLite Database with Cursor's Sidebar Chat
+
+> i want to store data in sqlite database. how would i add one to the application?
+
+> i want to use better-sqlite3 package. update you response accordingly
+
+Here’s a much tighter, step-by-step guide for swapping your in-memory
+user store out for a SQLite database using the better-sqlite3 package in
+a Node/Express REST API.
+
+Prerequisites +
+• You already have an Express app (app.js) and a basic
+`+models/user.js+`. +
+• Routes exist to “create user” and “find user by email.”
+
+Goal +
+Persist user data in SQLite instead of keeping it in memory.
+
+'''''
+
+[arabic]
+. Install better-sqlite3
++
+[source,bash]
+----
+npm install better-sqlite3
+----
+. Create a database module +
+Next to `+app.js+`, add `+database.js+`:
++
+[source,js]
+----
+// database.js
+const Database = require('better-sqlite3');
+let db;
+
+function initializeDatabase(filePath = './data.db') {
+  db = new Database(filePath);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id       INTEGER PRIMARY KEY,
+      email    TEXT UNIQUE    NOT NULL,
+      password TEXT           NOT NULL
+    );
+  `);
+  return db;
+}
+
+function getDatabase() {
+  if (!db) throw new Error('Database not initialized');
+  return db;
+}
+
+module.exports = { initializeDatabase, getDatabase };
+----
+. Update your user model +
+In `+models/user.js+`, replace whatever you had with:
++
+[source,js]
+----
+// models/user.js
+const { getDatabase } = require('../database');
+
+function createUser({ email, password }) {
+  const db   = getDatabase();
+  const stmt = db.prepare('INSERT INTO users (email, password) VALUES (?, ?)');
+  const info = stmt.run(email, password);
+  return { id: info.lastInsertRowid, email, password };
+}
+
+function findUserByEmail(email) {
+  const db   = getDatabase();
+  const stmt = db.prepare('SELECT id, email, password FROM users WHERE email = ?');
+  return stmt.get(email);
+}
+
+module.exports = { createUser, findUserByEmail };
+----
+. Wire up the database in your app entrypoint +
+In `+app.js+`, import and initialize before registering routes:
++
+[source,js]
+----
+// app.js
+const express = require('express');
+const { initializeDatabase } = require('./database');
+
+const app = express();
+
+try {
+  initializeDatabase('./data.db');
+  console.log('✅ SQLite database initialized');
+} catch (err) {
+  console.error('❌ Failed to initialize database:', err);
+  process.exit(1);
+}
+
+app.use(express.json());
+// require('./routes/users')(app)  – your user routes here
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+----
+. Test it +
+• Start your server. +
+• POST to `+/users+` with `+{ "email": "...", "password": "..." }+`. +
+• Verify `+data.db+` contains your new user (e.g. via
+`+sqlite3 data.db "SELECT * FROM users;"+`).
+
+That’s it! You now have a persistent SQLite store backing your
+user-creation endpoints, all via better-sqlite3.
+
+====
+Sign up a new user:
+```
+curl -X POST http://localhost:3000/users/signup \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password123"}'
+```
+
+---
+Login with the created user:
+```
+curl -X POST http://localhost:3000/users/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password123"}'
+```
+
+====

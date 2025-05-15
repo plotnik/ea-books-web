@@ -546,6 +546,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </ul>
 </li>
 <li><a href="#_providing_follow_up_feedback_to_cursor_composer">Providing Follow-Up Feedback To Cursor Composer</a></li>
+<li><a href="#_connecting_to_a_sqlite_database_with_cursors_sidebar_chat">Connecting to A SQLite Database with Cursor&#8217;s Sidebar Chat</a></li>
 </ul>
 </div>
 </div>
@@ -1164,10 +1165,187 @@ functions—ready for the next development steps.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_connecting_to_a_sqlite_database_with_cursors_sidebar_chat">Connecting to A SQLite Database with Cursor&#8217;s Sidebar Chat</h2>
+<div class="sectionbody">
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>i want to store data in sqlite database. how would i add one to the application?</p>
+</div>
+</blockquote>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>i want to use better-sqlite3 package. update you response accordingly</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Here’s a much tighter, step-by-step guide for swapping your in-memory
+user store out for a SQLite database using the better-sqlite3 package in
+a Node/Express REST API.</p>
+</div>
+<div class="paragraph">
+<p>Prerequisites<br>
+• You already have an Express app (app.js) and a basic
+<code>models/user.js</code>.<br>
+• Routes exist to “create user” and “find user by email.”</p>
+</div>
+<div class="paragraph">
+<p>Goal<br>
+Persist user data in SQLite instead of keeping it in memory.</p>
+</div>
+<hr>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install better-sqlite3</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">npm install better-sqlite3</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a database module<br>
+Next to <code>app.js</code>, add <code>database.js</code>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// database.js</span>
+const Database = require(<span class="string"><span class="delimiter">'</span><span class="content">better-sqlite3</span><span class="delimiter">'</span></span>);
+let db;
+
+<span class="keyword">function</span> <span class="function">initializeDatabase</span>(filePath = <span class="string"><span class="delimiter">'</span><span class="content">./data.db</span><span class="delimiter">'</span></span>) {
+  db = <span class="keyword">new</span> Database(filePath);
+  db.exec(<span class="error">`</span>
+    CREATE TABLE IF NOT EXISTS users (
+      id       INTEGER PRIMARY KEY,
+      email    TEXT UNIQUE    NOT NULL,
+      password TEXT           NOT NULL
+    );
+  <span class="error">`</span>);
+  <span class="keyword">return</span> db;
+}
+
+<span class="keyword">function</span> <span class="function">getDatabase</span>() {
+  <span class="keyword">if</span> (!db) <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string"><span class="delimiter">'</span><span class="content">Database not initialized</span><span class="delimiter">'</span></span>);
+  <span class="keyword">return</span> db;
+}
+
+module.exports = { initializeDatabase, getDatabase };</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Update your user model<br>
+In <code>models/user.js</code>, replace whatever you had with:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// models/user.js</span>
+const { getDatabase } = require(<span class="string"><span class="delimiter">'</span><span class="content">../database</span><span class="delimiter">'</span></span>);
+
+<span class="keyword">function</span> <span class="function">createUser</span>({ email, password }) {
+  const db   = getDatabase();
+  const stmt = db.prepare(<span class="string"><span class="delimiter">'</span><span class="content">INSERT INTO users (email, password) VALUES (?, ?)</span><span class="delimiter">'</span></span>);
+  const info = stmt.run(email, password);
+  <span class="keyword">return</span> { <span class="key">id</span>: info.lastInsertRowid, email, password };
+}
+
+<span class="keyword">function</span> <span class="function">findUserByEmail</span>(email) {
+  const db   = getDatabase();
+  const stmt = db.prepare(<span class="string"><span class="delimiter">'</span><span class="content">SELECT id, email, password FROM users WHERE email = ?</span><span class="delimiter">'</span></span>);
+  <span class="keyword">return</span> stmt.get(email);
+}
+
+module.exports = { createUser, findUserByEmail };</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Wire up the database in your app entrypoint<br>
+In <code>app.js</code>, import and initialize before registering routes:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// app.js</span>
+const express = require(<span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>);
+const { initializeDatabase } = require(<span class="string"><span class="delimiter">'</span><span class="content">./database</span><span class="delimiter">'</span></span>);
+
+const app = express();
+
+<span class="keyword">try</span> {
+  initializeDatabase(<span class="string"><span class="delimiter">'</span><span class="content">./data.db</span><span class="delimiter">'</span></span>);
+  console.log(<span class="string"><span class="delimiter">'</span><span class="content">✅ SQLite database initialized</span><span class="delimiter">'</span></span>);
+} <span class="keyword">catch</span> (err) {
+  console.error(<span class="string"><span class="delimiter">'</span><span class="content">❌ Failed to initialize database:</span><span class="delimiter">'</span></span>, err);
+  process.exit(<span class="integer">1</span>);
+}
+
+app.use(express.json());
+<span class="comment">// require('./routes/users')(app)  – your user routes here</span>
+
+const PORT = process.env.PORT || <span class="integer">3000</span>;
+app.listen(PORT, () =&gt; {
+  console.log(<span class="error">`</span>Server listening on port <span class="predefined">$</span>{PORT}<span class="error">`</span>);
+});</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Test it<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Start your server.<br></p>
+</li>
+<li>
+<p>POST to <code>/users</code> with <code>{ "email": "...", "password": "..." }</code>.<br></p>
+</li>
+<li>
+<p>Verify <code>data.db</code> contains your new user (e.g. via
+<code>sqlite3 data.db "SELECT * FROM users;"</code>).</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>That’s it! You now have a persistent SQLite store backing your
+user-creation endpoints, all via better-sqlite3.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>Sign up a new user:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>curl -X POST http://localhost:3000/users/signup \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;email&quot;: &quot;user@example.com&quot;, &quot;password&quot;: &quot;password123&quot;}'</code></pre>
+</div>
+</div>
+<hr>
+<div class="paragraph">
+<p>Login with the created user:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>curl -X POST http://localhost:3000/users/login \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;email&quot;: &quot;user@example.com&quot;, &quot;password&quot;: &quot;password123&quot;}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-15 09:24:30 +0300
+Last updated 2025-05-15 10:45:52 +0300
 </div>
 </div>
 </body>
