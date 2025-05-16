@@ -547,6 +547,9 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </li>
 <li><a href="#_providing_follow_up_feedback_to_cursor_composer">Providing Follow-Up Feedback To Cursor Composer</a></li>
 <li><a href="#_connecting_to_a_sqlite_database_with_cursors_sidebar_chat">Connecting to A SQLite Database with Cursor&#8217;s Sidebar Chat</a></li>
+<li><a href="#_tweaking_ai_generated_code">Tweaking AI-Generated Code</a></li>
+<li><a href="#_using_inline_chat_for_editing_validation_code">Using Inline Chat For Editing Validation Code</a></li>
+<li><a href="#_testing_the_rest_api_with_postman">Testing the REST API With Postman</a></li>
 </ul>
 </div>
 </div>
@@ -1342,10 +1345,354 @@ user-creation endpoints, all via better-sqlite3.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_tweaking_ai_generated_code">Tweaking AI-Generated Code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here’s a more concise, structured explanation of what we’re doing in
+<strong>app.js</strong>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Start the server before initializing the database<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Instead of exporting the Express app and initializing the DB
+immediately, call <code>app.listen(...)</code> right away.<br></p>
+</li>
+<li>
+<p>In the listen callback (i.e. once the server has successfully
+started), run your database‐initialization logic.<br></p>
+</li>
+<li>
+<p>If the server fails to start, the callback never fires, so you never
+attempt to initialize the database.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Use a configurable port<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Read the port from <code>process.env.PORT</code> when available, otherwise fall
+back to <code>3000</code>.<br></p>
+</li>
+<li>
+<p>This lets you adapt to hosting environments that assign dynamic ports.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">const port = process.env.PORT || <span class="integer">3000</span>;</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Full flow in <strong>app.js</strong><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Configure middleware and routes first (e.g.
+<code>app.use('/users', userRoutes)</code>).<br></p>
+</li>
+<li>
+<p>Call <code>app.listen(port, async (err) =&gt; { … })</code>.<br>
+– Inside this callback, initialize the database.<br>
+– On failure, log the error and exit the process.<br>
+– On success, log “Server is running on port X”.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Routing and controllers<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>All requests to <code>/users</code> go to your <strong>userRoutes</strong> module.<br></p>
+</li>
+<li>
+<p>Each route handler calls the appropriate function in
+<strong>userController.js</strong>.<br></p>
+</li>
+<li>
+<p>Controllers in turn use <strong>userModel.js</strong> to interact with the database
+(e.g. inserting a new user).</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>By structuring it this way:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>We only initialize the DB once the server is confirmed up.<br></p>
+</li>
+<li>
+<p>We support configurable ports out of the box.<br></p>
+</li>
+<li>
+<p>Our <code>route → controller → model</code> flow stays clean and predictable.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_using_inline_chat_for_editing_validation_code">Using Inline Chat For Editing Validation Code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here’s a more polished, step-by-step summary of how we improved our
+user-creation and login flows with proper validation:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Identify Where to Validate<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Instead of lumping everything into the low-level utility function, we
+chose the UsersController’s <code>createUser</code> (signup) method—where request
+data is first extracted—as the right place to validate.<br></p>
+</li>
+<li>
+<p>For login, we only need minimal checks (to avoid blank inputs) since
+credentials get verified later.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Define Our Validation Rules<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Email<br>
+– Must not be empty or just whitespace (hence <code>.trim()</code>).<br>
+– Must match a standard email-format regex.<br>
+– Must be unique in the database (no existing user with that email).<br></p>
+</li>
+<li>
+<p>Password<br>
+– Must not be empty or just whitespace.<br>
+– Must be at least six characters long.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Use Inline AI-Powered Editing<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>We highlighted the entire signup method.<br></p>
+</li>
+<li>
+<p>We invoked our editor’s inline chat (Cursor) and told it: “Add robust
+email and password validation per the rules above.”<br></p>
+</li>
+<li>
+<p>The AI inserted:<br>
+– <code>const email = req.body.email?.trim()</code> and
+<code>const password = req.body.password?.trim()</code><br>
+– Checks for empty strings after trimming.<br>
+– A regex test for valid email format, returning a 400 error if it
+fails.<br>
+– <code>User.findOne({ email })</code> to enforce uniqueness, returning a 409 if
+already taken.<br>
+– A length check on the password, returning a 400 if it’s under six
+characters.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Tweak the Login Endpoint<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>For <code>/login</code>, we similarly ensure <code>email.trim()</code> and
+<code>password.trim()</code> aren’t empty.<br></p>
+</li>
+<li>
+<p>We skip stricter checks here, trusting the authentication routine to
+handle format and credential validation.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Next Steps<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>We’re still storing passwords in plain text—for now.<br></p>
+</li>
+<li>
+<p>Our immediate goal is to get these validations in place and test the
+flow.<br></p>
+</li>
+<li>
+<p>After confirming that requests are properly vetted, we’ll add hashing
+(e.g., with bcrypt) and any additional safeguards.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Key Takeaways</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Inline AI-assistant tools can speed up repetitive editing tasks
+(regex, trimming boilerplate, etc.).<br></p>
+</li>
+<li>
+<p>Don’t let AI make every decision for you—stay in the driver’s seat.<br></p>
+</li>
+<li>
+<p>Always validate at the boundary (where external input enters your
+system).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing_the_rest_api_with_postman">Testing the REST API With Postman</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here’s a cleaned-up, step-by-step guide for running your server, testing
+the signup endpoint with Postman, and spotting the plain-text password
+issue:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Start the Development Server<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>In your project folder run:<br>
+<code>npm run dev</code><br></p>
+</li>
+<li>
+<p>This launches your Express app on <a href="http://localhost:3000" class="bare">http://localhost:3000</a>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Install &amp; Launch Postman<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Download the free Postman desktop app (no account required to test
+APIs).<br></p>
+</li>
+<li>
+<p>Open Postman and click “New Request.”</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Configure the Signup Request<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Method: POST<br></p>
+</li>
+<li>
+<p>URL: <a href="http://localhost:3000/users/signup" class="bare">http://localhost:3000/users/signup</a><br></p>
+</li>
+<li>
+<p>Body:<br>
+– Select “raw”<br>
+– Choose “JSON”<br>
+– Enter a JSON object, for example:<br>
+<code>+json { "email": "<a href="mailto:test@example.com">test@example.com</a>", "password": "test123abc" } +</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Send &amp; Verify the Response<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Click “Send.”<br></p>
+</li>
+<li>
+<p>You should receive a 200 OK (or 201 Created) with a message like:<br>
+<code>{"message":"User created successfully","user":{"id":1,"email":"test@example.com"}}</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Inspect the SQLite Database<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A file named <code>database.sqlite</code> appears in your project root.<br></p>
+</li>
+<li>
+<p>To view its contents, install a SQLite viewer (e.g. VS Code’s SQLite
+extension).<br></p>
+</li>
+<li>
+<p>Confirm that the <code>users</code> table contains your new record.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Security Warning: Plain-Text Passwords<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Right now, passwords are stored unhashed in the database.<br></p>
+</li>
+<li>
+<p>If an attacker ever accessed your database file, they’d see every
+user’s password.<br></p>
+</li>
+<li>
+<p>Always hash passwords before saving—e.g., using bcrypt—so stored
+passwords can’t be read directly.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Next Steps<br>
+• Update your signup handler to hash <code>req.body.password</code> before
+inserting into SQLite.<br>
+• Re-run your tests to confirm passwords are now stored safely as
+encrypted hashes.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-15 10:45:52 +0300
+Last updated 2025-05-16 11:39:50 +0300
 </div>
 </div>
 </body>
