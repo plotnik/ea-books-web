@@ -33,7 +33,7 @@ st.set_page_config(
 current_folder = os.path.basename(os.getcwd())
 st.write(f"### {current_folder}")
 overwrite_files = True # st.toggle("Overwrite files")
-hide_source_panel = st.toggle("Hide source panel", value=True)
+hide_source_panel = st.toggle("Hide source panel", value=False)
 st.write("---")
 
 # Prints a stylized banner to the console when the application starts.
@@ -48,13 +48,68 @@ def print_banner():
     ▝▚▄▄▖▄▀ ▀▄ █▄▄▄▀ █      █ █   █     ▄  ▐▌      ▀▄▀       
                █     █      █           ▀▄▄▞▘                
                ▀  
-               
+           
     ██ {current_folder} ██
     """)
     return 1
 
 print_banner()
 
+# LLM Prices  
+# ----------
+#
+# .. csv-table:: Useful Links
+#    :header: "Name", "URL"
+#    :widths: 10 30
+#
+#    "Gemini Models", https://ai.google.dev/gemini-api/docs/models
+#    "Gemini Rate Limits", https://ai.google.dev/gemini-api/docs/rate-limits
+#    "OpenAI Models", https://platform.openai.com/docs/models
+#
+# ::
+
+llm_prices = {
+    "gemini-2.5-flash-preview-04-17": 0.0,
+    "gemini-2.0-flash": 0.0,
+    "gemma-3-27b-it": 0.0,
+    "gpt-4.1-mini": 0.4,
+    "gpt-4.1-nano": 0.1,
+    "gpt-4.1": 2.0,
+    "gpt-4o-mini": 0.15,
+    "o4-mini": 1.10,
+    "o3-mini": 1.10,
+    "gpt-4o": 2.5,
+    "o1": 15.0,
+}
+llm_models = list(llm_prices.keys())    
+
+# Prompts 
+# -------
+#
+# ::
+
+GEN_PROMPT = "Generate Prompt"
+EXPLAIN_PROMPT = "Explain"
+IMPROVE_PROMPT = "Improve"
+llm_ops = [GEN_PROMPT, EXPLAIN_PROMPT, IMPROVE_PROMPT]
+
+def generate_prompt():
+    return "Create LLM prompt that can be used to generate this Java code."
+
+def generate_method_prompt(method_name):
+    return f"Create LLM prompt that can be used to generate method `{method_name}` in Java code you are provided."
+
+def explain_prompt():
+    return "Explain Java code you are provided."
+
+def explain_method_prompt(method_name):
+    return f"Explain method `{method_name}` in Java code you are provided."
+
+def improve_prompt():
+    return "Improve Java code you are provided."
+
+def improve_method_prompt(method_name):
+    return f"Improve method `{method_name}` in Java code you are provided."
 
 # Save Java class
 #
@@ -95,7 +150,7 @@ def save_java_class(java_code: str, overwrite: bool) -> Tuple[str, str]:
     if (os.path.exists(file_path) and not overwrite):
         st.toast(f"File exists: {file_path}")
         return None, None
-    
+
     # Save the file
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(java_code)
@@ -249,7 +304,7 @@ with col2c:
 with col3c: 
     method_names = methods_by_class[f"{package_name}.{class_name}"]
     method_name = st.selectbox("Method", method_names)
-  
+
 # Get java code from clipboard and save it to file
 #
 # ::
@@ -261,13 +316,13 @@ def paste_java():
     except ValueError as e:   
         st.toast(e)
         return
-    
+
     classes_by_package[package_name].append(class_name)  
     save_dict(classes_by_package, classes_by_package_json)
     st.rerun()
 
 # Load Java code
-#      
+#    
 # ::
 
 def load_java_code(package_name: str, class_name: str):
@@ -275,14 +330,14 @@ def load_java_code(package_name: str, class_name: str):
     file_path = os.path.join(dir_path(package_name), f"{class_name}.java")
     with open(file_path, 'r', encoding='utf-8') as file:
         java_code = file.read()   
-    
+
     return java_code 
 
 try:
     java_code = load_java_code(package_name, class_name)    
 except Exception as e:
     java_code = ""
-  
+
 # Load and save markdown result of LLM prompt
 #
 # :: 
@@ -290,13 +345,13 @@ except Exception as e:
 def file_path(package_name: str, class_name: str, method_name: str, ext="md"):
     method_suffix = f".{method_name}" if method_name else ""
     return os.path.join(dir_path(package_name), f"{class_name}{method_suffix}.{ext}")
-    
+
 def load_markdown(package_name: str, class_name: str, method_name: str):
     with open(file_path(package_name, class_name, method_name), 'r', encoding='utf-8') as file:
         markdown = file.read()   
-    
+
     return markdown 
-    
+
 # Parse HTML and add Tailwind CSS classes to improve styling.
 #
 # ::
@@ -364,7 +419,7 @@ def enhance_html_with_tailwind(html_text, filename):
             </body>
             </html>
             """
-            
+        
 def convert_to_html(md_text, title):
     # Convert to HTML
     html_text = markdown.markdown(
@@ -377,7 +432,7 @@ def convert_to_html(md_text, title):
         output_format='html5'
     )    
     return enhance_html_with_tailwind(html_text, title)
-    
+
 def save_markdown(package_name: str, class_name: str, method_name: str, md_text: str, overwrite: bool):
     md_path = file_path(package_name, class_name, method_name, "md")
     html_path = file_path(package_name, class_name, method_name, "html")
@@ -385,7 +440,7 @@ def save_markdown(package_name: str, class_name: str, method_name: str, md_text:
     if (os.path.exists(md_path) and not overwrite):
         st.toast(f"File exists: {md_path}")
         return None, None
-    
+
     # Save markdown
     with open(md_path, 'w', encoding='utf-8') as f:
         f.write(md_text)
@@ -394,45 +449,14 @@ def save_markdown(package_name: str, class_name: str, method_name: str, md_text:
     method_suffix = f".{method_name}" if method_name else ""
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(convert_to_html(md_text, class_name + method_suffix))
-        
+    
 # Select LLM    
 # ----------    
 #
 # ::
 
-llm_prices = {
-    "gemini-2.5-pro-exp-03-25": 0.0,
-    "gemini-2.0-flash": 0.0,
-    "gemma-3-27b-it": 0.0,
-    "gpt-4.1-mini": 0.4,
-    "gpt-4.1-nano": 0.1,
-    "gpt-4.1": 2.0,
-    "gpt-4o-mini": 0.15,
-    "o4-mini": 1.10,
-    "o3-mini": 1.10,
-    "gpt-4o": 2.5,
-    "o1": 15.0,
-}
-llm_models = list(llm_prices.keys())    
 llm_persisted = PersistedList("llm_models.txt")
 llm_models = llm_persisted.sort_by_pattern(llm_models)
-
-# Prompts 
-# -------
-#
-# ::
-
-def explain_prompt():
-    return "Explain Java code you are provided."
-    
-def explain_method_prompt(method_name):
-    return f"Explain method `{method_name}` in Java code you are provided."
-    
-def improve_prompt():
-    return "Improve Java code you are provided."
-    
-def improve_method_prompt(method_name):
-    return f"Improve method `{method_name}` in Java code you are provided."
 
 # OpenAI client
 #
@@ -513,20 +537,20 @@ def call_llm(prompt, text):
 
     elif llm_model.startswith("gemma"):
         response = call_gemma(prompt, text)
-    
+
     elif llm_model.startswith("gpt"):
         response = call_gpt(prompt, text)  
-    
+
     elif llm_model.startswith("o"):
         response = call_o_model(prompt, text)
 
     else:
         st.error(f"Unknown model: {llm_model}")
         st.stop()
-    
+
     llm_persisted.select(llm_model)
     return response
-  
+
 # Get response from LLM and save it to file
 #
 # ::
@@ -535,38 +559,43 @@ def run_llm_op(llm_op, package_name, class_name, java_code):
     global method_name
     method_name = "" if method_name is None else method_name.strip()
     print(f"[run_llm_op] method_name: `{method_name}`")
-    
+
     packages_persisted.select(package_name)
     classes_persisted.select(class_name)
-    
-    if llm_op == "Explain":
+
+    if llm_op == GEN_PROMPT:
+        if len(method_name) > 0: 
+            response = call_llm(generate_method_prompt(method_name), java_code)
+        else:    
+            response = call_llm(generate_prompt(), java_code)    
+    if llm_op == EXPLAIN_PROMPT:
         if len(method_name) > 0: 
             response = call_llm(explain_method_prompt(method_name), java_code)
         else:    
             response = call_llm(explain_prompt(), java_code)
-    elif llm_op == "Improve":
+    elif llm_op == IMPROVE_PROMPT:
         if len(method_name) > 0: 
             response = call_llm(improve_method_prompt(method_name), java_code)
         else:    
             response = call_llm(improve_prompt(), java_code)
-            
+        
     markdown = response.message.content
     try:
         save_markdown(package_name, class_name, method_name, markdown, overwrite=overwrite_files)
     except ValueError as e:   
         st.toast(e)
-        
+    
     if platform.system() == 'Darwin':
         os.system("afplay /System/Library/Sounds/Glass.aiff")
-        
+    
     if len(method_name) > 0:
         class_key = f"{package_name}.{class_name}"
         if method_name not in methods_by_class[class_key]:
             methods_by_class[class_key].append(method_name)
-            
+        
         save_dict(methods_by_class, methods_by_class_json)
         st.rerun()
-        
+    
 
 # 2nd row
 # -------
@@ -577,13 +606,11 @@ def run_llm_op(llm_op, package_name, class_name, java_code):
 
 col1b, col2b, col3b = st.columns(3)
 
-llm_ops = ["Explain", "Improve"]
-
 with col1b:
     if st.button(":clipboard: &nbsp; Paste", use_container_width=True):
         paste_java()
     llm_op = st.selectbox("Op", llm_ops, label_visibility="collapsed")
-    
+
 with col2b:
     llm_model = st.selectbox("LLM Model", llm_models, label_visibility="collapsed")
 
@@ -598,7 +625,7 @@ with col2b:
 
 with col3b:
     method_name = st.text_input("Method", value=method_name, label_visibility="collapsed")
-    
+
     if st.button(f":exclamation: &nbsp; {llm_op}", use_container_width=True):
         f_path = file_path(package_name, class_name, method_name)
 
@@ -606,7 +633,7 @@ with col3b:
             st.toast(f"File exists: {f_path}")
         else:
             run_llm_op(llm_op, package_name, class_name, java_code)
-            
+        
 # Original java file and LLM explanation
 #
 # ::
@@ -619,11 +646,11 @@ if hide_source_panel:
         pass        
 else:    
     col1j, col2j = st.columns(2)
-    
+
     with col1j:
         if len(java_code) > 0:
             st.write(f"```java\n{java_code}\n```\n")
-    
+
     with col2j:
         try:
             markdown = load_markdown(package_name, class_name, method_name)

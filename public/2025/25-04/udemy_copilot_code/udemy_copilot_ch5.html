@@ -550,6 +550,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_tweaking_ai_generated_code">Tweaking AI-Generated Code</a></li>
 <li><a href="#_using_inline_chat_for_editing_validation_code">Using Inline Chat For Editing Validation Code</a></li>
 <li><a href="#_testing_the_rest_api_with_postman">Testing the REST API With Postman</a></li>
+<li><a href="#_encrypting_user_passwords_with_bcryptjs">Encrypting User Passwords With bcryptjs</a></li>
 </ul>
 </div>
 </div>
@@ -559,15 +560,98 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <div class="paragraph">
 <p><a href="https://www.udemy.com/course/ai-for-developers-with-github-copilot-cursor-ai-chatgpt/" class="bare">https://www.udemy.com/course/ai-for-developers-with-github-copilot-cursor-ai-chatgpt/</a></p>
 </div>
+<hr>
+<div class="mermaid">
+sequenceDiagram
+    participant Client
+    participant API
+    participant UserModel
+    participant Database
+
+    %% User Creation Flow
+    rect rgb(200, 220, 240)
+        Note over Client,Database: User Creation Flow
+        Client->>API: POST /api/users
+        Note right of Client: {email, password}
+        API->>UserModel: createUser(data)
+        UserModel->>UserModel: Validate email format
+        UserModel->>Database: Check if email exists
+        Database-->>UserModel: Email status
+        UserModel->>UserModel: Validate password
+        UserModel->>UserModel: Hash password
+        UserModel->>Database: Insert user
+        Database-->>UserModel: User created
+        UserModel-->>API: Return user (without password)
+        API-->>Client: 201 Created
+    end
+
+    %% User Login Flow
+    rect rgb(220, 240, 200)
+        Note over Client,Database: User Login Flow
+        Client->>API: POST /api/auth/login
+        Note right of Client: {email, password}
+        API->>UserModel: authenticateUser(data)
+        UserModel->>Database: Get user by email
+        Database-->>UserModel: User data
+        UserModel->>UserModel: Verify password
+        UserModel-->>API: Return authenticated user
+        API-->>Client: 200 OK with token
+    end
+</div>
+<script src="http://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_planning_the_application_structure_with_chatgpt">Planning the Application Structure with ChatGPT</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
 <div class="paragraph">
-<p>Here’s a concise, reorganized version of your narrative—suitable for a
-README, slide deck, or blog post—highlighting objectives, AI‐driven
-planning, and next steps.</p>
+<p>The user plans to build a REST API using Node and Express that allows authenticated users to create, share, and register/unregister for events. They want to leverage AI (specifically ChatGPT) initially to help plan the application structure and core features without generating code yet. The AI provides helpful suggestions including:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A possible project structure with folders like controllers and models (though the user will customize it, e.g., placing uploads in a public folder).</p>
+</li>
+<li>
+<p>Using JSON Web Tokens for authentication.</p>
+</li>
+<li>
+<p>A user model with username, email, and hashed password fields (using bcrypt).</p>
+</li>
+<li>
+<p>Event model fields: title, description, date, location, plus a creator/user ID to link events to users.</p>
+</li>
+<li>
+<p>Suggested API endpoints for user authentication, event management, and event registration.</p>
+</li>
+<li>
+<p>Additional helpful routes like fetching all registrations for a specific event.</p>
+</li>
+<li>
+<p>Using <code>multer</code> library for image uploads.</p>
+</li>
+<li>
+<p>Suggested files and code organization, which the user will adapt.</p>
+</li>
+<li>
+<p>Database management suggestions (like Mongoose or SQLite) which the user will not follow, opting for a different approach.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, the AI helps confirm and expand the user&#8217;s initial requirements and provides a solid planning foundation. The user will next move to using AI-assisted coding tools like Cursor and GitHub Copilot to build the actual application code based on this plan.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -609,38 +693,31 @@ planning, and next steps.</p>
 </li>
 <li>
 <p>Prompt Structure<br>
-Role assigned: “You’re my technical architect.”<br>
+Role assigned: <em>“You’re my technical architect.”</em><br>
 Requirements summary:<br>
-– REST API in Node.js/Express<br>
-– JWT authentication + bcrypt for passwords<br>
-– Event model fields + image upload<br>
-– Registration endpoints<br>
-Instruction: “Don’t generate code now—just outline building blocks &amp;
-project structure.”</p>
+– <em>REST API in Node.js/Express</em><br>
+– <em>JWT authentication + bcrypt for passwords</em><br>
+– <em>Event model fields + image upload</em><br>
+– <em>Registration endpoints</em><br>
+Instruction: <em>“Don’t generate code now—just outline building blocks &amp; project structure.”</em></p>
 </li>
 <li>
 <p>Key AI-Generated Suggestions<br></p>
 <div class="olist upperalpha">
 <ol class="upperalpha">
 <li>
-<p>Project Structure<br></p>
-<div class="ulist">
-<ul>
-<li>
-<p>src/<br>
-– controllers/<br>
-– models/<br>
-– routes/<br>
-– middleware/<br>
-– config/<br></p>
-</li>
-<li>
-<p>public/uploads/ (for images)<br></p>
-</li>
-<li>
-<p>server.js, .env, package.json<br></p>
-</li>
-</ul>
+<p>Project Structure</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">• src/
+    – controllers/
+    – models/
+    – routes/
+    – middleware/
+    – config/
+• public/uploads/ (for images)
+• server.js, .env, package.json</code></pre>
+</div>
 </div>
 </li>
 <li>
@@ -651,7 +728,7 @@ project structure.”</p>
 <p>JSON Web Tokens (JWT) for stateless sessions<br></p>
 </li>
 <li>
-<p>bcrypt to hash passwords<br></p>
+<p><code>bcrypt</code> to hash passwords<br></p>
 </li>
 </ul>
 </div>
@@ -661,37 +738,27 @@ project structure.”</p>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>User \{ username, email, passwordHash }</p>
+<p>User: <code>{ username, email, passwordHash }</code></p>
 </li>
 <li>
-<p>Event \{ title, description, date, location, imagePath, creatorId }</p>
+<p>Event: <code>{ title, description, date, location, imagePath, creatorId }</code></p>
 </li>
 <li>
-<p>Registration \{ userId, eventId, registeredAt }<br></p>
+<p>Registration: <code>{ userId, eventId, registeredAt }</code><br></p>
 </li>
 </ol>
 </div>
 </li>
 <li>
-<p>Endpoints<br></p>
-<div class="ulist">
-<ul>
-<li>
-<p>POST /auth/register, /auth/login<br></p>
-</li>
-<li>
-<p>GET /users/me<br></p>
-</li>
-<li>
-<p>GET/POST/PUT/DELETE /events<br></p>
-</li>
-<li>
-<p>POST /events/:id/register, DELETE /events/:id/unregister<br></p>
-</li>
-<li>
-<p>GET /events/:id/registrations<br></p>
-</li>
-</ul>
+<p>Endpoints</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>• POST /auth/register, /auth/login
+• GET /users/me
+• GET/POST/PUT/DELETE /events
+• POST /events/:id/register, DELETE /events/:id/unregister
+• GET /events/:id/registrations</code></pre>
+</div>
 </div>
 </li>
 <li>
@@ -754,21 +821,59 @@ project structure.”</p>
 <p>With this plan in hand, you’ll hit the ground running—no surprises, no
 forgotten endpoints, and a clear roadmap for implementation.</p>
 </div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>What specific project structure and folder organization did the AI suggest for building a Node and Express REST API with user authentication and event management, and which parts did the user decide to modify or reject?</p>
+</li>
+<li>
+<p>How did the AI help identify missing elements or routes in the initial event management requirements, such as linking events to users or adding a route to fetch all registrations for a specific event?</p>
+</li>
+<li>
+<p>Which libraries and security practices did the AI recommend for password hashing, image uploads, and authentication, and how did these suggestions align with or differ from the user&#8217;s initial plans?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_setting_up_the_project_in_cursor_ai">Setting Up the Project in Cursor AI</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
 <div class="paragraph">
-<p>Here’s a cleaner, more focused step-by-step setup for your
-Node.js/Express REST API project:</p>
+<p>The user is setting up a new Node.js REST API project using Cursor in an empty folder. They start by creating a package.json file with <code>npm init -y</code>, then manually edit it to set the main entry file to <code>app.js</code>, add their name and company, specify <code>"type": "module"</code> for ES module support, and add a dev script using Node.js&#8217;s built-in watch mode instead of nodemon. They create a <code>.env</code> file for environment variables like JWT secrets and a <code>.gitignore</code> file to exclude <code>.env</code>, <code>node_modules</code>, and Mac-specific files. They install Express.js as the main dependency for building the API. The user organizes the project structure by adding root-level folders: <code>controllers</code>, <code>models</code>, <code>routes</code>, and a <code>public/images</code> folder for uploads. Up to this point, all setup is manual since the user knows what they want, but next they plan to use Cursor&#8217;s AI features to generate code and files to build out the API.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Create a new project folder<br>
-mkdir my-rest-api<br>
-cd my-rest-api</p>
+<p>Create a new project folder</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">mkdir my-rest-api
+cd my-rest-api</code></pre>
+</div>
+</div>
 </li>
 <li>
 <p>Initialize npm</p>
@@ -910,11 +1015,49 @@ connect to a database, and flesh out controllers and models. This
 structure keeps your code organized and makes collaboration much
 smoother.</p>
 </div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>What specific folder structure and file setup does the author prefer for their Node.js REST API project, and how does it differ from the example suggested by the AI?</p>
+</li>
+<li>
+<p>How does the author configure the package.json file differently from the default npm init output, particularly regarding the main entry file, module type, and development scripts?</p>
+</li>
+<li>
+<p>Which files and folders does the author decide to create manually before using AI assistance, and what rationale do they provide for these choices?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_writing_user_registration_login_code_with_cursor_composer">Writing User Registration &amp; Login Code with Cursor Composer</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The user is working on building an application with multiple requirements and is using ChatGPT and CursorComposer to generate code and files. They emphasize breaking down the app development into smaller steps rather than one big prompt to improve results. The first step tackled is user registration and login, focusing on generating a user model (without classes or OOP), sign-up and login routes, and linking routes to controllers. They requested no JWT or database code yet. CursorComposer generated a <code>user.js</code> model with an object containing two methods (though the user prefers separate functions), routes for sign-up and login pointing to controller functions, and integration of these routes in <code>app.js</code> with JSON body parser middleware. Overall, the generated structure looks reasonable but the user has some reservations about certain suggestions and wants to refine the code further.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="sect2">
 <h3 id="_1_context_strategy">1. Context &amp; Strategy</h3>
 <div class="paragraph">
@@ -1054,12 +1197,69 @@ controllers.</p>
 <p>That gives CursorComposer a precise second pass to align everything
 exactly how I need it.</p>
 </div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the generated user model structure differ from the desired approach of having separate functions instead of an object with methods, and what specific changes would be needed to align it with the user&#8217;s preference?</p>
+</li>
+<li>
+<p>What is the exact folder and file organization pattern used by CursorComposer for the user authentication feature, including the placement of models, routes, and controllers, and how does this structure facilitate linking routes to controllers?</p>
+</li>
+<li>
+<p>How does the generated Express <code>app.js</code> file integrate the user routes and middleware, specifically the JSON body parser, and what are the implications of this setup for handling incoming user registration and login requests before database integration?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_providing_follow_up_feedback_to_cursor_composer">Providing Follow-Up Feedback To Cursor Composer</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The user describes their preferences and workflow for organizing JavaScript code, focusing on two main points:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>They prefer exporting and importing standalone functions rather than methods inside objects or classes. They want simple, plain functions exported individually across all files.</p>
+</li>
+<li>
+<p>They want to use the modern ECMAScript Module (ESM) syntax for imports and exports instead of the older CommonJS style.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>They provide feedback to an AI coding assistant (Cursor) to adjust the code accordingly. Cursor updates the code to have standalone functions like createUser and findUserByEmail, and switches all import/export statements to ESM syntax. The user accepts these changes, rejects unnecessary ones (like redundant package.json or gitignore edits), and manually renames files to their preferred naming convention.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, the user prefers defining functions with the traditional <code>function</code> keyword rather than arrow functions assigned to constants. Cursor helps convert arrow functions to this style with export keywords, speeding up the process by suggesting similar changes for multiple functions.</p>
+</div>
+<div class="paragraph">
+<p>Overall, the user achieves a clean, modular codebase with standalone exported functions using modern ESM syntax and traditional function declarations, setting a solid foundation for further development of user registration features with AI assistance.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -1166,11 +1366,60 @@ same transform to <code>findUserByEmail()</code> and the controller functions.</
 <p>Outcome: a clean, ESM-based codebase composed of plain, exported
 functions—ready for the next development steps.</p>
 </div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the author prefer to structure and export functions in their Node.js project, and what specific syntax changes do they make to achieve this?</p>
+</li>
+<li>
+<p>What role does the AI tool "Cursor" play in refactoring the code, and how does it assist with converting arrow functions to traditional function declarations with exports?</p>
+</li>
+<li>
+<p>Why does the author reject certain automated changes suggested by the AI (e.g., changes to <code>package.json</code> or <code>.gitignore</code>), and what does this reveal about their workflow preferences?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_connecting_to_a_sqlite_database_with_cursors_sidebar_chat">Connecting to A SQLite Database with Cursor&#8217;s Sidebar Chat</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The user is enhancing a Node.js Express REST API by integrating a SQLite database to store user data. They use an AI chat tool within their code editor (Cursor) to help generate code for database setup, including creating a database.js file to initialize the database and update user-related model functions to interact with the database. Initially, the AI suggests using the <code>sqlite3</code> package, but the user prefers the <code>better-sqlite3</code> package for improved performance and requests updated instructions accordingly.</p>
+</div>
+<div class="paragraph">
+<p>The user encounters some workflow issues with applying AI-generated code snippets directly to the correct files, so they manually create the <code>database.js</code> file and then apply the changes. They review and tweak the generated code, such as removing unnecessary "auto increment" from the table schema for better performance. The user updates the <code>user.js</code> model to import the database functions and implement user creation and lookup by email using the database. Finally, they modify <code>app.js</code> to import and call the database initialization function, ensuring the server shuts down if initialization fails.</p>
+</div>
+<div class="paragraph">
+<p>Overall, the process involves using AI-assisted code generation combined with manual adjustments and testing to integrate a SQLite database into the existing Node Express application for persistent user data storage.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>Prompts:</p>
+</div>
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
@@ -1185,9 +1434,11 @@ functions—ready for the next development steps.</p>
 </div>
 </blockquote>
 </div>
+</div>
+</div>
 <div class="paragraph">
 <p>Here’s a much tighter, step-by-step guide for swapping your in-memory
-user store out for a SQLite database using the better-sqlite3 package in
+user store out for a SQLite database using the <code>better-sqlite3</code> package in
 a Node/Express REST API.</p>
 </div>
 <div class="paragraph">
@@ -1343,14 +1594,52 @@ user-creation endpoints, all via better-sqlite3.</p>
 </div>
 </div>
 </div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the integration of the <code>better-sqlite3</code> package differ from the <code>sqlite3</code> package in terms of initialization and usage within this specific Node Express REST API project?</p>
+</li>
+<li>
+<p>What is the recommended workflow for applying code changes using the integrated chat in Cursor when adding new files (like <code>database.js</code>) versus updating existing files (like <code>user.js</code>), and what limitations were encountered?</p>
+</li>
+<li>
+<p>Why was the <code>auto increment</code> attribute removed from the SQLite table creation code in this project, and what are the implications of this decision on database performance and ID generation?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_tweaking_ai_generated_code">Tweaking AI-Generated Code</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The user explains improvements made to their <code>app.js</code> code: instead of exporting the app object directly, they now start the server with app.listen and initialize the database inside the listen callback. This ensures the database only initializes if the server starts successfully. They also modify the port configuration to use an environment variable (PORT) with a fallback to 3000, making the app more flexible. The updated <code>app.js</code> handles requests to <code>/users</code> by routing them to user routes, which invoke controller functions that interact with the user model to perform database operations like creating users. Overall, the changes improve server startup flow and configuration.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Here’s a more concise, structured explanation of what we’re doing in
-<strong>app.js</strong>:</p>
+<code>app.js</code>:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -1393,7 +1682,7 @@ back to <code>3000</code>.<br></p>
 </div>
 </li>
 <li>
-<p>Full flow in <strong>app.js</strong><br></p>
+<p>Full flow in <code>app.js</code><br></p>
 <div class="ulist">
 <ul>
 <li>
@@ -1414,14 +1703,13 @@ back to <code>3000</code>.<br></p>
 <div class="ulist">
 <ul>
 <li>
-<p>All requests to <code>/users</code> go to your <strong>userRoutes</strong> module.<br></p>
+<p>All requests to <code>/users</code> go to your <code>userRoutes</code> module.<br></p>
 </li>
 <li>
-<p>Each route handler calls the appropriate function in
-<strong>userController.js</strong>.<br></p>
+<p>Each route handler calls the appropriate function in <code>userController.js</code>.<br></p>
 </li>
 <li>
-<p>Controllers in turn use <strong>userModel.js</strong> to interact with the database
+<p>Controllers in turn use <code>userModel.js</code> to interact with the database
 (e.g. inserting a new user).</p>
 </li>
 </ul>
@@ -1441,15 +1729,53 @@ back to <code>3000</code>.<br></p>
 <p>We support configurable ports out of the box.<br></p>
 </li>
 <li>
-<p>Our <code>route → controller → model</code> flow stays clean and predictable.</p>
+<p>Our <strong>route → controller → model</strong> flow stays clean and predictable.</p>
 </li>
 </ul>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Why does the code initialize the database inside the callback of <code>app.listen</code> instead of before starting the server?</p>
+</li>
+<li>
+<p>How does the updated port selection logic in <code>app.js</code> determine which port the server listens on?</p>
+</li>
+<li>
+<p>What is the sequence of function calls and file interactions when handling requests to the <code>/users</code> route in this application?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_using_inline_chat_for_editing_validation_code">Using Inline Chat For Editing Validation Code</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The application is progressing steadily, with a focus on improving user data validation during account creation. Instead of blindly accepting input, the developer wants to ensure the email is valid, unique in the database, and the password meets a minimum length (at least six characters) and is not just blank spaces. They use inline AI-assisted code editing to enhance the validation logic in the user controller, adding checks for trimmed input, regex-based email validation, password length, and duplicate email detection. While AI helped generate this improved validation, the developer notes that sometimes manual coding might be faster and cautions against over-reliance on AI. They also plan lighter validation for login inputs and acknowledge that currently passwords are stored in plain text, which will be addressed later. Overall, this is an iterative step toward a more robust and secure user signup process.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Here’s a more polished, step-by-step summary of how we improved our
 user-creation and login flows with proper validation:</p>
@@ -1569,11 +1895,49 @@ system).</p>
 </li>
 </ul>
 </div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the inline chat functionality assist in improving the validation logic within the user controller file, specifically for email and password fields?</p>
+</li>
+<li>
+<p>What specific validation checks are applied to the email and password fields in the signup function after using the AI-assisted code editing?</p>
+</li>
+<li>
+<p>Why does the author consider the current password storage method insecure, and what is the intended next step for improving password handling in the application?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_testing_the_rest_api_with_postman">Testing the REST API With Postman</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The content explains how to test a REST API during development using the <code>npm run dev</code> command to start the server and Postman as a tool to send requests. Specifically, it demonstrates sending a POST request to the <code>/users/signup</code> endpoint with JSON data containing an email and password. The server responds with a success message and user details, which are stored in a SQLite database file. However, the password is stored in plain text, which is a security risk. The author notes the need to fix this by hashing the password before storage, as storing unencrypted passwords can lead to serious vulnerabilities if the database is compromised. They mention that while Cursor suggested code that hashes passwords, their current setup does not, so they plan to update it accordingly.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Here’s a cleaned-up, step-by-step guide for running your server, testing
 the signup endpoint with Postman, and spotting the plain-text password
@@ -1687,12 +2051,241 @@ inserting into SQLite.<br>
 • Re-run your tests to confirm passwords are now stored safely as
 encrypted hashes.</p>
 </div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>What are the exact steps to send a POST request to the <code>/users/signup</code> endpoint using Postman without creating an account or paying for the tool?</p>
+</li>
+<li>
+<p>How can you verify that user signup data has been stored in the <code>database.sqlite</code> file, and what limitations exist when viewing this data directly?</p>
+</li>
+<li>
+<p>Why is storing passwords in plain text in the SQLite database a security risk, and what approach is suggested to mitigate this issue in the context of this project?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_encrypting_user_passwords_with_bcryptjs">Encrypting User Passwords With bcryptjs</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The user is updating their application to securely handle passwords by hashing them before storage using the bcrypt.js package. They manually install bcrypt.js, then modify the code to hash passwords asynchronously before saving them. They add a new function to verify user credentials by comparing a plaintext password with the stored hashed password. This verification function is integrated into the login controller, which is updated to handle asynchronous calls and return appropriate success or error responses.</p>
+</div>
+<div class="paragraph">
+<p>After implementing these changes, they clear the existing database to remove plaintext passwords and restart the server. Testing signup confirms that passwords are now stored as hashes. However, they encounter two issues: the signup response returns an empty object instead of user data, and login attempts produce errors. These problems are identified for further debugging and fixing in subsequent steps.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here’s a cleaner, more structured write-up of what you did—and why—when
+integrating bcrypt.js for password hashing and verification:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install the bcrypt.js package<br>
+Run in your project root:<br>
+<code>npm install bcryptjs</code><br>
+(We prefer bcryptjs over the native bcrypt module because it’s simpler
+to install and use in this application.)</p>
+</li>
+<li>
+<p>Update the User model to hash passwords<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Import bcryptjs at the top of your user model file:<br>
+<code>const bcrypt = require('bcryptjs');</code><br></p>
+</li>
+<li>
+<p>Replace your existing “store password in plain text” logic with an
+async <code>hashPassword</code> helper:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// before saving a new user…</span>
+async <span class="keyword">function</span> <span class="function">hashPassword</span>(plainPassword) {
+  const salt = await bcrypt.genSalt(<span class="integer">12</span>);
+  <span class="keyword">return</span> await bcrypt.hash(plainPassword, salt);
+}
+
+<span class="comment">// e.g. in your createUser function</span>
+async <span class="keyword">function</span> <span class="function">createUser</span>(data) {
+  const hashed = await hashPassword(data.password);
+  <span class="comment">// store `hashed` instead of data.password</span>
+  <span class="error">…</span>
+}</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Mark your model functions with <code>async</code> where you call bcrypt’s async
+methods.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Add a verify-credentials helper<br>
+In the same model file, export a new function that:<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Accepts <code>email</code> and <code>plainPassword</code>.<br></p>
+</li>
+<li>
+<p>Queries the database for a user by email.<br></p>
+</li>
+<li>
+<p>If no user is found, returns <code>null</code>.<br></p>
+</li>
+<li>
+<p>Otherwise, uses <code>bcrypt.compare(plainPassword, user.passwordHash)</code>
+to check the password.<br></p>
+</li>
+<li>
+<p>Returns a simplified user object (<code>{ id, email }</code>) on success, or
+<code>null</code> if the password doesn’t match.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">async <span class="keyword">function</span> <span class="function">verifyUserCredentials</span>(email, plainPassword) {
+  const user = await db(<span class="string"><span class="delimiter">'</span><span class="content">users</span><span class="delimiter">'</span></span>).where({ email }).first();
+  <span class="keyword">if</span> (!user) <span class="keyword">return</span> <span class="predefined-constant">null</span>;
+
+  const isValid = await bcrypt.compare(plainPassword, user.passwordHash);
+  <span class="keyword">return</span> isValid ? { <span class="key">id</span>: user.id, <span class="key">email</span>: user.email } : <span class="predefined-constant">null</span>;
+}
+
+module.exports = { createUser, verifyUserCredentials, <span class="error">…</span> };</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Wire up the login controller<br>
+In your users controller’s <code>login</code> handler:<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Mark it <code>async</code>.<br></p>
+</li>
+<li>
+<p>Call <code>verifyUserCredentials(email, password)</code>.<br></p>
+</li>
+<li>
+<p>If the helper returns <code>null</code>, respond with a 401 Unauthorized.<br></p>
+</li>
+<li>
+<p>Otherwise, respond with 200 OK and the user data.<br></p>
+</li>
+<li>
+<p>Catch any unexpected errors and return a 500.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">async <span class="keyword">function</span> <span class="function">login</span>(req, res) {
+  <span class="keyword">try</span> {
+    const { email, password } = req.body;
+    const user = await verifyUserCredentials(email, password);
+
+    <span class="keyword">if</span> (!user) {
+      <span class="keyword">return</span> res.status(<span class="integer">401</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Invalid credentials.</span><span class="delimiter">'</span></span> });
+    }
+
+    res.json({ <span class="key">message</span>: <span class="string"><span class="delimiter">'</span><span class="content">Login successful</span><span class="delimiter">'</span></span>, user });
+  } <span class="keyword">catch</span> (err) {
+    console.error(err);
+    res.status(<span class="integer">500</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Server error.</span><span class="delimiter">'</span></span> });
+  }
+}</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Test end to end<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Delete your SQLite file to wipe out any plain-text passwords.<br></p>
+</li>
+<li>
+<p>Restart your server (<code>npm run dev</code>).<br></p>
+</li>
+<li>
+<p>Send a signup request → verify the database now stores a bcrypt
+hash.<br></p>
+</li>
+<li>
+<p>Send a login request → you should get back
+<code>{ message: 'Login successful', user: { id, email } }</code>.<br></p>
+</li>
+<li>
+<p>If you see an empty object or errors, dig into your return values and
+JSON serialization to make sure you’re returning the expected fields.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Next steps: fix the bug where signup returns an empty object instead of
+the new user data, and ensure your login route handles all edge cases.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>What specific changes are necessary in the user model code to switch from bcrypt&#8217;s synchronous hash function to its asynchronous version, and how do these changes affect the function signatures and usage?</p>
+</li>
+<li>
+<p>How does the custom verify user credentials function wrap bcrypt&#8217;s compare method, and what is its exact behavior when a user is not found, when the password is incorrect, or when an error occurs?</p>
+</li>
+<li>
+<p>What debugging steps and observations are made after implementing password hashing and login verification, particularly regarding the unexpected empty object returned on signup success and the login error encountered?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-16 11:39:50 +0300
+Last updated 2025-05-17 13:13:08 +0300
 </div>
 </div>
 </body>
