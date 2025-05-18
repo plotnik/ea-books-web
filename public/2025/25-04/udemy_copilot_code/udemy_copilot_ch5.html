@@ -551,6 +551,52 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_using_inline_chat_for_editing_validation_code">Using Inline Chat For Editing Validation Code</a></li>
 <li><a href="#_testing_the_rest_api_with_postman">Testing the REST API With Postman</a></li>
 <li><a href="#_encrypting_user_passwords_with_bcryptjs">Encrypting User Passwords With bcryptjs</a></li>
+<li><a href="#_debugging_the_app_with_the_ai_chat">Debugging the App With The AI Chat</a></li>
+<li><a href="#_adding_authentication_with_json_web_tokens">Adding Authentication with JSON Web Tokens</a>
+<ul class="sectlevel2">
+<li><a href="#_1_why_jwt">1. Why JWT?</a></li>
+<li><a href="#_2_installing_the_jwt_package">2. Installing the JWT Package</a></li>
+<li><a href="#_3_utility_functions">3. Utility Functions</a></li>
+<li><a href="#_4_integrate_in_user_controller">4. Integrate in User Controller</a></li>
+<li><a href="#_5_protecting_routes">5. Protecting Routes</a></li>
+<li><a href="#_6_testing">6. Testing</a></li>
+</ul>
+</li>
+<li><a href="#_adding_event_specific_routes_with_github_copilot_inline_chat">Adding Event Specific Routes With GitHub Copilot Inline Chat</a></li>
+<li><a href="#_creating_editing_deleting_events_with_copilots_sidebar_chat">Creating, Editing &amp; Deleting Events With Copilot&#8217;s Sidebar Chat</a></li>
+<li><a href="#_creating_exporting_reusable_model_functions_for_event_management">Creating &amp; Exporting Reusable Model Functions For Event Management</a></li>
+<li><a href="#_testing_debugging_the_app">Testing &amp; Debugging The App</a>
+<ul class="sectlevel2">
+<li><a href="#_1_clean_up_your_routesevents_js">1. Clean up your <code>routes/events.js</code></a></li>
+<li><a href="#_2_hook_the_routes_into_your_main_app">2. Hook the routes into your main app</a></li>
+<li><a href="#_3_fix_the_import_path_in_your_controller">3. Fix the import path in your controller</a></li>
+<li><a href="#_4_start_your_dev_server_and_test">4. Start your dev server and test</a>
+<ul class="sectlevel3">
+<li><a href="#_4_1_get_all_events">4.1 GET all events</a></li>
+<li><a href="#_4_2_post_create_an_event">4.2 POST (create) an event</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_implementing_testing_validation_with_the_inline_chat">Implementing &amp; Testing Validation With The Inline Chat</a>
+<ul class="sectlevel2">
+<li><a href="#_1_add_input_validation_to_create_event">1. Add Input Validation to “Create Event”</a>
+<ul class="sectlevel3">
+<li><a href="#_what_we_want">What we want</a></li>
+<li><a href="#_implementation">Implementation</a></li>
+<li><a href="#_quick_tests_with_postman">Quick Tests with Postman</a></li>
+</ul>
+</li>
+<li><a href="#_2_protect_event_routes_with_jwt_authentication">2. Protect Event Routes with JWT Authentication</a>
+<ul class="sectlevel3">
+<li><a href="#_goal">Goal</a></li>
+<li><a href="#_1_create_an_auth_middleware">1) Create an auth middleware</a></li>
+<li><a href="#_2_apply_to_sensitive_routes">2) Apply to sensitive routes</a></li>
+<li><a href="#_3_verify">3) Verify</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -560,46 +606,9 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <div class="paragraph">
 <p><a href="https://www.udemy.com/course/ai-for-developers-with-github-copilot-cursor-ai-chatgpt/" class="bare">https://www.udemy.com/course/ai-for-developers-with-github-copilot-cursor-ai-chatgpt/</a></p>
 </div>
-<hr>
-<div class="mermaid">
-sequenceDiagram
-    participant Client
-    participant API
-    participant UserModel
-    participant Database
-
-    %% User Creation Flow
-    rect rgb(200, 220, 240)
-        Note over Client,Database: User Creation Flow
-        Client->>API: POST /api/users
-        Note right of Client: {email, password}
-        API->>UserModel: createUser(data)
-        UserModel->>UserModel: Validate email format
-        UserModel->>Database: Check if email exists
-        Database-->>UserModel: Email status
-        UserModel->>UserModel: Validate password
-        UserModel->>UserModel: Hash password
-        UserModel->>Database: Insert user
-        Database-->>UserModel: User created
-        UserModel-->>API: Return user (without password)
-        API-->>Client: 201 Created
-    end
-
-    %% User Login Flow
-    rect rgb(220, 240, 200)
-        Note over Client,Database: User Login Flow
-        Client->>API: POST /api/auth/login
-        Note right of Client: {email, password}
-        API->>UserModel: authenticateUser(data)
-        UserModel->>Database: Get user by email
-        Database-->>UserModel: User data
-        UserModel->>UserModel: Verify password
-        UserModel-->>API: Return authenticated user
-        API-->>Client: 200 OK with token
-    end
+<div class="paragraph">
+<p>See <a href="diagram_ch5.html">Diagram - Chapter 5. Practice Project: Creating a REST API with AI</a></p>
 </div>
-<script src="http://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true});</script>
 </div>
 </div>
 <div class="sect1">
@@ -2088,7 +2097,7 @@ encrypted hashes.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>The user is updating their application to securely handle passwords by hashing them before storage using the bcrypt.js package. They manually install bcrypt.js, then modify the code to hash passwords asynchronously before saving them. They add a new function to verify user credentials by comparing a plaintext password with the stored hashed password. This verification function is integrated into the login controller, which is updated to handle asynchronous calls and return appropriate success or error responses.</p>
+<p>The user is updating their application to securely handle passwords by hashing them before storage using the <code>bcryptjs</code> package. They manually install <code>bcryptjs</code>, then modify the code to hash passwords asynchronously before saving them. They add a new function to verify user credentials by comparing a plaintext password with the stored hashed password. This verification function is integrated into the login controller, which is updated to handle asynchronous calls and return appropriate success or error responses.</p>
 </div>
 <div class="paragraph">
 <p>After implementing these changes, they clear the existing database to remove plaintext passwords and restart the server. Testing signup confirms that passwords are now stored as hashes. However, they encounter two issues: the signup response returns an empty object instead of user data, and login attempts produce errors. These problems are identified for further debugging and fixing in subsequent steps.</p>
@@ -2099,15 +2108,15 @@ encrypted hashes.</p>
 </div>
 <div class="paragraph">
 <p>Here’s a cleaner, more structured write-up of what you did—and why—when
-integrating bcrypt.js for password hashing and verification:</p>
+integrating <code>bcryptjs</code> for password hashing and verification:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Install the bcrypt.js package<br>
+<p>Install the <code>bcryptjs</code> package<br>
 Run in your project root:<br>
 <code>npm install bcryptjs</code><br>
-(We prefer bcryptjs over the native bcrypt module because it’s simpler
+(We prefer <code>bcryptjs</code> over the native <code>bcrypt</code> module because it’s simpler
 to install and use in this application.)</p>
 </li>
 <li>
@@ -2115,11 +2124,11 @@ to install and use in this application.)</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Import bcryptjs at the top of your user model file:<br>
+<p>Import <code>bcryptjs</code> at the top of your user model file:<br>
 <code>const bcrypt = require('bcryptjs');</code><br></p>
 </li>
 <li>
-<p>Replace your existing “store password in plain text” logic with an
+<p>Replace your existing <em>“store password in plain text”</em> logic with an
 async <code>hashPassword</code> helper:</p>
 <div class="listingblock">
 <div class="content">
@@ -2282,10 +2291,1531 @@ the new user data, and ensure your login route handles all edge cases.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_debugging_the_app_with_the_ai_chat">Debugging the App With The AI Chat</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The content describes using AI assistance to debug and fix errors in a coding project. Initially, a "reference error" occurs because a function (<code>verifyUserCredentials</code>) is called but not defined or imported. The AI suggests adding the correct import statement, which resolves the issue quickly.</p>
+</div>
+<div class="paragraph">
+<p>Next, the user encounters a problem where a sign-up route returns an empty user object instead of actual user data. By providing the AI with relevant code files (controller, model, routes) and the error context, the AI identifies that the asynchronous <code>createUser</code> function was not awaited. The fix involves marking the controller function as <code>async</code> and adding <code>await</code> before the <code>createUser</code> call. Applying these changes fixes the issue, and subsequent user creation and login attempts work correctly, including proper error handling for duplicate emails or invalid credentials.</p>
+</div>
+<div class="paragraph">
+<p>Overall, the example highlights how combining developer knowledge with AI tools can speed up debugging and development, making it easier to identify and fix issues efficiently.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here’s a clearer, more structured walkthrough of how you can leverage AI
+to troubleshoot and fix runtime errors in your code.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Fixing a “ReferenceError: verifyUserCredentials is not defined”</strong><br></p>
+<div class="olist loweralpha">
+<ol class="loweralpha">
+<li>
+<p>Identify the error</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The console reports:<br>
+<code>ReferenceError: verifyUserCredentials is not defined</code><br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Use your IDE’s AI assistant (or any AI chat)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Highlight the error in your code.</p>
+</li>
+<li>
+<p>Trigger <strong>“Fix with AI”</strong> (or copy/paste the snippet into an AI chat).</p>
+</li>
+<li>
+<p>Prompt: “I see this ReferenceError for <code>verifyUserCredentials</code>. How
+can I fix it?”<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>AI’s diagnosis and fix</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Diagnosis: the function is called but never imported or defined.</p>
+</li>
+<li>
+<p>Suggestion: add the missing import.<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Apply the change</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// Before</span>
+<span class="reserved">import</span> { loginUser } from <span class="string"><span class="delimiter">'</span><span class="content">./auth</span><span class="delimiter">'</span></span>;
+
+<span class="comment">// After</span>
+<span class="reserved">import</span> { loginUser, verifyUserCredentials } from <span class="string"><span class="delimiter">'</span><span class="content">./auth</span><span class="delimiter">'</span></span>;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>e. Verify the error is gone and <code>verifyUserCredentials</code> is now
+available.</p>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p><strong>Fixing an Empty User Object on Sign-Up</strong><br></p>
+<div class="olist loweralpha">
+<ol class="loweralpha">
+<li>
+<p>Symptom</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Your Sign-Up route returns <code>{ success: true, user: {} }</code> instead of
+the new user data.<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Gather context for the AI</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Copy the JSON response and your controller, model, and route files
+into the chat.</p>
+</li>
+<li>
+<p>Ask: “When testing the sign-up route, I get an empty user object.
+Why?”<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>AI’s diagnosis</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>createUser</code> function is <code>async</code> and returns a Promise.</p>
+</li>
+<li>
+<p>You must <code>await</code> that Promise to extract the user data.<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Suggested code changes<br>
+In <code>usersController.js</code>, update your function signature and call site:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// Before</span>
+<span class="keyword">function</span> <span class="function">signUp</span>(req, res) {
+  const user = createUser(req.body);
+  res.json({ <span class="key">success</span>: <span class="predefined-constant">true</span>, user });
+}
+
+<span class="comment">// After</span>
+async <span class="keyword">function</span> <span class="function">signUp</span>(req, res) {
+  const user = await createUser(req.body);
+  res.json({ <span class="key">success</span>: <span class="predefined-constant">true</span>, user });
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>e. Apply the patch and test
+* Save your files.
+* Re-register a user—now you’ll see the full user object in the
+response.
+* Test logging in with valid and invalid credentials to confirm errors
+and success cases.</p>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p><strong>Summary and Best Practices</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use AI for quick first-pass diagnostics on import issues, missing
+keywords, and common typos.</p>
+</li>
+<li>
+<p>When the bug is more involved, provide the AI with all relevant files
+(controllers, models, routes) and a clear description of the symptoms.</p>
+</li>
+<li>
+<p>Always review AI-generated patches before applying.</p>
+</li>
+<li>
+<p>Combine your own domain knowledge with AI suggestions to speed up
+development without sacrificing code quality.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the AI identify and fix the "verify user credentials is not defined" error in the code, and what specific change does it make to resolve this issue?</p>
+</li>
+<li>
+<p>What is the root cause of receiving an empty user object in the success response after creating a user, and how does the AI suggest modifying the asynchronous function to fix this?</p>
+</li>
+<li>
+<p>How does the AI-assisted debugging process handle validation errors during login, such as using an already registered email or incorrect password, and what feedback does the system provide in these cases?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_adding_authentication_with_json_web_tokens">Adding Authentication with JSON Web Tokens</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The application is progressing, currently focusing on user management before starting on events. A key missing feature is authentication using JSON Web Tokens (JWTs), a common method for securing REST APIs. JWTs serve as proof of authentication, allowing a frontend to store and send tokens with requests to verify user identity.</p>
+</div>
+<div class="paragraph">
+<p>To implement this, the developer plans to install the JSON Web Token package via npm. Instead of placing token generation code directly in the user controller, utility functions for creating and verifying JWTs will be added in a new <code>util/auth.js</code> file. These tokens will include the user&#8217;s ID and email and are signed with a secret key known only to the backend, ensuring token authenticity.</p>
+</div>
+<div class="paragraph">
+<p>After setting up these utility functions, they will be used in the user controller to generate and send JWTs upon successful signup or login. The frontend can then store these tokens and include them in future requests to access protected routes. The next step is to implement routes that require authenticated access using these tokens.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>As our application grows, we need a way to identify authenticated users
+across requests. Right now, we can sign up and log in users, but any
+client (e.g., a web or mobile frontend) calling protected routes needs
+proof of authentication. JSON Web Token (JWT) is a popular, stateless
+approach for this.</p>
+</div>
+<div class="sect2">
+<h3 id="_1_why_jwt">1. Why JWT?</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>After a successful signup or login, the server issues a signed token
+containing user data (usually the user ID and email).</p>
+</li>
+<li>
+<p>The client stores this token (e.g., in local storage or secure
+storage) and sends it with subsequent API calls.</p>
+</li>
+<li>
+<p>The server verifies the signature on each request to confirm the token
+was issued by us and hasn’t been tampered with.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_installing_the_jwt_package">2. Installing the JWT Package</h3>
+<div class="paragraph">
+<p>Stop your server and run:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>npm install jsonwebtoken</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This package lets us generate and verify JWTs using a secret key.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_3_utility_functions">3. Utility Functions</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>Prompt:</strong></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Add functions for generating JWTs (with the jsonwebtoken package) and for verifying.
+The GWT should include the user id and email of the user to whom it belongs.</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a new folder <code>util/</code> and inside it, add <code>auth.js</code>. Here,
+we’ll centralize our token logic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// util/auth.js</span>
+const jwt = require(<span class="string"><span class="delimiter">'</span><span class="content">jsonwebtoken</span><span class="delimiter">'</span></span>);
+
+<span class="comment">// Replace with a secure key in production (e.g., from environment variables)</span>
+const JWT_SECRET = process.env.JWT_SECRET || <span class="string"><span class="delimiter">'</span><span class="content">your-very-secure-secret</span><span class="delimiter">'</span></span>;
+
+<span class="keyword">function</span> <span class="function">generateToken</span>(user) {
+  <span class="comment">// Include user ID and email in the token payload</span>
+  const payload = { <span class="key">id</span>: user.id, <span class="key">email</span>: user.email };
+  <span class="comment">// Token expires in 1 hour (adjust as needed)</span>
+  <span class="keyword">return</span> jwt.sign(payload, JWT_SECRET, { <span class="key">expiresIn</span>: <span class="string"><span class="delimiter">'</span><span class="content">1h</span><span class="delimiter">'</span></span> });
+}
+
+<span class="keyword">function</span> <span class="function">verifyToken</span>(token) {
+  <span class="keyword">try</span> {
+    <span class="keyword">return</span> jwt.verify(token, JWT_SECRET);
+  } <span class="keyword">catch</span> (err) {
+    <span class="comment">// Token is invalid or expired</span>
+    <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string"><span class="delimiter">'</span><span class="content">Invalid or expired token</span><span class="delimiter">'</span></span>);
+  }
+}
+
+module.exports = { generateToken, verifyToken };</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_integrate_in_user_controller">4. Integrate in User Controller</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>Prompt:</strong></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Use the @generateToken function to generate GWTs which are sent back with the response
+after successful signup or login.</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>In your user controller (e.g., <code>controllers/userController.js</code>),
+import and use <code>generateToken</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="diff"><span class="line insert"><span class="insert">+</span> const { generateToken } = require('../util/auth');</span>
+
+<span class="line comment">async function signup(req, res, next) {</span>
+  // ... your existing signup logic
+  const newUser = await User.create({ email, passwordHash });
+<span class="line insert"><span class="insert">+</span> const token = generateToken(newUser);</span>
+  res.status(201).json({
+    user: { id: newUser.id, email: newUser.email },
+<span class="line insert"><span class="insert">+</span>   token</span>
+  });
+<span class="line comment">}</span>
+
+<span class="line comment">async function login(req, res, next) {</span>
+  // ... your existing login logic (verify credentials)
+<span class="line insert"><span class="insert">+</span> const token = generateToken(user);</span>
+  res.json({
+    user: { id: user.id, email: user.email },
+<span class="line insert"><span class="insert">+</span>   token</span>
+  });
+<span class="line comment">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, after signup or login, the response will include a <code>token</code> field.
+The client should store that token and send it in an <code>Authorization</code>
+header (e.g., <code>Authorization: Bearer &lt;token&gt;</code>) with future requests.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_protecting_routes">5. Protecting Routes</h3>
+<div class="paragraph">
+<p>To secure any route, create middleware that:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Reads the <code>Authorization</code> header.</p>
+</li>
+<li>
+<p>Verifies the token.</p>
+</li>
+<li>
+<p>Attaches the decoded user info to <code>req.user</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Example middleware (<code>middleware/auth.js</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">const { verifyToken } = require(<span class="string"><span class="delimiter">'</span><span class="content">../util/auth</span><span class="delimiter">'</span></span>);
+
+<span class="keyword">function</span> <span class="function">requireAuth</span>(req, res, next) {
+  const authHeader = req.headers.authorization || <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>;
+  const token = authHeader.replace(<span class="regexp"><span class="delimiter">/</span><span class="content">^Bearer</span><span class="char">\s</span><span class="content">+</span><span class="delimiter">/</span></span>, <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>);
+  <span class="keyword">if</span> (!token) {
+    <span class="keyword">return</span> res.status(<span class="integer">401</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">'</span><span class="content">Authentication required</span><span class="delimiter">'</span></span> });
+  }
+
+  <span class="keyword">try</span> {
+    const decoded = verifyToken(token);
+    req.user = decoded; <span class="comment">// { id, email }</span>
+    next();
+  } <span class="keyword">catch</span> (err) {
+    res.status(<span class="integer">401</span>).json({ <span class="key">message</span>: err.message });
+  }
+}
+
+module.exports = requireAuth;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use it in your routes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">const requireAuth = require(<span class="string"><span class="delimiter">'</span><span class="content">../middleware/auth</span><span class="delimiter">'</span></span>);
+
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/events</span><span class="delimiter">'</span></span>, requireAuth, createEventController);
+router.patch(<span class="string"><span class="delimiter">'</span><span class="content">/events/:id</span><span class="delimiter">'</span></span>, requireAuth, updateEventController);
+<span class="comment">// ... any other protected routes</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_6_testing">6. Testing</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Restart your server.</p>
+</li>
+<li>
+<p><strong>Signup/Login</strong>: Send a POST to <code>/signup</code> or <code>/login</code> with valid
+credentials. You should receive a JSON response containing <code>user</code> and
+<code>token</code>.</p>
+</li>
+<li>
+<p><strong>Access Protected Routes</strong>: Include the header<br>
+<code>Authorization: Bearer your.jwt.token</code><br>
+in requests to protected endpoints. You should get a successful response
+only if the token is valid.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>That’s it! You now have JWT-based authentication protecting your REST
+API. Next up, we’ll dive into creating and editing events—routes that
+will require a valid token.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the described approach ensure that only tokens generated by the backend are accepted for authenticating users in subsequent API requests?</p>
+</li>
+<li>
+<p>What is the role of the <code>auth.js</code> utility file in managing JSON Web Tokens within this application, and how does it improve code organization?</p>
+</li>
+<li>
+<p>In the context of this application, how are JSON Web Tokens generated and attached to the response after user signup or login, and how should the frontend handle these tokens?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_adding_event_specific_routes_with_github_copilot_inline_chat">Adding Event Specific Routes With GitHub Copilot Inline Chat</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The speaker discusses expanding their application by adding event-related routes (such as creating, editing, and deleting events) after already having sign-up and login routes. They switch to Visual Studio Code with GitHub Copilot to demonstrate both tools, though they usually stick to one. They create an <code>events.js</code> file in the <code>routes</code> folder and use Copilot to generate event-specific route code with ESM imports/exports. However, Copilot&#8217;s suggestions include unnecessary or incorrect database-related code because it lacks full context of the project in the inline chat mode. The speaker then manually simplifies and cleans up the generated code, removing irrelevant parts and planning to add more functionality later.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>Prompt:</strong></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Add some event-specific routes which can be used to create events, edit an event (identified by id)
+or delete an event. Use ESM imports/exports.</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Here’s a cleaned-up, more focused walkthrough for adding your “events”
+routes in Express using ESM—and without any of the Copilot noise.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a new file routes/events.js</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// routes/events.js</span>
+<span class="reserved">import</span> express from <span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>;
+const router = express.Router();
+
+<span class="comment">// GET /events         → list all events</span>
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, async (req, res, next) =&gt; {
+  <span class="keyword">try</span> {
+    const events = await db.events.findAll()
+    res.json(events)
+  } <span class="keyword">catch</span> (err) {
+    next(err)
+  }
+})
+
+<span class="comment">// GET /events/:id     → get a single event</span>
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, async (req, res, next) =&gt; {
+  <span class="keyword">try</span> {
+    const event = await db.events.findByPk(req.params.id)
+    <span class="keyword">if</span> (!event) <span class="keyword">return</span> res.status(<span class="integer">404</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Not found</span><span class="delimiter">'</span></span> })
+    res.json(event)
+  } <span class="keyword">catch</span> (err) {
+    next(err)
+  }
+})
+
+<span class="comment">// POST /events        → create a new event</span>
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, async (req, res, next) =&gt; {
+  <span class="keyword">try</span> {
+    const { title, date, location, description } = req.body
+    const newEvent = await db.events.create({ title, date, location, description })
+    res.status(<span class="integer">201</span>).json(newEvent)
+  } <span class="keyword">catch</span> (err) {
+    next(err)
+  }
+})
+
+<span class="comment">// PUT /events/:id     → update an event</span>
+router.put(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, async (req, res, next) =&gt; {
+  <span class="keyword">try</span> {
+    const updates = req.body
+    const [updated] = await db.events.update(updates, { <span class="key">where</span>: { <span class="key">id</span>: req.params.id } })
+    <span class="keyword">if</span> (!updated) <span class="keyword">return</span> res.status(<span class="integer">404</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Not found</span><span class="delimiter">'</span></span> })
+    const event = await db.events.findByPk(req.params.id)
+    res.json(event)
+  } <span class="keyword">catch</span> (err) {
+    next(err)
+  }
+})
+
+<span class="comment">// DELETE /events/:id  → delete an event</span>
+router.<span class="keyword">delete</span>(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, async (req, res, next) =&gt; {
+  <span class="keyword">try</span> {
+    const deleted = await db.events.destroy({ <span class="key">where</span>: { <span class="key">id</span>: req.params.id } })
+    <span class="keyword">if</span> (!deleted) <span class="keyword">return</span> res.status(<span class="integer">404</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Not found</span><span class="delimiter">'</span></span> })
+    res.status(<span class="integer">204</span>).end()
+  } <span class="keyword">catch</span> (err) {
+    next(err)
+  }
+})
+
+<span class="reserved">export</span> <span class="keyword">default</span> router</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Wire it up in your main app file (e.g. app.js):</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">import</span> express from <span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> eventsRouter from <span class="string"><span class="delimiter">'</span><span class="content">./routes/events.js</span><span class="delimiter">'</span></span>
+<span class="comment">// ... other imports (auth, users, etc.)</span>
+
+const app = express()
+app.use(express.json())
+
+<span class="comment">// existing routes</span>
+app.use(<span class="string"><span class="delimiter">'</span><span class="content">/auth</span><span class="delimiter">'</span></span>, authRouter)
+app.use(<span class="string"><span class="delimiter">'</span><span class="content">/users</span><span class="delimiter">'</span></span>, usersRouter)
+
+<span class="comment">// our new event routes</span>
+app.use(<span class="string"><span class="delimiter">'</span><span class="content">/events</span><span class="delimiter">'</span></span>, eventsRouter)
+
+<span class="comment">// error‐handling middleware, etc.</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Next steps<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Validate request bodies (e.g. with Joi or express-validator)<br></p>
+</li>
+<li>
+<p>Add middleware for authentication/authorization<br></p>
+</li>
+<li>
+<p>Tie your route handlers into real database logic (the examples above
+assume a Sequelize-style <code>db.events</code> object)</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>With this in place, you’ve now got full CRUD support for your “events”
+resource using clean ESM imports/exports and no stray placeholder code.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does GitHub Copilot&#8217;s awareness of the overall project context differ when used inline within a single file versus when using the chat feature with the workspace added as a reference?</p>
+</li>
+<li>
+<p>What specific adjustments does the author make to the event routes generated by GitHub Copilot to accommodate the lack of database context in the inline code suggestions?</p>
+</li>
+<li>
+<p>Why does the author choose to switch between Cursor and Visual Studio Code with GitHub Copilot during the course, and how does this impact the demonstration of adding event-specific routes?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_editing_deleting_events_with_copilots_sidebar_chat">Creating, Editing &amp; Deleting Events With Copilot&#8217;s Sidebar Chat</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The user is working on adding database functionality to their project, specifically for managing event data. They plan to create a new events controller and a model file (<code>event.js</code>) to handle CRUD operations like creating, finding, updating, and deleting events with fields such as title, description, address, and date (image handling to be added later). Initially, the AI suggested using an in-memory events array, which was not helpful, so the user explicitly specified using a SQLite database. They then updated the <code>database.js</code> file to include an events table with appropriate columns. After that, they applied changes to the <code>event.js</code> model file to interact with this SQLite database for event operations. The user is manually integrating AI-generated code with GitHub Copilot assistance and ensuring the database schema and model functions align properly.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>Prompts:</strong></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><code>@workspace Edit the #file:event.js file to contain and export functions
+that will create a new event
+(with file, description, address and date), edit an event, delete an event
+or get all or a single event (by id)</code></p>
+</div>
+</blockquote>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><code>I am using SQLite database. Update the #file:database.js file
+to also contain a fitting "events" table.
+Use the database from this file in the #file:event.js</code></p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Here’s a cleaned-up, step-by-step summary of what you did and how you
+ended up wiring up a SQLite-backed <code>events</code> model and controller in your
+Node.js app:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Switched to a chat instance with full workspace context</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The previous chat couldn’t see your code, so you moved to one that
+could load your project files.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Planned your file structure</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>routes/events.js</code> ← your route definitions</p>
+</li>
+<li>
+<p><code>controllers/events-controller.js</code></p>
+</li>
+<li>
+<p><code>models/event.js</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Updated <code>database.js</code> to include an <code>events</code> table<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Using <code>sqlite3</code> or <code>better-sqlite3</code>, you exported a single DB
+connection.<br></p>
+</li>
+<li>
+<p>Added a DDL statement to create the table if it doesn’t already
+exist:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>• id INTEGER PRIMARY KEY AUTOINCREMENT
+• title TEXT NOT NULL
+• description TEXT
+• address TEXT
+• date TEXT or INTEGER (depending on how you store dates)
+• image TEXT (optional, added later)</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Populated models/event.js with CRUD functions</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>createEvent({ title, description, address, date })</code><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>INSERT INTO events (…) VALUES (…)</code><br></p>
+</li>
+<li>
+<p>return the newly created row’s ID</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>getEventById(id)</code><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>SELECT * FROM events WHERE id = ?</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>getAllEvents()</code><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>SELECT * FROM events</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>updateEvent(id, { title, description, address, date })</code><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>UPDATE events SET … WHERE id = ?</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>deleteEvent(id)</code><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>DELETE FROM events WHERE id = ?</code></p>
+<div class="paragraph">
+<p>Each function uses your shared <code>db</code> instance and returns a Promise (or
+uses async/await).</p>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Hooked up the controller (<code>controllers/events-controller.js</code><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Imported the model functions.<br></p>
+</li>
+<li>
+<p>Mapped route handlers:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>• POST /events → createEvent
+• GET /events → getAllEvents
+• GET /events/:id → getEventById
+• PATCH /events/:id → updateEvent
+• DELETE /events/:id → deleteEvent</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Sent appropriate status codes and JSON responses.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Tied it all together in <code>routes/events.js</code><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Imported Express Router and your controller.<br></p>
+</li>
+<li>
+<p>Defined each route and exported the router.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Tested end-to-end<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Verified the <code>events</code> table was created on startup.<br></p>
+</li>
+<li>
+<p>Exercised all CRUD endpoints in Postman or curl.<br></p>
+</li>
+<li>
+<p>Confirmed data persisted in <code>database.sqlite</code> as expected.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>With that setup in place, you now have a fully functional events module
+backed by SQLite, and you can iterate further—adding image support,
+validation, or migration scripts—right in this same workspace-aware
+chat.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the user explicitly instruct the AI to handle database integration for event data in their codebase, and what specific database technology do they specify?</p>
+</li>
+<li>
+<p>What is the sequence of file modifications the user plans to make to implement CRUD operations for events, and how does the user ensure the AI understands the structure and purpose of each file?</p>
+</li>
+<li>
+<p>How does the user manage the AI&#8217;s suggestions when it initially generates an unhelpful events array, and what steps do they take to correct the AI&#8217;s approach to better fit their existing project setup?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_exporting_reusable_model_functions_for_event_management">Creating &amp; Exporting Reusable Model Functions For Event Management</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The user describes their process of integrating database model functions into an events controller and then wiring those controller functions into the events routes. They start by importing and exporting functions like insert, update, delete, and get events in the event.js model file. Then, in the events controller, they import these model functions, rename some for clarity (e.g., create, edit, deleteItem, getAll, getSingle), and remove aliases to simplify the code. They note that some manual edits were needed, which could be faster with smarter tooling like Cursor. Finally, they update the events routes file to import all controller functions as a single object (named "events") and use dot notation (e.g., events.create) for readability, manually adjusting the import and usage after an initial unsuccessful attempt by Copilot. Overall, the user successfully sets up the flow from models to controller to routes with clean, readable code.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>Prompts:</strong></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><code>Insert and export functions for creating an event, editing an event, deleting an event
+and for getting one event by id or all events</code></p>
+</div>
+</blockquote>
+</div>
+<hr>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><code>Update the routes to use the appropriate controller functions from #file:events-controller.js.
+Import all controller functions through one single "events" object</code></p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Here’s a cleaned-up, more concise walkthrough of what you did:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>models/event.js</code><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You imported your database helper and defined a set of exported
+functions:<br>
+– insertEvent<br>
+– updateEvent<br>
+– deleteEvent<br>
+– getEventById<br>
+– getAllEvents</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>controllers/events-controller.js</code><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You brought in the model functions and wired them up to Express
+handlers.<br></p>
+</li>
+<li>
+<p>To simplify naming, you renamed them locally to:<br>
+– create<br>
+– edit<br>
+– deleteItem (avoiding the reserved word “delete”)<br>
+– getSingle<br>
+– getAll<br></p>
+</li>
+<li>
+<p>That let you remove any aliasing and keep each export/import concise.</p>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">import</span> {
+  insertEvent   as create,
+  updateEvent   as edit,
+  deleteEvent   as deleteItem,
+  getEventById  as getSingle,
+  getAllEvents  as getAll
+} from <span class="string"><span class="delimiter">'</span><span class="content">../models/event.js</span><span class="delimiter">'</span></span>;
+
+<span class="reserved">export</span> const createEvent    = async (req, res) =&gt; { <span class="comment">/* … */</span> };
+<span class="reserved">export</span> const editEvent      = async (req, res) =&gt; { <span class="comment">/* … */</span> };
+<span class="comment">// etc.</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>routes/events.js</code><br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You imported the entire controller file as a single namespace for
+readability:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">import</span> * as events from <span class="string"><span class="delimiter">'</span><span class="content">../controllers/eventsController.js</span><span class="delimiter">'</span></span>;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Then you hooked up each route:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">router.post   (<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>,     events.createEvent);
+router.put    (<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>,   events.editEvent);
+router.<span class="keyword">delete</span> (<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>,   events.deleteEvent);
+router.get    (<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>,   events.getSingleEvent);
+router.get    (<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>,     events.getAllEvents);</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Summary of key improvements:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Group imports under a namespace (<code>events</code>) instead of individually
+naming each function.</p>
+</li>
+<li>
+<p>Use shorter, non-reserved local names in the controller to avoid alias
+clutter.</p>
+</li>
+<li>
+<p>Keep model, controller, and route layers clearly separated for
+testability and maintainability.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the developer handle naming conflicts with reserved keywords like "delete" when importing and exporting functions between the event model and controller files?</p>
+</li>
+<li>
+<p>What specific manual steps does the developer take to refactor the <code>events-controller</code> imports and function names to improve code readability, and why are these steps necessary despite using AI-assisted tools like Copilot?</p>
+</li>
+<li>
+<p>In what way does the developer prefer to structure imports in the events routes file for better readability, and how does this preference affect the usage of controller functions within the routes?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing_debugging_the_app">Testing &amp; Debugging The App</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The content describes setting up event routes in a Node.js app. The key steps include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Removing redundant "/events" prefixes from individual route files since the prefix is added globally in app.js.</p>
+</li>
+<li>
+<p>Importing the event routes in app.js and using <code>app.use('/events', eventsRoutes)</code> to apply the prefix.</p>
+</li>
+<li>
+<p>Running the development server with <code>npm run dev</code> and fixing an import path error for the database module.</p>
+</li>
+<li>
+<p>Testing the GET /events route, which returns an empty array initially.</p>
+</li>
+<li>
+<p>Testing the POST /events route, which creates an event without validation and returns the event ID.</p>
+</li>
+<li>
+<p>Noting that validation is not yet implemented and will be added later.</p>
+</li>
+<li>
+<p>Planning to further refine the event controllers to ensure proper event creation and validation.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, the setup works but requires additional validation and fine-tuning of the event controller logic.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_1_clean_up_your_routesevents_js">1. Clean up your <code>routes/events.js</code></h3>
+<div class="paragraph">
+<p>Since these routes live under <code>/events</code> in <code>app.js</code>, you don’t need
+to repeat that prefix here:</p>
+</div>
+<div class="paragraph">
+<p>Before (routes/events.js)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">import</span> express from <span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>;
+const router = express.Router();
+
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/events</span><span class="delimiter">'</span></span>, getAllEvents);
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/events</span><span class="delimiter">'</span></span>, createEvent);
+<span class="comment">// …etc.</span>
+
+<span class="reserved">export</span> <span class="keyword">default</span> router;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">import</span> express from <span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>;
+const router = express.Router();
+
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>,    getAllEvents);
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>,   createEvent);
+<span class="comment">// …the rest stays the same</span>
+
+<span class="reserved">export</span> <span class="keyword">default</span> router;</code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_2_hook_the_routes_into_your_main_app">2. Hook the routes into your main app</h3>
+<div class="paragraph">
+<p>In <code>app.js</code>, import and mount the cleaned-up router:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="reserved">import</span> express from <span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> eventRoutes from <span class="string"><span class="delimiter">'</span><span class="content">./routes/events.js</span><span class="delimiter">'</span></span>;
+
+const app = express();
+app.use(express.json());
+
+<span class="comment">// All “events” routes now live under /events</span>
+app.use(<span class="string"><span class="delimiter">'</span><span class="content">/events</span><span class="delimiter">'</span></span>, eventRoutes);
+
+<span class="comment">// …your error handlers, DB connection, etc.</span>
+
+<span class="reserved">export</span> <span class="keyword">default</span> app;</code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_3_fix_the_import_path_in_your_controller">3. Fix the import path in your controller</h3>
+<div class="paragraph">
+<p>If you saw an error like</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Cannot find module 'database.js' imported in event.js</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>it means the relative path is wrong. In <code>controllers/event.js</code> change:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="diff"><span class="line delete"><span class="delete">-</span> import db from './database.js';</span>
+<span class="line insert"><span class="insert">+</span> import db from '.<span class="eyecatcher">.</span>/database.js';</span></code></pre>
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_4_start_your_dev_server_and_test">4. Start your dev server and test</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">npm run dev</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_1_get_all_events">4.1 GET all events</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">curl http://localhost:3000/events
+# → []</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_2_post_create_an_event">4.2 POST (create) an event</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">curl -X POST http://localhost:3000/events \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;title&quot;:&quot;Launch Party&quot;,&quot;date&quot;:&quot;2024-07-01&quot;}'
+# → { &quot;id&quot;: 1, &quot;title&quot;:&quot;Launch Party&quot;, &quot;date&quot;:&quot;2024-07-01&quot; }</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Right now there’s no validation, so even an empty POST will create
+an event. We’ll add input validation next.
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div class="paragraph">
+<p>You’re all set! The routes are wired up, imports are fixed, and basic
+smoke-tests pass. Next step: add request validation and error handling
+in your controllers.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Why is it unnecessary to include the '/events' prefix in the individual event routes file, and where should this prefix be added instead?</p>
+</li>
+<li>
+<p>What was the cause of the "Cannot find module database.js" error when running the development server, and how was it resolved?</p>
+</li>
+<li>
+<p>What behavior occurs when sending a POST request to create an event without any validation implemented, and what does the server return in this case?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_implementing_testing_validation_with_the_inline_chat">Implementing &amp; Testing Validation With The Inline Chat</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The user wants to improve their event creation process by adding two main features: first, validating the submitted event data (title, description, address, date) before storing it in the database, ensuring fields are not empty or just blanks and that the date is valid; second, restricting access to event-related routes so only authenticated users with a valid JSON Web Token can use them. They used AI (Copilot) to add validation code that trims input, checks for empty or invalid fields, and returns error responses for invalid data. Testing showed the validation works as expected. The user acknowledges that further refinements (like max length checks) are possible but is satisfied with the current solution for the demo. The next planned steps are to add similar validation for event editing and to enforce authentication on event creation and modification routes.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_1_add_input_validation_to_create_event">1. Add Input Validation to “Create Event”</h3>
+<div class="sect3">
+<h4 id="_what_we_want">What we want</h4>
+<div class="paragraph">
+<p>Before persisting a new event to the database, ensure that:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>title</code>, <code>description</code>, <code>address</code> and <code>date</code> are present</p>
+</li>
+<li>
+<p>they’re not just whitespace</p>
+</li>
+<li>
+<p><code>date</code> is a valid date</p>
+</li>
+<li>
+<p>all strings are trimmed</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_implementation">Implementation</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Highlight your <code>POST /events</code> handler.</p>
+</li>
+<li>
+<p>Ask Copilot (or write yourself) this middleware/validation stub:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// validation.js</span>
+<span class="keyword">function</span> <span class="function">validateEvent</span>(req, res, next) {
+  const { title, description, address, date } = req.body;
+
+  <span class="comment">// Trim inputs</span>
+  const t = title?.trim();
+  const d = description?.trim();
+  const a = address?.trim();
+  const dt = date?.trim();
+
+  <span class="comment">// Check required fields</span>
+  <span class="keyword">if</span> (!t || !d || !a || !dt) {
+    <span class="keyword">return</span> res.status(<span class="integer">400</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Invalid input: all fields are required.</span><span class="delimiter">&quot;</span></span> });
+  }
+
+  <span class="comment">// Validate date</span>
+  const parsedDate = <span class="keyword">new</span> Date(dt);
+  <span class="keyword">if</span> (isNaN(parsedDate.getTime())) {
+    <span class="keyword">return</span> res.status(<span class="integer">400</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Invalid input: date must be a valid date string.</span><span class="delimiter">&quot;</span></span> });
+  }
+
+  <span class="comment">// Attach cleaned data and continue</span>
+  req.cleanedEvent = { <span class="key">title</span>: t, <span class="key">description</span>: d, <span class="key">address</span>: a, <span class="key">date</span>: parsedDate.toISOString() };
+  next();
+}
+
+module.exports = validateEvent;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Wire it up in your router:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">const express = require(<span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>);
+const validateEvent = require(<span class="string"><span class="delimiter">'</span><span class="content">./validation</span><span class="delimiter">'</span></span>);
+const { createEvent } = require(<span class="string"><span class="delimiter">'</span><span class="content">./controllers/events</span><span class="delimiter">'</span></span>);
+
+const router = express.Router();
+
+<span class="comment">// Before saving, validate</span>
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, validateEvent, async (req, res) =&gt; {
+  const eventData = req.cleanedEvent;
+  const newEvent = await createEvent(eventData);
+  res.status(<span class="integer">201</span>).json(newEvent);
+});</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_quick_tests_with_postman">Quick Tests with Postman</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Missing body</strong> → 400 “Invalid input”</p>
+</li>
+<li>
+<p><strong>Blank strings</strong> → 400</p>
+</li>
+<li>
+<p><strong>Bad date</strong> → 400</p>
+</li>
+<li>
+<p><strong>All good</strong> → 201 + event object</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_protect_event_routes_with_jwt_authentication">2. Protect Event Routes with JWT Authentication</h3>
+<div class="sect3">
+<h4 id="_goal">Goal</h4>
+<div class="paragraph">
+<p>Only allow access to create, edit, or delete event routes if the user
+presents a valid JSON Web Token.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_1_create_an_auth_middleware">1) Create an auth middleware</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js"><span class="comment">// auth.js</span>
+const jwt = require(<span class="string"><span class="delimiter">'</span><span class="content">jsonwebtoken</span><span class="delimiter">'</span></span>);
+const SECRET = process.env.JWT_SECRET;
+
+<span class="keyword">function</span> <span class="function">authenticateToken</span>(req, res, next) {
+  const authHeader = req.headers[<span class="string"><span class="delimiter">'</span><span class="content">authorization</span><span class="delimiter">'</span></span>];
+  <span class="keyword">if</span> (!authHeader) <span class="keyword">return</span> res.status(<span class="integer">401</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Token missing</span><span class="delimiter">'</span></span> });
+
+  const token = authHeader.split(<span class="string"><span class="delimiter">'</span><span class="content"> </span><span class="delimiter">'</span></span>)[<span class="integer">1</span>]; <span class="comment">// Expect “Bearer &lt;token&gt;”</span>
+  jwt.verify(token, SECRET, (err, user) =&gt; {
+    <span class="keyword">if</span> (err) <span class="keyword">return</span> res.status(<span class="integer">403</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Invalid token</span><span class="delimiter">'</span></span> });
+    req.user = user;
+    next();
+  });
+}
+
+module.exports = authenticateToken;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_2_apply_to_sensitive_routes">2) Apply to sensitive routes</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">const authenticateToken = require(<span class="string"><span class="delimiter">'</span><span class="content">./auth</span><span class="delimiter">'</span></span>);
+
+<span class="comment">// Only authenticated users can create, update, delete</span>
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, authenticateToken, validateEvent, createHandler);
+router.put(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, authenticateToken, validateEvent, updateHandler);
+router.<span class="keyword">delete</span>(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, authenticateToken, deleteHandler);
+
+<span class="comment">// Public: list and view</span>
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, listHandler);
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, detailHandler);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_3_verify">3) Verify</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>No token</strong> → 401 Unauthorized</p>
+</li>
+<li>
+<p><strong>Bad token</strong> → 403 Forbidden</p>
+</li>
+<li>
+<p><strong>Good token</strong> + valid body → 201 / 200</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>With these two steps, your event‐creation API is now both robust
+(validated input) and secure (JWT-protected). From here you can refine
+further—e.g. enforce max lengths, sanitize HTML, add role-based checks,
+etc.—but the core pattern is in place.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the described validation process ensure that event data fields like title, description, address, and date are not only non-empty but also properly formatted before storing in the database?</p>
+</li>
+<li>
+<p>What specific approach is used to handle and respond to invalid input data during event creation, and how does trimming whitespace contribute to data integrity?</p>
+</li>
+<li>
+<p>In the context of this event creation flow, how is user authentication planned to be integrated with JSON Web Tokens to restrict access to event-related routes, especially for creating or editing events?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-17 13:13:08 +0300
+Last updated 2025-05-18 14:08:07 +0300
 </div>
 </div>
 </body>

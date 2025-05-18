@@ -1,0 +1,48 @@
+= Diagram - Chapter 5. Practice Project: Creating a REST API with AI
+
+See link:udemy_copilot_ch5.html[Chapter 5. Practice Project: Creating a REST API with AI]
+
+++++
+<div class="mermaid">
+sequenceDiagram
+    participant Client
+    participant API
+    participant UserModel
+    participant Database
+
+    %% User Creation Flow
+    rect rgb(200, 220, 240)
+        Note over Client,Database: User Creation Flow
+        Client->>API: POST /api/users
+        Note right of Client: {email, password}
+        API->>UserModel: createUser(data)
+        UserModel->>UserModel: Validate email format
+        UserModel->>Database: Check if email exists
+        Database-->>UserModel: Email status
+        UserModel->>UserModel: Validate password
+        UserModel->>UserModel: Hash password
+        UserModel->>Database: Insert user
+        Database-->>UserModel: User created
+        UserModel-->>API: Return user (without password)
+        API-->>Client: 201 Created
+    end
+
+    %% User Login Flow
+    rect rgb(220, 240, 200)
+        Note over Client,Database: User Login Flow
+        Client->>API: POST /api/auth/login
+        Note right of Client: {email, password}
+        API->>UserModel: authenticateUser(data)
+        UserModel->>Database: Get user by email
+        Database-->>UserModel: User data
+        UserModel->>UserModel: Verify password
+        UserModel-->>API: Return authenticated user
+        API-->>Client: 200 OK with token
+    end
+</div>
+++++
+
+++++
+<script src="http://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+++++
