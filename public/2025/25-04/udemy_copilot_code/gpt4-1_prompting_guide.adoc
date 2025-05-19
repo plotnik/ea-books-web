@@ -1,0 +1,62 @@
+= GPT-4.1 Prompting Guide
+:icons: font
+
+https://cookbook.openai.com/examples/gpt4-1_prompting_guide
+
+The GPT-4.1 family of models offers significant improvements over GPT-4o in coding, instruction following, and handling long context inputs. This prompting guide consolidates best practices and tips from extensive internal testing to help developers maximize GPT-4.1’s capabilities.
+
+Key points include:
+
+1. **Agentic Workflows**
+   - GPT-4.1 excels at autonomous, multi-step problem solving (agentic workflows), achieving state-of-the-art results on coding benchmarks like SWE-bench Verified.
+   - Recommended system prompt reminders for agents:
+     - **Persistence:** Keep working until the problem is fully solved before ending the turn.
+     - **Tool-calling:** Use tools to gather information instead of guessing.
+     - **Planning (optional):** Explicitly plan and reflect before and after tool calls to improve reasoning.
+   - Use the API’s `tools` field to pass tool definitions rather than embedding tool descriptions in prompts, improving tool usage accuracy.
+   - Example agent prompt for SWE-bench Verified includes detailed step-by-step problem-solving workflow, emphasizing thorough understanding, incremental changes, debugging, rigorous testing, and reflection.
+
+2. **Long Context Handling**
+   - GPT-4.1 supports up to 1 million tokens of input context, enabling complex tasks like document parsing, re-ranking, and multi-hop reasoning.
+   - Performance is strong even with mixed relevant and irrelevant context, but complex reasoning over very large contexts may degrade.
+   - Prompt instructions should be placed both before and after the context for best results.
+   - Developers can tune how much the model relies on external context versus its internal knowledge by explicit instructions.
+
+3. **Chain of Thought (CoT)**
+   - GPT-4.1 is not inherently a reasoning model but can be prompted to “think step by step” to improve problem decomposition and output quality.
+   - Simple CoT prompts can boost performance, and more explicit instructions can address systematic reasoning errors.
+
+4. **Instruction Following**
+   - GPT-4.1 follows instructions more literally and closely than predecessors, requiring explicit and clear instructions.
+   - Recommended workflow for prompt development: start with high-level rules, add detailed sections for specific behaviors, specify ordered steps, and add examples if needed.
+   - Avoid conflicting or underspecified instructions; instructions closer to the end of the prompt tend to take precedence.
+   - Common failure modes include hallucinated tool calls if insufficient info is provided, repetitive phrasing from sample phrases, and overly verbose responses without constraints.
+
+5. **General Prompting Advice**
+   - Structure prompts with clear roles, objectives, instructions, reasoning steps, output formats, and examples.
+   - Use markdown headings for sections and inline code blocks for code snippets. XML can be effective for nested structured data; JSON is less effective for large document sets.
+   - For very long outputs or repetitive tasks, explicitly instruct the model to produce full output and consider concise approaches.
+   - Parallel tool calls may sometimes be unreliable; consider disabling parallel calls if issues arise.
+
+6. **Diff Generation and Patch Application**
+   - GPT-4.1 has improved capabilities for generating and applying code diffs.
+   - A recommended human-readable V4A diff format is provided, which avoids line numbers and uses clear context lines and chunk markers.
+   - A reference Python implementation of an `apply_patch` utility is included, enabling safe application of patches in this format.
+   - Alternative diff formats like SEARCH/REPLACE and pseudo-XML are also effective.
+
+7. **Example Prompts**
+   - Detailed example prompts for agentic coding workflows (SWE-bench Verified) and customer service agents demonstrate best practices in instruction clarity, tool usage, stepwise reasoning, and output formatting.
+
+Overall, GPT-4.1’s improvements enable more literal instruction following, better tool integration, and handling of very long contexts, but require careful prompt design with explicit instructions, planning prompts, and structured workflows to fully leverage its capabilities. The guide encourages iterative prompt engineering with evals to optimize performance for specific use cases.
+
+---
+
+[CAUTION]
+====
+1. How do the three specific system prompt reminders—Persistence, Tool-calling, and Planning—transform GPT-4.1’s behavior in agentic workflows, and what measurable impact do they have on performance benchmarks like SWE-bench Verified?
+
+2. What is the recommended method for passing tools to GPT-4.1 in API requests to maximize tool-calling accuracy and model performance, and why is this preferred over manually injecting tool descriptions into prompts?
+
+3. In the provided SWE-bench Verified sample prompt for GPT-4.1, what are the detailed step-by-step problem-solving strategies and workflow instructions that ensure the model iterates thoroughly and tests code rigorously before concluding a fix is complete?
+====
+

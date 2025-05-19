@@ -1743,3 +1743,708 @@ etc.—but the core pattern is in place.
 
 3. In the context of this event creation flow, how is user authentication planned to be integrated with JSON Web Tokens to restrict access to event-related routes, especially for creating or editing events?
 ====
+
+== Protecting Event Routes With User Authentication
+
+[NOTE]
+====
+The content describes adding validation to a new route, similar to previous event creation checks, using GitHub Copilot to assist with code updates. The next step involves protecting certain event routes so only authenticated users can access them. This is done using a utility function, verifyToken, located in an auth.js file, which validates tokens attached to incoming requests.
+
+Additionally, a new utility function is introduced that extracts the token from the authorization header (following the "Bearer token" convention), verifies it using verifyToken, and either returns an error if invalid or stores the decoded user data (ID and email) in the request object. This function acts as middleware to authenticate requests before allowing access to route handlers, ensuring only requests with valid tokens proceed, while invalid ones receive error responses.
+====
+
+Here’s a more concise, structured write-up of what you’re doing and why,
+with a clear separation of concerns and some sample code snippets.
+
+[arabic]
+. Add Validation to Your New Route
+* Highlight the route in your code editor.
+* Invoke GitHub Copilot (or any other autocomplete tool) to “Add
+validation here.”
+* Ensure it mirrors the same checks you already implemented when
+creating an event (e.g., required fields, types, value ranges).
+* Review the generated code, tweak as needed, and commit.
+. Protect Event Routes with Authentication +
+We want only authenticated users to access certain endpoints. We’ll
+build a small middleware in `+utils/auth.js+`:
++
+[source,javascript]
+----
+// utils/auth.js
+const { verifyToken } = require('./tokenUtils'); // your existing token verifier
+
+/**
+ * Middleware that:
+ * 1) Parses the Bearer token from Authorization header.
+ * 2) Verifies and decodes it.
+ * 3) Attaches decoded user data to req.user.
+ * 4) Calls next() or returns 401 on failure.
+ */
+function authenticate(req, res, next) {
+  const authHeader = req.headers.authorization || '';
+  const [scheme, token] = authHeader.split(' ');
+
+  if (scheme !== 'Bearer' || !token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  try {
+    const decoded = verifyToken(token); // throws if invalid
+    // decoded contains { id, email } based on how you signed it
+    req.user = { id: decoded.id, email: decoded.email };
+    next(); // move on to the next middleware/route handler
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+}
+
+module.exports = { authenticate };
+----
+. Apply the Middleware to Protected Routes +
+In your route definitions (e.g. `+routes/events.js+`), import and use
+the `+authenticate+` middleware:
++
+[source,javascript]
+----
+const express = require('express');
+const { authenticate } = require('../utils/auth');
+const router = express.Router();
+
+// Public route—anyone can list events
+router.get('/', listEvents);
+
+// Protected routes—only logged-in users
+router.post('/', authenticate, createEvent);
+router.put('/:id', authenticate, updateEvent);
+router.delete('/:id', authenticate, deleteEvent);
+
+module.exports = router;
+----
+. How It All Works
+* *verifyToken*: Checks token signature and expiration. If invalid, it
+throws.
+* *authenticate*:
+[arabic]
+.. Extracts the token from the `+Authorization: Bearer <token>+` header.
+.. Calls `+verifyToken(token)+`.
+.. On success, attaches user info (`+id+` and `+email+`) to
+`+req.user+`.
+.. Calls `+next()+`, allowing the actual route handler to run.
+.. On failure, returns a 401 Unauthorized response.
+
+With this in place, your event-related routes will only run if the
+request carries a valid JWT.
+
+[CAUTION]
+====
+1. How does the custom `authenticate` middleware function extract and verify the JWT token from an incoming HTTP request's headers in this specific implementation?
+
+2. What user information is decoded from the JWT token and stored in the request object for downstream middleware or route handlers to use?
+
+3. How does the `authenticate` middleware control the flow of request handling when a token is valid versus when it is invalid or missing?
+====
+
+== Testing Authentication
+
+[NOTE]
+====
+The summary explains how to selectively protect certain Express.js event routes (specifically create, update, and delete) using an authentication middleware called `authenticate`. The middleware is applied only to POST, PUT, and DELETE routes, while GET routes remain publicly accessible.
+
+Key points:
+
+- GET requests to `/events` and `/events/:id` work without authentication and return event data.
+- POST requests to `/events` require a valid bearer token in the authorization header; otherwise, they fail.
+- Tokens are obtained by logging in or creating a user, then copying the returned token into the authorization header.
+- PUT requests to `/events/:id` allow updating event data but require authentication.
+- DELETE requests to `/events/:id` allow deleting events and also require authentication.
+- Testing confirms that unauthorized requests fail, while authorized requests succeed.
+- Image upload functionality is not yet implemented.
+- The implementation was assisted by GitHub Copilot along with manual coding.
+====
+
+Here’s a cleaned-up, step-by-step guide showing how to protect only your
+“write” routes (POST, PUT, DELETE) with an `+authenticate+` middleware
+in Express, while leaving GETs open, and how to test everything with
+Postman.
+
+[arabic]
+. Import and apply the middleware +
+In your routes file (e.g. `+events.js+`), do something like:
++
+[source,js]
+----
+const express     = require('express')
+const router      = express.Router()
+const authenticate = require('../middleware/authenticate')
+const Events      = require('../models/event')
+
+// Public routes (no auth)
+router.get('/', async (req, res) => {
+  const events = await Events.find()
+  res.json(events)
+})
+
+router.get('/:id', async (req, res) => {
+  const ev = await Events.findById(req.params.id)
+  if (!ev) return res.status(404).send('Not found')
+  res.json(ev)
+})
+
+// Protected routes (require valid JWT in Authorization header)
+router.post('/', authenticate, async (req, res) => {
+  const newEvent = await Events.create(req.body)
+  res.status(201).json(newEvent)
+})
+
+router.put('/:id', authenticate, async (req, res) => {
+  const updated = await Events.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  if (!updated) return res.status(404).send('Not found')
+  res.json(updated)
+})
+
+router.delete('/:id', authenticate, async (req, res) => {
+  const deleted = await Events.findByIdAndDelete(req.params.id)
+  if (!deleted) return res.status(404).send('Not found')
+  res.sendStatus(204)
+})
+
+module.exports = router
+----
+. Start your server
++
+[source,bash]
+----
+node index.js
+# or
+npm start
+----
+. Test with Postman (or any REST client)
++
+A. GET all events (no token needed)
++
+....
+GET http://localhost:3000/events
+→ 200 OK
+→ body: [ … existing events … ]
+....
++
+B. GET one event (no token needed)
++
+....
+GET http://localhost:3000/events/1
+→ 200 OK
+→ body: { id: 1, title: '…', … }
+....
++
+C. POST new event without auth → fails
++
+....
+POST http://localhost:3000/events
+Headers: none
+Body (JSON): { title: 'Test', … }
+→ 401 Unauthorized
+→ { error: 'Missing authorization header' }
+....
++
+D. Obtain a token
+[arabic]
+.. Sign up or log in:
++
+....
+POST http://localhost:3000/auth/login
+Body: { email: 'foo@bar.com', password: '1234' }
+→ 200 OK
+→ { token: 'eyJhbGciO…' }
+....
+.. Copy the token string.
++
+E. POST new event with token → succeeds
++
+....
+POST http://localhost:3000/events
+Headers:
+  Authorization: Bearer eyJhbGciO…
+Body (JSON):
+  {
+    "title": "My New Event",
+    "description": "…",
+    "location": "Main Hall",
+    "date": "2024-07-01T18:00:00Z"
+  }
+→ 201 Created
+→ { id: 3, title: 'My New Event', … }
+....
++
+F. PUT (update) an event
++
+....
+PUT http://localhost:3000/events/3
+Headers:
+  Authorization: Bearer eyJhbGciO…
+Body (JSON):
+  {
+    "title": "Updated Title",
+    "location": "Room 101",
+    "date": "2024-07-02T19:00:00Z"
+  }
+→ 200 OK
+→ { id: 3, title: 'Updated Title', … }
+....
++
+G. DELETE an event
++
+....
+DELETE http://localhost:3000/events/3
+Headers:
+  Authorization: Bearer eyJhbGciO…
+→ 204 No Content
+....
++
+H. Verify deletion
++
+....
+GET http://localhost:3000/events
+→ 200 OK
+→ [ … events without the deleted one … ]
+....
+. What’s next?
+* Add request-body validation (e.g. with Joi or express-validator)
+* Implement file/image uploads if needed (e.g. Multer + Cloud storage)
+* Handle edge cases & error formatting consistently
+
+With just one `+authenticate+` middleware and a couple of route tweaks,
+you now require valid JWTs for all create/update/delete operations while
+leaving read-only endpoints publicly accessible.
+
+[CAUTION]
+====
+1. How can you selectively apply authentication middleware in Express.js routes to protect only event creation, updating, and deletion, while leaving event retrieval routes publicly accessible?
+
+2. What is the exact process to test the authentication-protected POST, PUT, and DELETE event routes using authorization headers and bearer tokens in a local Express.js server setup?
+
+3. How can you verify that an event was successfully updated or deleted through authenticated PUT and DELETE requests, and what specific HTTP requests and headers are involved in this verification?
+====
+
+== Adding Role Based Authorization To The Update & Delete Routes
+
+[NOTE]
+====
+The key topics and entities discussed are:
+
+- **Event-related routes and authentication**: Ensuring only logged-in users can create, edit, or delete events.
+- **Authorization check enhancement**: Adding logic so only the user who created an event can edit or delete it.
+- **Database schema update**: Adding a `userId` field to the events table to store the creator's user ID, with a foreign key reference to the users table.
+- **Model update**: Modifying the event creation logic in the event model (`event.js`) to store the user ID when creating an event.
+- **Controller update**: Adjusting the events controller (`events controller.js`) to pass the user ID from the authenticated request to the event creation function.
+- **Authentication middleware**: Using the `auth.js` file where the decoded user info is attached to the request object (`req.user`).
+- **Authorization checks in controller functions**: Adding checks in the edit and delete functions to verify that the logged-in user matches the event creator before allowing modifications.
+- **Error handling improvements**: Returning appropriate HTTP status codes and messages, such as 404 if event not found and 500 if deletion fails.
+- **Use of AI tools**: Leveraging GitHub Copilot to generate and suggest code changes for these updates.
+
+Overall, the focus is on implementing proper user-based authorization for event management in a web application by updating the database schema, models, controllers, and middleware accordingly.
+====
+
+Here’s a cleaned-up, step-by-step summary of what we did to ensure that
+only the creator of an event can edit or delete it:
+
+[arabic]
+. Add a creator reference to your Event model
+* In your database schema (e.g. `+database.js+` or migration file), add
+a `+userId+` column to the `+events+` table. +
+• Type: INTEGER +
+• Foreign key → `+users.id+`
+* This lets us know which user created each event.
+. Persist the creator ID on event creation
+* In `+models/event.js+`, update the `+createEvent+` function (or
+wherever you build the new event object) to expect and store a
+`+userId+` field.
+* In `+controllers/eventsController.js+` (the “create” route): • Extract
+`+req.user.id+` (populated by your authentication middleware). +
+• Pass that `+id+` as `+userId+` into the call to `+createEvent+`.
+. Protect the “update” and “delete” routes +
+In both `+controllers/eventsController.js+` functions (`+editEvent+` and
+`+deleteEvent+`):
++
+{empty}a. Fetch the event by its ID (e.g. with
+`+getEventById(eventId)+`). +
+b. If no event is found, return 404. +
+c. Compare `+event.userId+` against the `+req.user.id+` of the currently
+logged-in user. +
+• If they don’t match, return 403 Forbidden (or a 400 error with a
+message like “You are not allowed to modify this event”). +
+d. If they do match, proceed with the update or deletion.
+. Example flow in “editEvent”:
++
+[source,js]
+----
+async function editEvent(req, res) {
+  const { id } = req.params;
+  const event = await Event.getEventById(id);
+  if (!event) {
+    return res.status(404).json({ message: "Event not found" });
+  }
+  if (event.userId !== req.user.id) {
+    return res.status(403).json({ message: "Not authorized to edit this event" });
+  }
+  // ...validate input, then update...
+}
+----
+. Example flow in “deleteEvent”:
++
+[source,js]
+----
+async function deleteEvent(req, res) {
+  const { id } = req.params;
+  const event = await Event.getEventById(id);
+  if (!event) {
+    return res.status(404).json({ message: "Event not found" });
+  }
+  if (event.userId !== req.user.id) {
+    return res.status(403).json({ message: "Not authorized to delete this event" });
+  }
+  const deleted = await Event.deleteById(id);
+  if (!deleted) {
+    return res.status(500).json({ message: "Failed to delete event" });
+  }
+  return res.status(200).json({ message: "Event deleted successfully" });
+}
+----
+
+That covers:
+
+• Database change to track the creator +
+• Passing the user’s ID into `+createEvent+` +
+• Guarding your edit/delete controllers so only the owner can modify or
+remove their events.
+
+With those checks in place, you can be confident that one user can’t
+tamper with another user’s events.
+
+[CAUTION]
+====
+1. In the described implementation, where exactly in the `events-controller.js` file is the user ID check added to ensure only the creator can edit an event, and what sequence of operations does this check follow before allowing the update?
+
+2. How is the user ID propagated from the authentication token to the event creation process, including the specific files and properties involved in extracting and passing this user ID?
+
+3. What specific database schema change was made to the events table to support ownership checks, and how does the foreign key constraint relate the events table to the users table?
+====
+
+== Testing Authorization
+
+[NOTE]
+====
+The user tested their app's authorization by deleting the database, restarting the server, and reinitializing it. They created a new user and received a token, then posted a new event. Next, they created a second user with a different token and tried to edit and delete the first user's event, which correctly resulted in a "forbidden" error due to lack of authorization. Finally, using the original creator's token, they successfully edited the event. This confirmed that the app properly restricts event modifications to the user who created them.
+====
+
+Here’s a more concise, structured walkthrough of the authorization test
+you described:
+
+[arabic]
+. Reset the database +
+• Delete the existing database file. +
+• Restart the server:
++
+[source,bash]
+----
+npm run dev
+----
+. Create the first user +
+• POST to `+/signup+` with dummy credentials. +
+• Store the returned token (tokenA).
+. Verify no events exist +
+• GET `+/events+` with `+Authorization: Bearer tokenA+` +
+• Response should be an empty array.
+. Create a new event +
+• POST `+/events+` with the same dummy data and
+`+Authorization: Bearer tokenA+` +
+• Server responds with the created event (e.g. `+{ id: 1, … }+`).
+. Create a second user +
+• POST to `+/signup+` with a different email (e.g. test2@example.com). +
+• Store the returned token (tokenB).
+. Attempt unauthorized modifications +
+• PUT `+/events/1+` with `+Authorization: Bearer tokenB+` → 403
+Forbidden +
+• DELETE `+/events/1+` with `+Authorization: Bearer tokenB+` → 403
+Forbidden
++
+These confirm that only the creator can update or delete an event.
+. Confirm authorized update +
+• Reuse tokenA (first user) and PUT `+/events/1+` with updated data. +
+• Should return 200 OK and the updated event. +
+• GET `+/events+` with tokenA to verify the changes.
+
+Result: Authorization is enforced correctly—only the user who created an
+event may edit or delete it.
+
+[CAUTION]
+====
+1. What specific steps are taken to verify that only the user who created an event can edit or delete it in this application?
+
+2. How does the application handle token usage when multiple users attempt to modify the same event, and what error message is returned if unauthorized?
+
+3. After deleting the database file and restarting the server, what sequence of API requests is used to recreate users and test event creation and authorization?
+====
+
+== Adding POST Routes with Suggestions For Registering & Unregistering Events
+
+Here’s a more concise, step-by-step guide for adding
+“register”/“unregister” functionality to your events API. I’ve broken it
+into logical sections, included code snippets, and omitted incidental
+details about Copilot so you can follow the core steps more easily.
+
+[arabic]
+. Define the Routes (routes/events.js) +
+Add two new POST routes, `+/events/:id/register+` and
+`+/events/:id/unregister+`. Make sure your `+authenticate+` middleware
+runs first so you have access to `+req.userId+`.
++
+[source,js]
+----
+const express = require('express');
+const { authenticate } = require('../middleware/authenticate');
+const {
+  createEvent,
+  listEvents,
+  getEvent,
+  updateEvent,
+  deleteEvent,
+  registerForEvent,
+  unregisterFromEvent
+} = require('../controllers/eventsController');
+
+const router = express.Router();
+
+router.post('/', authenticate, createEvent);
+router.get('/', listEvents);
+router.get('/:id', getEvent);
+router.put('/:id', authenticate, updateEvent);
+router.delete('/:id', authenticate, deleteEvent);
+
+// New registration routes
+router.post('/:id/register', authenticate, registerForEvent);
+router.post('/:id/unregister', authenticate, unregisterFromEvent);
+
+module.exports = router;
+----
+. Implement Controller Functions (`controllers/events-controller.js`) +
+At the bottom of your `+events-controller.js+`, add two new exports:
+`+registerForEvent+` and `+unregisterFromEvent+`. Each one looks up the
+event, then inserts or deletes a row in a `+registrations+` table
+relating `+eventId+` and `+userId+`.
++
+[source,js]
+----
+const db = require('../db');  // your database client
+
+// POST /events/:id/register
+exports.registerForEvent = async (req, res) => {
+  const eventId = parseInt(req.params.id, 10);
+  const userId = req.userId;
+
+  // Check event exists
+  const event = await db.query('SELECT * FROM events WHERE id = $1', [eventId]);
+  if (!event.rows.length) {
+    return res.status(404).json({ error: 'Event not found' });
+  }
+
+  try {
+    await db.query(
+      'INSERT INTO registrations (event_id, user_id) VALUES ($1, $2)',
+      [eventId, userId]
+    );
+    res.status(201).json({ message: 'Registered successfully' });
+  } catch (err) {
+    // Handle unique-constraint violation if already registered
+    if (err.code === '23505') {
+      return res.status(400).json({ error: 'Already registered' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Registration failed' });
+  }
+};
+
+// POST /events/:id/unregister
+exports.unregisterFromEvent = async (req, res) => {
+  const eventId = parseInt(req.params.id, 10);
+  const userId = req.userId;
+
+  const result = await db.query(
+    'DELETE FROM registrations WHERE event_id = $1 AND user_id = $2',
+    [eventId, userId]
+  );
+
+  if (result.rowCount === 0) {
+    return res.status(404).json({ error: 'Registration not found' });
+  }
+  res.status(200).json({ message: 'Unregistered successfully' });
+};
+----
+. Create the `+registrations+` Table (db/database.js or your
+migration) +
+Ensure you have a `+registrations+` table with a composite unique key on
+`+(event_id, user_id)+` and foreign keys to both `+events+` and
+`+users+`.
++
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS registrations (
+  id SERIAL PRIMARY KEY,
+  event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE (event_id, user_id)
+);
+----
++
+If you’re using a migration tool, put that SQL into a new migration
+file. If you’re initializing the schema manually in `+database.js+`,
+just include it with your other `+CREATE TABLE IF NOT EXISTS+`
+statements.
+. Restart & Test
+[arabic]
+.. Restart your server so any schema changes take effect.
+.. Use a tool like Postman or cURL to:
+* POST `+/events/:id/register+` → should return 201 on success.
+* POST `+/events/:id/unregister+` → should return 200 on success.
+* Verify duplicate registration returns 400, and unregistering a
+non-existent registration returns 404.
+
+That’s it! You now have full register/unregister capabilities on your
+events resource.
+
+== Testing & Fixing Event Registration & Unregistration
+
+[NOTE]
+====
+The user describes implementing event registration and unregistration functionality in a web app. They log in with a second user and create POST and DELETE requests to register and unregister for an event by targeting routes like `/event/1/register` and `/event/1/unregister`. The event ID is passed via the URL, and the user ID is extracted from an authorization token in the request header.
+
+Initially, the registration code fails due to a missing database reference because database operations were handled in a separate model file (`event.js`). The user refactors the code by moving the register/unregister database functions into the model file and importing them into the controller. This separation keeps database logic centralized.
+
+After refactoring, registration and unregistration requests work correctly, returning success or failure based on the user's registration status. The user notes that while duplicate registrations or unregistering when not registered could be prevented with extra checks, they keep the app simple and functional as is. Overall, the process demonstrates setting up authenticated event registration endpoints with proper separation of concerns between controller and model layers.
+====
+
+I'll log in with my second user again—though technically, this isn’t
+required. I could also sign up for my own events. You could add code to
+prevent users from registering for their own events, but here I’m fine
+with allowing it.
+
+Now, using the second user, I’ll create a new *POST* request targeting:
+
+....
+http://localhost:3000/event/1/register
+....
+
+I'll add my authorization header with the format:
+
+....
+Authorization: Bearer <token>
+....
+
+Since the event ID is encoded in the URL and the token in the header, I
+don’t need to send any extra request body. This is all that the route
+and the controller function require.
+
+=== How the Register Controller Works
+
+* The controller extracts the event ID from the URL parameters.
+* It retrieves the user ID from the `+request+` object, which the
+authentication middleware previously populated by decoding the token.
+* This setup should, in theory, work perfectly.
+
+=== Encountering an Error
+
+When I send the request, I get an error:
+
+....
+getDatabase is not defined
+....
+
+This happens because the register functionality is trying to access the
+database in the *events controller JS file*, but in my current
+structure, all other database interactions are located in the *event.js*
+file inside the `+models+` folder.
+
+To fix this, I want to avoid duplicating database logic or mixing
+concerns. Instead of putting database code in the controller, I’ll add
+the relevant functions to the `+event.js+` model file.
+
+=== Adding Database Functions
+
+Inside the `+models/event.js+` file, I’ll add two functions:
+
+* `+registerUserForEvent+`
+* `+unregisterUserFromEvent+`
+
+Thankfully, GitHub Copilot helps me with good implementation suggestions
+for these.
+
+=== Updating the Controller Functions
+
+Back in the controller, instead of accessing the database directly, I’ll
+call these imported model functions:
+
+[source,javascript]
+----
+const { registerUserForEvent, unregisterUserFromEvent } = require('../models/event');
+
+// In register controller:
+const success = await registerUserForEvent(eventId, userId);
+
+// In unregister controller:
+const success = await unregisterUserFromEvent(eventId, userId);
+----
+
+Both functions return a boolean indicating success.
+
+=== Testing the Changes
+
+After saving these updates:
+
+* Sending the *register* request again now returns
+`+"Registered successfully"+`.
+* Sending it again doesn’t cause issues, but doesn’t make much logical
+sense (registering twice).
+** We could prevent duplicate registration, but to keep the example
+simple, I’m not adding that now.
+
+'''''
+
+Next, I add a *DELETE* request to unregister:
+
+....
+DELETE http://localhost:3000/event/1/unregister
+....
+
+With the same `+Authorization+` header.
+
+Since unregistering can be considered deleting a registration, using a
+DELETE method is appropriate. After sending this request, the response
+confirms successful unregistration.
+
+If I send the DELETE request repeatedly, eventually I’ll get
+`+"Unregistration failed"+` because I’m no longer registered—this is
+expected behavior.
+
+'''''
+
+=== Summary
+
+* Moved database logic out of the controller into model functions to
+keep code organized.
+* Used proper HTTP methods (`+POST+` for register, `+DELETE+` for
+unregister).
+* Managed token-based authentication with middleware and accessed user
+info accordingly.
+* Added simple success/failure flags to handle responses.
+* Kept the app simple, but it can be enhanced later with additional
+validations (e.g., prevent duplicate registrations).
+
+This setup now works as intended.
+
+[CAUTION]
+====
+1. How does the authentication middleware contribute to identifying the user in the event registration and unregistration process described?
+
+2. Why was it necessary to move the database-related functions for registering and unregistering users from the controller file to the event model file, and how does this affect the code structure?
+
+3. What is the rationale behind using a DELETE HTTP request for unregistering a user from an event, and how is this implemented in the described API routes?
+====

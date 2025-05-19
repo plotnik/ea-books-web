@@ -597,6 +597,21 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </li>
 </ul>
 </li>
+<li><a href="#_protecting_event_routes_with_user_authentication">Protecting Event Routes With User Authentication</a></li>
+<li><a href="#_testing_authentication">Testing Authentication</a></li>
+<li><a href="#_adding_role_based_authorization_to_the_update_delete_routes">Adding Role Based Authorization To The Update &amp; Delete Routes</a></li>
+<li><a href="#_testing_authorization">Testing Authorization</a></li>
+<li><a href="#_adding_post_routes_with_suggestions_for_registering_unregistering_events">Adding POST Routes with Suggestions For Registering &amp; Unregistering Events</a></li>
+<li><a href="#_testing_fixing_event_registration_unregistration">Testing &amp; Fixing Event Registration &amp; Unregistration</a>
+<ul class="sectlevel2">
+<li><a href="#_how_the_register_controller_works">How the Register Controller Works</a></li>
+<li><a href="#_encountering_an_error">Encountering an Error</a></li>
+<li><a href="#_adding_database_functions">Adding Database Functions</a></li>
+<li><a href="#_updating_the_controller_functions">Updating the Controller Functions</a></li>
+<li><a href="#_testing_the_changes">Testing the Changes</a></li>
+<li><a href="#_summary">Summary</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -3812,10 +3827,1221 @@ etc.—but the core pattern is in place.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_protecting_event_routes_with_user_authentication">Protecting Event Routes With User Authentication</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The content describes adding validation to a new route, similar to previous event creation checks, using GitHub Copilot to assist with code updates. The next step involves protecting certain event routes so only authenticated users can access them. This is done using a utility function, verifyToken, located in an auth.js file, which validates tokens attached to incoming requests.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, a new utility function is introduced that extracts the token from the authorization header (following the "Bearer token" convention), verifies it using verifyToken, and either returns an error if invalid or stores the decoded user data (ID and email) in the request object. This function acts as middleware to authenticate requests before allowing access to route handlers, ensuring only requests with valid tokens proceed, while invalid ones receive error responses.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here’s a more concise, structured write-up of what you’re doing and why,
+with a clear separation of concerns and some sample code snippets.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add Validation to Your New Route</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Highlight the route in your code editor.</p>
+</li>
+<li>
+<p>Invoke GitHub Copilot (or any other autocomplete tool) to “Add
+validation here.”</p>
+</li>
+<li>
+<p>Ensure it mirrors the same checks you already implemented when
+creating an event (e.g., required fields, types, value ranges).</p>
+</li>
+<li>
+<p>Review the generated code, tweak as needed, and commit.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Protect Event Routes with Authentication<br>
+We want only authenticated users to access certain endpoints. We’ll
+build a small middleware in <code>utils/auth.js</code>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="comment">// utils/auth.js</span>
+const { verifyToken } = require(<span class="string"><span class="delimiter">'</span><span class="content">./tokenUtils</span><span class="delimiter">'</span></span>); <span class="comment">// your existing token verifier</span>
+
+<span class="comment">/**
+ * Middleware that:
+ * 1) Parses the Bearer token from Authorization header.
+ * 2) Verifies and decodes it.
+ * 3) Attaches decoded user data to req.user.
+ * 4) Calls next() or returns 401 on failure.
+ */</span>
+<span class="keyword">function</span> <span class="function">authenticate</span>(req, res, next) {
+  const authHeader = req.headers.authorization || <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>;
+  const [scheme, token] = authHeader.split(<span class="string"><span class="delimiter">'</span><span class="content"> </span><span class="delimiter">'</span></span>);
+
+  <span class="keyword">if</span> (scheme !== <span class="string"><span class="delimiter">'</span><span class="content">Bearer</span><span class="delimiter">'</span></span> || !token) {
+    <span class="keyword">return</span> res.status(<span class="integer">401</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">No token provided</span><span class="delimiter">'</span></span> });
+  }
+
+  <span class="keyword">try</span> {
+    const decoded = verifyToken(token); <span class="comment">// throws if invalid</span>
+    <span class="comment">// decoded contains { id, email } based on how you signed it</span>
+    req.user = { <span class="key">id</span>: decoded.id, <span class="key">email</span>: decoded.email };
+    next(); <span class="comment">// move on to the next middleware/route handler</span>
+  } <span class="keyword">catch</span> (err) {
+    <span class="keyword">return</span> res.status(<span class="integer">401</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Invalid or expired token</span><span class="delimiter">'</span></span> });
+  }
+}
+
+module.exports = { authenticate };</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Apply the Middleware to Protected Routes<br>
+In your route definitions (e.g. <code>routes/events.js</code>), import and use
+the <code>authenticate</code> middleware:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">const express = require(<span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>);
+const { authenticate } = require(<span class="string"><span class="delimiter">'</span><span class="content">../utils/auth</span><span class="delimiter">'</span></span>);
+const router = express.Router();
+
+<span class="comment">// Public route—anyone can list events</span>
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, listEvents);
+
+<span class="comment">// Protected routes—only logged-in users</span>
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, authenticate, createEvent);
+router.put(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, authenticate, updateEvent);
+router.<span class="keyword">delete</span>(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, authenticate, deleteEvent);
+
+module.exports = router;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>How It All Works</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>verifyToken</strong>: Checks token signature and expiration. If invalid, it
+throws.</p>
+</li>
+<li>
+<p><strong>authenticate</strong>:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Extracts the token from the <code>Authorization: Bearer &lt;token&gt;</code> header.</p>
+</li>
+<li>
+<p>Calls <code>verifyToken(token)</code>.</p>
+</li>
+<li>
+<p>On success, attaches user info (<code>id</code> and <code>email</code>) to
+<code>req.user</code>.</p>
+</li>
+<li>
+<p>Calls <code>next()</code>, allowing the actual route handler to run.</p>
+</li>
+<li>
+<p>On failure, returns a 401 Unauthorized response.</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>With this in place, your event-related routes will only run if the
+request carries a valid JWT.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the custom <code>authenticate</code> middleware function extract and verify the JWT token from an incoming HTTP request&#8217;s headers in this specific implementation?</p>
+</li>
+<li>
+<p>What user information is decoded from the JWT token and stored in the request object for downstream middleware or route handlers to use?</p>
+</li>
+<li>
+<p>How does the <code>authenticate</code> middleware control the flow of request handling when a token is valid versus when it is invalid or missing?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing_authentication">Testing Authentication</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The summary explains how to selectively protect certain Express.js event routes (specifically create, update, and delete) using an authentication middleware called <code>authenticate</code>. The middleware is applied only to POST, PUT, and DELETE routes, while GET routes remain publicly accessible.</p>
+</div>
+<div class="paragraph">
+<p>Key points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>GET requests to <code>/events</code> and <code>/events/:id</code> work without authentication and return event data.</p>
+</li>
+<li>
+<p>POST requests to <code>/events</code> require a valid bearer token in the authorization header; otherwise, they fail.</p>
+</li>
+<li>
+<p>Tokens are obtained by logging in or creating a user, then copying the returned token into the authorization header.</p>
+</li>
+<li>
+<p>PUT requests to <code>/events/:id</code> allow updating event data but require authentication.</p>
+</li>
+<li>
+<p>DELETE requests to <code>/events/:id</code> allow deleting events and also require authentication.</p>
+</li>
+<li>
+<p>Testing confirms that unauthorized requests fail, while authorized requests succeed.</p>
+</li>
+<li>
+<p>Image upload functionality is not yet implemented.</p>
+</li>
+<li>
+<p>The implementation was assisted by GitHub Copilot along with manual coding.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here’s a cleaned-up, step-by-step guide showing how to protect only your
+“write” routes (POST, PUT, DELETE) with an <code>authenticate</code> middleware
+in Express, while leaving GETs open, and how to test everything with
+Postman.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Import and apply the middleware<br>
+In your routes file (e.g. <code>events.js</code>), do something like:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">const express     = require(<span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>)
+const router      = express.Router()
+const authenticate = require(<span class="string"><span class="delimiter">'</span><span class="content">../middleware/authenticate</span><span class="delimiter">'</span></span>)
+const Events      = require(<span class="string"><span class="delimiter">'</span><span class="content">../models/event</span><span class="delimiter">'</span></span>)
+
+<span class="comment">// Public routes (no auth)</span>
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, async (req, res) =&gt; {
+  const events = await Events.find()
+  res.json(events)
+})
+
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, async (req, res) =&gt; {
+  const ev = await Events.findById(req.params.id)
+  <span class="keyword">if</span> (!ev) <span class="keyword">return</span> res.status(<span class="integer">404</span>).send(<span class="string"><span class="delimiter">'</span><span class="content">Not found</span><span class="delimiter">'</span></span>)
+  res.json(ev)
+})
+
+<span class="comment">// Protected routes (require valid JWT in Authorization header)</span>
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, authenticate, async (req, res) =&gt; {
+  const newEvent = await Events.create(req.body)
+  res.status(<span class="integer">201</span>).json(newEvent)
+})
+
+router.put(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, authenticate, async (req, res) =&gt; {
+  const updated = await Events.findByIdAndUpdate(req.params.id, req.body, { <span class="keyword">new</span>: <span class="predefined-constant">true</span> })
+  <span class="keyword">if</span> (!updated) <span class="keyword">return</span> res.status(<span class="integer">404</span>).send(<span class="string"><span class="delimiter">'</span><span class="content">Not found</span><span class="delimiter">'</span></span>)
+  res.json(updated)
+})
+
+router.<span class="keyword">delete</span>(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, authenticate, async (req, res) =&gt; {
+  const deleted = await Events.findByIdAndDelete(req.params.id)
+  <span class="keyword">if</span> (!deleted) <span class="keyword">return</span> res.status(<span class="integer">404</span>).send(<span class="string"><span class="delimiter">'</span><span class="content">Not found</span><span class="delimiter">'</span></span>)
+  res.sendStatus(<span class="integer">204</span>)
+})
+
+module.exports = router</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start your server</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">node index.js
+# or
+npm start</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Test with Postman (or any REST client)</p>
+<div class="olist upperalpha">
+<ol class="upperalpha">
+<li>
+<p>GET all events (no token needed)</p>
+<div class="literalblock">
+<div class="content">
+<pre>GET http://localhost:3000/events
+→ 200 OK
+→ body: [ … existing events … ]</pre>
+</div>
+</div>
+</li>
+<li>
+<p>GET one event (no token needed)</p>
+<div class="literalblock">
+<div class="content">
+<pre>GET http://localhost:3000/events/1
+→ 200 OK
+→ body: { id: 1, title: '…', … }</pre>
+</div>
+</div>
+</li>
+<li>
+<p>POST new event without auth → fails</p>
+<div class="literalblock">
+<div class="content">
+<pre>POST http://localhost:3000/events
+Headers: none
+Body (JSON): { title: 'Test', … }
+→ 401 Unauthorized
+→ { error: 'Missing authorization header' }</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Obtain a token</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Sign up or log in:</p>
+<div class="literalblock">
+<div class="content">
+<pre>POST http://localhost:3000/auth/login
+Body: { email: 'foo@bar.com', password: '1234' }
+→ 200 OK
+→ { token: 'eyJhbGciO…' }</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Copy the token string.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>POST new event with token → succeeds</p>
+<div class="literalblock">
+<div class="content">
+<pre>POST http://localhost:3000/events
+Headers:
+  Authorization: Bearer eyJhbGciO…
+Body (JSON):
+  {
+    "title": "My New Event",
+    "description": "…",
+    "location": "Main Hall",
+    "date": "2024-07-01T18:00:00Z"
+  }
+→ 201 Created
+→ { id: 3, title: 'My New Event', … }</pre>
+</div>
+</div>
+</li>
+<li>
+<p>PUT (update) an event</p>
+<div class="literalblock">
+<div class="content">
+<pre>PUT http://localhost:3000/events/3
+Headers:
+  Authorization: Bearer eyJhbGciO…
+Body (JSON):
+  {
+    "title": "Updated Title",
+    "location": "Room 101",
+    "date": "2024-07-02T19:00:00Z"
+  }
+→ 200 OK
+→ { id: 3, title: 'Updated Title', … }</pre>
+</div>
+</div>
+</li>
+<li>
+<p>DELETE an event</p>
+<div class="literalblock">
+<div class="content">
+<pre>DELETE http://localhost:3000/events/3
+Headers:
+  Authorization: Bearer eyJhbGciO…
+→ 204 No Content</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Verify deletion</p>
+<div class="literalblock">
+<div class="content">
+<pre>GET http://localhost:3000/events
+→ 200 OK
+→ [ … events without the deleted one … ]</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>What’s next?</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Add request-body validation (e.g. with Joi or express-validator)</p>
+</li>
+<li>
+<p>Implement file/image uploads if needed (e.g. Multer + Cloud storage)</p>
+</li>
+<li>
+<p>Handle edge cases &amp; error formatting consistently</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>With just one <code>authenticate</code> middleware and a couple of route tweaks,
+you now require valid JWTs for all create/update/delete operations while
+leaving read-only endpoints publicly accessible.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How can you selectively apply authentication middleware in Express.js routes to protect only event creation, updating, and deletion, while leaving event retrieval routes publicly accessible?</p>
+</li>
+<li>
+<p>What is the exact process to test the authentication-protected POST, PUT, and DELETE event routes using authorization headers and bearer tokens in a local Express.js server setup?</p>
+</li>
+<li>
+<p>How can you verify that an event was successfully updated or deleted through authenticated PUT and DELETE requests, and what specific HTTP requests and headers are involved in this verification?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_adding_role_based_authorization_to_the_update_delete_routes">Adding Role Based Authorization To The Update &amp; Delete Routes</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The key topics and entities discussed are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Event-related routes and authentication</strong>: Ensuring only logged-in users can create, edit, or delete events.</p>
+</li>
+<li>
+<p><strong>Authorization check enhancement</strong>: Adding logic so only the user who created an event can edit or delete it.</p>
+</li>
+<li>
+<p><strong>Database schema update</strong>: Adding a <code>userId</code> field to the events table to store the creator&#8217;s user ID, with a foreign key reference to the users table.</p>
+</li>
+<li>
+<p><strong>Model update</strong>: Modifying the event creation logic in the event model (<code>event.js</code>) to store the user ID when creating an event.</p>
+</li>
+<li>
+<p><strong>Controller update</strong>: Adjusting the events controller (<code>events controller.js</code>) to pass the user ID from the authenticated request to the event creation function.</p>
+</li>
+<li>
+<p><strong>Authentication middleware</strong>: Using the <code>auth.js</code> file where the decoded user info is attached to the request object (<code>req.user</code>).</p>
+</li>
+<li>
+<p><strong>Authorization checks in controller functions</strong>: Adding checks in the edit and delete functions to verify that the logged-in user matches the event creator before allowing modifications.</p>
+</li>
+<li>
+<p><strong>Error handling improvements</strong>: Returning appropriate HTTP status codes and messages, such as 404 if event not found and 500 if deletion fails.</p>
+</li>
+<li>
+<p><strong>Use of AI tools</strong>: Leveraging GitHub Copilot to generate and suggest code changes for these updates.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, the focus is on implementing proper user-based authorization for event management in a web application by updating the database schema, models, controllers, and middleware accordingly.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here’s a cleaned-up, step-by-step summary of what we did to ensure that
+only the creator of an event can edit or delete it:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add a creator reference to your Event model</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In your database schema (e.g. <code>database.js</code> or migration file), add
+a <code>userId</code> column to the <code>events</code> table.<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Type: INTEGER<br></p>
+</li>
+<li>
+<p>Foreign key → <code>users.id</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>This lets us know which user created each event.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Persist the creator ID on event creation</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In <code>models/event.js</code>, update the <code>createEvent</code> function (or
+wherever you build the new event object) to expect and store a
+<code>userId</code> field.</p>
+</li>
+<li>
+<p>In <code>controllers/eventsController.js</code> (the “create” route): • Extract
+<code>req.user.id</code> (populated by your authentication middleware).<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Pass that <code>id</code> as <code>userId</code> into the call to <code>createEvent</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Protect the “update” and “delete” routes<br>
+In both <code>controllers/eventsController.js</code> functions (<code>editEvent</code> and
+<code>deleteEvent</code>):</p>
+<div class="paragraph">
+<p>a. Fetch the event by its ID (e.g. with
+<code>getEventById(eventId)</code>).<br>
+b. If no event is found, return 404.<br>
+c. Compare <code>event.userId</code> against the <code>req.user.id</code> of the currently
+logged-in user.<br>
+• If they don’t match, return 403 Forbidden (or a 400 error with a
+message like “You are not allowed to modify this event”).<br>
+d. If they do match, proceed with the update or deletion.</p>
+</div>
+</li>
+<li>
+<p>Example flow in “editEvent”:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">async <span class="keyword">function</span> <span class="function">editEvent</span>(req, res) {
+  const { id } = req.params;
+  const event = await Event.getEventById(id);
+  <span class="keyword">if</span> (!event) {
+    <span class="keyword">return</span> res.status(<span class="integer">404</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Event not found</span><span class="delimiter">&quot;</span></span> });
+  }
+  <span class="keyword">if</span> (event.userId !== req.user.id) {
+    <span class="keyword">return</span> res.status(<span class="integer">403</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Not authorized to edit this event</span><span class="delimiter">&quot;</span></span> });
+  }
+  <span class="comment">// ...validate input, then update...</span>
+}</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Example flow in “deleteEvent”:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">async <span class="keyword">function</span> <span class="function">deleteEvent</span>(req, res) {
+  const { id } = req.params;
+  const event = await Event.getEventById(id);
+  <span class="keyword">if</span> (!event) {
+    <span class="keyword">return</span> res.status(<span class="integer">404</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Event not found</span><span class="delimiter">&quot;</span></span> });
+  }
+  <span class="keyword">if</span> (event.userId !== req.user.id) {
+    <span class="keyword">return</span> res.status(<span class="integer">403</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Not authorized to delete this event</span><span class="delimiter">&quot;</span></span> });
+  }
+  const deleted = await Event.deleteById(id);
+  <span class="keyword">if</span> (!deleted) {
+    <span class="keyword">return</span> res.status(<span class="integer">500</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Failed to delete event</span><span class="delimiter">&quot;</span></span> });
+  }
+  <span class="keyword">return</span> res.status(<span class="integer">200</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Event deleted successfully</span><span class="delimiter">&quot;</span></span> });
+}</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>That covers:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Database change to track the creator<br></p>
+</li>
+<li>
+<p>Passing the user’s ID into <code>createEvent</code><br></p>
+</li>
+<li>
+<p>Guarding your edit/delete controllers so only the owner can modify or
+remove their events.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>With those checks in place, you can be confident that one user can’t
+tamper with another user’s events.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the described implementation, where exactly in the <code>events-controller.js</code> file is the user ID check added to ensure only the creator can edit an event, and what sequence of operations does this check follow before allowing the update?</p>
+</li>
+<li>
+<p>How is the user ID propagated from the authentication token to the event creation process, including the specific files and properties involved in extracting and passing this user ID?</p>
+</li>
+<li>
+<p>What specific database schema change was made to the events table to support ownership checks, and how does the foreign key constraint relate the events table to the users table?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing_authorization">Testing Authorization</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The user tested their app&#8217;s authorization by deleting the database, restarting the server, and reinitializing it. They created a new user and received a token, then posted a new event. Next, they created a second user with a different token and tried to edit and delete the first user&#8217;s event, which correctly resulted in a "forbidden" error due to lack of authorization. Finally, using the original creator&#8217;s token, they successfully edited the event. This confirmed that the app properly restricts event modifications to the user who created them.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here’s a more concise, structured walkthrough of the authorization test
+you described:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Reset the database<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Delete the existing database file.<br></p>
+</li>
+<li>
+<p>Restart the server:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">npm run dev</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Create the first user<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>POST to <code>/signup</code> with dummy credentials.<br></p>
+</li>
+<li>
+<p>Store the returned token (tokenA).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Verify no events exist<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>GET <code>/events</code> with <code>Authorization: Bearer tokenA</code><br></p>
+</li>
+<li>
+<p>Response should be an empty array.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Create a new event<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>POST <code>/events</code> with the same dummy data and
+<code>Authorization: Bearer tokenA</code><br></p>
+</li>
+<li>
+<p>Server responds with the created event (e.g. <code>{ id: 1, … }</code>).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Create a second user<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>POST to <code>/signup</code> with a different email (e.g. <a href="mailto:test2@example.com">test2@example.com</a>).<br></p>
+</li>
+<li>
+<p>Store the returned token (tokenB).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Attempt unauthorized modifications<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>PUT <code>/events/1</code> with <code>Authorization: Bearer tokenB</code> → 403
+Forbidden<br></p>
+</li>
+<li>
+<p>DELETE <code>/events/1</code> with <code>Authorization: Bearer tokenB</code> → 403
+Forbidden</p>
+<div class="paragraph">
+<p>These confirm that only the creator can update or delete an event.</p>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Confirm authorized update<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reuse tokenA (first user) and PUT <code>/events/1</code> with updated data.<br></p>
+</li>
+<li>
+<p>Should return 200 OK and the updated event.<br></p>
+</li>
+<li>
+<p>GET <code>/events</code> with tokenA to verify the changes.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Result: Authorization is enforced correctly—only the user who created an
+event may edit or delete it.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>What specific steps are taken to verify that only the user who created an event can edit or delete it in this application?</p>
+</li>
+<li>
+<p>How does the application handle token usage when multiple users attempt to modify the same event, and what error message is returned if unauthorized?</p>
+</li>
+<li>
+<p>After deleting the database file and restarting the server, what sequence of API requests is used to recreate users and test event creation and authorization?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_adding_post_routes_with_suggestions_for_registering_unregistering_events">Adding POST Routes with Suggestions For Registering &amp; Unregistering Events</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here’s a more concise, step-by-step guide for adding
+“register”/“unregister” functionality to your events API. I’ve broken it
+into logical sections, included code snippets, and omitted incidental
+details about Copilot so you can follow the core steps more easily.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Define the Routes (routes/events.js)<br>
+Add two new POST routes, <code>/events/:id/register</code> and
+<code>/events/:id/unregister</code>. Make sure your <code>authenticate</code> middleware
+runs first so you have access to <code>req.userId</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">const express = require(<span class="string"><span class="delimiter">'</span><span class="content">express</span><span class="delimiter">'</span></span>);
+const { authenticate } = require(<span class="string"><span class="delimiter">'</span><span class="content">../middleware/authenticate</span><span class="delimiter">'</span></span>);
+const {
+  createEvent,
+  listEvents,
+  getEvent,
+  updateEvent,
+  deleteEvent,
+  registerForEvent,
+  unregisterFromEvent
+} = require(<span class="string"><span class="delimiter">'</span><span class="content">../controllers/eventsController</span><span class="delimiter">'</span></span>);
+
+const router = express.Router();
+
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, authenticate, createEvent);
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, listEvents);
+router.get(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, getEvent);
+router.put(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, authenticate, updateEvent);
+router.<span class="keyword">delete</span>(<span class="string"><span class="delimiter">'</span><span class="content">/:id</span><span class="delimiter">'</span></span>, authenticate, deleteEvent);
+
+<span class="comment">// New registration routes</span>
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/:id/register</span><span class="delimiter">'</span></span>, authenticate, registerForEvent);
+router.post(<span class="string"><span class="delimiter">'</span><span class="content">/:id/unregister</span><span class="delimiter">'</span></span>, authenticate, unregisterFromEvent);
+
+module.exports = router;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Implement Controller Functions (<code>controllers/events-controller.js</code>)<br>
+At the bottom of your <code>events-controller.js</code>, add two new exports:
+<code>registerForEvent</code> and <code>unregisterFromEvent</code>. Each one looks up the
+event, then inserts or deletes a row in a <code>registrations</code> table
+relating <code>eventId</code> and <code>userId</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="js">const db = require(<span class="string"><span class="delimiter">'</span><span class="content">../db</span><span class="delimiter">'</span></span>);  <span class="comment">// your database client</span>
+
+<span class="comment">// POST /events/:id/register</span>
+exports.registerForEvent = async (req, res) =&gt; {
+  const eventId = parseInt(req.params.id, <span class="integer">10</span>);
+  const userId = req.userId;
+
+  <span class="comment">// Check event exists</span>
+  const event = await db.query(<span class="string"><span class="delimiter">'</span><span class="content">SELECT * FROM events WHERE id = $1</span><span class="delimiter">'</span></span>, [eventId]);
+  <span class="keyword">if</span> (!event.rows.length) {
+    <span class="keyword">return</span> res.status(<span class="integer">404</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Event not found</span><span class="delimiter">'</span></span> });
+  }
+
+  <span class="keyword">try</span> {
+    await db.query(
+      <span class="string"><span class="delimiter">'</span><span class="content">INSERT INTO registrations (event_id, user_id) VALUES ($1, $2)</span><span class="delimiter">'</span></span>,
+      [eventId, userId]
+    );
+    res.status(<span class="integer">201</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">'</span><span class="content">Registered successfully</span><span class="delimiter">'</span></span> });
+  } <span class="keyword">catch</span> (err) {
+    <span class="comment">// Handle unique-constraint violation if already registered</span>
+    <span class="keyword">if</span> (err.code === <span class="string"><span class="delimiter">'</span><span class="content">23505</span><span class="delimiter">'</span></span>) {
+      <span class="keyword">return</span> res.status(<span class="integer">400</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Already registered</span><span class="delimiter">'</span></span> });
+    }
+    console.error(err);
+    res.status(<span class="integer">500</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Registration failed</span><span class="delimiter">'</span></span> });
+  }
+};
+
+<span class="comment">// POST /events/:id/unregister</span>
+exports.unregisterFromEvent = async (req, res) =&gt; {
+  const eventId = parseInt(req.params.id, <span class="integer">10</span>);
+  const userId = req.userId;
+
+  const result = await db.query(
+    <span class="string"><span class="delimiter">'</span><span class="content">DELETE FROM registrations WHERE event_id = $1 AND user_id = $2</span><span class="delimiter">'</span></span>,
+    [eventId, userId]
+  );
+
+  <span class="keyword">if</span> (result.rowCount === <span class="integer">0</span>) {
+    <span class="keyword">return</span> res.status(<span class="integer">404</span>).json({ <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="content">Registration not found</span><span class="delimiter">'</span></span> });
+  }
+  res.status(<span class="integer">200</span>).json({ <span class="key">message</span>: <span class="string"><span class="delimiter">'</span><span class="content">Unregistered successfully</span><span class="delimiter">'</span></span> });
+};</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create the <code>registrations</code> Table (db/database.js or your
+migration)<br>
+Ensure you have a <code>registrations</code> table with a composite unique key on
+<code>(event_id, user_id)</code> and foreign keys to both <code>events</code> and
+<code>users</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql"><span class="class">CREATE</span> <span class="type">TABLE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> registrations (
+  id SERIAL <span class="directive">PRIMARY</span> <span class="type">KEY</span>,
+  event_id <span class="predefined-type">INTEGER</span> <span class="keyword">NOT</span> <span class="predefined-constant">NULL</span> <span class="keyword">REFERENCES</span> events(id) <span class="keyword">ON</span> <span class="class">DELETE</span> <span class="directive">CASCADE</span>,
+  user_id <span class="predefined-type">INTEGER</span> <span class="keyword">NOT</span> <span class="predefined-constant">NULL</span> <span class="keyword">REFERENCES</span> users(id) <span class="keyword">ON</span> <span class="class">DELETE</span> <span class="directive">CASCADE</span>,
+  <span class="directive">UNIQUE</span> (event_id, user_id)
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you’re using a migration tool, put that SQL into a new migration
+file. If you’re initializing the schema manually in <code>database.js</code>,
+just include it with your other <code>CREATE TABLE IF NOT EXISTS</code>
+statements.</p>
+</div>
+</li>
+<li>
+<p>Restart &amp; Test</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Restart your server so any schema changes take effect.</p>
+</li>
+<li>
+<p>Use a tool like Postman or cURL to:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>POST <code>/events/:id/register</code> → should return 201 on success.</p>
+</li>
+<li>
+<p>POST <code>/events/:id/unregister</code> → should return 200 on success.</p>
+</li>
+<li>
+<p>Verify duplicate registration returns 400, and unregistering a
+non-existent registration returns 404.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>That’s it! You now have full register/unregister capabilities on your
+events resource.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing_fixing_event_registration_unregistration">Testing &amp; Fixing Event Registration &amp; Unregistration</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The user describes implementing event registration and unregistration functionality in a web app. They log in with a second user and create POST and DELETE requests to register and unregister for an event by targeting routes like <code>/event/1/register</code> and <code>/event/1/unregister</code>. The event ID is passed via the URL, and the user ID is extracted from an authorization token in the request header.</p>
+</div>
+<div class="paragraph">
+<p>Initially, the registration code fails due to a missing database reference because database operations were handled in a separate model file (<code>event.js</code>). The user refactors the code by moving the register/unregister database functions into the model file and importing them into the controller. This separation keeps database logic centralized.</p>
+</div>
+<div class="paragraph">
+<p>After refactoring, registration and unregistration requests work correctly, returning success or failure based on the user&#8217;s registration status. The user notes that while duplicate registrations or unregistering when not registered could be prevented with extra checks, they keep the app simple and functional as is. Overall, the process demonstrates setting up authenticated event registration endpoints with proper separation of concerns between controller and model layers.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>I&#8217;ll log in with my second user again—though technically, this isn’t
+required. I could also sign up for my own events. You could add code to
+prevent users from registering for their own events, but here I’m fine
+with allowing it.</p>
+</div>
+<div class="paragraph">
+<p>Now, using the second user, I’ll create a new <strong>POST</strong> request targeting:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>http://localhost:3000/event/1/register</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>I&#8217;ll add my authorization header with the format:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Authorization: Bearer &lt;token&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since the event ID is encoded in the URL and the token in the header, I
+don’t need to send any extra request body. This is all that the route
+and the controller function require.</p>
+</div>
+<div class="sect2">
+<h3 id="_how_the_register_controller_works">How the Register Controller Works</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The controller extracts the event ID from the URL parameters.</p>
+</li>
+<li>
+<p>It retrieves the user ID from the <code>request</code> object, which the
+authentication middleware previously populated by decoding the token.</p>
+</li>
+<li>
+<p>This setup should, in theory, work perfectly.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_encountering_an_error">Encountering an Error</h3>
+<div class="paragraph">
+<p>When I send the request, I get an error:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>getDatabase is not defined</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This happens because the register functionality is trying to access the
+database in the <strong>events controller JS file</strong>, but in my current
+structure, all other database interactions are located in the <strong>event.js</strong>
+file inside the <code>models</code> folder.</p>
+</div>
+<div class="paragraph">
+<p>To fix this, I want to avoid duplicating database logic or mixing
+concerns. Instead of putting database code in the controller, I’ll add
+the relevant functions to the <code>event.js</code> model file.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_adding_database_functions">Adding Database Functions</h3>
+<div class="paragraph">
+<p>Inside the <code>models/event.js</code> file, I’ll add two functions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>registerUserForEvent</code></p>
+</li>
+<li>
+<p><code>unregisterUserFromEvent</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Thankfully, GitHub Copilot helps me with good implementation suggestions
+for these.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_updating_the_controller_functions">Updating the Controller Functions</h3>
+<div class="paragraph">
+<p>Back in the controller, instead of accessing the database directly, I’ll
+call these imported model functions:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">const { registerUserForEvent, unregisterUserFromEvent } = require(<span class="string"><span class="delimiter">'</span><span class="content">../models/event</span><span class="delimiter">'</span></span>);
+
+<span class="comment">// In register controller:</span>
+const success = await registerUserForEvent(eventId, userId);
+
+<span class="comment">// In unregister controller:</span>
+const success = await unregisterUserFromEvent(eventId, userId);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Both functions return a boolean indicating success.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_testing_the_changes">Testing the Changes</h3>
+<div class="paragraph">
+<p>After saving these updates:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Sending the <strong>register</strong> request again now returns
+<code>"Registered successfully"</code>.</p>
+</li>
+<li>
+<p>Sending it again doesn’t cause issues, but doesn’t make much logical
+sense (registering twice).</p>
+<div class="ulist">
+<ul>
+<li>
+<p>We could prevent duplicate registration, but to keep the example
+simple, I’m not adding that now.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>Next, I add a <strong>DELETE</strong> request to unregister:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>DELETE http://localhost:3000/event/1/unregister</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the same <code>Authorization</code> header.</p>
+</div>
+<div class="paragraph">
+<p>Since unregistering can be considered deleting a registration, using a
+DELETE method is appropriate. After sending this request, the response
+confirms successful unregistration.</p>
+</div>
+<div class="paragraph">
+<p>If I send the DELETE request repeatedly, eventually I’ll get
+<code>"Unregistration failed"</code> because I’m no longer registered—this is
+expected behavior.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_summary">Summary</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Moved database logic out of the controller into model functions to
+keep code organized.</p>
+</li>
+<li>
+<p>Used proper HTTP methods (<code>POST</code> for register, <code>DELETE</code> for
+unregister).</p>
+</li>
+<li>
+<p>Managed token-based authentication with middleware and accessed user
+info accordingly.</p>
+</li>
+<li>
+<p>Added simple success/failure flags to handle responses.</p>
+</li>
+<li>
+<p>Kept the app simple, but it can be enhanced later with additional
+validations (e.g., prevent duplicate registrations).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This setup now works as intended.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does the authentication middleware contribute to identifying the user in the event registration and unregistration process described?</p>
+</li>
+<li>
+<p>Why was it necessary to move the database-related functions for registering and unregistering users from the controller file to the event model file, and how does this affect the code structure?</p>
+</li>
+<li>
+<p>What is the rationale behind using a DELETE HTTP request for unregistering a user from an event, and how is this implemented in the described API routes?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-18 14:08:07 +0300
+Last updated 2025-05-19 13:17:43 +0300
 </div>
 </div>
 </body>
