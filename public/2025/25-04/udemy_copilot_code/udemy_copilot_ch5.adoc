@@ -2448,3 +2448,319 @@ This setup now works as intended.
 
 3. What is the rationale behind using a DELETE HTTP request for unregistering a user from an event, and how is this implemented in the described API routes?
 ====
+
+== Integrating Image Upload Functionality With The Multer Package
+
+[NOTE]
+====
+The content describes adding image upload functionality to an event management app that already supports user signup/login and event CRUD operations. The goal is to allow attaching an image when creating or editing events, storing the image locally, and serving it later.
+
+Key steps outlined:
+
+- Use the multer library for handling file uploads, installed via npm.
+- Configure multer in a new util/upload.js file to store images in a public/images folder with filenames based on timestamps plus original names.
+- Export a configured multer middleware to be used in event routes.
+- Add this middleware to the POST (create) and PUT (edit) event routes after authentication middleware, specifying the expected image field name ("image").
+- Modify the event controller functions to access the uploaded file via req.file, validate its presence, and handle errors if missing.
+- Store the uploaded image filename in the database along with other event data by passing it to the create and edit event model functions.
+- Update the model functions to save the image filename in the database so events can be associated with their images.
+
+This approach enables image upload, storage, validation, and database association for events, completing the app's core functionality.
+====
+
+Here’s a more concise, structured walkthrough of adding local
+image‐upload support with Multer to your Event API:
+
+[arabic]
+. Install Multer +
+• Run: `npm install multer`
+. Configure Multer (`util/upload.js`) +
+• Import and set up disk storage in `public/images` +
+– destination: `(req, file, cb) ⇒ cb(null, 'public/images')` +
+– filename: `(req, file, cb) ⇒ cb(null, ${Date.now()}_${file.originalname}+`) +
+• Export a ready‐to‐use middleware: +
+`export const upload = multer({ storage }).single('image')`
+. Hook Multer into your Event routes +
+In your Express route definitions (`POST /events and PUT /events/:id`): +
+• Before the controller, add: +
+`[authenticateUser, upload]` +
+• This tells Express to first check authentication, then parse a single
+file from the “image” field.
+. Adjust your Event controllers +
+In both `createEvent` and `editEvent` handlers: +
+• After you pull title, date, etc., grab the uploaded file via
+req.file +
+– If req.file is missing, return a 400 “invalid input” error +
+• Extract the stored filename: `const imageName = req.file.filename` +
+• Pass image name into your model call along with the other event data
+. Persist the image name in your database models +
+• Update `createEvent(data)` and `editEvent(id, data)` to expect an image
+field +
+• In your SQL/ORM layer, include imageName in the INSERT or UPDATE
+statement
+. Serve uploaded images +
+• Ensure Express serves static files from `public/` +
+`app.use('/images', express.static(path.join(__dirname, 'public/images')))` +
+• In your frontend, you can now reference each event’s image via
+`/images/`
+
+That’s it. With these steps: +
+– Multer will store each upload in `public/images` under a unique
+timestamped name +
+– Your routes accept `multipart/form-data` and extract the image +
+– Your controllers validate the presence of req.file, pull out
+`req.file.filename` +
+– Your data layer saves the filename alongside the other event fields +
+– Your frontend can fetch and display the image via the `public/images`
+URL path
+
+[CAUTION]
+====
+1. How does the multer configuration in this app ensure that uploaded event images are stored with unique filenames, and where exactly are these images saved on the server?
+
+2. In what way does the middleware chain in the Express routes handle image uploads for event creation and editing, and how is the uploaded image accessed within the controller functions?
+
+3. What modifications are necessary in the event model’s create and edit functions to properly store the uploaded image filename in the database alongside other event data?
+====
+
+== Finishing & Testing The Image Upload Feature
+
+[NOTE]
+====
+The user describes updating code to enable image upload functionality for events in their application. They use AI tools like GitHub Copilot and ChatGPT to assist with coding and generating dummy images. Key steps include:
+
+- Modifying code to extract an image key from uploads and store it in the database.
+- Updating the database schema to add an image field in the events table, deleting and recreating the SQLite database to apply changes.
+- Testing the feature via Postman by signing up a new user, obtaining an auth token, and sending POST requests with form-data including event details and an image file.
+- Verifying that uploaded images are saved correctly in the project's public images folder.
+- Confirming that both creating and updating events with images works as intended.
+
+Overall, the user successfully implements and tests image upload functionality integrated with event data storage, leveraging AI assistance and manual adjustments.
+====
+
+In this guide, we’ll walk through:
+
+[arabic]
+. Adjusting your backend code (with GitHub Copilot assistance)
+. Updating the SQLite database schema
+. Testing the image-upload feature with Postman
+
+'''''
+
+=== 1. Adjust the Code
+
+==== a. Extract and Store the Image Key
+
+Use GitHub Copilot (or your editor’s cursor-based completion) to
+generate code that:
+
+* Reads the uploaded file’s key/name
+* Saves it to the `+image+` column in your `+events+` table
+
+For example, in your route handler (`+routes/events.js+`):
+
+[source,js]
+----
+// Before: no image handling
+router.post('/', authenticate, async (req, res) => {
+  const { title, description, address, date } = req.body;
+  // …
+});
+
+// After: with image upload
+router.post('/', authenticate, upload.single('image'), async (req, res) => {
+  const { title, description, address, date } = req.body;
+  const image = req.file ? req.file.filename : null;
+
+  const stmt = db.prepare(`
+    INSERT INTO events (title, description, address, date, image)
+    VALUES (?, ?, ?, ?, ?)
+  `);
+  stmt.run(title, description, address, date, image);
+  res.status(201).json({ message: 'Event created', image });
+});
+----
+
+Repeat the same edits in your `+PUT /events/:id+` route to handle
+updates.
+
+'''''
+
+=== 2. Update the Database Schema
+
+Open `+database.js+` (or wherever you initialize SQLite) and ensure your
+`+events+` table has an `+image+` column:
+
+[source,js]
+----
+db.exec(`
+  CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT,
+    address TEXT,
+    date TEXT,
+    image TEXT          -- ← New column
+  );
+`);
+----
+
+After updating the schema:
+
+[arabic]
+. Delete your existing SQLite file (e.g., `+events.db+`)
+. Restart your dev server to recreate the database with the new column
+
+'''''
+
+=== 3. Test with Postman
+
+==== a. Sign Up & Authenticate
+
+[arabic]
+. Send a `+POST /signup+` to create a new user.
+. Copy the returned token (you’ll need it for `+/events+`).
+
+==== b. Create an Event with an Image
+
+[arabic]
+. In Postman, open `+POST /events+`.
+. Under *Headers*, add:
+* `+Authorization: Bearer <your_token>+`
+. Switch *Body* to `+form-data+`.
+. Add fields:
+* `+title+` (Text)
+* `+description+` (Text)
+* `+address+` (Text)
+* `+date+` (Text, e.g. `+2024-07-18+`)
+* `+image+` (File) → Select an image file from disk
+. Send the request. You should get a 201 response and see your `+image+`
+filename.
+
+==== c. Update an Event’s Image
+
+[arabic]
+. Copy the existing event’s `+id+`.
+. Open `+PUT /events/:id+`.
+. Repeat steps 2–4 above (use `+form-data+`, supply new fields + new
+file).
+. Send the request and confirm you get a success status.
+
+'''''
+
+=== 4. Verify Uploaded Files
+
+Navigate to your project’s `+public/images/+` (or wherever you
+configured uploads). You should see the uploaded image files there.
+Refresh your file explorer if needed.
+
+'''''
+
+Congratulations! Your app now supports uploading and storing images for
+events. You can further customize naming, validation, or storage
+location as needed.
+
+[CAUTION]
+====
+1. How does the process of integrating image upload functionality differ when using GitHub Copilot versus manual AI prompting in this code example?
+
+2. What specific steps are necessary to ensure the events table in the SQLite database supports storing image keys, and how does the code handle database reinitialization after schema changes?
+
+3. In the described testing workflow using Postman, how is the request body structured differently for uploading images compared to standard JSON data, and what are the key details to correctly attach an image file?
+====
+
+== Adding Frontend Applications To The REST API with the CORS Package
+
+[NOTE]
+====
+The demo REST API is mostly complete, but to enable interaction from decoupled front-end or mobile applications, two key additions are needed:
+
+1. Enable Cross-Origin Resource Sharing (CORS) by adding appropriate headers to API responses. This can be done manually or by installing and using the popular 'cors' npm package as middleware in the Node Express app, allowing front-ends to send requests without errors.
+
+2. Serve uploaded images statically so they can be accessed directly from outside the API. This is achieved by adding Express's static middleware pointing to the public folder where images are stored, enabling direct browser access to images via URLs.
+
+With these middleware additions, the API becomes fully accessible and usable by external front-end clients, allowing both API requests and image retrieval to work seamlessly.
+====
+
+Here’s a cleaner, more structured write-up of how to enable CORS and
+serve uploaded images statically in your Express demo API:
+
+[arabic]
+. Context +
+• We’ve built a simple REST API and tested it with Postman, but a fully
+decoupled front-end (web or mobile) will typically be blocked by the
+browser unless we explicitly allow cross-origin requests. +
+• We also need to make uploaded images publicly accessible via simple
+URLs, without writing a dedicated route for each file.
+. Enable Cross-Origin Resource Sharing (CORS) +
+a. Install the `+cors+` package: +
+npm install cors +
+b. Register the middleware early in your app (usually after you create
+your `+express()+` app object):
++
+[source,js]
+----
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+
+// Enable CORS for all routes
+app.use(cors());
+// Optionally, you can configure CORS options:
+// app.use(cors({
+//   origin: 'https://your-frontend.com',
+//   methods: ['GET','POST','PUT','DELETE'],
+//   credentials: true
+// }));
+----
++
+{empty}c. Result: All incoming requests will receive the proper
+`+Access-Control-Allow-*+` headers, allowing your front-end to call the
+API without “blocked by CORS policy” errors.
+. Serve Uploaded Images Statically +
+If your uploads land in a directory such as `+public/images+`, you can
+use Express’s built-in static middleware instead of hand-rolling routes:
++
+[source,js]
+----
+// Serve any files under public/images at the /images URL path
+app.use('/images', express.static('public/images'));
+----
++
+Now, if you upload a file named `+avatar.jpg+` into `+public/images+`,
+it becomes accessible at:
++
+....
+http://localhost:3000/images/avatar.jpg
+....
+. Quick Verification +
+• Start your server:
++
+[source,bash]
+----
+node index.js
+----
++
+• In the browser, visit +
+http://localhost:3000/images/your-uploaded-file.jpg +
+• You should see the image load. If you remove or comment out the
+`+express.static+` line, you’ll get a 404 or similar error instead.
+. Next Steps +
+• Add global error-handling middleware +
+• Clean up and modularize your routes/controllers +
+• Expand your CORS configuration to only allow trusted origins or to
+handle preflight requests specially
+
+That’s it! With just two middleware calls—`+cors()+` and
+`+express.static()+`—your API is now front-end friendly and serves
+uploaded assets directly.
+
+[CAUTION]
+====
+1. What specific middleware setup is required in a Node Express application to enable cross-origin resource sharing (CORS) for decoupled front-end applications, and how does it affect API response headers?
+
+2. How can static middleware be configured in an Express app to serve uploaded images from a public folder, and what is the resulting URL pattern to access these images directly via a browser?
+
+3. What are the consequences of not adding the static middleware for serving images in an Express API, and how does this impact the ability to request uploaded images from outside the application?
+====
