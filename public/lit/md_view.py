@@ -80,7 +80,7 @@ with open(selected_file, 'r', encoding='utf-8') as file:
     
 st.write(md_text)    
 
-html_format = st.sidebar.radio("Output HTML:", options=["Tailwind", "Bootstrap"])
+html_format = st.sidebar.radio("Output HTML:", options=["Tailwind", "Bootstrap"], horizontal=True)
 
 # Parse HTML and add Tailwind CSS classes to improve styling.
 #

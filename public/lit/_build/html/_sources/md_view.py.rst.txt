@@ -82,7 +82,7 @@ Display the contents of the file that has been selected.
     
   st.write(md_text)    
 
-  html_format = st.sidebar.radio("Output HTML:", options=["Tailwind", "Bootstrap"])
+  html_format = st.sidebar.radio("Output HTML:", options=["Tailwind", "Bootstrap"], horizontal=True)
 
 Parse HTML and add Tailwind CSS classes to improve styling.
 

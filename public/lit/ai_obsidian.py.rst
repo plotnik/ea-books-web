@@ -89,6 +89,10 @@ Prompts
   Prioritize specificity and uniqueness in each question.
   """
 
+  prompt_improve = """You will be provided with statements in markdown,
+  and your task is to improve the content you are provided.
+  """
+
   prompt = prompt_summary
 
 Select LLM
@@ -394,7 +398,11 @@ Sidebar buttons
   if st.sidebar.button(':question: &nbsp; Ask questions', use_container_width=True):
       prompt = prompt_questions
       call_llm()
-  
+    
+  if st.sidebar.button(':exclamation: &nbsp; Improve', use_container_width=True):
+      prompt = prompt_improve
+      call_llm()
+    
   if "llm_result" in st.session_state and st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
       pyperclip.copy(st.session_state.llm_result)
         

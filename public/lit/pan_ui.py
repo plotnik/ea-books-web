@@ -98,6 +98,12 @@ with open(lua_codeblock_file, "w", encoding="utf-8") as fout:
   
 lua_filter = "--lua-filter=" + lua_codeblock_file
 
+# Input number of headers to bump
+#
+# ::
+
+bump_headers_n = st.sidebar.number_input("Bump headers", value=0, min_value=0)
+
 # Convert text.
 #
 # ::
@@ -127,8 +133,10 @@ def convert_text():
     result = run_pandoc(input_file, output_file)
     if o_ext == ".adoc": 
         result = asciidoc_headers(result)
+        result = bump_headers(result, bump_headers_n)
 
     st.text_area(label = "Output text", value = result, height = text_area_height) 
+
 
 # Remove lines that contain Pandoc's anchor markup: ``[[something]]``
 #
@@ -139,6 +147,16 @@ def asciidoc_headers(content):
     cleaned_content = re.sub(r'^\[\[.*?\]\]\s*\n', '', content, flags=re.MULTILINE)
     return cleaned_content     
 
+def bump_headers(text: str, n: int) -> str:
+    """Add n '=' characters to the start of each AsciiDoc header line."""
+    if n == 0:
+        return text
+
+    prefix = '=' * n
+    # Match lines starting with one or more '=' but not lines with only '=' (adornments)
+    pattern = re.compile(r'^(=+)(?=\s)', re.MULTILINE)
+    return pattern.sub(lambda m: prefix + m.group(1), text)
+    
 # Click button.
 #
 # ::

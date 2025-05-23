@@ -126,6 +126,10 @@
 <span class="s2">Prioritize specificity and uniqueness in each question.</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
+<span class="n">prompt_improve</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
+<span class="s2">and your task is to improve the content you are provided.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
 <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_summary</span>
 </pre></div>
 </div>
@@ -394,6 +398,10 @@ so we have added a separate configuration for them.</p>
 
 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:question: &amp;nbsp; Ask questions&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_questions</span>
+    <span class="n">call_llm</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:exclamation: &amp;nbsp; Improve&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_improve</span>
     <span class="n">call_llm</span><span class="p">()</span>
 
 <span class="k">if</span> <span class="s2">&quot;llm_result&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:clipboard: &amp;nbsp; Copy to clipboard&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>

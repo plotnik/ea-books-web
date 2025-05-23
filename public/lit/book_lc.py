@@ -130,7 +130,7 @@ st.write(f"### {current_folder}")
 # ::
 
 llm_models = [
-    "gemini-2.5-pro-exp-03-25",
+    "gemini-2.5-flash-preview-04-17",
     "gemini-2.0-flash",
     "gemma-3-27b-it",
 ]
