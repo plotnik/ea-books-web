@@ -17,10 +17,15 @@ Pandoc UI
   import re
   import os
   import subprocess
+  import pyperclip
 
 Print banner.
 
 ::
+
+  st.set_page_config(
+      page_title="Pandoc-UI"
+  )
 
   @st.cache_data
   def print_banner():
@@ -136,6 +141,10 @@ Convert text.
           result = bump_headers(result, bump_headers_n)
 
       st.text_area(label = "Output text", value = result, height = text_area_height) 
+    
+  # Save result to clipboard
+      pyperclip.copy(result)
+      st.sidebar.write(f'Copied to clipboard')
 
 
 Remove lines that contain Pandoc's anchor markup: ``[[something]]``
@@ -162,7 +171,7 @@ Click button.
 ::
 
   st.sidebar.write('---')
-  if st.sidebar.button('Convert', type='primary'):
+  if st.sidebar.button(':arrows_counterclockwise: &nbsp; Convert', type='primary', use_container_width=True):
       if i_ext == o_ext:
           st.error("Input and output formats shouldn't be the same!")
       elif text is None or text.strip() == '': 

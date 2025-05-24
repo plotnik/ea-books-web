@@ -59,10 +59,15 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyperclip</span>
 </pre></div>
 </div>
 <p>Print banner.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;Pandoc-UI&quot;</span>
+<span class="p">)</span>
+
+<span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                                ,--.                            ,--.</span>
@@ -166,6 +171,10 @@ We can use a <strong>custom Lua filter</strong> in Pandoc to transform the code 
         <span class="n">result</span> <span class="o">=</span> <span class="n">bump_headers</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">bump_headers_n</span><span class="p">)</span>
 
     <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Output text&quot;</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">text_area_height</span><span class="p">)</span>
+
+<span class="c1"># Save result to clipboard</span>
+    <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Remove lines that contain Pandoc’s anchor markup: <code class="docutils literal notranslate"><span class="pre">[[something]]</span></code></p>
@@ -187,7 +196,7 @@ We can use a <strong>custom Lua filter</strong> in Pandoc to transform the code 
 </div>
 <p>Click button.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Convert&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:arrows_counterclockwise: &amp;nbsp; Convert&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">i_ext</span> <span class="o">==</span> <span class="n">o_ext</span><span class="p">:</span>
         <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Input and output formats shouldn&#39;t be the same!&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>

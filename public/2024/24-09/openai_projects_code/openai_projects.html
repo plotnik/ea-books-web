@@ -447,6 +447,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_2_building_a_chatgpt_clone">2. Building a ChatGPT Clone</a></li>
+<li><a href="#_3_creating_and_deploying_a_code_bug_fixing_application_using_flask">3. Creating and Deploying a Code Bug-Fixing Application Using Flask</a>
+<ul class="sectlevel2">
+<li><a href="#_key_components_and_workflow">Key Components and Workflow:</a></li>
+<li><a href="#_development_setup">Development Setup:</a></li>
+<li><a href="#_testing">Testing:</a></li>
+<li><a href="#_deployment_to_azure_cloud">Deployment to Azure Cloud:</a></li>
+<li><a href="#_summary">Summary:</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -536,10 +545,152 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_3_creating_and_deploying_a_code_bug_fixing_application_using_flask">3. Creating and Deploying a Code Bug-Fixing Application Using Flask</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This chapter guides you through building and deploying an AI-powered
+code bug-fixing SaaS application called <strong>Code Bug Fixer</strong> using the Flask
+web framework and OpenAI’s GPT-3.5 model. The app helps developers by
+explaining code errors and providing fixed code snippets, streamlining
+debugging across any programming language.</p>
+</div>
+<div class="sect2">
+<h3 id="_key_components_and_workflow">Key Components and Workflow:</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Multiple ChatGPT API Requests:</strong> The app sends two simultaneous
+requests to ChatGPT—one to explain the error in plain English and
+another to fix the buggy code.</p>
+</li>
+<li>
+<p><strong>Flask Backend:</strong> Handles GET and POST requests, processes user input
+(buggy code and error message), calls the OpenAI API, and renders
+results.</p>
+</li>
+<li>
+<p><strong>Frontend UI:</strong> Built with HTML and CSS, featuring two input text areas
+for code and error, a "Code Fix" button, and two read-only text areas
+displaying the explanation and fixed code.</p>
+</li>
+<li>
+<p><strong>Styling:</strong> Uses CSS for a clean, modern, two-column layout with a
+blue-and-white color scheme and interactive button styling.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_development_setup">Development Setup:</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a VSCode project named <strong>CodeBugFixer</strong> with files: <code>app.py</code>,
+<code>config.py</code>, and a <code>templates/index.html</code>.</p>
+</li>
+<li>
+<p>Install Python 3.7+, Flask, and OpenAI Python libraries in a virtual
+environment.</p>
+</li>
+<li>
+<p>Store the OpenAI API key securely in <code>config.py</code>.</p>
+</li>
+<li>
+<p>Implement Flask routes and logic in <code>app.py</code> to handle form
+submissions and interact with the ChatGPT API.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_testing">Testing:</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Demonstrated fixing Python and Java code examples with typical errors.</p>
+</li>
+<li>
+<p>The app successfully explains errors and provides corrected code,
+verified by running the fixed code in appropriate IDEs.</p>
+</li>
+<li>
+<p>Shows versatility in handling multiple programming languages.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_deployment_to_azure_cloud">Deployment to Azure Cloud:</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Instructions to create a free Azure account and install the Azure CLI
+on macOS, Windows, or Linux.</p>
+</li>
+<li>
+<p>Prepare the project for deployment by creating a <code>requirements.txt</code>
+listing dependencies (<code>Flask==3.0.2</code>, <code>openai==1.13.3</code>).</p>
+</li>
+<li>
+<p>Deploy the app using the Azure CLI command
+<code>az webapp up --name &lt;app_name&gt;</code>.</p>
+</li>
+<li>
+<p>After deployment, the app is accessible globally via the provided
+Azure URL.</p>
+</li>
+<li>
+<p>Optionally embed the deployed app into a WordPress site using an
+iframe.</p>
+</li>
+<li>
+<p>Manage the deployed app through the Azure portal, with options to
+update or delete the deployment.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_summary">Summary:</h3>
+<div class="paragraph">
+<p>By following this chapter, you learn to build a scalable Flask web app
+that leverages OpenAI’s GPT-3.5 for code debugging assistance, create a
+user-friendly interface, test with real code examples, and deploy the
+app to Azure cloud for worldwide access. This equips you with practical
+skills to develop and host AI-powered SaaS applications.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>How does the Code Bug Fixer application architecturally handle simultaneous requests to OpenAI’s GPT-3.5 API to both explain and fix code errors, and what are the specific prompt structures used for each request?</strong></p>
+</li>
+<li>
+<p><strong>What is the detailed step-by-step process, including file structure and Flask route handling, for setting up the Code Bug Fixer project in VSCode to securely integrate the OpenAI API key and manage GET vs POST requests for user-submitted code and errors?</strong></p>
+</li>
+<li>
+<p><strong>What are the exact commands and configuration steps required to deploy the Flask-based Code Bug Fixer app to Microsoft Azure using the Azure CLI, including preparation of the requirements.txt file and naming conventions critical for successful deployment?</strong></p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-23 10:56:42 +0300
+Last updated 2025-05-24 11:47:54 +0300
 </div>
 </div>
 </body>

@@ -44,3 +44,75 @@ Overall, this chapter provides a comprehensive, step-by-step tutorial on creatin
 
 3. How does the jQuery-based frontend in the ChatGPT clone handle real-time user input submission and response display without page refresh, specifically detailing the AJAX GET request to the `/get` Flask route and the DOM manipulation to append chat messages dynamically?
 ====
+
+== 3. Creating and Deploying a Code Bug-Fixing Application Using Flask
+
+This chapter guides you through building and deploying an AI-powered
+code bug-fixing SaaS application called *Code Bug Fixer* using the Flask
+web framework and OpenAI’s GPT-3.5 model. The app helps developers by
+explaining code errors and providing fixed code snippets, streamlining
+debugging across any programming language.
+
+=== Key Components and Workflow:
+
+* *Multiple ChatGPT API Requests:* The app sends two simultaneous
+requests to ChatGPT—one to explain the error in plain English and
+another to fix the buggy code.
+* *Flask Backend:* Handles GET and POST requests, processes user input
+(buggy code and error message), calls the OpenAI API, and renders
+results.
+* *Frontend UI:* Built with HTML and CSS, featuring two input text areas
+for code and error, a "Code Fix" button, and two read-only text areas
+displaying the explanation and fixed code.
+* *Styling:* Uses CSS for a clean, modern, two-column layout with a
+blue-and-white color scheme and interactive button styling.
+
+=== Development Setup:
+
+* Create a VSCode project named *CodeBugFixer* with files: `+app.py+`,
+`+config.py+`, and a `+templates/index.html+`.
+* Install Python 3.7+, Flask, and OpenAI Python libraries in a virtual
+environment.
+* Store the OpenAI API key securely in `+config.py+`.
+* Implement Flask routes and logic in `+app.py+` to handle form
+submissions and interact with the ChatGPT API.
+
+=== Testing:
+
+* Demonstrated fixing Python and Java code examples with typical errors.
+* The app successfully explains errors and provides corrected code,
+verified by running the fixed code in appropriate IDEs.
+* Shows versatility in handling multiple programming languages.
+
+=== Deployment to Azure Cloud:
+
+* Instructions to create a free Azure account and install the Azure CLI
+on macOS, Windows, or Linux.
+* Prepare the project for deployment by creating a `+requirements.txt+`
+listing dependencies (`+Flask==3.0.2+`, `+openai==1.13.3+`).
+* Deploy the app using the Azure CLI command
+`+az webapp up --name <app_name>+`.
+* After deployment, the app is accessible globally via the provided
+Azure URL.
+* Optionally embed the deployed app into a WordPress site using an
+iframe.
+* Manage the deployed app through the Azure portal, with options to
+update or delete the deployment.
+
+=== Summary:
+
+By following this chapter, you learn to build a scalable Flask web app
+that leverages OpenAI’s GPT-3.5 for code debugging assistance, create a
+user-friendly interface, test with real code examples, and deploy the
+app to Azure cloud for worldwide access. This equips you with practical
+skills to develop and host AI-powered SaaS applications.
+
+[CAUTION]
+====
+1. **How does the Code Bug Fixer application architecturally handle simultaneous requests to OpenAI’s GPT-3.5 API to both explain and fix code errors, and what are the specific prompt structures used for each request?**
+
+2. **What is the detailed step-by-step process, including file structure and Flask route handling, for setting up the Code Bug Fixer project in VSCode to securely integrate the OpenAI API key and manage GET vs POST requests for user-submitted code and errors?**
+
+3. **What are the exact commands and configuration steps required to deploy the Flask-based Code Bug Fixer app to Microsoft Azure using the Azure CLI, including preparation of the requirements.txt file and naming conventions critical for successful deployment?**
+====
+
