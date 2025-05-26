@@ -101,6 +101,8 @@ prompt = prompt_summary
 # ::
 
 llm_prices = {
+    "gemini-2.5-flash-preview-05-20": 0.0,
+    "gemini-2.5-pro-preview-05-06": 0.0,
     "gemma-3-27b-it": 0.0,
     "gemini-2.0-flash": 0.0,
     "gpt-4.1-mini": 0.4,
@@ -109,7 +111,6 @@ llm_prices = {
     "gpt-4o-mini": 0.15,
     "o3-mini": 1.10,
     "gpt-4o": 2.5,
-    "o1": 15.0,
 }
 
 # Remember which LLM was used last time
