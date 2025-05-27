@@ -1,0 +1,35 @@
+= Chapter 9: Upgrading from Spring Boot 2.x to Spring Boot 3.0
+:icons: font
+:toc: left
+:source-highlighter: coderay
+
+link:sboot_proven.html[<Contents>]
+
+== Preparing the application
+
+To prepare for a major upgrade from Spring Boot 2 to Spring Boot 3, it is strongly recommended to first upgrade to the latest Spring Boot 2.7.x version (e.g., 2.7.18).
+
+Key preparatory steps include:
+
+1.  **Upgrade Spring Boot version** to the latest 2.7.x.
+2.  **Update Java version** to Java 17, which is the minimum supported version for Spring Boot 3.
+3.  **Address all deprecated components** and APIs.
+
+The provided recipe demonstrates this process using a sample application, initially on Spring 2.6 and Java 11, aiming to bring it to Spring 2.7.18 and Java 17 with deprecations resolved.
+
+The practical steps involve:
+
+*   **Identifying and replacing deprecated classes**, such as changing `DataSourceInitializationMode` to `DatabaseInitializationMode`, often guided by deprecation warnings in IDEs or compile output.
+*   **Updating the Spring Boot parent version** in the `pom.xml` file to 2.7.18.
+*   **Ensuring Java Development Kit (JDK) 17 is installed and configured** (e.g., via SDKMAN! or IDE settings), and then updating the `<java.version>` property in `pom.xml` to 17.
+
+The rationale behind these steps is to facilitate a smoother transition by gradually addressing changes and deprecations. Skipping minor versions (like 2.7.x) can lead to missing crucial deprecation warnings and alternative solutions, resulting in "class not found" errors during the major Spring Boot 3 upgrade.
+
+Additionally, it's noted that Spring Boot 3.0 uses Spring Framework 6.0, meaning any explicit Spring Framework dependencies in the project will also need to be upgraded. Prerequisites for the sample application include a running PostgreSQL server.
+
+[CAUTION]
+====
+1.  When preparing a Spring Boot 2.6 application for migration, what specific class is identified as deprecated in Spring Boot 2.6.0 and what is its recommended replacement?
+2.  What are the initial Spring Boot and Java versions of the sample application used in this recipe, and what are the target versions after the preparation steps?
+3.  According to the text, why is it recommended *not* to skip minor Spring Boot versions (e.g., 2.7.x) when upgrading to a major version like Spring Boot 3?
+====
