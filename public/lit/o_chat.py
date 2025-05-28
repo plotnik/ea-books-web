@@ -1,8 +1,9 @@
 # Obsidian Chat (LI)
 # ==================
 #
-# Obsidian Chat using LlamaIndex
+# *Obsidian Chat using LlamaIndex*
 #
+# To find the Obsidian folder, this script searches the current directory for the first subfolder whose name ends with " Book".
 #
 # .. csv-table:: LlamaIndex Links
 #    :header: "Name", "URL"
