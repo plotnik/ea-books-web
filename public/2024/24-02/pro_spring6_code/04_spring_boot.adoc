@@ -26,3 +26,94 @@ Specifically, it will cover:
 2.  Which two specific interfaces does Spring offer to make a bean "Spring aware" by allowing it to obtain its assigned name and reference its `ApplicationContext` instance, as discussed in this chapter?
 3.  According to this chapter, which specific Spring version introduced the ability to configure bean definitions using the Groovy language, and how is this approach positioned as an alternative or supplement to existing configuration styles?
 ====
+
+== Spring’s Impact on Application Portability
+
+The text discusses the trade-off between using Spring-specific features and ensuring application portability across different IoC containers. While avoiding Spring-specific features might seem to enhance portability, it means sacrificing the extensive functionality Spring offers.
+
+The author advises against creating unnecessary portability requirements, as end-users typically prioritize functionality over the ability to run on multiple IoC containers, and building on the "lowest common denominator" can disadvantage an application.
+
+However, the text argues that coupling an application to Spring can paradoxically *increase* its portability in a wider scope. As a freely available, open-source, vendor-agnostic framework, Spring allows applications to run wherever Java runs. It provides capabilities similar to JEE and simplifies many aspects of it, enabling sophisticated web applications to run in simpler servlet containers by replacing vendor-specific or configuration-dependent JEE features with Spring's equivalents.
+
+[CAUTION]
+====
+1.  According to the text, what is the primary trade-off when prioritizing application portability between different IoC containers over using Spring-specific features?
+2.  Which specific book is cited in the text as providing a more detailed discussion on "phantom requirements" related to project development?
+3.  In what ways does the text argue that coupling an application to the Spring Framework can actually *increase* its portability in a wider scope, despite being specific to Spring?
+====
+
+== Bean Life-Cycle Management
+
+Spring IoC containers, including Spring, allow beans to receive notifications at specific points in their lifecycle to perform relevant processing. The two key events are *post-initialization* and *pre-destruction*.
+
+*   **Post-initialization** occurs after Spring has set all property values and completed any configured dependency checks.
+*   **Pre-destruction** is fired just before Spring destroys the bean instance.
+
+A notable exception is that beans with **prototype scope** will *not* receive the pre-destruction event, although they do receive post-initialization notifications.
+
+Spring provides three mechanisms for beans to hook into these lifecycle events:
+
+1.  **Interface-based mechanism:** The bean implements a Spring-specific interface (e.g., `InitializingBean`, `DisposableBean`), and Spring invokes a defined callback method.
+2.  **Method-based mechanism:** You specify the names of initialization and destruction methods in your `ApplicationContext` configuration.
+3.  **Annotation-based mechanism:** You use JSR-250 annotations (`@PostConstruct` for post-initialization, `@PreDestroy` for pre-destruction) on methods within the bean class.
+
+While all three achieve the same goal, the choice depends on application requirements. Interface-based mechanisms are widely used within Spring itself and can be convenient for many beans of the same type or when coupling to Spring is already present. However, for your own beans, method-based or annotation-based (especially JSR-250, which is a standard) approaches offer better portability as they don't require implementing Spring-specific interfaces. If a bean is intended to be self-contained and used across different Spring projects, the interface-based mechanism is recommended. When using annotations, ensure your IoC container supports the JSR-250 standard.
+
+[CAUTION]
+====
+1.  What is the specific exception regarding pre-destruction life-cycle events for beans with prototype scope in Spring?
+2.  According to the text, what are the specific scenarios or application requirements that would lead a developer to choose the interface-based mechanism over method-based or annotation-based mechanisms for Spring bean life-cycle notifications?
+3.  What is a key advantage of using JSR-250 annotations for Spring bean life-cycle callbacks compared to Spring's interface-based mechanism, and what is a prerequisite for using them?
+====
+
+== Hooking into Bean Creation
+
+Spring bean initialization callbacks allow a bean to verify if all its required dependencies are met and apply custom logic to dependency resolution, such as providing defaults for optional dependencies. This is crucial because Spring's automatic dependency checking is an all-or-nothing approach.
+
+These callbacks are invoked *after* Spring has finished injecting all possible dependencies, making them suitable for checks that cannot be performed in the constructor (as dependencies aren't available yet). Beyond dependency validation, initialization callbacks are also ideal for triggering actions that a bean must perform automatically based on its configuration, such as starting a scheduler.
+
+[CAUTION]
+====
+1.  Beyond Spring's all-or-nothing dependency checking, what specific opportunities does an initialization callback offer for applying custom logic to dependency resolution, such as handling optional dependencies with defaults?
+2.  Why is a bean's constructor an unsuitable place to verify if all its required dependencies are satisfied, and when does Spring's initialization callback execute to make such checks feasible?
+3.  In addition to validating dependencies, what other primary purpose does Spring's initialization callback serve, especially regarding a bean's automatic actions triggered by its configuration?
+====
+
+=== Executing a Method When a Bean Is Created
+
+====
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/initmethod/InitMethodDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/initmethod/InitMethodDemo.java</a>
+++++
+====
+
+Spring allows you to define an initialization method for a bean, which is invoked after the bean's properties have been set. This callback mechanism is beneficial for:
+
+*   Decoupling your application from Spring.
+*   Integrating pre-built or third-party beans.
+*   Managing a small number of similar beans.
+
+To designate an initialization method, you specify its name using the `initMethod` attribute within the `@Bean` annotation in Java configuration classes.
+
+The provided example demonstrates this with a `Singer` bean that includes an `init()` method. This `init()` method performs validation and sets default values:
+
+*   If the `name` property is null, it assigns a `DEFAULT_NAME`.
+*   If the `age` property is not set (i.e., `Integer.MIN_VALUE`), it throws an `IllegalArgumentException`.
+
+In the `SingerConfiguration`, three `Singer` beans are defined, all using `init()` as their initialization method:
+
+1.  **`singerOne`**: Has both `name` and `age` set, so `init()` makes no changes.
+2.  **`singerTwo`**: Lacks a `name`, so `init()` assigns the `DEFAULT_NAME`.
+3.  **`singerThree`**: Lacks an `age`, causing `init()` to throw an `IllegalArgumentException`, which Spring wraps in a `BeanCreationException`, preventing the bean's creation.
+
+This approach ensures that beans are correctly configured and validated before they are used. The initialization method must not accept any arguments, though its return type is ignored. While static initialization methods are possible, non-static methods are generally preferred for validating instance-specific state.
+
+---
+
+[CAUTION]
+====
+1.  According to the `Singer` class's `init()` method, what specific actions are taken if the `name` property is `null` or if the `age` property is `Integer.MIN_VALUE` during bean initialization?
+2.  When the `singerThree` bean is processed by Spring, as configured in `Listing 4-2`, what is the specific reason for its failure, and what type of exception does Spring wrap the underlying error in?
+3.  What is the primary constraint on an initialization method designated via the `initMethod` attribute in the `@Bean` annotation, and why is using a static initialization method generally discouraged for validating a bean's state?
+====

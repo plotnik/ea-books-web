@@ -435,11 +435,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
 <h1>Chapter 4. Advanced Spring Configuration and Spring Boot</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_springs_impact_on_application_portability">Spring’s Impact on Application Portability</a></li>
+<li><a href="#_bean_life_cycle_management">Bean Life-Cycle Management</a></li>
+<li><a href="#_hooking_into_bean_creation">Hooking into Bean Creation</a>
+<ul class="sectlevel2">
+<li><a href="#_executing_a_method_when_a_bean_is_created">Executing a Method When a Bean Is Created</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
 <p><a href="pro_spring_6.html">&lt;Contents&gt;</a></p>
 </div>
@@ -506,9 +520,233 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </table>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_springs_impact_on_application_portability">Spring’s Impact on Application Portability</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The text discusses the trade-off between using Spring-specific features and ensuring application portability across different IoC containers. While avoiding Spring-specific features might seem to enhance portability, it means sacrificing the extensive functionality Spring offers.</p>
+</div>
+<div class="paragraph">
+<p>The author advises against creating unnecessary portability requirements, as end-users typically prioritize functionality over the ability to run on multiple IoC containers, and building on the "lowest common denominator" can disadvantage an application.</p>
+</div>
+<div class="paragraph">
+<p>However, the text argues that coupling an application to Spring can paradoxically <strong>increase</strong> its portability in a wider scope. As a freely available, open-source, vendor-agnostic framework, Spring allows applications to run wherever Java runs. It provides capabilities similar to JEE and simplifies many aspects of it, enabling sophisticated web applications to run in simpler servlet containers by replacing vendor-specific or configuration-dependent JEE features with Spring&#8217;s equivalents.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>According to the text, what is the primary trade-off when prioritizing application portability between different IoC containers over using Spring-specific features?</p>
+</li>
+<li>
+<p>Which specific book is cited in the text as providing a more detailed discussion on "phantom requirements" related to project development?</p>
+</li>
+<li>
+<p>In what ways does the text argue that coupling an application to the Spring Framework can actually <strong>increase</strong> its portability in a wider scope, despite being specific to Spring?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_bean_life_cycle_management">Bean Life-Cycle Management</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring IoC containers, including Spring, allow beans to receive notifications at specific points in their lifecycle to perform relevant processing. The two key events are <strong>post-initialization</strong> and <strong>pre-destruction</strong>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Post-initialization</strong> occurs after Spring has set all property values and completed any configured dependency checks.</p>
+</li>
+<li>
+<p><strong>Pre-destruction</strong> is fired just before Spring destroys the bean instance.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A notable exception is that beans with <strong>prototype scope</strong> will <strong>not</strong> receive the pre-destruction event, although they do receive post-initialization notifications.</p>
+</div>
+<div class="paragraph">
+<p>Spring provides three mechanisms for beans to hook into these lifecycle events:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Interface-based mechanism:</strong> The bean implements a Spring-specific interface (e.g., <code>InitializingBean</code>, <code>DisposableBean</code>), and Spring invokes a defined callback method.</p>
+</li>
+<li>
+<p><strong>Method-based mechanism:</strong> You specify the names of initialization and destruction methods in your <code>ApplicationContext</code> configuration.</p>
+</li>
+<li>
+<p><strong>Annotation-based mechanism:</strong> You use JSR-250 annotations (<code>@PostConstruct</code> for post-initialization, <code>@PreDestroy</code> for pre-destruction) on methods within the bean class.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>While all three achieve the same goal, the choice depends on application requirements. Interface-based mechanisms are widely used within Spring itself and can be convenient for many beans of the same type or when coupling to Spring is already present. However, for your own beans, method-based or annotation-based (especially JSR-250, which is a standard) approaches offer better portability as they don&#8217;t require implementing Spring-specific interfaces. If a bean is intended to be self-contained and used across different Spring projects, the interface-based mechanism is recommended. When using annotations, ensure your IoC container supports the JSR-250 standard.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>What is the specific exception regarding pre-destruction life-cycle events for beans with prototype scope in Spring?</p>
+</li>
+<li>
+<p>According to the text, what are the specific scenarios or application requirements that would lead a developer to choose the interface-based mechanism over method-based or annotation-based mechanisms for Spring bean life-cycle notifications?</p>
+</li>
+<li>
+<p>What is a key advantage of using JSR-250 annotations for Spring bean life-cycle callbacks compared to Spring&#8217;s interface-based mechanism, and what is a prerequisite for using them?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_hooking_into_bean_creation">Hooking into Bean Creation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring bean initialization callbacks allow a bean to verify if all its required dependencies are met and apply custom logic to dependency resolution, such as providing defaults for optional dependencies. This is crucial because Spring&#8217;s automatic dependency checking is an all-or-nothing approach.</p>
+</div>
+<div class="paragraph">
+<p>These callbacks are invoked <strong>after</strong> Spring has finished injecting all possible dependencies, making them suitable for checks that cannot be performed in the constructor (as dependencies aren&#8217;t available yet). Beyond dependency validation, initialization callbacks are also ideal for triggering actions that a bean must perform automatically based on its configuration, such as starting a scheduler.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Beyond Spring&#8217;s all-or-nothing dependency checking, what specific opportunities does an initialization callback offer for applying custom logic to dependency resolution, such as handling optional dependencies with defaults?</p>
+</li>
+<li>
+<p>Why is a bean&#8217;s constructor an unsuitable place to verify if all its required dependencies are satisfied, and when does Spring&#8217;s initialization callback execute to make such checks feasible?</p>
+</li>
+<li>
+<p>In addition to validating dependencies, what other primary purpose does Spring&#8217;s initialization callback serve, especially regarding a bean&#8217;s automatic actions triggered by its configuration?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_executing_a_method_when_a_bean_is_created">Executing a Method When a Bean Is Created</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/initmethod/InitMethodDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/initmethod/InitMethodDemo.java</a>
+</div>
+</div>
+<div class="paragraph">
+<p>Spring allows you to define an initialization method for a bean, which is invoked after the bean&#8217;s properties have been set. This callback mechanism is beneficial for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Decoupling your application from Spring.</p>
+</li>
+<li>
+<p>Integrating pre-built or third-party beans.</p>
+</li>
+<li>
+<p>Managing a small number of similar beans.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To designate an initialization method, you specify its name using the <code>initMethod</code> attribute within the <code>@Bean</code> annotation in Java configuration classes.</p>
+</div>
+<div class="paragraph">
+<p>The provided example demonstrates this with a <code>Singer</code> bean that includes an <code>init()</code> method. This <code>init()</code> method performs validation and sets default values:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If the <code>name</code> property is null, it assigns a <code>DEFAULT_NAME</code>.</p>
+</li>
+<li>
+<p>If the <code>age</code> property is not set (i.e., <code>Integer.MIN_VALUE</code>), it throws an <code>IllegalArgumentException</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In the <code>SingerConfiguration</code>, three <code>Singer</code> beans are defined, all using <code>init()</code> as their initialization method:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong><code>singerOne</code></strong>: Has both <code>name</code> and <code>age</code> set, so <code>init()</code> makes no changes.</p>
+</li>
+<li>
+<p><strong><code>singerTwo</code></strong>: Lacks a <code>name</code>, so <code>init()</code> assigns the <code>DEFAULT_NAME</code>.</p>
+</li>
+<li>
+<p><strong><code>singerThree</code></strong>: Lacks an <code>age</code>, causing <code>init()</code> to throw an <code>IllegalArgumentException</code>, which Spring wraps in a <code>BeanCreationException</code>, preventing the bean&#8217;s creation.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This approach ensures that beans are correctly configured and validated before they are used. The initialization method must not accept any arguments, though its return type is ignored. While static initialization methods are possible, non-static methods are generally preferred for validating instance-specific state.</p>
+</div>
+<hr>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>According to the <code>Singer</code> class&#8217;s <code>init()</code> method, what specific actions are taken if the <code>name</code> property is <code>null</code> or if the <code>age</code> property is <code>Integer.MIN_VALUE</code> during bean initialization?</p>
+</li>
+<li>
+<p>When the <code>singerThree</code> bean is processed by Spring, as configured in <code>Listing 4-2</code>, what is the specific reason for its failure, and what type of exception does Spring wrap the underlying error in?</p>
+</li>
+<li>
+<p>What is the primary constraint on an initialization method designated via the <code>initMethod</code> attribute in the <code>@Bean</code> annotation, and why is using a static initialization method generally discouraged for validating a bean&#8217;s state?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-28 10:04:08 +0300
+Last updated 2025-05-29 09:42:13 +0300
 </div>
 </div>
 </body>

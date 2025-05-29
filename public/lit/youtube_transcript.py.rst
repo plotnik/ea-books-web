@@ -41,7 +41,7 @@ Get transcript from YouTube URL
 ::
 
   youtube_url = st.text_input("YouTube URL")
-  lang = st.radio("Language", ["ru","en"], horizontal=True)
+  lang = st.radio("Language", ["ru","en","by"], horizontal=True)
 
   transcript_file = "transcript.txt"
 
@@ -86,8 +86,8 @@ Get trunscript summary
   """
 
   llm_prices = {
+      "gemini-2.5-flash-preview-05-20": 0.0,
       "gemini-2.0-flash": 0.0,
-      "gemini-2.5-pro-exp-03-25": 0.0,
       "gemma-3-27b-it": 0.0,
       "gpt-4.1-mini": 0.4,
       "gpt-4.1-nano": 0.1,
