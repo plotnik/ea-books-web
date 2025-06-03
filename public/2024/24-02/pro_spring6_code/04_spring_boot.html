@@ -446,6 +446,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_hooking_into_bean_creation">Hooking into Bean Creation</a>
 <ul class="sectlevel2">
 <li><a href="#_executing_a_method_when_a_bean_is_created">Executing a Method When a Bean Is Created</a></li>
+<li><a href="#_implementing_the_initializingbean_interface">Implementing the InitializingBean Interface</a></li>
+<li><a href="#_using_the_jsr_250_postconstruct_annotation">Using the JSR-250 @PostConstruct Annotation</a></li>
 </ul>
 </li>
 </ul>
@@ -741,12 +743,213 @@ chapter04/src/main/java/com/apress/prospring6/four/initmethod/InitMethodDemo.jav
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_implementing_the_initializingbean_interface">Implementing the InitializingBean Interface</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/intf/InitializingBeanDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/intf/InitializingBeanDemo.java</a>
+<hr>
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/intf/DisposableBeanDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/intf/DisposableBeanDemo.java</a>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>InitializingBean</code> interface in Spring allows developers to execute custom code within a bean immediately after Spring has finished configuring it. This interface defines a single method, <code>afterPropertiesSet()</code>, which serves the same purpose as a traditional initialization method.</p>
+</div>
+<div class="paragraph">
+<p>This post-configuration hook is useful for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Validating</strong> the bean&#8217;s configuration to ensure it&#8217;s in a valid state.</p>
+</li>
+<li>
+<p><strong>Providing default values</strong> for properties if they haven&#8217;t been explicitly set.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The provided example demonstrates a <code>Singer</code> class implementing <code>InitializingBean</code>. Its <code>afterPropertiesSet()</code> method checks if the <code>name</code> property is null and sets a default if so, and it throws an <code>IllegalArgumentException</code> if the <code>age</code> property is not set. Using <code>InitializingBean</code> eliminates the need to specify an <code>initMethod</code> attribute in the bean&#8217;s configuration, yielding identical results to the <code>initMethod</code> approach.</p>
+</div>
+<hr>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>According to the <code>Singer</code> class implementation in Listing 4-4, what specific exception is thrown if the <code>age</code> property is not set for a <code>Singer</code> bean?</p>
+</li>
+<li>
+<p>What is the default <code>name</code> value assigned to a <code>Singer</code> bean by its <code>afterPropertiesSet()</code> method if no name is explicitly provided?</p>
+</li>
+<li>
+<p>How does the <code>afterPropertiesSet()</code> method in the <code>Singer</code> class (Listing 4-4) handle the <code>name</code> and <code>age</code> properties to ensure valid configuration?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_using_the_jsr_250_postconstruct_annotation">Using the JSR-250 @PostConstruct Annotation</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/jsr250/PostConstructDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/jsr250/PostConstructDemo.java</a>
+</div>
+</div>
+<div class="paragraph">
+<p>JSR-250 annotations, specifically <code>@PostConstruct</code>, are supported by
+Spring (starting from version 2.5) to define bean lifecycle
+initialization methods.</p>
+</div>
+<div class="paragraph">
+<p><strong>Key Points:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Purpose:</strong> <code>@PostConstruct</code> marks a method that Spring should call
+after a bean&#8217;s properties have been set but before the bean is fully
+ready for use.</p>
+</li>
+<li>
+<p><strong>Example (<code>Singer</code> class):</strong> The provided <code>Singer</code> class uses
+<code>@PostConstruct</code> on a <code>postConstruct()</code> method to perform
+initialization logic, such as setting a default name or validating the
+<code>age</code> property.</p>
+</li>
+<li>
+<p><strong>Alternatives:</strong> <code>@PostConstruct</code> is an alternative to:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Using <code>initMethod</code> attribute with <code>@Bean</code> (e.g.,
+<code>@Bean(initMethod="myInitMethod")</code>).</p>
+</li>
+<li>
+<p>Implementing the <code>InitializingBean</code> interface.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Method Naming:</strong> The method annotated with <code>@PostConstruct</code> can have
+any name (e.g., <code>postConstruct</code> is just a convention).</p>
+</li>
+<li>
+<p><strong>Comparison of Approaches:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>@Bean(initMethod=..)</code>:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Benefit:</strong> Decouples application from Spring.</p>
+</li>
+<li>
+<p><strong>Drawback:</strong> Requires configuring the initialization method for
+<em>each</em> bean.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>InitializingBean</code> interface:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Benefit:</strong> Specifies initialization callback once for all instances
+of a class.</p>
+</li>
+<li>
+<p><strong>Drawback:</strong> Couples the application to Spring.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>@PostConstruct</code> annotation:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Benefit:</strong> Applied directly to the method, clear intent.</p>
+</li>
+<li>
+<p><strong>Drawback:</strong> Requires the IoC container to support JSR-250.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Choosing an Approach:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>For <strong>portability</strong> (less coupling to Spring), use
+<code>@Bean(initMethod=..)</code> or <code>@PostConstruct</code>.</p>
+</li>
+<li>
+<p>To <strong>reduce configuration</strong> and potential errors, use
+<code>InitializingBean</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Private Initialization Methods:</strong> Both <code>@Bean(initMethod=..)</code> and
+<code>@PostConstruct</code> allow initialization methods to be declared as
+<code>private</code>. Spring can still call them via reflection, preventing
+accidental external calls and ensuring they are only invoked once during
+bean creation.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>According to the text, what specific access right advantage do <code>@Bean(initMethod=..)</code> and <code>@PostConstruct</code> offer for initialization methods, and why is this considered beneficial?</p>
+</li>
+<li>
+<p>In the <code>Singer</code> class example (Listing 4-5), what specific conditions does the <code>postConstruct()</code> method check for, and what actions does it take if those conditions are not met?</p>
+</li>
+<li>
+<p>When comparing bean initialization approaches, what is the main benefit of using the <code>InitializingBean</code> interface, and what is its primary drawback regarding application coupling?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-29 09:42:13 +0300
+Last updated 2025-06-03 09:50:03 +0300
 </div>
 </div>
 </body>

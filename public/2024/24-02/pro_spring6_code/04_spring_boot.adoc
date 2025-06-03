@@ -117,3 +117,96 @@ This approach ensures that beans are correctly configured and validated before t
 2.  When the `singerThree` bean is processed by Spring, as configured in `Listing 4-2`, what is the specific reason for its failure, and what type of exception does Spring wrap the underlying error in?
 3.  What is the primary constraint on an initialization method designated via the `initMethod` attribute in the `@Bean` annotation, and why is using a static initialization method generally discouraged for validating a bean's state?
 ====
+
+=== Implementing the InitializingBean Interface
+
+====
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/intf/InitializingBeanDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/intf/InitializingBeanDemo.java</a>
+++++
+
+---
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/intf/DisposableBeanDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/intf/DisposableBeanDemo.java</a>
+++++
+====
+
+The `InitializingBean` interface in Spring allows developers to execute custom code within a bean immediately after Spring has finished configuring it. This interface defines a single method, `afterPropertiesSet()`, which serves the same purpose as a traditional initialization method.
+
+This post-configuration hook is useful for:
+
+*   **Validating** the bean's configuration to ensure it's in a valid state.
+*   **Providing default values** for properties if they haven't been explicitly set.
+
+The provided example demonstrates a `Singer` class implementing `InitializingBean`. Its `afterPropertiesSet()` method checks if the `name` property is null and sets a default if so, and it throws an `IllegalArgumentException` if the `age` property is not set. Using `InitializingBean` eliminates the need to specify an `initMethod` attribute in the bean's configuration, yielding identical results to the `initMethod` approach.
+
+---
+
+[CAUTION]
+====
+1.  According to the `Singer` class implementation in Listing 4-4, what specific exception is thrown if the `age` property is not set for a `Singer` bean?
+2.  What is the default `name` value assigned to a `Singer` bean by its `afterPropertiesSet()` method if no name is explicitly provided?
+3.  How does the `afterPropertiesSet()` method in the `Singer` class (Listing 4-4) handle the `name` and `age` properties to ensure valid configuration?
+====
+
+=== Using the JSR-250 @PostConstruct Annotation
+
+====
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/jsr250/PostConstructDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/jsr250/PostConstructDemo.java</a>
+++++
+====
+
+JSR-250 annotations, specifically `+@PostConstruct+`, are supported by
+Spring (starting from version 2.5) to define bean lifecycle
+initialization methods.
+
+*Key Points:*
+
+* *Purpose:* `+@PostConstruct+` marks a method that Spring should call
+after a bean's properties have been set but before the bean is fully
+ready for use.
+* *Example (`+Singer+` class):* The provided `+Singer+` class uses
+`+@PostConstruct+` on a `+postConstruct()+` method to perform
+initialization logic, such as setting a default name or validating the
+`+age+` property.
+* *Alternatives:* `+@PostConstruct+` is an alternative to:
+** Using `+initMethod+` attribute with `+@Bean+` (e.g.,
+`+@Bean(initMethod="myInitMethod")+`).
+** Implementing the `+InitializingBean+` interface.
+* *Method Naming:* The method annotated with `+@PostConstruct+` can have
+any name (e.g., `+postConstruct+` is just a convention).
+* *Comparison of Approaches:*
+** *`+@Bean(initMethod=..)+`:*
+*** *Benefit:* Decouples application from Spring.
+*** *Drawback:* Requires configuring the initialization method for
+_each_ bean.
+** *`+InitializingBean+` interface:*
+*** *Benefit:* Specifies initialization callback once for all instances
+of a class.
+*** *Drawback:* Couples the application to Spring.
+** *`+@PostConstruct+` annotation:*
+*** *Benefit:* Applied directly to the method, clear intent.
+*** *Drawback:* Requires the IoC container to support JSR-250.
+* *Choosing an Approach:*
+** For *portability* (less coupling to Spring), use
+`+@Bean(initMethod=..)+` or `+@PostConstruct+`.
+** To *reduce configuration* and potential errors, use
+`+InitializingBean+`.
+* *Private Initialization Methods:* Both `+@Bean(initMethod=..)+` and
+`+@PostConstruct+` allow initialization methods to be declared as
+`+private+`. Spring can still call them via reflection, preventing
+accidental external calls and ensuring they are only invoked once during
+bean creation.
+
+---
+
+[CAUTION]
+====
+1.  According to the text, what specific access right advantage do `@Bean(initMethod=..)` and `@PostConstruct` offer for initialization methods, and why is this considered beneficial?
+2.  In the `Singer` class example (Listing 4-5), what specific conditions does the `postConstruct()` method check for, and what actions does it take if those conditions are not met?
+3.  When comparing bean initialization approaches, what is the main benefit of using the `InitializingBean` interface, and what is its primary drawback regarding application coupling?
+====
