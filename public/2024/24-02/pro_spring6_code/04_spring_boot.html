@@ -448,6 +448,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_executing_a_method_when_a_bean_is_created">Executing a Method When a Bean Is Created</a></li>
 <li><a href="#_implementing_the_initializingbean_interface">Implementing the InitializingBean Interface</a></li>
 <li><a href="#_using_the_jsr_250_postconstruct_annotation">Using the JSR-250 @PostConstruct Annotation</a></li>
+<li><a href="#_understanding_order_of_resolution">Understanding Order of Resolution</a></li>
 </ul>
 </li>
 </ul>
@@ -944,12 +945,70 @@ bean creation.</p>
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_understanding_order_of_resolution">Understanding Order of Resolution</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/all/AllInitMethodsDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/all/AllInitMethodsDemo.java</a>
+</div>
+</div>
+<div class="paragraph">
+<p>The provided text details the specific order in which Spring invokes various initialization mechanisms on a single bean instance. This order is a fundamental part of the Spring bean creation lifecycle:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Constructor Call:</strong> The bean instance is first created by calling its constructor.</p>
+</li>
+<li>
+<p><strong>Dependency Injection:</strong> Dependencies are injected, typically via setters (e.g., methods annotated with <code>@Autowired</code>), which is handled by infrastructure beans like <code>AutowiredAnnotationBeanPostProcessor</code>.</p>
+</li>
+<li>
+<p><strong>Pre-Initialization Callbacks (<code>@PostConstruct</code>):</strong> Before the main initialization, pre-initialization <code>BeanPostProcessor</code>-s are consulted. The <code>@PostConstruct</code> annotated method is invoked at this stage (managed by <code>CommonAnnotationBeanPostProcessor</code>). This happens <strong>after</strong> construction and dependency injection, but <strong>before</strong> <code>afterPropertiesSet()</code> and the <code>initMethod</code>.</p>
+</li>
+<li>
+<p><strong><code>InitializingBean.afterPropertiesSet()</code>:</strong> If the bean implements the <code>InitializingBean</code> interface, its <code>afterPropertiesSet()</code> method is executed next, once all bean properties have been set.</p>
+</li>
+<li>
+<p><strong>Custom Initialization Method (<code>initMethod</code>):</strong> Finally, the method specified by the <code>initMethod</code> attribute in the <code>@Bean</code> annotation is executed. This is considered the "actual" initialization method of the bean.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The <code>AllInitMethodsDemo</code> example, including the <code>MultiInit</code> class and <code>MultiInitConfiguration</code>, clearly demonstrates this precise order in its console output: Constructor &#8594; Setter (<code>@Autowired</code>) &#8594; <code>@PostConstruct</code> &#8594; <code>afterPropertiesSet()</code> &#8594; <code>initMethod</code>. Spring leverages internal <code>BeanPostProcessor</code> infrastructure beans (like <code>CommonAnnotationBeanPostProcessor</code> for <code>@PostConstruct</code> and <code>AutowiredAnnotationBeanPostProcessor</code> for <code>@Autowired</code>) to manage these steps.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>When a single Spring bean instance utilizes all available initialization mechanisms (constructor, <code>@Autowired</code> setters, <code>@PostConstruct</code>, <code>InitializingBean.afterPropertiesSet()</code>, and a method specified by <code>@Bean(initMethod)</code>), what is the precise order in which these methods are invoked by Spring?</p>
+</li>
+<li>
+<p>Which specific Spring infrastructure <code>BeanPostProcessor</code> is responsible for processing the <code>@PostConstruct</code> annotation, and at what stage of the bean creation process (relative to dependency injection and <code>afterPropertiesSet()</code>) does it execute the annotated method?</p>
+</li>
+<li>
+<p>According to the <code>AllInitMethodsDemo</code> example and its console output (Listing 4-7), what is the exact sequence of log messages indicating the execution order of the <code>MultiInit</code> bean&#8217;s lifecycle methods, from its constructor call to its final initialization method?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-06-03 09:50:03 +0300
+Last updated 2025-06-04 09:24:59 +0300
 </div>
 </div>
 </body>

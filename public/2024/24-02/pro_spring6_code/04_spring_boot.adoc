@@ -210,3 +210,29 @@ bean creation.
 2.  In the `Singer` class example (Listing 4-5), what specific conditions does the `postConstruct()` method check for, and what actions does it take if those conditions are not met?
 3.  When comparing bean initialization approaches, what is the main benefit of using the `InitializingBean` interface, and what is its primary drawback regarding application coupling?
 ====
+
+=== Understanding Order of Resolution
+
+====
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/all/AllInitMethodsDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/all/AllInitMethodsDemo.java</a>
+++++
+====
+
+The provided text details the specific order in which Spring invokes various initialization mechanisms on a single bean instance. This order is a fundamental part of the Spring bean creation lifecycle:
+
+1.  **Constructor Call:** The bean instance is first created by calling its constructor.
+2.  **Dependency Injection:** Dependencies are injected, typically via setters (e.g., methods annotated with `@Autowired`), which is handled by infrastructure beans like `AutowiredAnnotationBeanPostProcessor`.
+3.  **Pre-Initialization Callbacks (`@PostConstruct`):** Before the main initialization, pre-initialization `BeanPostProcessor`-s are consulted. The `@PostConstruct` annotated method is invoked at this stage (managed by `CommonAnnotationBeanPostProcessor`). This happens *after* construction and dependency injection, but *before* `afterPropertiesSet()` and the `initMethod`.
+4.  **`InitializingBean.afterPropertiesSet()`:** If the bean implements the `InitializingBean` interface, its `afterPropertiesSet()` method is executed next, once all bean properties have been set.
+5.  **Custom Initialization Method (`initMethod`):** Finally, the method specified by the `initMethod` attribute in the `@Bean` annotation is executed. This is considered the "actual" initialization method of the bean.
+
+The `AllInitMethodsDemo` example, including the `MultiInit` class and `MultiInitConfiguration`, clearly demonstrates this precise order in its console output: Constructor -> Setter (`@Autowired`) -> `@PostConstruct` -> `afterPropertiesSet()` -> `initMethod`. Spring leverages internal `BeanPostProcessor` infrastructure beans (like `CommonAnnotationBeanPostProcessor` for `@PostConstruct` and `AutowiredAnnotationBeanPostProcessor` for `@Autowired`) to manage these steps.
+
+[CAUTION]
+====
+1.  When a single Spring bean instance utilizes all available initialization mechanisms (constructor, `@Autowired` setters, `@PostConstruct`, `InitializingBean.afterPropertiesSet()`, and a method specified by `@Bean(initMethod)`), what is the precise order in which these methods are invoked by Spring?
+2.  Which specific Spring infrastructure `BeanPostProcessor` is responsible for processing the `@PostConstruct` annotation, and at what stage of the bean creation process (relative to dependency injection and `afterPropertiesSet()`) does it execute the annotated method?
+3.  According to the `AllInitMethodsDemo` example and its console output (Listing 4-7), what is the exact sequence of log messages indicating the execution order of the `MultiInit` bean's lifecycle methods, from its constructor call to its final initialization method?
+====
