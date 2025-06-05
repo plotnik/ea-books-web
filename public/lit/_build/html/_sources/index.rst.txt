@@ -31,6 +31,7 @@ Literate Programs
    exc_yaml.py
    exc_ui.py
    exc_histo.py
+   curl_clean.py
    cmp_folders.py
    adoc_links.py
    jira_stats.py

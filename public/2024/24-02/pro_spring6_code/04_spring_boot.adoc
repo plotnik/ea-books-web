@@ -236,3 +236,37 @@ The `AllInitMethodsDemo` example, including the `MultiInit` class and `MultiInit
 2.  Which specific Spring infrastructure `BeanPostProcessor` is responsible for processing the `@PostConstruct` annotation, and at what stage of the bean creation process (relative to dependency injection and `afterPropertiesSet()`) does it execute the annotated method?
 3.  According to the `AllInitMethodsDemo` example and its console output (Listing 4-7), what is the exact sequence of log messages indicating the execution order of the `MultiInit` bean's lifecycle methods, from its constructor call to its final initialization method?
 ====
+
+==  Making Your Beans “Spring Aware”
+
+=== Using the BeanNameAware Interface
+
+The `BeanNameAware` interface in Spring allows a bean to obtain its own name within the Spring container.
+
+**Key aspects:**
+
+*   **Method:** It has a single method, `setBeanName(String beanName)`.
+*   **Invocation:** Spring calls this method after the bean has been configured but *before* any lifecycle callbacks (like initialization or destruction methods).
+*   **Implementation:** Typically, the `setBeanName()` method simply stores the provided bean name in a private field for later use by the bean.
+*   **Usage:** No special configuration is required to use `BeanNameAware`. It's often used to enhance log messages by including the bean's name.
+*   **Caution:** While useful for internal purposes like logging, it's advised *not* to give bean names business meaning solely to leverage `BeanNameAware`. If a bean requires an internal "name" with business significance, it's better to define a custom interface (e.g., `Nameable`) and inject the name via dependency injection, keeping Spring configuration names concise and separate from business logic.
+
+[CAUTION]
+====
+1.  According to the text, at what precise point in the Spring bean lifecycle is the `setBeanName()` method of the `BeanNameAware` interface invoked, relative to bean configuration and other lifecycle callbacks?
+2.  What is a common practical application for using the `BeanNameAware` interface highlighted in the provided example, and what specific temptation should developers avoid when assigning names to beans via this mechanism?
+3.  Does the `BeanNameAware` interface require any special Spring configuration to be utilized, and what is the typical, minimal implementation pattern for its `setBeanName()` method as demonstrated in the `NamedSinger` example?
+====
+
+=== Using the ApplicationContextAware Interface
+
+The `ApplicationContextAware` interface allows a Spring bean to obtain a reference to its configuring `ApplicationContext` instance. While it enables programmatic access to other beans via `getBean()`, this practice is generally discouraged in favor of dependency injection to avoid unnecessary coupling and complexity.
+
+A key use case for `ApplicationContextAware` is demonstrated by automatically registering a shutdown hook. By implementing `ApplicationContextAware` and its `setApplicationContext()` method, a bean (like `ShutdownHookBean`) can check if the `ApplicationContext` is a `GenericApplicationContext` and then call `registerShutdownHook()` on it. This eliminates the need for manual `ctx.registerShutdownHook()` calls during application bootstrap, ensuring that `preDestroy()` methods on singletons are automatically invoked when the application shuts down.
+
+[CAUTION]
+====
+1.  How does the `ShutdownHookBean` implementation in Listing 4-15 determine if it can register a shutdown hook, and what specific method does it call to perform this registration?
+2.  What is the key advantage of configuring the `ShutdownHookBean` as shown in Listing 4-16, specifically regarding the need for explicit shutdown hook registration in the `AwareDemo` application?
+3.  What was the primary reason given for the creation of the `ApplicationContextAware` interface, and what specific practice is strongly advised against when using it to obtain other beans?
+====
