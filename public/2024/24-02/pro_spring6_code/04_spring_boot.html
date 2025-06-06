@@ -457,6 +457,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_using_the_applicationcontextaware_interface">Using the ApplicationContextAware Interface</a></li>
 </ul>
 </li>
+<li><a href="#_use_of_factorybeans">Use of FactoryBeans</a>
+<ul class="sectlevel2">
+<li><a href="#_factorybean_example_the_messagedigestfactorybean">FactoryBean Example - The MessageDigestFactoryBean</a></li>
+<li><a href="#_accessing_a_factorybean_directly">Accessing a FactoryBean Directly</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1101,10 +1107,206 @@ chapter04/src/main/java/com/apress/prospring6/four/all/AllInitMethodsDemo.java</
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_use_of_factorybeans">Use of FactoryBeans</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_factorybean_example_the_messagedigestfactorybean">FactoryBean Example - The MessageDigestFactoryBean</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/factory/FactoryBeanDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/factory/FactoryBeanDemo.java</a>
+<hr>
+<a href="04_diagram_FactoryBeanDemo.html" target="_blank">
+Diagram - FactoryBeanDemo</a>
+</div>
+</div>
+<div class="paragraph">
+<p>The provided text explains how to integrate Java&#8217;s <code>MessageDigest</code>
+class, which requires creation via a static factory method
+(<code>MessageDigest.getInstance()</code>), into a Spring application using a
+<code>FactoryBean</code>.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a summary of the key points:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Problem Statement:</strong> Java&#8217;s <code>MessageDigest</code> class cannot be
+instantiated directly with <code>new</code>; it requires
+<code>MessageDigest.getInstance("algorithm")</code>. Managing such objects in
+Spring without a <code>FactoryBean</code> would necessitate an <code>algorithmName</code>
+property on the bean and an initialization callback to invoke
+<code>getInstance()</code>.</p>
+</li>
+<li>
+<p><strong>Solution: <code>FactoryBean</code>:</strong> Spring&#8217;s <code>FactoryBean</code> interface
+provides a way to encapsulate complex object creation logic. It allows
+other beans to declare a dependency on the <em>product</em> of the
+<code>FactoryBean</code> (e.g., <code>MessageDigest</code>), rather than the
+<code>FactoryBean</code> itself.</p>
+</li>
+<li>
+<p><strong><code>MessageDigestFactoryBean</code> Implementation:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>It implements <code>FactoryBean&lt;MessageDigest&gt;</code> and <code>InitializingBean</code>.</p>
+</li>
+<li>
+<p><code>afterPropertiesSet()</code>: This callback method is used to create the
+actual <code>MessageDigest</code> instance by calling
+<code>MessageDigest.getInstance(algorithmName)</code>. The <code>algorithmName</code>
+defaults to "MD5" but can be configured.</p>
+</li>
+<li>
+<p><code>getObject()</code>: Returns the <code>MessageDigest</code> instance created in
+<code>afterPropertiesSet()</code>. This is the object that Spring injects into
+other beans.</p>
+</li>
+<li>
+<p><code>getObjectType()</code>: Specifies that the factory produces objects of
+type <code>MessageDigest.class</code>.</p>
+</li>
+<li>
+<p><code>isSingleton()</code>: Indicates that the <em>produced</em> <code>MessageDigest</code>
+instance is a singleton.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Consuming the `FactoryBean&#8217;s Product:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A <code>MessageDigester</code> bean is introduced, which has two
+<code>MessageDigest</code> dependencies (<code>digest1</code> and <code>digest2</code>).</p>
+</li>
+<li>
+<p>In the Spring configuration (<code>MessageDigestConfig</code>), two
+<code>MessageDigestFactoryBean</code> beans are defined (one for SHA1, one for
+MD5).</p>
+</li>
+<li>
+<p>The <code>MessageDigester</code> bean then explicitly obtains the
+<code>MessageDigest</code> instances by calling <code>getObject()</code> on the configured
+<code>MessageDigestFactoryBean</code> beans, demonstrating how the factory
+provides the actual <code>MessageDigest</code> objects for injection.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Benefits of <code>FactoryBean</code>:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>It&#8217;s ideal for integrating classes that cannot be created directly
+using the <code>new</code> operator (e.g., those requiring static factory methods
+or complex setup).</p>
+</li>
+<li>
+<p>It acts as an adapter, allowing such objects to fully leverage
+Spring&#8217;s Inversion of Control (IoC) capabilities.</p>
+</li>
+<li>
+<p>It simplifies the configuration for consuming beans, as they only need
+to declare a dependency on the product type, while the <code>FactoryBean</code>
+handles the underlying creation complexity.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>What is the primary benefit of using a <code>FactoryBean</code> over a simple
+property-based initialization callback when creating a <code>MessageDigest</code>
+object in Spring?</strong> <em>This question targets the core reason for using the
+<code>FactoryBean</code> pattern as explained in the text – encapsulating the
+<code>MessageDigest.getInstance()</code> logic.</em></p>
+</li>
+<li>
+<p><strong>According to the provided code, what default algorithm is used by the
+<code>MessageDigestFactoryBean</code> if the <code>algorithmName</code> property is not
+explicitly set?</strong> <em>This question requires a close reading of the
+<code>MessageDigestFactoryBean</code> class to identify the default value
+assigned to <code>algorithmName</code>.</em></p>
+</li>
+<li>
+<p><strong>In the context of Spring&#8217;s IoC container, what is the difference
+between setting the scope of a <code>FactoryBean</code> itself versus the objects
+it returns?</strong> <em>This question focuses on a nuanced point about the
+<code>isSingleton()</code> method and the <code>@Scope</code> annotation, which is
+specifically addressed in the text.</em></p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_accessing_a_factorybean_directly">Accessing a FactoryBean Directly</h3>
+<div class="paragraph">
+<p>This text explains how to directly access a <code>FactoryBean</code> in Spring. While Spring automatically provides the object <strong>produced</strong> by a <code>FactoryBean</code>, you can access the <code>FactoryBean</code> itself by prefixing the bean name with an ampersand (<code>&amp;</code>) when calling <code>getBean()</code>.</p>
+</div>
+<div class="paragraph">
+<p>However, the text strongly advises <strong>against</strong> directly accessing the <code>FactoryBean</code> and manually calling <code>getObject()</code>. The <code>FactoryBean</code> is intended as internal infrastructure to support IoC, and directly interacting with it creates unnecessary coupling and extra work, potentially leading to issues if Spring&#8217;s implementation details change. It&#8217;s best to let Spring manage the object creation process.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>How does Spring allow direct access to a <code>FactoryBean</code> instance,
+and what prefix is required when using <code>getBean()</code> to achieve this?</strong>
+(Answer is directly stated: prefix the bean name with an ampersand –
+<code>&amp;</code>.)</p>
+</li>
+<li>
+<p><strong>In the provided code example (<code>FactoryBeanDemo</code>), what is being
+cast to <code>MessageDigestFactoryBean</code> when retrieving it from the
+application context?</strong> (Answer: <code>ctx.getBean("&amp;shaDigest")</code> is cast to
+<code>MessageDigestFactoryBean</code>.)</p>
+</li>
+<li>
+<p><strong>According to the text, what is the primary <em>intended</em> purpose of a
+<code>FactoryBean</code>, and why is directly accessing it and calling
+<code>getObject()</code> discouraged?</strong> (Answer: It&#8217;s intended as supporting
+infrastructure for IoC, and direct access creates unnecessary coupling
+to implementation details.)</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-06-05 08:56:09 +0300
+Last updated 2025-06-06 10:00:52 +0300
 </div>
 </div>
 </body>

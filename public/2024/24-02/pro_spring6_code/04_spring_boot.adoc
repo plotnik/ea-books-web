@@ -270,3 +270,116 @@ A key use case for `ApplicationContextAware` is demonstrated by automatically re
 2.  What is the key advantage of configuring the `ShutdownHookBean` as shown in Listing 4-16, specifically regarding the need for explicit shutdown hook registration in the `AwareDemo` application?
 3.  What was the primary reason given for the creation of the `ApplicationContextAware` interface, and what specific practice is strongly advised against when using it to obtain other beans?
 ====
+
+== Use of FactoryBeans
+
+===  FactoryBean Example - The MessageDigestFactoryBean
+
+====
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/factory/FactoryBeanDemo.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/factory/FactoryBeanDemo.java</a>
+++++
+
+---
+++++
+<a href="04_diagram_FactoryBeanDemo.html" target="_blank">
+Diagram - FactoryBeanDemo</a>
+++++
+====
+
+The provided text explains how to integrate Java's `+MessageDigest+`
+class, which requires creation via a static factory method
+(`+MessageDigest.getInstance()+`), into a Spring application using a
+`+FactoryBean+`.
+
+Here's a summary of the key points:
+
+[arabic]
+. *Problem Statement:* Java's `+MessageDigest+` class cannot be
+instantiated directly with `+new+`; it requires
+`+MessageDigest.getInstance("algorithm")+`. Managing such objects in
+Spring without a `+FactoryBean+` would necessitate an `+algorithmName+`
+property on the bean and an initialization callback to invoke
+`+getInstance()+`.
+. *Solution: `+FactoryBean+`:* Spring's `+FactoryBean+` interface
+provides a way to encapsulate complex object creation logic. It allows
+other beans to declare a dependency on the _product_ of the
+`+FactoryBean+` (e.g., `+MessageDigest+`), rather than the
+`+FactoryBean+` itself.
+. *`+MessageDigestFactoryBean+` Implementation:*
+* It implements `+FactoryBean<MessageDigest>+` and `+InitializingBean+`.
+* `+afterPropertiesSet()+`: This callback method is used to create the
+actual `+MessageDigest+` instance by calling
+`+MessageDigest.getInstance(algorithmName)+`. The `+algorithmName+`
+defaults to "MD5" but can be configured.
+* `+getObject()+`: Returns the `+MessageDigest+` instance created in
+`+afterPropertiesSet()+`. This is the object that Spring injects into
+other beans.
+* `+getObjectType()+`: Specifies that the factory produces objects of
+type `+MessageDigest.class+`.
+* `+isSingleton()+`: Indicates that the _produced_ `+MessageDigest+`
+instance is a singleton.
+. *Consuming the `+FactoryBean+`'s Product:*
+* A `+MessageDigester+` bean is introduced, which has two
+`+MessageDigest+` dependencies (`+digest1+` and `+digest2+`).
+* In the Spring configuration (`+MessageDigestConfig+`), two
+`+MessageDigestFactoryBean+` beans are defined (one for SHA1, one for
+MD5).
+* The `+MessageDigester+` bean then explicitly obtains the
+`+MessageDigest+` instances by calling `+getObject()+` on the configured
+`+MessageDigestFactoryBean+` beans, demonstrating how the factory
+provides the actual `+MessageDigest+` objects for injection.
+. *Benefits of `+FactoryBean+`:*
+* It's ideal for integrating classes that cannot be created directly
+using the `+new+` operator (e.g., those requiring static factory methods
+or complex setup).
+* It acts as an adapter, allowing such objects to fully leverage
+Spring's Inversion of Control (IoC) capabilities.
+* It simplifies the configuration for consuming beans, as they only need
+to declare a dependency on the product type, while the `+FactoryBean+`
+handles the underlying creation complexity.
+
+[CAUTION]
+====
+[arabic]
+. *What is the primary benefit of using a `+FactoryBean+` over a simple
+property-based initialization callback when creating a `+MessageDigest+`
+object in Spring?* _This question targets the core reason for using the
+`+FactoryBean+` pattern as explained in the text – encapsulating the
+`+MessageDigest.getInstance()+` logic._
+. *According to the provided code, what default algorithm is used by the
+`+MessageDigestFactoryBean+` if the `+algorithmName+` property is not
+explicitly set?* _This question requires a close reading of the
+`+MessageDigestFactoryBean+` class to identify the default value
+assigned to `+algorithmName+`._
+. *In the context of Spring's IoC container, what is the difference
+between setting the scope of a `+FactoryBean+` itself versus the objects
+it returns?* _This question focuses on a nuanced point about the
+`+isSingleton()+` method and the `+@Scope+` annotation, which is
+specifically addressed in the text._
+====
+
+=== Accessing a FactoryBean Directly
+
+This text explains how to directly access a `FactoryBean` in Spring. While Spring automatically provides the object *produced* by a `FactoryBean`, you can access the `FactoryBean` itself by prefixing the bean name with an ampersand (`&`) when calling `getBean()`. 
+
+However, the text strongly advises *against* directly accessing the `FactoryBean` and manually calling `getObject()`. The `FactoryBean` is intended as internal infrastructure to support IoC, and directly interacting with it creates unnecessary coupling and extra work, potentially leading to issues if Spring's implementation details change. It's best to let Spring manage the object creation process.
+
+[CAUTION]
+====
+[arabic]
+. *How does Spring allow direct access to a `+FactoryBean+` instance,
+and what prefix is required when using `+getBean()+` to achieve this?*
+(Answer is directly stated: prefix the bean name with an ampersand –
+`+&+`.)
+. *In the provided code example (`+FactoryBeanDemo+`), what is being
+cast to `+MessageDigestFactoryBean+` when retrieving it from the
+application context?* (Answer: `+ctx.getBean("&shaDigest")+` is cast to
+`+MessageDigestFactoryBean+`.)
+. *According to the text, what is the primary _intended_ purpose of a
+`+FactoryBean+`, and why is directly accessing it and calling
+`+getObject()+` discouraged?* (Answer: It's intended as supporting
+infrastructure for IoC, and direct access creates unnecessary coupling
+to implementation details.)
+====

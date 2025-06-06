@@ -1,0 +1,48 @@
+= Diagram - Ch.4. FactoryBeanDemo
+
+See link:04_spring_boot.html#_factorybean_example_the_messagedigestfactorybean[FactoryBean Example - The MessageDigestFactoryBean]
+
+++++
+<div class="mermaid">
+sequenceDiagram
+    participant Main as FactoryBeanDemo
+    participant Context as AnnotationConfigApplicationContext
+    participant Config as MessageDigestConfig
+    participant Factory as MessageDigestFactoryBean
+    participant Digester as MessageDigester
+    participant MD as MessageDigest
+
+    Main->>Context: new AnnotationConfigApplicationContext(MessageDigestConfig.class)
+    activate Context
+    Context->>Config: Initialize configuration
+    Config->>Factory: Create shaDigest bean
+    Config->>Factory: Create defaultDigest bean
+    Config->>Digester: Create digester bean
+    Digester->>Factory: getObject() for shaDigest
+    Digester->>Factory: getObject() for defaultDigest
+    Context-->>Main: Context initialized
+    deactivate Context
+
+    Main->>Context: getBean("digester")
+    Context-->>Main: Return MessageDigester
+    Main->>Digester: digest("Hello World!")
+    Digester->>MD: digest1.digest()
+    Digester->>MD: digest2.digest()
+
+    Main->>Context: getBean("&shaDigest")
+    Context-->>Main: Return MessageDigestFactoryBean
+    Main->>Factory: getObject()
+    Factory-->>Main: Return MessageDigest
+    Main->>MD: digest("Hello world".getBytes())
+
+    Main->>Context: close()
+    activate Context
+    Context-->>Main: Context closed
+    deactivate Context
+</div>
+++++
+
+++++
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+++++
