@@ -21,7 +21,6 @@ Script is written in `literate programming`_.
    :widths: 10 30
 
    "OpenAI API Examples", https://platform.openai.com/examples
-   "OpenAI Models", https://platform.openai.com/docs/models
    "How to count tokens with tiktoken", https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
 
 ::
@@ -35,6 +34,10 @@ Script is written in `literate programming`_.
   import pyperclip
   from typing import List
   import time
+
+  from pathlib import Path
+  from typing import List
+  from collections import namedtuple
 
 Print banner.
 
@@ -98,69 +101,143 @@ Prompts
 Select LLM
 ----------
 
+.. csv-table:: Useful Links
+   :header: "Name", "URL"
+   :widths: 10 30
+
+   "OpenAI Models", https://platform.openai.com/docs/models
+   "Gemini Models", https://ai.google.dev/gemini-api/docs/models
+
 ::
 
   llm_prices = {
       "gemini-2.5-flash-preview-05-20": 0.0,
-      "gemini-2.5-pro-preview-05-06": 0.0,
       "gemma-3-27b-it": 0.0,
       "gemini-2.0-flash": 0.0,
+
       "gpt-4.1-mini": 0.4,
       "gpt-4.1-nano": 0.1,
       "gpt-4.1": 2.0,
       "gpt-4o-mini": 0.15,
-      "o3-mini": 1.10,
       "gpt-4o": 2.5,
+
+      "o3-mini": 1.10,
+      "o3": 2.0,
+      "o3-pro": 20.0,
   }
 
-Remember which LLM was used last time
+  def get_llm_properties(llm_model):
+      if llm_model.startswith("gemini"):
+          return {"google": True, "temperature": True, "xml": False}
+        
+      elif llm_model.startswith("gemma"): 
+          return {"google": True, "temperature": True, "xml": True}
+    
+      elif llm_model.startswith("gpt"): 
+          return {"google": False, "temperature": True, "xml": False}
+        
+      else: #o3
+          return {"google": False, "temperature": False, "xml": False}
+        
+Persisted List   
+--------------    
 
+.. csv-table:: History
+   :header: "Date", "Comment"
+   :widths: 10 30
+
+   "2025-06-13", "New elements come first"
+   "", "Copied from: `explain_java.py`_"
+
+.. _explain_java.py: explain_java.py.html#persisted-list
+  
 ::
 
-  llm_names_file = ".o-ai"
+  class PersistedList:
+      """
+      A tiny helper that remembers a list of strings on disk.
+      """
 
-Writes a list of strings to a file, one per line.
+      def __init__(self, filename: str) -> None:
+          self.filename = Path(filename)
+          self.names: List[str] = self._read_from_file()
 
-::
+      # ──────────────────────────────────────────────────────────────
+      # Private helpers
+      # ──────────────────────────────────────────────────────────────
 
-  def write_list_to_file(filename: str, lines: List[str]) -> None:
-      with open(filename, 'w', encoding='utf-8') as file:
-          file.write('\n'.join(lines) + '\n')
-      
-Reads non-empty, stripped lines from a text file into a list.
-Returns an empty list if the file does not exist or an error occurs.
-
-::
-
-  def read_list_from_file(filename: str) -> None:
-      try:
-          with open(filename, 'r', encoding='utf-8') as file:
-              return [line.strip() for line in file if line.strip()]
-      except FileNotFoundError:
+      def _read_from_file(self) -> List[str]:
+          """
+          Return the list stored on disk (empty if the file is missing).
+          """
+          if self.filename.exists():
+              with self.filename.open("r", encoding="utf-8") as fh:
+                  return [line.strip() for line in fh if line.strip()]
           return []
-      
-Compare two lists of strings for equality based on their sorted versions
 
-::
+      def _write_to_file(self) -> None:
+          """
+          Persist the current list to disk (one item per line).
+          """
+          self.filename.parent.mkdir(parents=True, exist_ok=True)
+          with self.filename.open("w", encoding="utf-8") as fh:
+              fh.write("\n".join(self.names))
 
-  def lists_are_equal(a: List[str], b: List[str]) -> bool:
-      return sorted(a) == sorted(b)
-  
-Removes all occurrences of ``string_to_remove`` from ``lst``.   
+      @staticmethod
+      def _remove_strings(source: List[str], to_remove: List[str]) -> List[str]:
+          """
+          Return a copy of *source* without any element that occurs in *to_remove*.
+          """
+          removal_set = set(to_remove)
+          return [s for s in source if s not in removal_set]
 
-::
+      # ──────────────────────────────────────────────────────────────
+      # Public API
+      # ──────────────────────────────────────────────────────────────
 
-  def remove_string(lines: List[str], string_to_remove: str) -> List[str]:
-      return [s for s in lines if s != string_to_remove]
-  
-Select LLM
+      def sort_by_pattern(self, all_names: List[str]) -> List[str]:
+          """
+          Sort *all_names* so that previously‑stored names keep their old
+          ordering, and every new name is appended alphabetically.
+          The internal list is updated and re‑written to disk.
+          """
+          priority = {name: idx for idx, name in enumerate(self.names)}
 
+          sortd_names = sorted(
+              all_names,
+              key=lambda n: (1, priority[n]) if n in priority else (0, n)
+          )
+
+          self.names = sorted_names
+          self._write_to_file()
+          return sorted_names
+
+      def select(self, selected_name: str) -> None:
+          """
+          Move *selected_name* to the top of the list (inserting it if it
+          wasn’t present) and persist the change.
+          """
+          self.names = self._remove_strings(self.names, [selected_name])
+          self.names.insert(0, selected_name)
+          self._write_to_file()
+
+      # ──────────────────────────────────────────────────────────────
+      # Convenience
+      # ──────────────────────────────────────────────────────────────
+
+      def __iter__(self):
+          return iter(self.names)
+
+      def __repr__(self) -> str:
+          return f"{self.__class__.__name__}({self.filename!s}, {self.names})"
+
+Select LLM.
+Remember which LLM was used last time.
 ::
 
   llm_models = list(llm_prices.keys())
-  llm_names = read_list_from_file(llm_names_file) 
-  if lists_are_equal(llm_models, llm_names):
-      llm_models = llm_names
+  llm_models_persisted = PersistedList(".o-ai") 
+  llm_models = llm_models_persisted.sort_by_pattern(llm_models)
 
   llm_temperatures = [0, 0.1, 0.7, 1]
 
@@ -185,7 +262,7 @@ Select Obsidian folder from recent vaults.
           del st.session_state["llm_result"]
       if "note_name" in st.session_state:
           del st.session_state["note_name"]
-        
+    
   home_folder = os.path.expanduser('~')
   obsidian_json_path = f"{home_folder}/Library/Application Support/obsidian/obsidian.json"
   with open(obsidian_json_path, "r") as json_file:
@@ -253,7 +330,7 @@ Select ``note_name`` from 5 newest notes.
      newest_files,
      on_change=reset_llm_result
   )
-    
+
 Get the number of tokens.
 
 ::
@@ -261,7 +338,7 @@ Get the number of tokens.
   file_path = os.path.join(note_home, note_name)
   with open(file_path, 'r', encoding='utf-8') as file:
       text = file.read()
-  
+
 Tokens & Price
 --------------
 
@@ -272,10 +349,10 @@ so we have added a separate configuration for them.
 
   def count_tokens():
       llm_model_tiktoken = "gpt-4o-mini"
-  
+
       encoding = tiktoken.encoding_for_model(llm_model_tiktoken)
       tokens = encoding.encode(text)
-  
+
       cents = round(len(tokens) * llm_prices[llm_model]/10000, 5)
 
       st.sidebar.write(f'''
@@ -283,32 +360,16 @@ so we have added a separate configuration for them.
           |---|---|---|
           | {len(text)} | {len(tokens)} | {cents} |
           ''')
-  
+
   #if llm_model.startswith("gpt-") or llm_model.startswith("o-"):
   count_tokens()
  
 
-Call OpenAI API.
+OpenAI and Gemini clients
 
 ::
 
   client = OpenAI()
-
-  def call_openai():
-      response = client.chat.completions.create(
-              model=llm_model,
-              messages=[
-                  {"role": "system", "content": prompt},
-                  {"role": "user", "content": text},
-              ],
-              temperature=llm_temperature,
-          )
-
-      return response.choices[0]
-  
-Call Gemini.
-
-::
 
   g_key = os.getenv("GEMINI_API_KEY")
   g_client = OpenAI(
@@ -316,65 +377,61 @@ Call Gemini.
       base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
   )
 
-  def call_gemini():
-      messages = [
-          {"role": "developer", "content": prompt},
-          {"role": "user", "content": text},
-      ]
-      response = g_client.chat.completions.create(
-              model=llm_model,
-              messages=messages,
-              temperature=llm_temperature,
-          )
-      return response.choices[0]
-  
-  def call_gemma():
-      messages = [
-          {"role": "user", "content": f"<prompt>{prompt}</prompt>\n<query>{text}</query>"},
-      ]
-      response = g_client.chat.completions.create(
-              model=llm_model,
-              messages=messages
-          )
-      return response.choices[0]
-  
 Generic LLM call.
 
 ::
 
   def call_llm():
       start_time = time.time()
-    
+
       st.write('')
       st.info(prompt, icon="🤔")
-  
-      # Remember which LLM was used last time
-      global llm_models
-      llm_models = remove_string(llm_models, llm_model)
-      llm_models.insert(0, llm_model)
-      write_list_to_file(llm_names_file, llm_models)
-  
+
+      # Remember LLM to push it to the top of selectbox
+      llm_models_persisted.select(llm_model)
+
       # Call LLM
-      if llm_model.startswith("gemini"):
-          choice = call_gemini()
-      elif llm_model.startswith("gemma"): 
-          choice = call_gemma()
+      props = get_llm_properties(llm_model)
+    
+      llm_client = g_client if props["google"] else client
+    
+      if props["xml"]:
+          messages = [
+              {"role": "user", "content": f"<prompt>{prompt}</prompt>\n<query>{text}</query>"},
+          ]
       else:
-          choice = call_openai()
-      
+          messages = [
+              {"role": "developer", "content": prompt},
+              {"role": "user", "content": text},
+          ] 
+        
+      if props["temperature"]:    
+          response = llm_client.chat.completions.create(
+              model=llm_model,
+              messages=messages,
+              temperature=llm_temperature,
+          )
+      else:  
+          response = llm_client.chat.completions.create(
+              model=llm_model,
+              messages=messages,
+          )        
+    
+      choice = response.choices[0]
+  
       # Save result in session       
       st.session_state.llm_result = choice.message.content 
       st.session_state.note_name = note_name
-    
+
       # Save result to clipboard  
       pyperclip.copy(st.session_state.llm_result)
       st.write(f'Copied to clipboard')
-    
+
       end_time = time.time()
       st.session_state.execution_time = end_time - start_time
-    
+
       st.rerun()
-    
+
 Print result
 
 ::
@@ -383,10 +440,10 @@ Print result
       st.write('---')
       st.write(st.session_state.llm_result)
       st.write('---')  
-    
+
   if "execution_time" in st.session_state:
       st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 1)}` sec")    
-    
+
 Sidebar buttons
 
 ::    
@@ -399,24 +456,24 @@ Sidebar buttons
   if st.sidebar.button(':question: &nbsp; Ask questions', use_container_width=True):
       prompt = prompt_questions
       call_llm()
-    
+
   if st.sidebar.button(':exclamation: &nbsp; Improve', use_container_width=True):
       prompt = prompt_improve
       call_llm()
-    
+
   if "llm_result" in st.session_state and st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
       pyperclip.copy(st.session_state.llm_result)
-        
+    
   st.sidebar.write('---')
 
   if st.sidebar.button(f' `Summarize` {"&nbsp;"*8} :test_tube: `v.2`'):
       prompt = prompt_summary_v2
       call_llm()
-  
+
   if st.sidebar.button(f'`Ask questions` :test_tube: `v.2`'):
       prompt = prompt_questions_v2
       call_llm()
-  
 
-  
-  
+
+
+

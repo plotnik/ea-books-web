@@ -383,3 +383,75 @@ application context?* (Answer: `+ctx.getBean("&shaDigest")+` is cast to
 infrastructure for IoC, and direct access creates unnecessary coupling
 to implementation details.)
 ====
+
+== JavaBeans PropertyEditors
+
+=== Using the Built-in PropertyEditors
+
+====
+++++
+<a href="https://github.com/Apress/pro-spring-6/blob/main/chapter04/src/main/java/com/apress/prospring6/four/DiverseValuesContainer.java" target="_blank">
+chapter04/src/main/java/com/apress/prospring6/four/DiverseValuesContainer.java</a>
+++++
+====
+
+The provided content demonstrates a Spring bean, `DiverseValuesContainer`, which declares 14 properties of various types supported by Spring's built-in `PropertyEditor` implementations. Although the properties are not Strings, their values are injected as simple String literals, and Spring automatically converts these Strings to the appropriate types using the built-in editors.
+
+Key points include:
+
+- The bean properties cover types like byte arrays, Character, Class, Boolean, List, Date, Float, File, InputStream, Locale, Pattern, Properties, trimmed String, and URL.
+- Custom editors such as `CustomDateEditor` (with a specified date format) and `StringTrimmerEditor` are registered explicitly via a `PropertyEditorRegistrar` implementation because they are not registered by default.
+- The example includes a `ValuesHolder` component providing some values (like a list and an InputStream) injected via Spring Expression Language (SpEL).
+- Running the example shows Spring converting the String values to their respective types and injecting them, with logging output confirming the conversions.
+- Table 4-1 summarizes the main built-in Spring `PropertyEditor`s, describing their purpose, such as converting Strings to byte arrays, Characters, Classes, Booleans, Collections, Dates, Files, InputStreams, Locales, Patterns, Properties, trimmed Strings, and URLs.
+
+Overall, this example illustrates how Spring's built-in `PropertyEditor`s simplify configuration by automatically converting String property values to complex types, easing application setup with common components like files, URLs, and dates.
+
+[CAUTION]
+====
+1.  **What specific date format is used by the `CustomDateEditor` registered in the `DiverseValuesContainer`?**
+    *Answer:* The `CustomDateEditor` is registered with the format "MM/dd/yyyy".
+
+2.  **Besides `CustomDateEditor` and `StringTrimmerEditor`, what other PropertyEditors are explicitly mentioned as *not* being registered by default in Spring?**
+    *Answer:* The context states that these two editors "were not registered by default in Spring". No others are explicitly mentioned as lacking default registration.
+
+3.  **What values are used in the `ValuesHolder` class to populate the `stringList` and the `inputStream` properties?**
+    *Answer:* The `stringList` is populated with "Mayer", "Psihoza", and "Mazikeen". The `inputStream` is initialized to read from a file named "test.txt" located in the system's temporary directory.
+====
+
+=== Creating a Custom PropertyEditor
+
+• When Spring’s built-in PropertyEditors are insufficient, you can create your own by extending java.beans.PropertyEditorSupport and overriding only setAsText().
+
+• Example domain class: FullName with firstName and lastName fields.
+
+• Custom editor (NamePropertyEditor):
+
+  * Extends PropertyEditorSupport.
+  * In setAsText(), splits the incoming string on the space and builds a new FullName instance, then calls setValue().
+
+• Registration:
+
+  * Use a CustomEditorConfigurer bean.
+  * Supply a Map where the key is the target type (FullName.class) and the value is the custom editor class (NamePropertyEditor.class).
+
+• Usage demo:
+
+  * Person component has a FullName property.
+  * @Value("John Mayer") triggers Spring to feed the string through NamePropertyEditor and inject the resulting FullName.
+  * Running the application logs the correctly populated FullName object.
+
+• Key points:
+
+  * Only one method (setAsText) needs implementation when you extend PropertyEditorSupport.
+  * Custom editors are registered globally through CustomEditorConfigurer.
+  * Since Spring 3, a newer Type Conversion API and Field Formatting SPI offer a more modern alternative for type conversion.
+  
+[CAUTION]
+====
+1. In Listing 4-26, which property of the CustomEditorConfigurer bean is populated with a Map to register the custom PropertyEditor?  
+
+2. What exact string value is supplied via the @Value annotation to the Person.setName method, causing the custom editor to run?  
+
+3. What fully qualified class name is used as the key in the customEditors Map to associate NamePropertyEditor with its target type?
+====
