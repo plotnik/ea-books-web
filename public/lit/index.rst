@@ -23,6 +23,8 @@ Literate Programs
    time_intervals.py
    md_view.py
    pan_ui.py
+   firebase_edit.py
+   firebase_xml_sync.py
    code_review.py
    doc_note.py
    up_file.py

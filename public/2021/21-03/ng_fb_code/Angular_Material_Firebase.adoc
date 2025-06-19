@@ -1,0 +1,386 @@
+= Angular + Material + Firebase
+
+Here’s a concise, end-to-step plan to scaffold an Angular + Material +
+Firebase app that authenticates users and displays your Firestore
+`+prompts+` collection in a Material list.
+
+'''''
+
+== 1. Install Angular CLI & create project
+
+[source,bash]
+----
+npm install -g @angular/cli
+ng new prompts-app --routing=false --style=scss
+cd prompts-app
+----
+
+Choose defaults (no routing if you don’t need it; SCSS is optional).
+
+'''''
+
+== 2. Add Angular Material
+
+[source,bash]
+----
+ng add @angular/material
+----
+
+* Pick a theme (e.g. Indigo/Pink).
+* Answer *Yes* to global typography & animations.
+
+'''''
+
+== 3. Create Firebase project & register web app
+
+[arabic]
+. Go to https://console.firebase.google.com/[Firebase Console].
+. *Add project* (or use existing).
+. In *Build › Firestore*, create a database in test mode (you’ll tighten
+rules later).
+. In *Project settings › Web apps*, click *</>* and copy the config
+snippet.
+
+'''''
+
+== 4. Install Firebase SDK and AngularFire
+
+[source,bash]
+----
+npm install firebase @angular/fire
+----
+
+'''''
+
+== 5. Add your Firebase config
+
+Edit `+src/environments/environment.ts+`:
+
+[source,ts]
+----
+export const environment = {
+  production: false,
+  firebase: {
+    apiKey: "…",
+    authDomain: "…",
+    projectId: "…",
+    storageBucket: "…",
+    messagingSenderId: "…",
+    appId: "…"
+  }
+};
+----
+
+(And mirror in `+environment.prod.ts+`.)
+
+'''''
+
+== 6. Wire up AngularFire & Material modules
+
+In `+src/app/app.module.ts+`:
+
+[source,ts]
+----
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule }    from '@angular/material/list';
+import { MatCardModule }    from '@angular/material/card';
+import { MatButtonModule }  from '@angular/material/button';
+import { MatInputModule }   from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { AppComponent } from './app.component';
+import { environment } from '../environments/environment';
+import { LoginComponent } from './login/login.component';
+import { PromptsComponent } from './prompts/prompts.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    PromptsComponent
+  ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
+    AngularFirestoreModule,
+    // Material modules
+    MatToolbarModule,
+    MatListModule,
+    MatCardModule,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+----
+
+'''''
+
+== 7. Build authentication UI
+
+[source,bash]
+----
+ng generate component login
+----
+
+*`+login.component.ts+`*:
+
+[source,ts]
+----
+import { Component } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html'
+})
+export class LoginComponent {
+  email = '';
+  password = '';
+  constructor(private afAuth: AngularFireAuth) {}
+
+  async signIn() {
+    await this.afAuth.signInWithEmailAndPassword(this.email, this.password);
+  }
+  async signOut() {
+    await this.afAuth.signOut();
+  }
+}
+----
+
+*`+login.component.html+`*:
+
+[source,html]
+----
+<mat-card class="login-card">
+  <h2>Login</h2>
+  <mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput [(ngModel)]="email">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Password</mat-label>
+    <input matInput type="password" [(ngModel)]="password">
+  </mat-form-field>
+  <button mat-raised-button color="primary" (click)="signIn()">Sign In</button>
+  <button mat-button (click)="signOut()">Sign Out</button>
+</mat-card>
+----
+
+____
+Don’t forget to import `+FormsModule+` in `+AppModule+` if you use
+`+[(ngModel)]+`.
+____
+
+'''''
+
+== 8. Create a Prompt model & service
+
+[source,bash]
+----
+ng generate interface prompt --type=model
+ng generate service prompt
+----
+
+*`+prompt.model.ts+`*:
+
+[source,ts]
+----
+export interface Prompt {
+  name: string;
+  note: string;
+  tags?: string[];
+  updated_at: Date;
+}
+----
+
+*`+prompt.service.ts+`*:
+
+[source,ts]
+----
+import { Injectable } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Observable, of } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
+import { Prompt } from './prompt.model';
+
+@Injectable({ providedIn: 'root' })
+export class PromptService {
+  constructor(
+    private afs: AngularFirestore,
+    private afAuth: AngularFireAuth
+  ) {}
+
+  getPrompts(): Observable<Prompt[]> {
+    return this.afAuth.authState.pipe(
+      switchMap(user => {
+        if (!user) return of([]);
+        return this.afs.collection<Prompt>('prompts', ref =>
+          ref.orderBy('updated_at','desc')
+        )
+        .snapshotChanges().pipe(
+          map(actions =>
+            actions.map(a => {
+              const d = a.payload.doc.data() as any;
+              return { ...d, updated_at: d.updated_at.toDate() } as Prompt;
+            })
+          )
+        );
+      })
+    );
+  }
+}
+----
+
+'''''
+
+== 9. Display with a Material list
+
+[source,bash]
+----
+ng generate component prompts
+----
+
+*`+prompts.component.ts+`*:
+
+[source,ts]
+----
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { PromptService } from '../prompt.service';
+import { Prompt } from '../prompt.model';
+
+@Component({
+  selector: 'app-prompts',
+  templateUrl: './prompts.component.html'
+})
+export class PromptsComponent implements OnInit {
+  prompts$: Observable<Prompt[]>;
+  constructor(private ps: PromptService) {}
+  ngOnInit() {
+    this.prompts$ = this.ps.getPrompts();
+  }
+}
+----
+
+*`+prompts.component.html+`*:
+
+[source,html]
+----
+<mat-toolbar color="primary">My Prompts</mat-toolbar>
+<mat-list>
+  <mat-list-item *ngFor="let p of prompts$ | async">
+    <mat-card class="w-full">
+      <mat-card-title>{{ p.name }}</mat-card-title>
+      <mat-card-content>
+        <p>{{ p.note }}</p>
+        <p *ngIf="p.tags?.length">
+          <strong>Tags:</strong> {{ p.tags.join(', ') }}
+        </p>
+      </mat-card-content>
+      <mat-card-footer>
+        <small>Updated: {{ p.updated_at | date:'medium' }}</small>
+      </mat-card-footer>
+    </mat-card>
+  </mat-list-item>
+</mat-list>
+----
+
+'''''
+
+== 10. Protect routes / guard
+
+If you want to prevent unauthenticated access, add:
+
+[source,bash]
+----
+ng generate guard auth
+----
+
+*`+auth.guard.ts+`* (simplified):
+
+[source,ts]
+----
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { map } from 'rxjs/operators';
+
+@Injectable({ providedIn: 'root' })
+export class AuthGuard implements CanActivate {
+  constructor(private afAuth: AngularFireAuth, private router: Router) {}
+  canActivate() {
+    return this.afAuth.authState.pipe(
+      map(user => {
+        if (user) return true;
+        this.router.navigate(['/login']);
+        return false;
+      })
+    );
+  }
+}
+----
+
+And in your `+AppRoutingModule+`:
+
+[source,ts]
+----
+const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'prompts', component: PromptsComponent, canActivate: [AuthGuard] },
+  { path: '**', redirectTo: 'prompts' }
+];
+----
+
+'''''
+
+== 11. Deploy & secure your rules
+
+[arabic]
+. Update your Firestore rules to:
++
+[source,js]
+----
+match /prompts/{doc} {
+  allow read, write: if request.auth != null;
+}
+----
+. Test with the Firebase emulator or on your live project.
+. Deploy:
++
+[source,bash]
+----
+ng build --prod
+firebase deploy
+----
+
+'''''
+
+=== Summary
+
+[arabic]
+. Scaffold Angular + Material.
+. Register your Firebase app & copy config.
+. Install & configure AngularFire + Firestore + Auth modules.
+. Build a login form and guard your routes.
+. Create a `+PromptService+` that pulls `+prompts+` only for
+authenticated users.
+. Render them with Angular Material’s list/cards.
+. Lock down your Firestore rules to `+request.auth != null+`.
+
+With this in place, signed-in users can view (and—if you add write
+methods—create/update) all documents in your `+prompts+` collection, per
+your rules.

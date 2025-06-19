@@ -203,7 +203,7 @@ Persisted List
           """
           priority = {name: idx for idx, name in enumerate(self.names)}
 
-          sortd_names = sorted(
+          sorted_names = sorted(
               all_names,
               key=lambda n: (1, priority[n]) if n in priority else (0, n)
           )
