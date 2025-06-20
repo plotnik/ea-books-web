@@ -1,0 +1,138 @@
+= Angular - The Complete Guide (2025 Edition)
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+Maximilian Schwarzmüller
+
+====
+Course on Udemy::
+https://www.udemy.com/course/the-complete-guide-to-angular-2/
+====
+
+== 2. Angular Essentials - Components, Templates, Services & More
+
+=== 9. Module Introduction
+
+In this section, we will explore the essential Angular concepts every developer needs to master. We'll do this by building a complete demo application from the ground up.
+
+As we develop this demo app and implement its features, you will gain a clear understanding of the Angular project structure—how Angular projects are organized and the purpose of the various files and folders.
+
+You will also dive deeper into the fundamental concept of working with components, which was introduced in the first course section. Additionally, we'll cover other core topics such as TypeScript fundamentals and writing declarative code.
+
+Specifically, you'll learn how to handle user events like clicks and respond to them effectively. Moreover, you'll discover how to write Angular code that enables dynamic rendering and updating of the user interface.
+
+By the end of this section, you will be equipped to build dynamic, interactive web applications—just like the demo app we create together.
+
+=== 10. A New Starting Project & Analyzing The Project Structure
+
+The content explains the setup and structure of a new Angular project created with the Angular CLI, recommending the use of a provided starter project to ensure a consistent starting point. It highlights that different CLI versions may create slightly different project structures, such as the location of the favicon file, but the Angular code remains the same.
+
+Key points covered include:
+
+- The root-level files are mostly configuration files for TypeScript, Angular CLI, package management, code formatting, and version control.
+- The SRC folder is the main area where development happens, especially the app folder where Angular components are built.
+- File naming conventions for components have evolved, with older projects using "app.component.ts" and newer Angular versions possibly omitting ".component" in filenames, but this does not affect functionality.
+- Important files in SRC include global styles (style.css), the main HTML file (index.html), the favicon, the main TypeScript entry file (main.ts), and an assets folder for images.
+- To resolve initial errors due to missing dependencies, users should run `npm install` in the project folder once to install all dependencies.
+- After installation, running `npm start` will launch the Angular development server, allowing preview of the app in a browser.
+- The next step will be to explore how the app content is rendered on the screen.
+
+Overall, the explanation provides a foundational understanding of the Angular project structure, configuration, and initial setup steps for development.
+
+[CAUTION]
+====
+1. What are the specific differences in project structure and file placement (such as the favicon location) between Angular CLI versions, and how does this affect the starting project provided in this course?
+
+2. Why is the main.ts file critical in an Angular project, what role does it play during application startup, and why might errors appear there before installing dependencies?
+
+3. How do configuration files like angular.json, TypeScript config files, and editorConfig contribute to the Angular development process, and why is it generally advised not to modify them unless you fully understand their impact?
+====
+
+=== 11. Understanding Components & How Content Ends Up On The Screen
+
+The content explains how Angular renders content on the screen starting from an almost empty `index.html` file containing a custom `<app-root>` element. This element is not standard HTML, so Angular takes over by executing code in `main.ts`, which is compiled from TypeScript to JavaScript by the Angular CLI. When the app runs (e.g., via `ng serve`), the CLI injects necessary script tags into the HTML automatically.
+
+The key function executed is `bootstrapApplication`, which takes an Angular Component as an argument. This Component corresponds to the custom element tag in the HTML (`app-root`). The Component is defined as a TypeScript class decorated with `@Component`, a decorator that adds metadata to the class, turning it into an Angular Component.
+
+The `@Component` decorator specifies a selector (`app-root`), a template URL (pointing to an external HTML file with the component's markup), and styles scoped to the component. Angular replaces the `<app-root>` tag in the `index.html` with the component's template content, rendering the title, subtitle, and image seen on the screen.
+
+In summary, Angular compiles and injects scripts, bootstraps a root component linked to a custom HTML tag, and replaces that tag with the component's template and styles, enabling dynamic content rendering in the browser.
+
+[CAUTION]
+====
+1. How does Angular replace the custom `<app-root>` element in the `index.html` file with the actual component markup during runtime?
+
+2. What role does the `@Component` decorator play in transforming a standard TypeScript class into an Angular Component, and how does Angular use the metadata provided by this decorator?
+
+3. Why are there no script tags in the original `index.html` file, yet scripts appear in the page source after running `ng serve`, and how does Angular CLI handle this process?
+====
+
+=== 12. Creating a First Custom Component
+
+The content explains how to build an Angular demo application by breaking the UI into multiple components, such as a header, sidebar, and dialog. Angular encourages creating these UI building blocks as individual components and composing them together. To start, the example focuses on creating a header component.
+
+Key points include:
+
+- Angular components typically consist of multiple files working together, commonly named with a pattern like `header.component.ts`. However, with Angular 20, the recommended naming has simplified to just `header.ts`.
+- The naming convention is flexible and does not affect functionality, but descriptive names are preferred for clarity.
+- Components are defined as exported TypeScript classes enhanced with a `@Component` decorator imported from Angular's core package.
+- The example shows creating a `HeaderComponent` class with an empty body initially, decorated with `@Component()` to mark it as an Angular component.
+
+Overall, the approach emphasizes modular UI design in Angular by creating reusable components, starting with the header as the first step in building the demo app.
+
+[CAUTION]
+====
+1. What is the traditional file naming convention for Angular components prior to Angular 20, and how has it changed with Angular 20?
+
+2. Why is it important to export the class in an Angular component file, and what naming conventions are recommended for the class name?
+
+3. How do Angular components relate to TypeScript classes and decorators, and what is the minimal structure needed to define a new component like HeaderComponent?
+====
+
+=== 14. Configuring the Custom Component
+
+The text explains how to create a custom Angular component, specifically a header component, focusing on key configuration aspects:
+
+- **Selector**: Should be a tag with at least two words separated by a dash (e.g., `app-header`) to avoid conflicts with built-in HTML elements like `<header>`. The prefix (like `app`) is customizable.
+
+- **Template**: While you can define a template inline as a string in the TypeScript file, it is recommended to use an external HTML file for anything beyond very simple templates. This is done via the `templateUrl` property, pointing to a relative path like `./header.component.html`.
+
+- **Standalone Property**: The `standalone` property should be set to `true` to mark the component as a Standalone Component, which is the modern Angular approach. In Angular 19+, this is true by default and can be omitted; for earlier versions, it must be explicitly set.
+
+- **Component Types**: Angular supports both module-based components (older style) and standalone components (newer, simpler to use). The recommendation is to use standalone components going forward.
+
+The example includes creating the external HTML file with basic markup (a `<header>` element containing an `<h1>`), and notes that styles and further content can be added later. The explanation ends by posing the question of how to use the newly created header component.
+
+[CAUTION]
+====
+1. Why does Angular recommend using a selector with at least two words separated by a dash (e.g., `app-header`) for custom components instead of a single word?
+
+2. How does the `standalone` property in Angular components behave differently depending on the Angular version, and what are the implications for setting it explicitly?
+
+3. What is the recommended way to define the template for an Angular component when the template is more than a few lines, and how should the external template file be named and referenced?
+====
+
+=== 15. Using the Custom Component
+
+The explanation covers how to properly use a custom Angular header component within an application:
+
+- Simply adding the custom component's tag (e.g., `<app-header>`) in the `index.html` won't render it because Angular doesn't automatically detect or render components placed directly in the HTML.
+- Angular requires explicit registration of components. The `bootstrapApplication` function is used to tell Angular which root component to render.
+- While you can bootstrap multiple components separately, the typical Angular approach is to have a single root component (usually `AppComponent`) and build a tree of nested components.
+- To use the header component inside the app component's template, you add its selector tag there.
+- However, this causes an error ("not a known element") unless you explicitly import the header component into the app component.
+- This is done by importing the header component class in the app component's TypeScript file and adding it to the `imports` array of the app component's configuration (leveraging Angular's standalone components feature).
+- Once imported properly, Angular recognizes the header component in the app component's template, and it renders correctly without errors.
+- This approach enables components to be part of the same Angular application tree, allowing them to communicate and share data effectively.
+
+In summary, Angular requires explicit component registration and encourages building a component tree with a single root component, importing child components where needed to render them properly.
+
+[CAUTION]
+====
+1. Why does Angular render an empty HTML element for a custom component tag if the component is not explicitly registered, and how does this behavior affect component rendering?
+
+2. What is the role of the `bootstrapApplication` function in Angular, and why is it typically called only once with the root component instead of multiple times for each component?
+
+3. How does the `imports` property in a standalone Angular component's configuration object enable the use of other components within its template, and what error occurs if this step is omitted?
+====
