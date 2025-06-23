@@ -1,5 +1,5 @@
 = Angular - The Complete Guide (2025 Edition)
-:source-highlighter: coderay
+:source-highlighter: pygments
 :icons: font
 :toc: left
 :toclevels: 4
@@ -25,6 +25,12 @@ Specifically, you'll learn how to handle user events like clicks and respond to 
 By the end of this section, you will be equipped to build dynamic, interactive web applications—just like the demo app we create together.
 
 === 10. A New Starting Project & Analyzing The Project Structure
+
+```
+npm install -g @angular/cli
+ng new prompts-app
+cd prompts-app
+```
 
 The content explains the setup and structure of a new Angular project created with the Angular CLI, recommending the use of a provided starter project to ensure a consistent starting point. It highlights that different CLI versions may create slightly different project structures, such as the location of the favicon file, but the Angular code remains the same.
 
@@ -135,4 +141,165 @@ In summary, Angular requires explicit component registration and encourages buil
 2. What is the role of the `bootstrapApplication` function in Angular, and why is it typically called only once with the root component instead of multiple times for each component?
 
 3. How does the `imports` property in a standalone Angular component's configuration object enable the use of other components within its template, and what error occurs if this step is omitted?
+====
+
+=== 16. Styling the Header Component & Adding An Image
+
+The content explains how to style an Angular header component by creating a separate CSS file (`header.component.css`) and linking it via the `styleUrl` or `styleUrls` property in the component's TypeScript file. Inline styles are possible but discouraged. It provides prepared CSS and assets (like a logo image) to be added to the project, including updating the global `styles.css` and `index.html` to import Google Fonts. The `header.component.html` is updated to include an image from the assets folder, with instructions to ensure the `angular.json` file properly references the assets path so images load correctly. Additional markup changes include wrapping the header text in a div and adding a descriptive paragraph. Once these changes are made and the development server is running, the styled header component will display correctly, marking the completion of the first custom component.
+
+[CAUTION]
+====
+1. What is the recommended way to link CSS styles to an Angular component, and why are inline styles or inline templates discouraged?
+
+2. How should the assets folder be configured in the `angular.json` file to ensure images like `task-management-logo.png` load correctly in an Angular project?
+
+3. What specific changes need to be made to the `index.html` and `styles.css` files to incorporate Google Fonts and global styles in this Angular project setup?
+====
+
+=== 17. Managing & Creating Components with the Angular CLI
+
+The content explains the process of creating and managing Angular components efficiently. Initially, it describes building a custom header component manually and highlights that as the number of components grows, organizing component files into feature-based subfolders (e.g., a "header" folder) inside the app folder is a common practice to maintain a clean structure. After moving files, import paths should be updated accordingly.
+
+Next, it introduces the Angular CLI as a tool to streamline component creation. Instead of manually creating folders and files, developers can use commands like `ng generate component` (or the shorthand `ng g c`) followed by the component name (e.g., "user") to automatically generate the component files in a new folder. The CLI creates the standard files (HTML, TypeScript, CSS, and a test spec file) following naming conventions and sets up the component with a selector, external style links, standalone configuration, and an imports array for dependencies. The test file can be deleted if not needed immediately. This approach saves time and ensures consistency in component setup.
+
+[CAUTION]
+====
+1. What is the recommended folder naming convention for organizing Angular component files within the src app folder, and why is this practice beneficial?
+
+2. How does the Angular CLI's `ng generate component` command structure the newly created component files and what default configurations does it apply in the generated TypeScript file?
+
+3. After moving component files into a new subfolder, what specific step must be taken to ensure the Angular app continues to work correctly, and how do modern IDEs assist with this?
+====
+
+=== 18. Styling & Using Our Next Custom Component
+
+The user component was updated to include a div containing a button with a user image and a span for the user's name. CSS styles were provided to improve its appearance. The user component's TypeScript file required no changes. To use this component in the app component's template, it was imported and added to the imports array, with Visual Studio Code offering a quick fix to automate this. The app component template was refined by wrapping the user component inside a main element and an unordered list with styling applied via updated CSS. The user component now displays but lacks the actual user image and name, which will be addressed next.
+
+[CAUTION]
+====
+1. What specific steps and Angular features are demonstrated to enable the use of a newly created user component inside the root app component, including how to resolve the "unknown element" error in the IDE?
+
+2. How does the example illustrate the use of self-closing tags for Angular components that do not contain content between their opening and closing tags, and what is the rationale behind this practice?
+
+3. What structural and styling changes are made to the app component’s template and CSS to properly contain and visually improve the layout of the user component, and why are these changes necessary?
+====
+
+=== 19. Preparing User Data (To Output Dynamic Content)
+
+The current app uses placeholder images and names, which are not final and the image isn't displaying yet. The goal is to support multiple users by using a provided `dummy.users.ts` file containing an array of user data (ID, name, image identifier). User images are supplied in a downloadable zip file, which should be extracted and placed into an assets/users folder, matching the image identifiers in the dummy data. The next step is to randomly select a user from this list and display their name and image dynamically in the user component. This requires learning Angular features to render dynamic content, moving beyond the previously static markup.
+
+[CAUTION]
+====
+1. What is the purpose of the `dummy.users.ts` file and how should it be integrated into the Angular app structure?
+
+2. How are the user images organized within the assets folder, and how do their filenames relate to the dummy user data?
+
+3. What Angular concept or feature is introduced to enable the user component to display dynamic content such as randomly selected user names and images?
+====
+
+=== 20. Storing Data in a Component Class
+
+*Goal:* display a randomly chosen user’s data in an Angular component.  
+
+In `user.component.ts`  
+
+   • Add a class property (e.g. `selectedUser`) directly in the component class body.  
+   • Import the `DUMMY_USERS` array from `../dummy-users.ts`.  
+   • Define a helper constant outside the class:
+   
+```js
+const randomIndex = Math.floor(Math.random() * DUMMY_USERS.length);
+```
+
+   • Initialize your property with a random entry:
+   
+```js
+selectedUser = DUMMY_USERS[randomIndex];
+```
+
+Because it’s a class property, Angular will expose `selectedUser` to the template.  
+
+In `user.component.html`  
+
+   • Use interpolation to output fields of the randomly chosen user, for example:
+   
+```ng2
+<h2>{{ selectedUser.name }}</h2>
+<p>{{ selectedUser.email }}</p>
+```
+
+That’s all it takes to bind dynamic (random) user data from your TypeScript class into the component’s HTML.
+
+[CAUTION]
+====
+1. In the `UserComponent` class shown, how do you declare and initialize the `selectedUser` property so that it becomes accessible in the component’s template?  
+2. What import statement and relative path are used to bring the `DUMMY_USERS` array into the `user.component.ts` file?  
+3. Which JavaScript expression combines `Math.random()`, `Math.floor()`, and `DUMMY_USERS.length` to produce a valid random index for selecting one of the dummy users?
+====
+
+=== 21. Outputting Dynamic Content with String Interpolation
+
+Angular lets you bind dynamic data from your component class into your templates in (at least) two ways. The most straightforward is string interpolation: wrap any public (not private) component property in double curly braces, e.g.  
+
+```ng2
+{{ selectedUser.name }}
+``` 
+
+Here, Angular’s tooling (for example in VS Code) will even auto-complete available properties and types. In our example, `dummyUsers` is an array of objects each with `id`, `name`, and `avatar`, so `selectedUser.name` inserts that user’s name into the view. Because the component picks a random user on each reload, you’ll see different names appearing whenever you refresh.
+
+[CAUTION]
+====
+1. According to the excerpt, exactly how do you denote an Angular string interpolation expression in your template (i.e. how many and which curly braces do you use)?  
+2. In the provided context, which TypeScript keyword, if prefixed to a component property, makes that property unavailable in the template?  
+3. What are the three fields defined on each object in the “dummy users” array as described?
+====
+
+=== 22. Property Binding & Outputting Computed Values
+
+Angular provides two primary ways to insert dynamic data into your templates:
+
+1. String interpolation (`{{ … }}`)  
+   - Ideal for embedding values in text nodes or between HTML tags.  
+   - You can even include simple expressions (e.g. `1 + 1`).
+
+2. Property binding (`[property]="…"`)  
+   - The recommended way to set element attributes or DOM properties (e.g. `<img>`’s `src` or `alt`).  
+   - Syntax: enclose the element’s property name in square brackets and assign it a JavaScript expression—no curly braces.  
+   - Allows you to build dynamic strings on the fly, for example:  
+     `<img [src]="'assets/users/' + selectedUser.avatar" [alt]="selectedUser.name">`
+
+By combining these techniques, you can display text and configure element attributes dynamically—essential for building interactive Angular applications.
+
+[CAUTION]
+====
+1. In the example, what Angular syntax is used instead of double-curly interpolation for setting an element’s src attribute, and how is it structured?  
+2. Given that user avatars live in the assets/users folder, how do you build the full image path by combining a fixed string with `selectedUser.avatar` inside an Angular template?  
+3. How do you bind the `alt` property of the `<img>` tag to `selectedUser.name` using Angular’s property-binding syntax?
+====
+
+=== 24. Using Getters For Computed Values
+
+Instead of building complex strings or computations directly in your
+Angular templates, it’s better to move that logic into your component
+class via a getter. For example:
+
+[arabic]
+. In your component class, define +
+`+get imagePath() {   return '/assets/avatars/' + this.selectedUser.avatar + '.png';   }+` +
+– note the `+get+` keyword makes it behave like a property rather than a
+method. +
+– inside the class you refer to other properties with
+`+this.selectedUser+`.
+. In your template, bind to it just like any other property: +
+`+<img [src]="imagePath">+` +
+– no parentheses needed.
+
+This keeps your template markup simpler and delegates all
+string‐construction or other computations to the class.
+
+[CAUTION]
+====
+1. Which keyword do you add before a class method in TypeScript to turn it into a property-like getter?  
+2. When you refer to another class property from inside that getter, which JavaScript keyword must you prefix it with?  
+3. Once you’ve defined such a getter, how do you bind to it in an Angular template—do you include parentheses or not?
 ====

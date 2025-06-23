@@ -32,6 +32,9 @@ Also can remove newlines from Udemy transcripts.
   import time
   import subprocess
 
+  from typing import List
+  from pathlib import Path
+
 Print banner.
 
 ::
@@ -64,9 +67,13 @@ Select OpenAI LLM.
   llm_prices = {
       "o4-mini": 1.10,
       "o3-mini": 1.10,
-      "gemini-2.5-pro-exp-03-25": 0.0,
+      "o3": 2.0,
+      "o3-pro": 20.0,
+        
+      "gemini-2.5-flash-preview-05-20": 0.0,
       "gemma-3-27b-it": 0.0,
       "gemini-2.0-flash": 0.0,
+    
       "gpt-4.1-mini": 0.4,
       "gpt-4.1-nano": 0.1,
       "gpt-4.1": 2.0,
@@ -74,18 +81,128 @@ Select OpenAI LLM.
       "gpt-4o": 2.5,
   }
 
+  def get_llm_properties(llm_model):
+      if llm_model.startswith("gemini"):
+          return {"google": True, "temperature": True, "xml": False}
+
+      elif llm_model.startswith("gemma"):
+          return {"google": True, "temperature": True, "xml": True}
+
+      elif llm_model.startswith("gpt"):
+          return {"google": False, "temperature": True, "xml": False}
+
+      else: #o3
+          return {"google": False, "temperature": False, "xml": False}
+        
   def reset_execution_time():
       if "execution_time" in st.session_state:
           del st.session_state["execution_time"]
-    
+
+Persisted List   
+--------------    
+
+.. csv-table:: History
+   :header: "Date", "Comment"
+   :widths: 10 30
+
+   "2025-06-13", "New elements come first"
+   "", "Copied from: `explain_java.py`_"
+
+.. _explain_java.py: explain_java.py.html#persisted-list
+  
+::
+
+  class PersistedList:
+      """
+      A tiny helper that remembers a list of strings on disk.
+      """
+
+      def __init__(self, filename: str) -> None:
+          self.filename = Path(filename)
+          self.names: List[str] = self._read_from_file()
+
+      # ──────────────────────────────────────────────────────────────
+      # Private helpers
+      # ──────────────────────────────────────────────────────────────
+
+      def _read_from_file(self) -> List[str]:
+          """
+          Return the list stored on disk (empty if the file is missing).
+          """
+          if self.filename.exists():
+              with self.filename.open("r", encoding="utf-8") as fh:
+                  return [line.strip() for line in fh if line.strip()]
+          return []
+
+      def _write_to_file(self) -> None:
+          """
+          Persist the current list to disk (one item per line).
+          """
+          self.filename.parent.mkdir(parents=True, exist_ok=True)
+          with self.filename.open("w", encoding="utf-8") as fh:
+              fh.write("\n".join(self.names))
+
+      @staticmethod
+      def _remove_strings(source: List[str], to_remove: List[str]) -> List[str]:
+          """
+          Return a copy of *source* without any element that occurs in *to_remove*.
+          """
+          removal_set = set(to_remove)
+          return [s for s in source if s not in removal_set]
+
+      # ──────────────────────────────────────────────────────────────
+      # Public API
+      # ──────────────────────────────────────────────────────────────
+
+      def sort_by_pattern(self, all_names: List[str]) -> List[str]:
+          """
+          Sort *all_names* so that previously‑stored names keep their old
+          ordering, and every new name is appended alphabetically.
+          The internal list is updated and re‑written to disk.
+          """
+          priority = {name: idx for idx, name in enumerate(self.names)}
+
+          sorted_names = sorted(
+              all_names,
+              key=lambda n: (1, priority[n]) if n in priority else (0, n)
+          )
+
+          self.names = sorted_names
+          self._write_to_file()
+          return sorted_names
+
+      def select(self, selected_name: str) -> None:
+          """
+          Move *selected_name* to the top of the list (inserting it if it
+          wasn’t present) and persist the change.
+          """
+          self.names = self._remove_strings(self.names, [selected_name])
+          self.names.insert(0, selected_name)
+          self._write_to_file()
+
+      # ──────────────────────────────────────────────────────────────
+      # Convenience
+      # ──────────────────────────────────────────────────────────────
+
+      def __iter__(self):
+          return iter(self.names)
+
+      def __repr__(self) -> str:
+          return f"{self.__class__.__name__}({self.filename!s}, {self.names})"
+
+Remember which LLM was used last time.
+
+::
+
   llm_models = list(llm_prices.keys())
-  openai_model = st.sidebar.radio(
+  llm_models_persisted = PersistedList(".udemy")
+  llm_models = llm_models_persisted.sort_by_pattern(llm_models)
+
+  llm_model = st.sidebar.selectbox(
       "LLM Models", 
       llm_models,
       on_change=reset_execution_time
   )
-
-  is_gemini = openai_model.startswith("gemini")
 
 Obsidian folder
 ---------------
@@ -117,11 +234,17 @@ Output file to save response.
   out_file = os.path.join(output_folder, 'udemy.txt')
   adoc_file = os.path.join(output_folder, 'udemy.adoc')
 
-Get Gemini API key.
+OpenAI and Gemini clients
 
 ::  
 
+  client = OpenAI()
+
   g_key = os.getenv("GEMINI_API_KEY")
+  g_client = OpenAI(
+      api_key=g_key,
+      base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+  )
 
 Newest files 
 ------------
@@ -201,10 +324,10 @@ Calculate price in cents.
 
 ::
 
-  cents = round(len(tokens) * llm_prices[openai_model]/10000, 5)
+  cents = round(len(tokens) * llm_prices[llm_model]/10000, 5)
 
   st.sidebar.write(f'''
-      | Characters | Tokens | Cents |
+      | Chars | Tokens | Cents |
       |---|---|---|
       | {len(text)} | {len(tokens)} | {cents} |
       ''')  
@@ -258,24 +381,44 @@ Call OpenAI API
   prompt_improve = """You will be provided with statements in markdown, 
   and your task is to improve the content you are provided.
   """
+  prompt_questions = """
+  You will be provided with context in markdown,
+  and your task is to generate 3 questions this context can provide
+  specific answers to which are unlikely to be found elsewhere.
 
-  g_client = OpenAI(
-      api_key=g_key,
-      base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-  )
-  client = g_client if is_gemini else OpenAI()
+  Higher-level summaries of surrounding context may be provided
+  as well. Try using these summaries to generate better questions
+  that this context can answer.
+  """
 
   if 'openai_result' not in st.session_state:
       st.session_state.openai_result = ""
  
-  def call_openai(text, prompt):
-      response = client.chat.completions.create(
-              model=openai_model,
-              messages=[
-                  {"role": "system", "content": prompt},
-                  {"role": "user", "content": text},
-              ],
-              # temperature=0.7,
+  def call_llm(text, prompt):
+      llm_models_persisted.select(llm_model)
+      props = get_llm_properties(llm_model)
+      llm_client = g_client if props["google"] else client
+
+      if props["xml"]:
+          messages = [
+              {"role": "user", "content": f"<prompt>{prompt}</prompt>\n<query>{text}</query>"},
+          ]
+      else:
+          messages = [
+              {"role": "developer", "content": prompt},
+              {"role": "user", "content": text},
+          ]
+
+      if props["temperature"]:
+          response = llm_client.chat.completions.create(
+              model=llm_model,
+              messages=messages,
+              temperature=llm_temperature,
+          )
+      else:
+          response = llm_client.chat.completions.create(
+              model=llm_model,
+              messages=messages,
           )
 
       choice = response.choices[0]
@@ -299,16 +442,23 @@ Show OpenAI result.
   st.write(st.session_state.openai_result)
   # st.write('---')
 
-  if st.sidebar.button(':sparkles: &nbsp; Summarize', type='primary', use_container_width=True):
+  if st.sidebar.button(':sparkles: &nbsp; Summarize', use_container_width=True):
       start_time = time.time()
-      call_openai(text, prompt_summarize)
+      call_llm(text, prompt_summarize)
       end_time = time.time()
       st.session_state.execution_time = end_time - start_time
       st.rerun()
-
+    
+  if st.sidebar.button(':question: &nbsp; Ask questions', use_container_width=True):
+      start_time = time.time()
+      call_llm(text, prompt_questions)
+      end_time = time.time()
+      st.session_state.execution_time = end_time - start_time
+      st.rerun()
+ 
   if st.sidebar.button(':thumbsup: &nbsp; Improve', use_container_width=True):
       start_time = time.time()
-      call_openai(text, prompt_improve)
+      call_llm(text, prompt_improve)
       end_time = time.time()
       st.session_state.execution_time = end_time - start_time
       st.rerun()
@@ -328,7 +478,7 @@ Copy to clipboard
 ::
 
   if len(st.session_state.openai_result) > 0:
-      if st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
+      if st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', type='primary', use_container_width=True):
           pyperclip.copy(st.session_state.openai_result)
           st.sidebar.write(f'Copied to clipboard')
         
@@ -354,7 +504,7 @@ Copy Asciidoc to clipboard
   bump_headers_n = st.sidebar.number_input("Bump headers", value=0, min_value=0)
 
   if len(st.session_state.openai_result) > 0:
-      if st.sidebar.button(':clipboard: &nbsp; Copy Asciidoc to clipboard', use_container_width=True):
+      if st.sidebar.button(':clipboard: &nbsp; Copy Asciidoc to clipboard', type='primary', use_container_width=True):
           pyperclip.copy(asciidoc_headers(bump_headers(convert_to_asciidoc(st.session_state.openai_result), bump_headers_n)))
           st.sidebar.write(f'Copied to clipboard')
         
