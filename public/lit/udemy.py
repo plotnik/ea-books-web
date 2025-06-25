@@ -32,8 +32,13 @@ import pyperclip
 import time
 import subprocess
 
-from typing import List
-from pathlib import Path
+# See: PersistedList_
+#
+# .. _PersistedList: PersistedList.py.html
+#   
+# ::
+
+from PersistedList import PersistedList
 
 # Print banner.
 #
@@ -69,7 +74,7 @@ llm_prices = {
     "o3-mini": 1.10,
     "o3": 2.0,
     "o3-pro": 20.0,
-        
+    
     "gemini-2.5-flash-preview-05-20": 0.0,
     "gemma-3-27b-it": 0.0,
     "gemini-2.0-flash": 0.0,
@@ -80,6 +85,8 @@ llm_prices = {
     "gpt-4o-mini": 0.15,
     "gpt-4o": 2.5,
 }
+
+llm_temperature = 0.1
 
 def get_llm_properties(llm_model):
     if llm_model.startswith("gemini"):
@@ -97,98 +104,6 @@ def get_llm_properties(llm_model):
 def reset_execution_time():
     if "execution_time" in st.session_state:
         del st.session_state["execution_time"]
-
-# Persisted List   
-# --------------    
-#
-# .. csv-table:: History
-#    :header: "Date", "Comment"
-#    :widths: 10 30
-#
-#    "2025-06-13", "New elements come first"
-#    "", "Copied from: `explain_java.py`_"
-#
-# .. _explain_java.py: explain_java.py.html#persisted-list
-#   
-# ::
-
-class PersistedList:
-    """
-    A tiny helper that remembers a list of strings on disk.
-    """
-
-    def __init__(self, filename: str) -> None:
-        self.filename = Path(filename)
-        self.names: List[str] = self._read_from_file()
-
-    # ──────────────────────────────────────────────────────────────
-    # Private helpers
-    # ──────────────────────────────────────────────────────────────
-
-    def _read_from_file(self) -> List[str]:
-        """
-        Return the list stored on disk (empty if the file is missing).
-        """
-        if self.filename.exists():
-            with self.filename.open("r", encoding="utf-8") as fh:
-                return [line.strip() for line in fh if line.strip()]
-        return []
-
-    def _write_to_file(self) -> None:
-        """
-        Persist the current list to disk (one item per line).
-        """
-        self.filename.parent.mkdir(parents=True, exist_ok=True)
-        with self.filename.open("w", encoding="utf-8") as fh:
-            fh.write("\n".join(self.names))
-
-    @staticmethod
-    def _remove_strings(source: List[str], to_remove: List[str]) -> List[str]:
-        """
-        Return a copy of *source* without any element that occurs in *to_remove*.
-        """
-        removal_set = set(to_remove)
-        return [s for s in source if s not in removal_set]
-
-    # ──────────────────────────────────────────────────────────────
-    # Public API
-    # ──────────────────────────────────────────────────────────────
-
-    def sort_by_pattern(self, all_names: List[str]) -> List[str]:
-        """
-        Sort *all_names* so that previously‑stored names keep their old
-        ordering, and every new name is appended alphabetically.
-        The internal list is updated and re‑written to disk.
-        """
-        priority = {name: idx for idx, name in enumerate(self.names)}
-
-        sorted_names = sorted(
-            all_names,
-            key=lambda n: (1, priority[n]) if n in priority else (0, n)
-        )
-
-        self.names = sorted_names
-        self._write_to_file()
-        return sorted_names
-
-    def select(self, selected_name: str) -> None:
-        """
-        Move *selected_name* to the top of the list (inserting it if it
-        wasn’t present) and persist the change.
-        """
-        self.names = self._remove_strings(self.names, [selected_name])
-        self.names.insert(0, selected_name)
-        self._write_to_file()
-
-    # ──────────────────────────────────────────────────────────────
-    # Convenience
-    # ──────────────────────────────────────────────────────────────
-
-    def __iter__(self):
-        return iter(self.names)
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.filename!s}, {self.names})"
 
 # Remember which LLM was used last time.
 #

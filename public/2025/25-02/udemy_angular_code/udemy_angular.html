@@ -532,6 +532,10 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_21_outputting_dynamic_content_with_string_interpolation">21. Outputting Dynamic Content with String Interpolation</a></li>
 <li><a href="#_22_property_binding_outputting_computed_values">22. Property Binding &amp; Outputting Computed Values</a></li>
 <li><a href="#_24_using_getters_for_computed_values">24. Using Getters For Computed Values</a></li>
+<li><a href="#_25_listening_to_events_with_event_binding">25. Listening to Events with Event Binding</a></li>
+<li><a href="#_26_managing_state_changing_data">26. Managing State &amp; Changing Data</a></li>
+<li><a href="#_27_a_look_behind_the_scenes_of_angulars_change_detection_mechanism">27. A Look Behind The Scenes Of Angular&#8217;s Change Detection Mechanism</a></li>
+<li><a href="#_28_introducing_signals">28. Introducing Signals</a></li>
 </ul>
 </li>
 </ul>
@@ -1210,12 +1214,191 @@ string‐construction or other computations to the class.</p>
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_25_listening_to_events_with_event_binding">25. Listening to Events with Event Binding</h3>
+<div class="paragraph">
+<p>The content explains how to handle user input events in Angular by adding event listeners to elements in templates. Specifically, it shows how to listen for a button&#8217;s click event by using Angular&#8217;s syntax: placing the event name (e.g., "click") inside parentheses on the element, followed by an equal sign and a method call in quotes. The method, defined in the component class (commonly prefixed with "on" like onSelectUser), contains the code to execute when the event occurs. For example, logging "Clicked" to the console. When the button is clicked, the method runs, demonstrating how to respond to user interactions and update the UI accordingly.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In Angular templates, what is the exact syntax for adding an event listener to a button element, and how does this syntax differ from traditional JavaScript event listener attachment?</p>
+</li>
+<li>
+<p>When defining a method in an Angular component class to handle an event, why is it common (but not mandatory) to prefix the method name with "on," and how does this convention help in understanding the code?</p>
+</li>
+<li>
+<p>How does Angular ensure that the method assigned to an event listener in the template is only executed upon the event occurrence (e.g., a button click) and not immediately during template parsing?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_26_managing_state_changing_data">26. Managing State &amp; Changing Data</h3>
+<div class="paragraph">
+<p>The excerpt explains how to combine event handling and dynamic data binding in Angular to update the UI whenever a user is clicked. Instead of logging to the console, you store the clicked user in a component property (often called “state,” here <code>selectedUser</code>). To pick a different user on each click, you move the random‐index calculation into the click handler method so it runs every time. Assigning the newly selected user to the component property automatically updates the rendered template—no extra setup needed.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the example, what is the name of the component method that gets called when the button is clicked to update which user is displayed?</p>
+</li>
+<li>
+<p>How does the code ensure that a different user is chosen on each click instead of only once at page load?</p>
+</li>
+<li>
+<p>What term does the snippet use to describe component data (like <code>selectedUser</code>) that, when changed, drives updates to the UI?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_27_a_look_behind_the_scenes_of_angulars_change_detection_mechanism">27. A Look Behind The Scenes Of Angular&#8217;s Change Detection Mechanism</h3>
+<div class="paragraph">
+<p>Angular automatically updates the UI whenever component data (state) changes. It does this by running its change-detection process, which compares the component’s template against the current data and applies any necessary DOM updates. Under the hood, Angular uses zone.js to hook into browser events (user interactions, timers, etc.). Whenever such an event fires, zone.js notifies Angular to run change detection, so you don’t have to manually tell the framework when to refresh the view.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>According to the lecture, what role does zone.js play in Angular’s change-detection process?</p>
+</li>
+<li>
+<p>After Angular detects that a component’s property value has changed, how does it determine whether to update the UI?</p>
+</li>
+<li>
+<p>Which kinds of events does zone.js automatically listen for to trigger Angular’s change detection?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_28_introducing_signals">28. Introducing Signals</h3>
+<div class="paragraph">
+<p>Here’s a concise summary of the key points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Traditional Angular state updates<br>
+– Since Angular 2, components have used plain properties and
+Zone.js–driven change detection.<br>
+– Zone.js tracks all async events and then diffs every component to see
+what needs re-rendering.</p>
+</li>
+<li>
+<p>Signals: a new reactive primitive (Angular 16/17)<br>
+– Import <code>signal</code> from <code>@angular/core</code> and create one via<br>
+<code>selectedUser = signal(initialUser)</code><br>
+– Read in a template or code by calling it as a function:<br>
+<code>{{ selectedUser() }}</code><br>
+– Update by calling <code>.set(newValue)</code>, e.g.<br>
+<code>selectedUser.set(newUser)</code></p>
+</li>
+<li>
+<p>Benefits of Signals<br>
+– Fine-grained tracking: Angular knows exactly which template bindings
+depend on which signals and only updates those.<br>
+– No more Zone.js overhead—more efficient change detection.</p>
+</li>
+<li>
+<p>Computed values</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>– Use the <code>computed</code> helper from <code>@angular/core</code>:<br></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ng2"><span></span><span class="tok-x">imagePath = computed</span><span class="tok-err">((</span><span class="tok-x">) =&gt; `assets/users/$</span><span class="tok-err">{</span><span class="tok-x">selectedUser</span><span class="tok-err">(</span><span class="tok-x">).avatar}`)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>– Under the hood, <code>computed</code> returns a signal that re-evaluates only
+when its dependent signals change.<br>
+– You also read computed signals by calling them (<code>imagePath()</code>).</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Compatibility<br>
+– Signals are optional and require Angular 16+ (fully stable in 17).<br>
+– Older codebases or teams not ready for Signals can continue using the
+classic zone-based approach.<br>
+– This course will cover both approaches, with a deeper dive into
+Signals later.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><em>How do you replace a plain property with a Signal in your component and update it at runtime?</em><br>
+(Answer: Import <code>signal</code> from <code>@angular/core</code>, initialize it in the component class—e.g.
+<code>selectedUser = signal&lt;User&gt;(initialUser)</code>—and later call <code>this.selectedUser.set(newUser)</code> to update it.)</p>
+</li>
+<li>
+<p><em>Once you’ve created a Signal on your component class, how do you read its current value inside the template?</em><br>
+(Answer: You treat the Signal property as a function and invoke it with parentheses—e.g. <code>{{ selectedUser().name }}</code>—so Angular knows to subscribe and re-render when it changes.)</p>
+</li>
+<li>
+<p><em>How do you define a computed value based on one or more Signals so that it only recalculates when its dependencies change?</em> <br>
+(Answer: Import <code>computed</code> from <code>@angular/core</code>, then create a Signal-driven computed property—e.g.
+<code>imagePath = computed(() &#8658; \`assets/users/\${selectedUser().avatar}\</code>);`—and invoke <code>imagePath()</code> in the template. Angular tracks its inner Signal reads and only re-runs the function when those Signals change.)</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-06-23 10:26:39 +0300
+Last updated 2025-06-25 11:05:50 +0300
 </div>
 </div>
 </body>
