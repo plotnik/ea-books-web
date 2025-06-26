@@ -9,6 +9,10 @@ import streamlit as st
 import pandas as pd
 import os
 
+st.set_page_config(
+    page_title="JIRA-Stats",
+)
+
 csv_files = [f for f in os.listdir('.') if f.endswith('.csv')]
 csv_files.sort()
 csv_file = st.sidebar.radio("Select exported JIRA filter CSV file to process:", csv_files)
@@ -61,3 +65,26 @@ st.write(f"Num cols: `{dfs.shape[0]}`, not empty: `{drops.shape[0]}`")
 
 # st.table(dfs)
 st.table(drops)
+
+# Create report
+#
+# ::
+
+def create_report():
+    report_name = csv_file[:-4] + ".report.md"
+    
+    with open(report_name, "w") as f:
+        for index, row in df.iterrows():
+            issue_key = row.get('Issue key', 'N/A')
+            summary = row.get('Summary', 'N/A')
+            status = row.get('Status', 'N/A')
+            assignee = row.get('Assignee', 'N/A')
+            
+            f.write(f'{issue_key} - {status} - {assignee}\n')
+            f.write(f'{summary}\n')
+            f.write('\n')
+    
+    st.sidebar.success(f"Report created: {report_name}")
+
+if st.sidebar.button("Create report", type="primary", use_container_width=True):
+    create_report()

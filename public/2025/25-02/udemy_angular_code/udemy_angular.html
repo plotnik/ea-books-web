@@ -536,6 +536,10 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_26_managing_state_changing_data">26. Managing State &amp; Changing Data</a></li>
 <li><a href="#_27_a_look_behind_the_scenes_of_angulars_change_detection_mechanism">27. A Look Behind The Scenes Of Angular&#8217;s Change Detection Mechanism</a></li>
 <li><a href="#_28_introducing_signals">28. Introducing Signals</a></li>
+<li><a href="#_29_we_need_more_flexible_components">29. We Need More Flexible Components!</a></li>
+<li><a href="#_30_defining_component_inputs">30. Defining Component Inputs</a></li>
+<li><a href="#_31_required_optional_inputs">31. Required &amp; Optional Inputs</a></li>
+<li><a href="#_32_using_signal_inputs">32. Using Signal Inputs</a></li>
 </ul>
 </li>
 </ul>
@@ -1393,12 +1397,323 @@ Signals later.</p>
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_29_we_need_more_flexible_components">29. We Need More Flexible Components!</h3>
+<div class="paragraph">
+<p>The instructor recaps that they’ve already gone through all the core Angular building blocks, but the demo app’s UI still only supports a single, randomly chosen user. The next goal is to turn the existing UserComponent into a truly reusable piece:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Remove the random-index logic, the selection state, and the related imports (compute, signal, etc.).</p>
+</li>
+<li>
+<p>Expose the user data via @Input() properties on the UserComponent so that each instance can be fed a different user.</p>
+</li>
+<li>
+<p>In the AppComponent template, render the UserComponent multiple times (or via *ngFor) with different inputs, so clicking any user item loads that user’s tasks on the right.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This approach leverages Angular’s component inputs to keep each user item simple, configurable, and reusable.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Which pieces of code in the existing UserComponent class (and its imports) are being stripped out to stop it from picking a random user on initialization?</p>
+</li>
+<li>
+<p>After removing the random-index logic, which imported functions become unnecessary in the UserComponent file, and why can they be deleted?</p>
+</li>
+<li>
+<p>What built-in Angular mechanism will we use to pass different user data into the same UserComponent tag so that it can render multiple distinct users?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_30_defining_component_inputs">30. Defining Component Inputs</h3>
+<div class="paragraph">
+<p>Here’s a concise summary of the steps and concepts covered:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Exposing a component property as an input</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In the child component, add a class property (e.g. <code>avatar</code>) and decorate it with <code>@Input()</code> (imported from <code>@angular/core</code>).</p>
+</li>
+<li>
+<p>This tells Angular that the property’s value will be provided from the parent.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Binding data in the parent component</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Import your data (e.g. <code>dummyUsers</code>) into the parent’s TypeScript file.</p>
+</li>
+<li>
+<p>Expose it via a property (e.g. <code>users = dummyUsers;</code>) so the template can access it.</p>
+</li>
+<li>
+<p>In the parent template, use property binding to pass each user’s data into the child:
+<code>[avatar]="users[0].avatar"</code>, <code>[name]="users[0].name"</code>, etc.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Dealing with TypeScript’s strict checks</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Annotate your input property with a type, e.g. <code>@Input() avatar: string;</code>.</p>
+</li>
+<li>
+<p>To satisfy “definitely assigned” checks, use the non-null assertion:
+<code>@Input() avatar!: string;</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Adding more inputs</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Repeat the process for additional fields like <code>name</code>.</p>
+</li>
+<li>
+<p>Bind them similarly in the parent template.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Computing derived values in the child</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use a getter to build the full image path, for example:
+<code>get imagePath() { return 'assets/users/' + this.avatar; }</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Final template tweaks</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Remove any leftover signal-style parentheses on property interpolations.</p>
+</li>
+<li>
+<p>Ensure event bindings (e.g. <code>(click)</code>) remain unchanged.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Result: a reusable user component that takes <code>avatar</code>, <code>name</code> (and any other inputs) from its parent and renders a list of users dynamically.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Which decorator does the tutorial add to a component’s property (and how is it applied) to mark that property as settable from outside the component?</p>
+</li>
+<li>
+<p>When TypeScript complains that an <code>@Input</code>-decorated property has no initializer and isn’t definitely assigned, what two TypeScript features does the guide use to satisfy the compiler?</p>
+</li>
+<li>
+<p>In the user component, how is the avatar image path constructed via a getter?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_31_required_optional_inputs">31. Required &amp; Optional Inputs</h3>
+<div class="paragraph">
+<p>The speaker is refactoring an Angular component to accept its avatar and name via @Input properties rather than hard-coding them. They initially used TypeScript’s non-null assertion (<code>!</code>) to convince the compiler those values would always be present—but that’s unsafe, since omitting one of these inputs at runtime (e.g. forgetting to pass <code>name</code>) would lead to a missing-data error. Angular’s <code>@Input</code> decorator can take a configuration object with a <code>required: true</code> option. By adding <code>required: true</code>, the framework and IDE will issue a compile-time/error if a caller fails to provide that input, aligning TypeScript’s guarantees with actual usage and catching mistakes earlier in development.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>What problem can arise when you use the non-null assertion operator (<code>!</code>) on an Angular @Input property without also marking it as required?</p>
+</li>
+<li>
+<p>How does adding <code>{ required: true }</code> to an Angular @Input decorator bring the runtime behavior back in line with TypeScript’s non-null expectations?</p>
+</li>
+<li>
+<p>Besides <code>required</code>, which other two configuration options for Angular @Input decorators were mentioned (and slated for later discussion) in this excerpt?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_32_using_signal_inputs">32. Using Signal Inputs</h3>
+<div class="paragraph">
+<p>Angular lets you accept component inputs in two ways: the classic @Input
+decorator and the newer “signal”–based approach. Here’s a high-level
+overview of the signal approach and how it compares to the decorator
+approach:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Defining a signal input<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Import the lowercase input function from @angular/core.<br></p>
+</li>
+<li>
+<p>Instead of decorating a property, assign it a signal:<br>
+– Optional with a default:<br>
+<code>avatar = input('')</code><br>
+– Required (no default):<br>
+<code>name = input.required()</code><br></p>
+</li>
+<li>
+<p>The generic <code>&lt;string&gt;</code> tells TypeScript (and Angular) what type the
+signal will carry.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Reading signal inputs<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>In your component’s template or code, call the signal as a function to
+get its current value, e.g. <code>name()</code> or <code>imagePath()</code>.<br></p>
+</li>
+<li>
+<p>Use the computed() function to derive other reactive values (e.g. an
+image path) — Angular will only recompute when its dependent signals
+change.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Read-only nature<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Input signals are read-only. You cannot call set() on them inside the
+component; they update only when the parent changes the bound value.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>How it’s used from the outside<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Parents bind to signal inputs exactly as they do with decorator
+inputs—property binding or literal values. The parent doesn’t need to
+use signals itself.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Pros and cons<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Pros: built-in reactivity, fine-grained updates, more efficient UI
+updates where it matters.<br></p>
+</li>
+<li>
+<p>Cons: signals are a newer Angular feature not yet ubiquitous in large
+codebases, so you’ll still see and often need to use @Input.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Because of widespread legacy code and to cover both styles, the course
+will continue primarily with the decorator-based @Input approach, but
+you’ll now know how to do both.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How do you declare an Angular signal-based input property with a specific type but no initial value, and what’s the exact TypeScript syntax for that?</p>
+</li>
+<li>
+<p>How do you mark an input signal as required using the <code>input</code> function, and why does adding <code>.required</code> forbid supplying a default value?</p>
+</li>
+<li>
+<p>When migrating a derived value like <code>imagePath</code> from a plain getter to a signal, how do you set it up with <code>computed()</code>, and what efficiency benefit does this give over the old getter approach?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-06-25 11:05:50 +0300
+Last updated 2025-06-26 09:53:48 +0300
 </div>
 </div>
 </body>

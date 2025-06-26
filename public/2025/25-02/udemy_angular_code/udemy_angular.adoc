@@ -392,3 +392,118 @@ Signals later.
    (Answer: Import `computed` from `@angular/core`, then create a Signal-driven computed property—e.g.  
    `imagePath = computed(() => \`assets/users/\${selectedUser().avatar}\`);`—and invoke `imagePath()` in the template. Angular tracks its inner Signal reads and only re-runs the function when those Signals change.)
 ====
+
+=== 29. We Need More Flexible Components!
+
+The instructor recaps that they’ve already gone through all the core Angular building blocks, but the demo app’s UI still only supports a single, randomly chosen user. The next goal is to turn the existing UserComponent into a truly reusable piece:
+
+1. Remove the random-index logic, the selection state, and the related imports (compute, signal, etc.).
+2. Expose the user data via @Input() properties on the UserComponent so that each instance can be fed a different user.
+3. In the AppComponent template, render the UserComponent multiple times (or via *ngFor) with different inputs, so clicking any user item loads that user’s tasks on the right.
+
+This approach leverages Angular’s component inputs to keep each user item simple, configurable, and reusable.
+
+[CAUTION]
+====
+1. Which pieces of code in the existing UserComponent class (and its imports) are being stripped out to stop it from picking a random user on initialization?  
+2. After removing the random-index logic, which imported functions become unnecessary in the UserComponent file, and why can they be deleted?  
+3. What built-in Angular mechanism will we use to pass different user data into the same UserComponent tag so that it can render multiple distinct users?
+====
+
+=== 30. Defining Component Inputs
+
+Here’s a concise summary of the steps and concepts covered:
+
+1. Exposing a component property as an input  
+   - In the child component, add a class property (e.g. `avatar`) and decorate it with `@Input()` (imported from `@angular/core`).  
+   - This tells Angular that the property’s value will be provided from the parent.
+
+2. Binding data in the parent component  
+   - Import your data (e.g. `dummyUsers`) into the parent’s TypeScript file.  
+   - Expose it via a property (e.g. `users = dummyUsers;`) so the template can access it.  
+   - In the parent template, use property binding to pass each user’s data into the child:
+     `[avatar]="users[0].avatar"`, `[name]="users[0].name"`, etc.
+
+3. Dealing with TypeScript’s strict checks  
+   - Annotate your input property with a type, e.g. `@Input() avatar: string;`.  
+   - To satisfy “definitely assigned” checks, use the non-null assertion:  
+     `@Input() avatar!: string;`
+
+4. Adding more inputs  
+   - Repeat the process for additional fields like `name`.  
+   - Bind them similarly in the parent template.
+
+5. Computing derived values in the child  
+   - Use a getter to build the full image path, for example:  
+     `get imagePath() { return 'assets/users/' + this.avatar; }`
+
+6. Final template tweaks  
+   - Remove any leftover signal-style parentheses on property interpolations.  
+   - Ensure event bindings (e.g. `(click)`) remain unchanged.
+
+Result: a reusable user component that takes `avatar`, `name` (and any other inputs) from its parent and renders a list of users dynamically.
+
+[CAUTION]
+====
+1. Which decorator does the tutorial add to a component’s property (and how is it applied) to mark that property as settable from outside the component?  
+2. When TypeScript complains that an `@Input`-decorated property has no initializer and isn’t definitely assigned, what two TypeScript features does the guide use to satisfy the compiler?  
+3. In the user component, how is the avatar image path constructed via a getter?
+====
+
+=== 31. Required & Optional Inputs
+
+The speaker is refactoring an Angular component to accept its avatar and name via @Input properties rather than hard-coding them. They initially used TypeScript’s non-null assertion (`!`) to convince the compiler those values would always be present—but that’s unsafe, since omitting one of these inputs at runtime (e.g. forgetting to pass `name`) would lead to a missing-data error. Angular’s `@Input` decorator can take a configuration object with a `required: true` option. By adding `required: true`, the framework and IDE will issue a compile-time/error if a caller fails to provide that input, aligning TypeScript’s guarantees with actual usage and catching mistakes earlier in development.
+
+[CAUTION]
+====
+1. What problem can arise when you use the non-null assertion operator (`!`) on an Angular @Input property without also marking it as required?  
+2. How does adding `{ required: true }` to an Angular @Input decorator bring the runtime behavior back in line with TypeScript’s non-null expectations?  
+3. Besides `required`, which other two configuration options for Angular @Input decorators were mentioned (and slated for later discussion) in this excerpt?
+====
+
+=== 32. Using Signal Inputs
+
+Angular lets you accept component inputs in two ways: the classic @Input
+decorator and the newer “signal”–based approach. Here’s a high-level
+overview of the signal approach and how it compares to the decorator
+approach:
+
+[arabic]
+. Defining a signal input +
+• Import the lowercase input function from @angular/core. +
+• Instead of decorating a property, assign it a signal: +
+– Optional with a default: +
+`avatar = input('')` +
+– Required (no default): +
+`name = input.required()` +
+• The generic `+<string>+` tells TypeScript (and Angular) what type the
+signal will carry.
+. Reading signal inputs +
+• In your component’s template or code, call the signal as a function to
+get its current value, e.g. `+name()+` or `+imagePath()+`. +
+• Use the computed() function to derive other reactive values (e.g. an
+image path) — Angular will only recompute when its dependent signals
+change.
+. Read-only nature +
+• Input signals are read-only. You cannot call set() on them inside the
+component; they update only when the parent changes the bound value.
+. How it’s used from the outside +
+• Parents bind to signal inputs exactly as they do with decorator
+inputs—property binding or literal values. The parent doesn’t need to
+use signals itself.
+. Pros and cons +
+• Pros: built-in reactivity, fine-grained updates, more efficient UI
+updates where it matters. +
+• Cons: signals are a newer Angular feature not yet ubiquitous in large
+codebases, so you’ll still see and often need to use @Input.
+
+Because of widespread legacy code and to cover both styles, the course
+will continue primarily with the decorator-based @Input approach, but
+you’ll now know how to do both.
+
+[CAUTION]
+====
+1. How do you declare an Angular signal-based input property with a specific type but no initial value, and what’s the exact TypeScript syntax for that?  
+2. How do you mark an input signal as required using the `input` function, and why does adding `.required` forbid supplying a default value?  
+3. When migrating a derived value like `imagePath` from a plain getter to a signal, how do you set it up with `computed()`, and what efficiency benefit does this give over the old getter approach?
+====
