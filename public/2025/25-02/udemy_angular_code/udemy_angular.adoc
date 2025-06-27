@@ -8,6 +8,9 @@ Maximilian Schwarzmüller
 ====
 Course on Udemy::
 https://www.udemy.com/course/the-complete-guide-to-angular-2/
+
+GitHub::
+https://github.com/mschwarzmueller/angular-complete-guide-course-resources/
 ====
 
 == 2. Angular Essentials - Components, Templates, Services & More
@@ -185,6 +188,13 @@ The user component was updated to include a div containing a button with a user 
 ====
 
 === 19. Preparing User Data (To Output Dynamic Content)
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/attachments/02-essentials/dummy-users.ts" target="_blank">
+attachments/02-essentials/dummy-users.ts</a>
+++++
+====
 
 The current app uses placeholder images and names, which are not final and the image isn't displaying yet. The goal is to support multiple users by using a provided `dummy.users.ts` file containing an array of user data (ID, name, image identifier). User images are supplied in a downloadable zip file, which should be extracted and placed into an assets/users folder, matching the image identifiers in the dummy data. The next step is to randomly select a user from this list and display their name and image dynamically in the user component. This requires learning Angular features to render dynamic content, moving beyond the previously static markup.
 
@@ -506,4 +516,175 @@ you’ll now know how to do both.
 1. How do you declare an Angular signal-based input property with a specific type but no initial value, and what’s the exact TypeScript syntax for that?  
 2. How do you mark an input signal as required using the `input` function, and why does adding `.required` forbid supplying a default value?  
 3. When migrating a derived value like `imagePath` from a plain getter to a signal, how do you set it up with `computed()`, and what efficiency benefit does this give over the old getter approach?
+====
+
+=== 33. We Need Custom Events!
+
+Angular components don’t just consume data via @Input; they can also emit events back to their parent using @Output properties. In the example:
+
+• The UserComponent receives a user via an input.  
+• When its button is clicked, it needs to tell its parent (AppComponent) “this user was clicked.”  
+• Rather than rendering tasks itself, the UserComponent emits a custom event carrying the clicked user.  
+• The AppComponent, which instantiated UserComponent, listens for that event and then displays the corresponding tasks alongside the user list.  
+
+This child-to-parent communication is made possible by defining an @Output property (an EventEmitter) in the child component and binding to it in the parent.
+
+[CAUTION]
+====
+1. In the described app, why can’t the tasks list for a clicked user be rendered inside the UserComponent, and which component must actually take responsibility for displaying those tasks?  
+2. How does defining an Angular output property on the UserComponent help it “emit” the information that its button was clicked back up to the AppComponent?  
+3. What makes a plain `(click)` listener on the button inside UserComponent insufficient for showing the user’s tasks, and how do output properties solve that limitation?
+====
+
+=== 34. Working with Outputs & Emitting Data
+
+Here’s a concise rundown of how to emit and handle a custom event in
+Angular:
+
+[arabic]
+. Define the Output in the child component
+* Import and use the @Output decorator and EventEmitter from
+@angular/core
+* Give the property a name (e.g. select) and type it:
++
+[source,ts]
+----
+@Input() id!: string;
+@Output() select = new EventEmitter<string>();
+----
+* In your click handler (e.g. onSelectUser()), call
+this.select.emit(this.id) to fire the event.
+. Bind to the custom event in the parent template
+* Pass in the child’s inputs and listen for the output with standard
+event binding:
++
+[source,ng2]
+----
+<app-user
+  [id]="user.id"
+  (select)="onSelectUser($event)">
+</app-user>
+----
+* $event holds the value you emitted (here, the user ID).
+. Handle it in the parent component class
+* Declare the handler with the correct type:
++
+[source,ts]
+----
+onSelectUser(id: string) {
+  console.log('Selected user with id', id);
+}
+----
+
+And don’t forget to add any necessary type annotations so TypeScript
+stays happy.
+
+[CAUTION]
+====
+1. In the `UserComponent` example, how is the `select` property defined and initialized so that it can emit custom events?  
+2. In the `app.component` template, what syntax brings the emitted user ID from the custom `select` event into the `onSelectUser` handler?  
+3. What specific change is made to the `onSelectUser(id)` method signature in `app.component.ts` to resolve the TypeScript “parameter implicitly has an ‘any’ type” error?
+====
+
+=== 35. Using the output() Function
+
+Here’s a concise summary of the key points:
+
+• Traditional @Output decorator +
+– You declare an EventEmitter manually and decorate it with @Output. +
+– You call its emit() method to fire events and listen via (eventName)
+in parent templates.
+
+• New output() function +
+– Imported from @angular/core, it replaces both the decorator and manual
+EventEmitter creation. +
+– Usage: +
+`select = output();` +
+`// then call select.emit(value) as usual` +
+– You must specify a generic type (e.g. `+<string>+`) so TypeScript
+knows what you’ll emit. +
+– Under the hood it still creates an EventEmitter, not a signal.
+
+• Why it exists +
+– Lets you avoid any decorators (similar to the input() function for
+@Input) if you prefer “decorator-free” components. +
+– Slightly more concise syntax.
+
+• Adoption +
+– Functionally equivalent to @Output + new EventEmitter +
+– Not yet widely used—most Angular codebases still use @Output +
+– You’ll see both approaches, but the decorator remains the most common
+today.
+
+[CAUTION]
+====
+[arabic]
+. How do you resolve the “argument of type string is not assignable to
+parameter of type void” error when you switch from +
+`+@Output() select = new EventEmitter<string>()+` +
+to +
+`+select = output(…);+` +
+in Angular?
+. Under the hood, what does the new `+output()+` function actually
+create for you, and how does that compare to the classic +
+`+@Output() select = new EventEmitter<string>()+`
+. Besides eliminating decorators inside your component class, what are
+the other two reasons given for why Angular introduced the standalone
+`+output()+` function even though it behaves identically to the familiar
+`+@Output+` plus `+EventEmitter+` pattern?
+====
+
+=== 36. Adding Extra Type Information To EventEmitter
+
+
+• You can declare component outputs with either the @Output decorator or the output(...) helper.  
+• When you manually instantiate an EventEmitter, you can still add a generic type—e.g.  
+  `new EventEmitter<string>()`—to tell TypeScript/Angular exactly what value type you’ll emit.  
+• It isn’t strictly required (the code will run without it), but adding it prevents accidentally emitting the wrong type (e.g. emitting a number when your parent expects a string), giving you extra compile-time safety.
+
+[CAUTION]
+====
+1. In the example above, how do you add a generic type parameter to the EventEmitter when using the @Output decorator so that it’s constrained to strings?  
+2. Although TypeScript won’t complain if you omit the `<string>` on `new EventEmitter()`, what concrete benefit does adding that generic type give you in your component interaction?  
+3. In the code shown, what compile-time error do you get if you accidentally call `this.selectUser.emit(123)` when the emitter has been declared as `EventEmitter<string>`?
+====
+
+=== 37. Exercise - Create a Configurable Component
+
+Here’s a concise summary of the exercise and solution:
+
+[arabic]
+. Exercise goal
+* Extract the “tasks” section in AppComponent into its own
+TasksComponent
+* Pass in and display the currently selected user’s name via an @Input()
+. Generate the new component
+* Run `+ng g c tasks --skip-tests+` to scaffold TasksComponent without
+test files
+. Implement TasksComponent
+* In tasks.component.ts import `+Input+` from `+@angular/core+`
+* Declare a required input property, e.g. +
+`+@Input({ required: true }) name!: string;+`
+* In tasks.component.html simply interpolate the name, e.g.
+`+<h2>{{ name }}</h2>+`
+. Hook it up in AppComponent
+* Add `+<app-tasks [name]="selectedUser.name"></app-tasks>+` to
+app.component.html
+* Ensure TasksComponent is declared or imported in AppComponent’s
+decorator
+. Manage selected user in AppComponent
+* Store `+selectedUserId+` (initialized to the first user’s ID)
+* Update it in `+onSelectUser(id: string)+` instead of logging
+* Expose a `+get selectedUser()+` getter that does +
+`+return this.users.find(u => u.id === this.selectedUserId)!;+` +
+(the `+!+` tells TypeScript it will never be undefined)
+
+Result: clicking a user updates `+selectedUserId+`, the getter finds the
+matching user, and TasksComponent displays that user’s name.
+
+[CAUTION]
+====
+1. What exact `ng` CLI command does the instructor use to generate the new TasksComponent without a test file?  
+2. How is the TasksComponent’s `@Input()` property configured to ensure the passed-in user name is required?  
+3. In the AppComponent’s getter for `selectedUser`, what syntax does the instructor use to tell TypeScript that the result of `.find(...)` will never be `undefined`?
 ====

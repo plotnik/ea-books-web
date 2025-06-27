@@ -540,6 +540,11 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_30_defining_component_inputs">30. Defining Component Inputs</a></li>
 <li><a href="#_31_required_optional_inputs">31. Required &amp; Optional Inputs</a></li>
 <li><a href="#_32_using_signal_inputs">32. Using Signal Inputs</a></li>
+<li><a href="#_33_we_need_custom_events">33. We Need Custom Events!</a></li>
+<li><a href="#_34_working_with_outputs_emitting_data">34. Working with Outputs &amp; Emitting Data</a></li>
+<li><a href="#_35_using_the_output_function">35. Using the output() Function</a></li>
+<li><a href="#_36_adding_extra_type_information_to_eventemitter">36. Adding Extra Type Information To EventEmitter</a></li>
+<li><a href="#_37_exercise_create_a_configurable_component">37. Exercise - Create a Configurable Component</a></li>
 </ul>
 </li>
 </ul>
@@ -555,6 +560,10 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <dt class="hdlist1">Course on Udemy</dt>
 <dd>
 <p><a href="https://www.udemy.com/course/the-complete-guide-to-angular-2/" class="bare">https://www.udemy.com/course/the-complete-guide-to-angular-2/</a></p>
+</dd>
+<dt class="hdlist1">GitHub</dt>
+<dd>
+<p><a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/" class="bare">https://github.com/mschwarzmueller/angular-complete-guide-course-resources/</a></p>
 </dd>
 </dl>
 </div>
@@ -947,6 +956,12 @@ cd prompts-app</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_19_preparing_user_data_to_output_dynamic_content">19. Preparing User Data (To Output Dynamic Content)</h3>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/attachments/02-essentials/dummy-users.ts" target="_blank">
+attachments/02-essentials/dummy-users.ts</a>
+</div>
+</div>
 <div class="paragraph">
 <p>The current app uses placeholder images and names, which are not final and the image isn&#8217;t displaying yet. The goal is to support multiple users by using a provided <code>dummy.users.ts</code> file containing an array of user data (ID, name, image identifier). User images are supplied in a downloadable zip file, which should be extracted and placed into an assets/users folder, matching the image identifiers in the dummy data. The next step is to randomly select a user from this list and display their name and image dynamically in the user component. This requires learning Angular features to render dynamic content, moving beyond the previously static markup.</p>
 </div>
@@ -1708,12 +1723,392 @@ you’ll now know how to do both.</p>
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_33_we_need_custom_events">33. We Need Custom Events!</h3>
+<div class="paragraph">
+<p>Angular components don’t just consume data via @Input; they can also emit events back to their parent using @Output properties. In the example:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The UserComponent receives a user via an input.</p>
+</li>
+<li>
+<p>When its button is clicked, it needs to tell its parent (AppComponent) “this user was clicked.”</p>
+</li>
+<li>
+<p>Rather than rendering tasks itself, the UserComponent emits a custom event carrying the clicked user.</p>
+</li>
+<li>
+<p>The AppComponent, which instantiated UserComponent, listens for that event and then displays the corresponding tasks alongside the user list.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This child-to-parent communication is made possible by defining an @Output property (an EventEmitter) in the child component and binding to it in the parent.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the described app, why can’t the tasks list for a clicked user be rendered inside the UserComponent, and which component must actually take responsibility for displaying those tasks?</p>
+</li>
+<li>
+<p>How does defining an Angular output property on the UserComponent help it “emit” the information that its button was clicked back up to the AppComponent?</p>
+</li>
+<li>
+<p>What makes a plain <code>(click)</code> listener on the button inside UserComponent insufficient for showing the user’s tasks, and how do output properties solve that limitation?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_34_working_with_outputs_emitting_data">34. Working with Outputs &amp; Emitting Data</h3>
+<div class="paragraph">
+<p>Here’s a concise rundown of how to emit and handle a custom event in
+Angular:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Define the Output in the child component</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Import and use the @Output decorator and EventEmitter from
+@angular/core</p>
+</li>
+<li>
+<p>Give the property a name (e.g. select) and type it:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-kd">@Input</span><span class="tok-p">()</span> <span class="tok-nx">id</span><span class="tok-o">!:</span> <span class="tok-kt">string</span><span class="tok-p">;</span>
+<span class="tok-kd">@Output</span><span class="tok-p">()</span> <span class="tok-nx">select</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">EventEmitter</span><span class="tok-o">&lt;</span><span class="tok-kt">string</span><span class="tok-o">&gt;</span><span class="tok-p">();</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>In your click handler (e.g. onSelectUser()), call
+this.select.emit(this.id) to fire the event.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Bind to the custom event in the parent template</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Pass in the child’s inputs and listen for the output with standard
+event binding:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ng2"><span></span><span class="tok-x">&lt;app-user</span>
+<span class="tok-x">  </span><span class="tok-p">[</span><span class="tok-na">id</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;user.id&quot;</span><span class="tok-x"></span>
+<span class="tok-x">  </span><span class="tok-p">(</span><span class="tok-na">select</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-s">&quot;onSelectUser($event)&quot;</span><span class="tok-x">&gt;</span>
+<span class="tok-x">&lt;/app-user&gt;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>$event holds the value you emitted (here, the user ID).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Handle it in the parent component class</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Declare the handler with the correct type:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ts"><span></span><span class="tok-nx">onSelectUser</span><span class="tok-p">(</span><span class="tok-nx">id</span>: <span class="tok-kt">string</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s1">&#39;Selected user with id&#39;</span><span class="tok-p">,</span> <span class="tok-nx">id</span><span class="tok-p">);</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>And don’t forget to add any necessary type annotations so TypeScript
+stays happy.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the <code>UserComponent</code> example, how is the <code>select</code> property defined and initialized so that it can emit custom events?</p>
+</li>
+<li>
+<p>In the <code>app.component</code> template, what syntax brings the emitted user ID from the custom <code>select</code> event into the <code>onSelectUser</code> handler?</p>
+</li>
+<li>
+<p>What specific change is made to the <code>onSelectUser(id)</code> method signature in <code>app.component.ts</code> to resolve the TypeScript “parameter implicitly has an ‘any’ type” error?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_35_using_the_output_function">35. Using the output() Function</h3>
+<div class="paragraph">
+<p>Here’s a concise summary of the key points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Traditional @Output decorator<br>
+– You declare an EventEmitter manually and decorate it with @Output.<br>
+– You call its emit() method to fire events and listen via (eventName)
+in parent templates.</p>
+</li>
+<li>
+<p>New output() function<br>
+– Imported from @angular/core, it replaces both the decorator and manual
+EventEmitter creation.<br>
+– Usage:<br>
+<code>select = output();</code><br>
+<code>// then call select.emit(value) as usual</code><br>
+– You must specify a generic type (e.g. <code>&lt;string&gt;</code>) so TypeScript
+knows what you’ll emit.<br>
+– Under the hood it still creates an EventEmitter, not a signal.</p>
+</li>
+<li>
+<p>Why it exists<br>
+– Lets you avoid any decorators (similar to the input() function for
+@Input) if you prefer “decorator-free” components.<br>
+– Slightly more concise syntax.</p>
+</li>
+<li>
+<p>Adoption<br>
+– Functionally equivalent to @Output + new EventEmitter<br>
+– Not yet widely used—most Angular codebases still use @Output<br>
+– You’ll see both approaches, but the decorator remains the most common
+today.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How do you resolve the “argument of type string is not assignable to
+parameter of type void” error when you switch from<br>
+<code>@Output() select = new EventEmitter&lt;string&gt;()</code><br>
+to<br>
+<code>select = output(…);</code><br>
+in Angular?</p>
+</li>
+<li>
+<p>Under the hood, what does the new <code>output()</code> function actually
+create for you, and how does that compare to the classic<br>
+<code>@Output() select = new EventEmitter&lt;string&gt;()</code></p>
+</li>
+<li>
+<p>Besides eliminating decorators inside your component class, what are
+the other two reasons given for why Angular introduced the standalone
+<code>output()</code> function even though it behaves identically to the familiar
+<code>@Output</code> plus <code>EventEmitter</code> pattern?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_36_adding_extra_type_information_to_eventemitter">36. Adding Extra Type Information To EventEmitter</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>You can declare component outputs with either the @Output decorator or the output(&#8230;&#8203;) helper.</p>
+</li>
+<li>
+<p>When you manually instantiate an EventEmitter, you can still add a generic type—e.g.
+<code>new EventEmitter&lt;string&gt;()</code>—to tell TypeScript/Angular exactly what value type you’ll emit.</p>
+</li>
+<li>
+<p>It isn’t strictly required (the code will run without it), but adding it prevents accidentally emitting the wrong type (e.g. emitting a number when your parent expects a string), giving you extra compile-time safety.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the example above, how do you add a generic type parameter to the EventEmitter when using the @Output decorator so that it’s constrained to strings?</p>
+</li>
+<li>
+<p>Although TypeScript won’t complain if you omit the <code>&lt;string&gt;</code> on <code>new EventEmitter()</code>, what concrete benefit does adding that generic type give you in your component interaction?</p>
+</li>
+<li>
+<p>In the code shown, what compile-time error do you get if you accidentally call <code>this.selectUser.emit(123)</code> when the emitter has been declared as <code>EventEmitter&lt;string&gt;</code>?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_37_exercise_create_a_configurable_component">37. Exercise - Create a Configurable Component</h3>
+<div class="paragraph">
+<p>Here’s a concise summary of the exercise and solution:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Exercise goal</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Extract the “tasks” section in AppComponent into its own
+TasksComponent</p>
+</li>
+<li>
+<p>Pass in and display the currently selected user’s name via an @Input()</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Generate the new component</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Run <code>ng g c tasks --skip-tests</code> to scaffold TasksComponent without
+test files</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Implement TasksComponent</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In tasks.component.ts import <code>Input</code> from <code>@angular/core</code></p>
+</li>
+<li>
+<p>Declare a required input property, e.g.<br>
+<code>@Input({ required: true }) name!: string;</code></p>
+</li>
+<li>
+<p>In tasks.component.html simply interpolate the name, e.g.
+<code>&lt;h2&gt;{{ name }}&lt;/h2&gt;</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Hook it up in AppComponent</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Add <code>&lt;app-tasks [name]="selectedUser.name"&gt;&lt;/app-tasks&gt;</code> to
+app.component.html</p>
+</li>
+<li>
+<p>Ensure TasksComponent is declared or imported in AppComponent’s
+decorator</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Manage selected user in AppComponent</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Store <code>selectedUserId</code> (initialized to the first user’s ID)</p>
+</li>
+<li>
+<p>Update it in <code>onSelectUser(id: string)</code> instead of logging</p>
+</li>
+<li>
+<p>Expose a <code>get selectedUser()</code> getter that does<br>
+<code>return this.users.find(u =&gt; u.id === this.selectedUserId)!;</code><br>
+(the <code>!</code> tells TypeScript it will never be undefined)</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Result: clicking a user updates <code>selectedUserId</code>, the getter finds the
+matching user, and TasksComponent displays that user’s name.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>What exact <code>ng</code> CLI command does the instructor use to generate the new TasksComponent without a test file?</p>
+</li>
+<li>
+<p>How is the TasksComponent’s <code>@Input()</code> property configured to ensure the passed-in user name is required?</p>
+</li>
+<li>
+<p>In the AppComponent’s getter for <code>selectedUser</code>, what syntax does the instructor use to tell TypeScript that the result of <code>.find(&#8230;&#8203;)</code> will never be <code>undefined</code>?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-06-26 09:53:48 +0300
+Last updated 2025-06-27 10:51:48 +0300
 </div>
 </div>
 </body>
