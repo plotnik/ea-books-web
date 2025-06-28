@@ -1,0 +1,63 @@
+= 3. Angular Essentials - Working with Modules
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+link:udemy_angular.html[<Contents>]
+
+== 64. Module Introduction
+
+You’ve learned the basics of building Angular apps using standalone components—the modern, recommended approach—but there’s an older alternative: Angular modules (NgModules). Introduced with Angular 2 in 2016, NgModules were the original way to group and organize components. Many existing projects still use them, so it’s important to understand how they work. In the next section you’ll learn:
+
+• What an Angular module is and why it exists
+• How to create a module and declare components in it
+• How to export components from a module for reuse
+• How to combine multiple modules and share functionality between them
+
+== 65. A First Introduction To Angular Modules (NgModule)
+
+Here’s a concise summary of the key points:
+
+[arabic]
+. Context
+* You have an existing “essentials” Angular app built with Standalone
+Components.
+* You install dependencies (`+npm install+`) and start the app as
+before.
+. Why Angular Modules?
+* Primarily a legacy feature, but still fully supported.
+* You might choose modules if: +
+• You’re maintaining an older project. +
+• You prefer grouping via NgModules. +
+• Your team is already module-oriented.
+. Standalone vs. NgModules
+* Standalone Components +
+• Each component must list its template’s component/directive
+dependencies in its own `+imports+` array.
+* NgModules +
+• You declare and export related components in a module’s
+`+declarations+` and `+exports+`. +
+• Components automatically see each other once they’re in the same
+module—no per-component `+imports+` needed.
+. Pros & Cons of NgModules
+* Pros: +
+• Leaner component decorators (no large `+imports+` on every component).
+* Cons: +
+• Harder to trace which components depend on which others. +
+• Extra boilerplate (creating modules).
+. Migration Plan
+* Create one or more NgModules to bundle related components.
+* Move component declarations and shared imports into those modules.
+* Update the root bootstrap to use the new module instead of standalone.
+* Optionally mix Standalone Components and NgModules if desired.
+. Learning Outcome
+* You’ll see firsthand how to define NgModules, declare and export
+components, and understand how modules differ from Standalone
+Components.
+
+[CAUTION]
+====
+1. What exact command does the narrator run to install the application’s dependencies before starting the “essentials” project?  
+2. When using Standalone Components, which three custom components does the AppComponent import for use in its template?  
+3. According to this context, what is the primary historic reason for Angular modules, and what advantage do they offer over Standalone Components in terms of component decorator configuration?
+====

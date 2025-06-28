@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Maximilian Schwarzmüller">
-<title>Angular - The Complete Guide (2025 Edition)</title>
+<title>3. Angular Essentials - Working with Modules</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,55 +437,222 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><strong>Angular - The Complete Guide (2025 Edition)</strong></h1>
-<div class="details">
-<span id="author" class="author">Maximilian Schwarzmüller</span><br>
-</div>
+<h1>3. Angular Essentials - Working with Modules</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_2_angular_essentials_components_templates_services_more">2. Angular Essentials - Components, Templates, Services &amp; More</a></li>
-<li><a href="#_3_angular_essentials_working_with_modules">3. Angular Essentials - Working with Modules</a></li>
+<li><a href="#_64_module_introduction">64. Module Introduction</a></li>
+<li><a href="#_65_a_first_introduction_to_angular_modules_ngmodule">65. A First Introduction To Angular Modules (NgModule)</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Course on Udemy</dt>
-<dd>
-<p><a href="https://www.udemy.com/course/the-complete-guide-to-angular-2/" class="bare">https://www.udemy.com/course/the-complete-guide-to-angular-2/</a></p>
-</dd>
-<dt class="hdlist1">GitHub</dt>
-<dd>
-<p><a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/" class="bare">https://github.com/mschwarzmueller/angular-complete-guide-course-resources/</a></p>
-</dd>
-</dl>
-</div>
-</div>
+<div class="paragraph">
+<p><a href="udemy_angular.html">&lt;Contents&gt;</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_2_angular_essentials_components_templates_services_more"><a href="2_essentials.html">2. Angular Essentials - Components, Templates, Services &amp; More</a></h2>
+<h2 id="_64_module_introduction">64. Module Introduction</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>You’ve learned the basics of building Angular apps using standalone components—the modern, recommended approach—but there’s an older alternative: Angular modules (NgModules). Introduced with Angular 2 in 2016, NgModules were the original way to group and organize components. Many existing projects still use them, so it’s important to understand how they work. In the next section you’ll learn:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>What an Angular module is and why it exists</p>
+</li>
+<li>
+<p>How to create a module and declare components in it</p>
+</li>
+<li>
+<p>How to export components from a module for reuse</p>
+</li>
+<li>
+<p>How to combine multiple modules and share functionality between them</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_3_angular_essentials_working_with_modules"><a href="3_modules.html">3. Angular Essentials - Working with Modules</a></h2>
+<h2 id="_65_a_first_introduction_to_angular_modules_ngmodule">65. A First Introduction To Angular Modules (NgModule)</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Here’s a concise summary of the key points:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Context</p>
+<div class="ulist">
+<ul>
+<li>
+<p>You have an existing “essentials” Angular app built with Standalone
+Components.</p>
+</li>
+<li>
+<p>You install dependencies (<code>npm install</code>) and start the app as
+before.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Why Angular Modules?</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Primarily a legacy feature, but still fully supported.</p>
+</li>
+<li>
+<p>You might choose modules if:<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You’re maintaining an older project.<br></p>
+</li>
+<li>
+<p>You prefer grouping via NgModules.<br></p>
+</li>
+<li>
+<p>Your team is already module-oriented.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Standalone vs. NgModules</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Standalone Components<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Each component must list its template’s component/directive
+dependencies in its own <code>imports</code> array.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>NgModules<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You declare and export related components in a module’s
+<code>declarations</code> and <code>exports</code>.<br></p>
+</li>
+<li>
+<p>Components automatically see each other once they’re in the same
+module—no per-component <code>imports</code> needed.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Pros &amp; Cons of NgModules</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Pros:<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Leaner component decorators (no large <code>imports</code> on every component).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Cons:<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Harder to trace which components depend on which others.<br></p>
+</li>
+<li>
+<p>Extra boilerplate (creating modules).</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Migration Plan</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create one or more NgModules to bundle related components.</p>
+</li>
+<li>
+<p>Move component declarations and shared imports into those modules.</p>
+</li>
+<li>
+<p>Update the root bootstrap to use the new module instead of standalone.</p>
+</li>
+<li>
+<p>Optionally mix Standalone Components and NgModules if desired.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Learning Outcome</p>
+<div class="ulist">
+<ul>
+<li>
+<p>You’ll see firsthand how to define NgModules, declare and export
+components, and understand how modules differ from Standalone
+Components.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>What exact command does the narrator run to install the application’s dependencies before starting the “essentials” project?</p>
+</li>
+<li>
+<p>When using Standalone Components, which three custom components does the AppComponent import for use in its template?</p>
+</li>
+<li>
+<p>According to this context, what is the primary historic reason for Angular modules, and what advantage do they offer over Standalone Components in terms of component decorator configuration?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-06-28 15:14:00 +0300
+Last updated 2025-06-28 15:22:22 +0300
 </div>
 </div>
 </body>
