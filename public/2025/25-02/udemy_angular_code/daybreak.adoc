@@ -1,0 +1,391 @@
+= DayBreak
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+====
+Can you give me step-by step plan how can i create from scratch
+Angular 20 app using standalone components
+using material design and firebase
+to show random poem from the list of poems stored in firebase.
+
+In firebase i have "daybreak" collection with the following structure:
+
+```
+<daybreak>
+
+<poem>
+<id>1</id>
+<text>
+'Twas brillig, and the slithy toves
+Did gyre and gimble in the wabe;
+All mimsy were the borogoves,
+And the mome raths outgrabe.
+
+"Beware the Jabberwock, my son!
+The jaws that bite, the claws that catch!
+Beware the Jubjub bird, and shun
+The frumious Bandersnatch!"
+</text>
+</poem>
+
+<poem>
+<id>2</id>
+<text>
+He took his vorpal sword in hand:
+Long time the manxome foe he sought—
+So rested he by the Tumtum tree,
+And stood awhile in thought.
+
+And as in uffish thought he stood,
+The Jabberwock, with eyes of flame,
+Came whiffling through the tulgey wood,
+And burbled as it came!
+</text>
+</poem>
+
+</daybreak>
+```
+
+Authorization rules in firebase are:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /daybreak/{document} {
+      allow read: true;
+    }
+  }
+}
+```
+====
+
+Of course, here is a comprehensive, step-by-step plan to create an
+Angular 20 application from scratch using standalone components, Angular
+Material, and Firebase to display a random poem.
+
+== *Part 1: Setting Up Your Angular Project*
+
+This initial phase will focus on creating the foundational structure of
+your Angular application.
+
+=== *Step 1: Create a New Angular Application*
+
+[arabic]
+. *Open your terminal or command prompt.*
+. *Navigate to the directory where you want to create your project.*
+. *Run the following command to generate a new Angular project:*
++
+[source,bash]
+----
+ng new angular-poem-app --standalone
+----
+* `+ng new+`: The Angular CLI command to create a new workspace.
+* `+angular-poem-app+`: The name of your application. You can change
+this to your preference.
+* `+--standalone+`: This flag ensures that your new project is set up to
+use standalone components, which simplifies the application structure by
+eliminating the need for `+NgModules+`.
+. *Follow the command-line prompts:*
+* When asked about adding Angular routing, you can select *No* for this
+simple application.
+* Choose your preferred stylesheet format (e.g., CSS, SCSS).
+. *Navigate into your newly created project directory:*
++
+[source,bash]
+----
+cd angular-poem-app
+----
+
+== *Part 2: Integrating Angular Material*
+
+Now, you will add Angular Material to your project to leverage its
+pre-built UI components for a polished look.
+
+=== *Step 2: Add Angular Material*
+
+[arabic]
+. *In your project's root directory, run the following command:*
++
+[source,bash]
+----
+ng add @angular/material
+----
+. *The CLI will prompt you with a few questions:*
+* *Choose a prebuilt theme name, or "custom" for a custom theme:* Select
+a theme that you like (e.g., `+Indigo/Pink+`).
+* *Set up global Angular Material typography styles?* Choose *Yes*.
+* *Include and enable animations?* Choose *Yes*.
+
+This command will install Angular Material, the Component Dev Kit (CDK),
+and Angular Animations, and will also configure your project to use
+them.
+
+== *Part 3: Setting Up Your Firebase Project*
+
+This section covers the creation of your Firebase project and the
+configuration of the Firestore database.
+
+=== *Step 3: Create a Firebase Project*
+
+[arabic]
+. *Go to the https://console.firebase.google.com/[Firebase console].*
+. *Click on "Add project".*
+. *Enter a name for your project* (e.g., `+poem-app-project+`) and click
+*Continue*.
+. You can choose to enable Google Analytics or not for this project.
+. *Click "Create project".*
+
+=== *Step 4: Set Up Firestore and Add Data*
+
+[arabic]
+. From your Firebase project's dashboard, navigate to *Build > Firestore
+Database*.
+. *Click "Create database".*
+. *Choose "Start in test mode"* and click *Next*. This allows for easy
+reading and writing during development.
+. *Select a Cloud Firestore location* that is geographically close to
+you.
+. *Click "Enable".*
+. *Now, you will manually add your poem data:*
+* Click on *"+ Start collection"*.
+* For the *Collection ID*, enter `+daybreak+`.
+* Click *"Next"*.
+* For the first document, click on *"Auto-ID"* for the *Document ID*.
+* Add two fields to this document:
+** *Field:* `+id+`, *Type:* `+number+`, *Value:* `+1+`
+** *Field:* `+text+`, *Type:* `+string+`, *Value:* Copy and paste the
+first poem text.
+* Click *"Save"*.
+* Click *"+ Add document"* to add the second poem in the same
+`+daybreak+` collection, following the same process with `+id+` 2 and
+its corresponding text.
+
+=== *Step 5: Configure Firebase Security Rules*
+
+[arabic]
+. In the Firestore Database section, go to the *"Rules"* tab.
+. *Replace the existing rules with the following:*
++
+....
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /daybreak/{document} {
+      allow read: true;
+      allow write: if false; // Disallow writing for security
+    }
+  }
+}
+....
+. *Click "Publish"* to save your new rules.
+
+== *Part 4: Connecting Angular to Firebase*
+
+Here you will install the necessary library to communicate with Firebase
+from your Angular app.
+
+=== *Step 6: Install AngularFire*
+
+[arabic]
+. *In your terminal, within your Angular project's root directory, run:*
++
+[source,bash]
+----
+ng add @angular/fire
+----
+. *The CLI will prompt you to select the Firebase features you want to
+set up.* Use the spacebar to select *Firestore* and press Enter.
+. The CLI will then prompt you to log in to your Firebase account and
+select the Firebase project you created earlier.
+
+This command will install the `+firebase+` and `+@angular/fire+`
+packages and will also update your `+app.config.ts+` to initialize
+Firebase.
+
+== *Part 5: Building the Application Logic*
+
+Now you will create the core components and services to fetch and
+display the poems.
+
+=== *Step 7: Create a Poem Service*
+
+A service is the ideal place to handle your data interactions with
+Firebase.
+
+[arabic]
+. *Generate a new service using the Angular CLI:*
++
+[source,bash]
+----
+ng generate service services/poem
+----
+. *Open the newly created `+src/app/services/poem.service.ts+` file and
+update it with the following code:*
++
+[source,typescript]
+----
+import { Injectable } from '@angular/core';
+import { Firestore, collectionData, collection } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+
+export interface Poem {
+  id: number;
+  text: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PoemService {
+
+  constructor(private firestore: Firestore) { }
+
+  getPoems(): Observable<Poem[]> {
+    const poemsCollection = collection(this.firestore, 'daybreak');
+    return collectionData(poemsCollection) as Observable<Poem[]>;
+  }
+}
+----
+
+=== *Step 8: Create the Poem Display Component*
+
+This will be a standalone component responsible for showing a single,
+randomly selected poem.
+
+[arabic]
+. *Generate a new standalone component:*
++
+[source,bash]
+----
+ng generate component components/poem-display --standalone
+----
+. *Open `+src/app/components/poem-display/poem-display.component.ts+`
+and update it:*
++
+[source,typescript]
+----
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { Poem, PoemService } from '../../services/poem.service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-poem-display',
+  standalone: true,
+  imports: [CommonModule, MatCardModule, MatButtonModule],
+  templateUrl: './poem-display.component.html',
+  styleUrls: ['./poem-display.component.css']
+})
+export class PoemDisplayComponent implements OnInit {
+  randomPoem$: Observable<Poem | undefined> | undefined;
+
+  constructor(private poemService: PoemService) {}
+
+  ngOnInit(): void {
+    this.getRandomPoem();
+  }
+
+  getRandomPoem(): void {
+    this.randomPoem$ = this.poemService.getPoems().pipe(
+      map(poems => {
+        if (poems && poems.length > 0) {
+          const randomIndex = Math.floor(Math.random() * poems.length);
+          return poems[randomIndex];
+        }
+        return undefined;
+      })
+    );
+  }
+}
+----
+. *Now, update the template in
+`+src/app/components/poem-display/poem-display.component.html+`:*
++
+[source,ng2]
+----
+<div *ngIf="randomPoem$ | async as poem; else loading">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>A Random Poem</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <pre>{{ poem.text }}</pre>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="getRandomPoem()">Show Another Poem</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<ng-template #loading>
+  <p>Loading poems...</p>
+</ng-template>
+----
+* The `+<pre>+` tag is used to preserve the whitespace and line breaks
+in the poem's text.
+
+== *Part 6: Bringing It All Together*
+
+Finally, you will integrate your new component into the main application
+component.
+
+=== *Step 9: Update the Main App Component*
+
+[arabic]
+. *Open `+src/app/app.component.ts+` and modify it to include your
+`+PoemDisplayComponent+`:*
++
+[source,typescript]
+----
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { PoemDisplayComponent } from './components/poem-display/poem-display.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, PoemDisplayComponent],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'angular-poem-app';
+}
+----
+. *Open `+src/app/app.component.html+` and replace its content with the
+following:*
++
+[source,html]
+----
+<main>
+  <h1>Welcome to the Random Poem Generator!</h1>
+  <app-poem-display></app-poem-display>
+</main>
+----
+
+== *Part 7: Run Your Application*
+
+You are now ready to see your application in action.
+
+=== *Step 10: Serve the Application*
+
+[arabic]
+. *In your terminal, make sure you are in the root directory of your
+project and run:*
++
+[source,bash]
+----
+ng serve
+----
+. *Open your web browser and navigate to `+http://localhost:4200/+`.*
+
+You should now see your Angular application displaying a random poem
+from your Firebase Firestore database, styled with Angular Material. You
+can click the "Show Another Poem" button to fetch and display another
+random poem.
+
