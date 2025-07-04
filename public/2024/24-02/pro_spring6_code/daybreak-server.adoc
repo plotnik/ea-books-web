@@ -1,0 +1,183 @@
+= DayBreak Server
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+== Prompt
+
+====
+Can you give me step-by step plan how can i create from scratch Spring
+Boot application that will provide REST API to the list of poems.
+
+Application name is "daybreak-server".
+
+When started it should read and parse the list of files with ".md"
+extension in "daybreak" folder located in user home folder.
+
+These markdowns contain the list of poems and have the following
+structure:
+
+```python
+# Section 1
+
+## Verse 1
+
+> 'Twas brillig, and the slithy toves
+> Did gyre and gimble in the wabe;
+> All mimsy were the borogoves,
+> And the mome raths outgrabe.
+
+# Section 2
+
+## Verse 2
+
+> "Beware the Jabberwock, my son!
+> The jaws that bite, the claws that catch!
+> Beware the Jubjub bird, and shun
+> The frumious Bandersnatch!"
+```
+====
+
+== Gemini Pro 2.5
+
+Here is a step-by-step plan to create the "daybreak" Spring Boot
+application from scratch.
+
+'''''
+
+=== Step 1: Initialize Your Project
+
+First, you'll use the Spring Initializr to generate the basic project
+structure.
+
+[arabic]
+. *Go to* https://start.spring.io[start.spring.io].
+. *Configure your project* with the following settings:
+* *Project*: Maven
+* *Language*: Java
+* *Spring Boot*: Select the latest stable version (e.g., 3.3.1).
+* *Group*: `+io.plotnik+`
+* *Artifact*: `+daybreak-server+`
+* *Name*: `+daybreak-server+`
+* *Package name*: `+io.plotnik.daybreak_server+`
+* *Packaging*: War
+* *Java*: 21
+. *Add Dependencies*: In the "Dependencies" section, add the following:
+* `+Spring Web+`: Required for building REST APIs.
+. *Generate*: Click the "GENERATE" button. A `+.zip+` file will be
+downloaded.
+. *Import*: Unzip the downloaded file and open it in VS Code as a Maven
+project.
+
+'''''
+
+=== Step 2: Create Data Models
+
+Next, define the classes that will represent your data. These are simple
+Plain Old Java Objects (POJOs).
+
+In the `+src/main/java/io/plotnik/daybreak_server+` directory, create a
+new package named `+model+`. Inside this package, create the following
+two classes.
+
+==== *Poem.java*
+
+This class holds the title and text of a single poem.
+
+====
+++++
+<a href="https://github.com/plotnik/daybreak-server/tree/main/src/main/java/io/plotnik/daybreak_server/model/Poem.java" target="_blank">
+Poem.java</a>
+++++
+====
+
+==== *PoemCollection.java*
+
+This class represents the content of a single markdown file.
+
+====
+++++
+<a href="https://github.com/plotnik/daybreak-server/tree/main/src/main/java/io/plotnik/daybreak_server/model/PoemCollection.java" target="_blank">
+PoemCollection.java</a>
+++++
+====
+
+'''''
+
+=== Step 3: Implement the File Parsing Service
+
+This service will contain the core logic for finding, reading, and
+parsing the `+.md+` files.
+
+Create a new package named `+service+` inside
+`+io.plotnin.daybreak_service+`. Then, create the `+PoemService+` class.
+
+==== *PoemService.java*
+
+====
+++++
+<a href="https://github.com/plotnik/daybreak-server/tree/main/src/main/java/io/plotnik/daybreak_server/service/PoemService.java" target="_blank">
+PoemService.java</a>
+++++
+====
+
+'''''
+
+=== Step 4: Create the REST Controller
+
+Add dependency:
+
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.8.9</version>
+</dependency>
+```
+
+____
+https://central.sonatype.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+____
+
+This controller will expose your service's functionality via REST
+endpoints.
+
+Create a new package named `+controller+` and add the `+PoemController+`
+class.
+
+==== *PoemController.java*
+
+====
+++++
+<a href="https://github.com/plotnik/daybreak-server/tree/main/src/main/java/io/plotnik/daybreak_server/controller/PoemController.java" target="_blank">
+PoemController.java</a>
+++++
+====
+
+'''''
+
+=== Step 5: Prepare Test Data and Run
+
+Finally, set up your test data and run the application.
+
+[arabic]
+. *Create the Folder*: In your user home directory (e.g.,
+`+C:\Users\YourUser+` on Windows or `+/home/YourUser+` on Linux/macOS),
+create a new folder named `+daybreak+`.
+. *Create a Markdown File*: Inside the `+daybreak+` folder, create a
+file named `+titanik.md+` and paste the exact content you provided in
+the prompt.
+. *Run the Application*:
+* Navigate to the `+DaybreakApplication.java+` file in
+`+src/main/java/com/example/daybreak+`.
+* Right-click and select "Run 'DaybreakApplication.main()'" or use the
+command line: `+mvn spring-boot:run+`.
+. *Test the API*:
+* *Swagger UI*: Open your web browser and navigate to
+http://localhost:8080/swagger-ui/index.html. You will see a
+user-friendly interface to test your three endpoints.
+* *cURL or Postman*:
+** `+curl http://localhost:8080/poems+`
+** `+curl http://localhost:8080/poems/titanik+`
+** `+curl http://localhost:8080/poems/titanik/1+`
+** `+curl http://localhost:8080/poems/titanik/2+`
