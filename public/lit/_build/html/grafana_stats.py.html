@@ -42,28 +42,64 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 
+<span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;Grafana-Stats&quot;</span>
+<span class="p">)</span>
 
-<span class="n">csv_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">)]</span>
+
+<span class="n">csv_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">f</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;log-&quot;</span><span class="p">)]</span>
 <span class="n">csv_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Select CSV file to process:&quot;</span><span class="p">,</span> <span class="n">csv_files</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
 
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tsNs&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;traceID&quot;</span><span class="p">,</span> <span class="s2">&quot;exporter&quot;</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">,</span> <span class="s2">&quot;service_name&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">num_rows</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rows: `</span><span class="si">{</span><span class="n">num_rows</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">&quot;Show details&quot;</span><span class="p">):</span>
 
-<span class="n">num</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span><span class="s2">&quot;Row&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">num_rows</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">series</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
+    <span class="n">num_rows</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rows: `</span><span class="si">{</span><span class="n">num_rows</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+
+    <span class="n">num</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span><span class="s2">&quot;Row&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">num_rows</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Parse body</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="s2">&quot;Line&quot;</span><span class="p">])</span>
-<span class="n">series</span><span class="p">[</span><span class="s2">&quot;Line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="s2">&quot;Line&quot;</span><span class="p">])</span>
+    <span class="n">series</span><span class="p">[</span><span class="s2">&quot;Line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">]</span>
 
-<span class="n">timestamp_s</span> <span class="o">=</span> <span class="n">series</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1000.0</span>  <span class="c1"># Convert milliseconds to seconds</span>
-<span class="n">series</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">timestamp_s</span><span class="p">)</span>
+    <span class="n">timestamp_s</span> <span class="o">=</span> <span class="n">series</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1000.0</span>  <span class="c1"># Convert milliseconds to seconds</span>
+    <span class="n">series</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">timestamp_s</span><span class="p">)</span>
 
-<span class="n">st</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+
+<span class="c1"># Function to extract &quot;body&quot; from JSON string</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_body</span><span class="p">(</span><span class="n">json_str</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="c1">#,parsed.get(&quot;instrumentation_scope&quot;, None)</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+<span class="n">log_file</span> <span class="o">=</span> <span class="s2">&quot;log-&quot;</span> <span class="o">+</span> <span class="n">csv_file</span>
+
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Export log&quot;</span><span class="p">):</span>
+    <span class="n">df_log</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span>
+        <span class="s1">&#39;Date&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Line&#39;</span><span class="p">,</span>
+    <span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">df_log</span><span class="p">[</span><span class="s1">&#39;Line&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_log</span><span class="p">[</span><span class="s1">&#39;Line&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">extract_body</span><span class="p">)</span>
+    <span class="n">df_log</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exported log: `</span><span class="si">{</span><span class="n">log_file</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">&quot;Show counts&quot;</span><span class="p">):</span>
+    <span class="n">df_log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
+
+    <span class="c1"># Count distinct messages</span>
+    <span class="n">count_df</span> <span class="o">=</span> <span class="n">df_log</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;Line&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Count&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Reorder columns to have Count first</span>
+    <span class="n">count_df</span> <span class="o">=</span> <span class="n">count_df</span><span class="p">[[</span><span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Line&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">st</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">count_df</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

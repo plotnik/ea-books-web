@@ -52,6 +52,12 @@ Input and output formats.
       ".adoc": "AsciiDoc"
   }
 
+  ext_formats = {
+      ".md": "gfm", #"markdown",
+      ".rst": "rest",
+      ".adoc": "asciidoc"
+  }
+
   def ext_name(name):
       return ext_names[name]
 
@@ -63,8 +69,9 @@ Input and output formats.
 
   o_ext = st.sidebar.radio(
       "Output format",
-      options = [".rst", ".adoc"],
+      options = [".md", ".rst", ".adoc"],
       format_func = ext_name,
+      index = 2,
   )
 
 Checks if ``output_folder`` exists in the user's home directory.
@@ -117,16 +124,19 @@ Convert text.
 
   text = st.text_area("Input text", height = text_area_height)
 
+  cmd_line = ""
+
   def run_pandoc(input_file, output_file):
       with open(input_file, "w", encoding="utf-8") as fout:
           fout.write(text)
 
-      if i_ext == ".md":
-          subprocess.run(["pandoc", "-f", "gfm", "-s", input_file, "-o", output_file], check=True)  
-      elif o_ext == ".adoc": 
-          subprocess.run(["pandoc", lua_filter, "-s", input_file, "-o", output_file], check=True) 
-      else:    
-          subprocess.run(["pandoc", "-s", input_file, "-o", output_file], check=True)
+      cmd = ["pandoc", "-s", input_file, "-f", ext_formats[i_ext], "-t", ext_formats[o_ext], "-o", output_file]
+      if o_ext == ".adoc": 
+          cmd.insert(1, lua_filter)
+
+      global cmd_line
+      cmd_line = " ".join(cmd)
+      subprocess.run(cmd, check=True)
 
       with open(output_file, "r", encoding="utf-8") as fin:
           result = fin.read()
@@ -134,18 +144,21 @@ Convert text.
       return result    
  
   def convert_text():
-
-      result = run_pandoc(input_file, output_file)
-      if o_ext == ".adoc": 
-          result = asciidoc_headers(result)
-          result = bump_headers(result, bump_headers_n)
-
-      st.text_area(label = "Output text", value = result, height = text_area_height) 
+      try:
+          result = run_pandoc(input_file, output_file)
+          if o_ext == ".adoc": 
+              result = asciidoc_headers(result)
+              result = bump_headers(result, bump_headers_n)
     
-  # Save result to clipboard
-      pyperclip.copy(result)
-      st.sidebar.write(f'Copied to clipboard')
-
+          st.text_area(label = "Output text", value = result, height = text_area_height) 
+        
+          # Save result to clipboard
+          pyperclip.copy(result)
+          st.sidebar.write(f'Copied to clipboard')
+        
+      except Exception as e:
+          st.error(e)
+          st.write(f"```\n{cmd_line}\n```")
 
 Remove lines that contain Pandoc's anchor markup: ``[[something]]``
 

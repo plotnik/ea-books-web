@@ -14,12 +14,14 @@
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
 #    :widths: 10 30
-#   
+#  
+#    "LM Arena", https://lmarena.ai/leaderboard
+#    "OpenAI Models", https://platform.openai.com/docs/models
 #    "GPT-4.1 Prompting Guide", https://cookbook.openai.com/examples/gpt4-1_prompting_guide 
 #    "OpenAI Cookbook", https://cookbook.openai.com/
 #    "OpenAI Resources and guides", https://openai.com/business/guides-and-resources/
-#   
-# .. contents::
+#  
+# .. .. contents::
 #
 # The provided Python code is a Streamlit_ application designed to interact with `OpenAI's language models`_, allowing users to generate and save notes based on prompts. 
 #
@@ -29,16 +31,7 @@
 # **User Input**: 
 #    - A text area is provided for users to input their notes.
 #    - A sidebar allows users to select a prompt from the loaded prompts.
-#
-# By the way, we can use emojis in buttons.
-#
-# .. csv-table:: Useful Links
-#    :header: "Name", "URL"
-#    :widths: 10 30
-#
-#    "Streamlit emoji shortcodes", https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
-#    "Emoji Cheat Sheet", https://www.webfx.com/tools/emoji-cheat-sheet/
-#
+#   
 # ::
 
 import streamlit as st
@@ -52,13 +45,13 @@ import os
 import ollama
 import pyperclip
 
-st.set_page_config(
-    page_title="Note-AI",
-)
-
 # Prints a stylized banner to the console when the application starts.
 #
 # ::
+    
+st.set_page_config(
+    page_title="Note-AI",
+)
 
 @st.cache_data
 def print_banner():
@@ -119,7 +112,7 @@ def read_list_from_file(filename):
     except Exception as e:
         print(f"Error reading {filename}: {e}")
         return []
-  
+
 # Write a list of strings to a text file
 #
 # ::
@@ -131,14 +124,14 @@ def write_list_to_file(filename, list_of_strings):
                 file.write(string + '\n') 
     except Exception as e:
         print(f"Error writing {filename}: {e}")
-  
+
 # Removes specified strings from a list of strings.  
 #
 # ::
 
 def remove_strings_from_list(string_list, strings_to_remove):
   return [s for s in string_list if s not in strings_to_remove]
-   
+ 
 # Collect all tags into a single set
 #
 # ::
@@ -193,12 +186,6 @@ st.write(prompt)
 # Select OpenAI LLM
 # -----------------
 #
-# .. csv-table:: Useful Links
-#    :header: "Name", "URL"
-#    :widths: 10 30
-#
-#    "OpenAI Models", https://platform.openai.com/docs/models
-#
 # ::
 
 model_type = st.sidebar.radio("Model Type", ["Gemini", "OpenAI", "Ollama"])
@@ -209,7 +196,7 @@ if model_type=="Gemini":
         "gemini-2.0-flash", 
         "gemma-3-27b-it",
     ]
-    
+  
 elif model_type=="OpenAI":    
     openai_prices = {
         "gpt-4.1-mini": 0.4,
@@ -222,9 +209,9 @@ elif model_type=="OpenAI":
         "o3": 2.0, 
         "o3-pro": 20.0, 
     }    
-  
+
     llm_models = list(openai_prices.keys())
-  
+
 else:    
     llm_models = [
         "ollama llama3.2",
@@ -272,11 +259,9 @@ if model_type=="OpenAI":
         | {len(text)} | {len(tokens)} | {cents} |
         ''')  
 
-# Call OpenAI API
-# ---------------
-#
+
 # Call ``o`` model
-# ================
+# ----------------
 #
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
@@ -299,7 +284,7 @@ def call_o_model(prompt, text):
     return response.choices[0]
 
 # Call ``gpt`` model
-# ==================
+# ------------------
 #
 # ::
 
@@ -316,7 +301,7 @@ def call_gpt_model(prompt, text):
     return response.choices[0]
 
 # Call Ollama
-# ===========
+# -----------
 #
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
@@ -339,7 +324,7 @@ def call_ollama(prompt, text):
         )
 
 # Call Gemini
-# ===========
+# -----------
 #
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
@@ -394,32 +379,35 @@ def call_gemma(prompt, text):
 # - The response is stored in the session state and displayed to the user.
 # - The execution time for the API call is calculated and can be used for monitoring performance.
 #
+# By the way, we can use emojis in buttons.
+#
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
 #    :widths: 10 30
 #
 #    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
-#
-# Concatenate request
+#    "Streamlit emoji shortcodes", https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
+#    "Emoji Cheat Sheet", https://www.webfx.com/tools/emoji-cheat-sheet/
 #
 # ::
-   
+    
+# Concatenate request
 def concat_request(prompt, text):
     return prompt + "\n\n```\n" + text + "\n```\n"
 
 if st.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
 
     start_time = time.time()
-    
+  
     if openai_model.startswith("ollama "): 
         response = call_ollama(prompt, text)
-        
+      
     elif openai_model.startswith("o"):
         response = call_o_model(prompt, text)
 
     elif openai_model.startswith("gemini"): 
         response = call_gemini(prompt, text)
-    
+  
     elif openai_model.startswith("gemma"): 
         response = call_gemma(prompt, text)
 
@@ -538,7 +526,7 @@ if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
 #         - pyperclip
 #         - pip:
 #           - ollama
-#         
+#        
 # 2. **Select conda-forge Channel**
 #
 #    Open your terminal or command prompt and execute the following
@@ -587,17 +575,17 @@ if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
 #      note: Improve style of the content you are provided.
 #      tags:
 #        - text
-#     
+#    
 #    - name: summarize_md
 #      note: You will be provided with statements in markdown, and your task is to summarize the content.
 #      tags:
 #        - text
-#     
+#    
 #    - name: explain_python
 #      note: Explain Python code you are provided.
 #      tags:
 #        - python
-#     
+#    
 #    - name: write_python
 #      note: Write Python code to satisfy the description you are provided.
 #      tags:

@@ -15,11 +15,13 @@ This is kind of Notepad editor with AI functions.
    :header: "Name", "URL"
    :widths: 10 30
   
+   "LM Arena", https://lmarena.ai/leaderboard
+   "OpenAI Models", https://platform.openai.com/docs/models
    "GPT-4.1 Prompting Guide", https://cookbook.openai.com/examples/gpt4-1_prompting_guide 
    "OpenAI Cookbook", https://cookbook.openai.com/
    "OpenAI Resources and guides", https://openai.com/business/guides-and-resources/
   
-.. contents::
+.. .. contents::
 
 The provided Python code is a Streamlit_ application designed to interact with `OpenAI's language models`_, allowing users to generate and save notes based on prompts. 
 
@@ -29,16 +31,7 @@ The provided Python code is a Streamlit_ application designed to interact with `
 **User Input**: 
    - A text area is provided for users to input their notes.
    - A sidebar allows users to select a prompt from the loaded prompts.
-
-By the way, we can use emojis in buttons.
-
-.. csv-table:: Useful Links
-   :header: "Name", "URL"
-   :widths: 10 30
-
-   "Streamlit emoji shortcodes", https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
-   "Emoji Cheat Sheet", https://www.webfx.com/tools/emoji-cheat-sheet/
-
+   
 ::
 
   import streamlit as st
@@ -52,14 +45,14 @@ By the way, we can use emojis in buttons.
   import ollama
   import pyperclip
 
-  st.set_page_config(
-      page_title="Note-AI",
-  )
-
 Prints a stylized banner to the console when the application starts.
 
 ::
-
+    
+  st.set_page_config(
+      page_title="Note-AI",
+  )
+  
   @st.cache_data
   def print_banner():
       print("""
@@ -193,12 +186,6 @@ Select the Prompt
 Select OpenAI LLM
 -----------------
 
-.. csv-table:: Useful Links
-   :header: "Name", "URL"
-   :widths: 10 30
-
-   "OpenAI Models", https://platform.openai.com/docs/models
-
 ::
 
   model_type = st.sidebar.radio("Model Type", ["Gemini", "OpenAI", "Ollama"])
@@ -272,11 +259,9 @@ If a button in the sidebar is clicked, the application counts the number of toke
           | {len(text)} | {len(tokens)} | {cents} |
           ''')  
 
-Call OpenAI API
----------------
 
 Call ``o`` model
-================
+----------------
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
@@ -299,7 +284,7 @@ Call ``o`` model
       return response.choices[0]
 
 Call ``gpt`` model
-==================
+------------------
 
 ::
 
@@ -316,7 +301,7 @@ Call ``gpt`` model
       return response.choices[0]
 
 Call Ollama
-===========
+-----------
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
@@ -339,7 +324,7 @@ Call Ollama
           )
 
 Call Gemini
-===========
+-----------
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
@@ -394,16 +379,19 @@ When the user clicks a button to call OpenAI:
 - The response is stored in the session state and displayed to the user.
 - The execution time for the API call is calculated and can be used for monitoring performance.
 
+By the way, we can use emojis in buttons.
+
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
 
    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
-
-Concatenate request
+   "Streamlit emoji shortcodes", https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
+   "Emoji Cheat Sheet", https://www.webfx.com/tools/emoji-cheat-sheet/
 
 ::
-   
+    
+  # Concatenate request
   def concat_request(prompt, text):
       return prompt + "\n\n```\n" + text + "\n```\n"
 

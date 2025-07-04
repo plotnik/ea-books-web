@@ -90,6 +90,12 @@
     <span class="s2">&quot;.adoc&quot;</span><span class="p">:</span> <span class="s2">&quot;AsciiDoc&quot;</span>
 <span class="p">}</span>
 
+<span class="n">ext_formats</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;.md&quot;</span><span class="p">:</span> <span class="s2">&quot;gfm&quot;</span><span class="p">,</span> <span class="c1">#&quot;markdown&quot;,</span>
+    <span class="s2">&quot;.rst&quot;</span><span class="p">:</span> <span class="s2">&quot;rest&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.adoc&quot;</span><span class="p">:</span> <span class="s2">&quot;asciidoc&quot;</span>
+<span class="p">}</span>
+
 <span class="k">def</span><span class="w"> </span><span class="nf">ext_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">ext_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
@@ -101,8 +107,9 @@
 
 <span class="n">o_ext</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span>
     <span class="s2">&quot;Output format&quot;</span><span class="p">,</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.rst&quot;</span><span class="p">,</span> <span class="s2">&quot;.adoc&quot;</span><span class="p">],</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.md&quot;</span><span class="p">,</span> <span class="s2">&quot;.rst&quot;</span><span class="p">,</span> <span class="s2">&quot;.adoc&quot;</span><span class="p">],</span>
     <span class="n">format_func</span> <span class="o">=</span> <span class="n">ext_name</span><span class="p">,</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -147,16 +154,19 @@ We can use a <strong>custom Lua filter</strong> in Pandoc to transform the code 
 
 <span class="n">text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;Input text&quot;</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">text_area_height</span><span class="p">)</span>
 
+<span class="n">cmd_line</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
 <span class="k">def</span><span class="w"> </span><span class="nf">run_pandoc</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
         <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">i_ext</span> <span class="o">==</span> <span class="s2">&quot;.md&quot;</span><span class="p">:</span>
-        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;pandoc&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="s2">&quot;gfm&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">input_file</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output_file</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">o_ext</span> <span class="o">==</span> <span class="s2">&quot;.adoc&quot;</span><span class="p">:</span>
-        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;pandoc&quot;</span><span class="p">,</span> <span class="n">lua_filter</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">input_file</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output_file</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;pandoc&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">input_file</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output_file</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pandoc&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">input_file</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">ext_formats</span><span class="p">[</span><span class="n">i_ext</span><span class="p">],</span> <span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="n">ext_formats</span><span class="p">[</span><span class="n">o_ext</span><span class="p">],</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output_file</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">o_ext</span> <span class="o">==</span> <span class="s2">&quot;.adoc&quot;</span><span class="p">:</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lua_filter</span><span class="p">)</span>
+
+    <span class="k">global</span> <span class="n">cmd_line</span>
+    <span class="n">cmd_line</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -164,17 +174,21 @@ We can use a <strong>custom Lua filter</strong> in Pandoc to transform the code 
     <span class="k">return</span> <span class="n">result</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_text</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">run_pandoc</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">o_ext</span> <span class="o">==</span> <span class="s2">&quot;.adoc&quot;</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">asciidoc_headers</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">bump_headers</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">bump_headers_n</span><span class="p">)</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">run_pandoc</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">o_ext</span> <span class="o">==</span> <span class="s2">&quot;.adoc&quot;</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">asciidoc_headers</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">bump_headers</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">bump_headers_n</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Output text&quot;</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">text_area_height</span><span class="p">)</span>
 
-    <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Output text&quot;</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">text_area_height</span><span class="p">)</span>
+        <span class="c1"># Save result to clipboard</span>
+        <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
 
-<span class="c1"># Save result to clipboard</span>
-    <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;```</span><span class="se">\n</span><span class="si">{</span><span class="n">cmd_line</span><span class="si">}</span><span class="se">\n</span><span class="s2">```&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Remove lines that contain Pandoc’s anchor markup: <code class="docutils literal notranslate"><span class="pre">[[something]]</span></code></p>
