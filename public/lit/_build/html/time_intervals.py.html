@@ -82,6 +82,7 @@
 
 <span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
     <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;T-Int&quot;</span><span class="p">,</span>
+    <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;wide&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -130,9 +131,9 @@
     <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
         <span class="s1">&#39;start_datetime&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
         <span class="s1">&#39;end_datetime&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span>
-        <span class="s1">&#39;task_code&#39;</span><span class="p">:</span> <span class="n">task_code</span><span class="p">,</span>
-        <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="n">comment</span><span class="p">,</span>
-        <span class="s1">&#39;duration_hours&#39;</span><span class="p">:</span> <span class="n">duration</span>
+        <span class="s1">&#39;Task&#39;</span><span class="p">:</span> <span class="n">task_code</span><span class="p">,</span>
+        <span class="s1">&#39;Comment&#39;</span><span class="p">:</span> <span class="n">comment</span><span class="p">,</span>
+        <span class="s1">&#39;Hours&#39;</span><span class="p">:</span> <span class="n">duration</span>
     <span class="p">})</span>
 
 <span class="c1"># Create DataFrame</span>
@@ -140,18 +141,20 @@
 </pre></div>
 </div>
 <p>Group by task_code, sum durations, and join comments</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grouped_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;task_code&#39;</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span>
-    <span class="s1">&#39;duration_hours&#39;</span><span class="p">:</span> <span class="s1">&#39;sum&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39; // &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grouped_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span>
+    <span class="s1">&#39;Hours&#39;</span><span class="p">:</span> <span class="s1">&#39;sum&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Comment&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39; // &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 <span class="p">})</span>
+<span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Hours&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Hours&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Display results</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># st.write(&quot;### Detailed DataFrame:&quot;)</span>
-<span class="c1"># st.table(df)</span>
-
-<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Grouped DataFrame (Total Duration by Task):&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Duration by Task&quot;</span><span class="p">)</span>
 <span class="n">st</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">grouped_df</span><span class="p">)</span>
+
+<span class="c1"># Calculate total hours</span>
+<span class="n">total_hours</span> <span class="o">=</span> <span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Hours&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Total Hours: </span><span class="si">{</span><span class="n">total_hours</span><span class="si">}</span><span class="s2">**&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Click button</p>
@@ -228,6 +231,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ollama_chat.py.html">Ollama Chat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_image.py.html">Create Image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
 <li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PersistedList.py.html">Persisted List</a></li>

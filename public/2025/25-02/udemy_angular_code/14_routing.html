@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Maximilian Schwarzmüller">
-<title>Angular - The Complete Guide (2025 Edition)</title>
+<title>14. Routing &amp; Building Multi-page Single Page Applications</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,62 +437,234 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><strong>Angular - The Complete Guide (2025 Edition)</strong></h1>
-<div class="details">
-<span id="author" class="author">Maximilian Schwarzmüller</span><br>
-</div>
+<h1>14. Routing &amp; Building Multi-page Single Page Applications</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_2_angular_essentials_components_templates_services_more">2. Angular Essentials - Components, Templates, Services &amp; More</a></li>
-<li><a href="#_3_angular_essentials_working_with_modules">3. Angular Essentials - Working with Modules</a></li>
-<li><a href="#_14_routing_building_multi_page_single_page_applications">14. Routing &amp; Building Multi-page Single Page Applications</a></li>
+<li><a href="#_263_module_introduction">263. Module Introduction</a></li>
+<li><a href="#_264_what_is_routing">264. What Is Routing</a></li>
+<li><a href="#_265_enabling_routing_adding_a_first_route">265. Enabling Routing &amp; Adding a First Route</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Course on Udemy</dt>
-<dd>
-<p><a href="https://www.udemy.com/course/the-complete-guide-to-angular-2/" class="bare">https://www.udemy.com/course/the-complete-guide-to-angular-2/</a></p>
-</dd>
-<dt class="hdlist1">GitHub</dt>
-<dd>
-<p><a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/" class="bare">https://github.com/mschwarzmueller/angular-complete-guide-course-resources/</a></p>
-</dd>
-</dl>
-</div>
-</div>
+<div class="paragraph">
+<p><a href="udemy_angular.html">&lt;Contents&gt;</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_2_angular_essentials_components_templates_services_more"><a href="2_essentials.html">2. Angular Essentials - Components, Templates, Services &amp; More</a></h2>
+<h2 id="_263_module_introduction">263. Module Introduction</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>This section introduces and builds up Angular’s built-in routing system. You’ll learn:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>What routing is and why it’s useful in Angular apps</p>
+</li>
+<li>
+<p>How to configure routes and navigate between them</p>
+</li>
+<li>
+<p>Nested (child) routes for more complex UIs</p>
+</li>
+<li>
+<p>Advanced features like data resolvers and route guards</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To follow along, download the provided starter project (an app you built earlier without routing), run</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>npm install</p>
+</li>
+<li>
+<p>npm start</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You should then see the existing app in your browser—note that selecting a user doesn’t work yet. Over the course of the section you’ll integrate and configure routing to make navigation (and data loading or access control) work as intended.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_3_angular_essentials_working_with_modules"><a href="3_modules.html">3. Angular Essentials - Working with Modules</a></h2>
+<h2 id="_264_what_is_routing">264. What Is Routing</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Routing in Angular lets a single-page application (one HTML file served by the server) behave like a multi-page site by changing views and the browser’s URL without full reloads. As users navigate, Angular’s built-in client-side router reads and updates the URL, loads the appropriate components, and gives the illusion of separate pages—enabling deep links and shareable routes—while keeping everything in one running application.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>According to the passage, how does Angular create the illusion of multiple pages while still serving only one HTML file?</p>
+</li>
+<li>
+<p>What three responsibilities does Angular’s client-side routing take care of when navigating within a single-page application?</p>
+</li>
+<li>
+<p>In the task-management example mentioned, which user interactions are treated as distinct “pages” by the routing system?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_14_routing_building_multi_page_single_page_applications"><a href="14_routing.html">14. Routing &amp; Building Multi-page Single Page Applications</a></h2>
+<h2 id="_265_enabling_routing_adding_a_first_route">265. Enabling Routing &amp; Adding a First Route</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Here’s a concise summary of the steps for adding and organizing routing
+in your Angular “starting” project:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Current situation</p>
+<div class="ulist">
+<ul>
+<li>
+<p>You have a single <code>AppComponent</code> rendered by <code>bootstrapApplication</code>.</p>
+</li>
+<li>
+<p>You’d like the UI to change based on the URL (e.g. selecting a user
+updates the address bar and the displayed component).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Enable the Angular router</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In <code>main.ts</code>, call <code>bootstrapApplication(AppComponent, \{ providers: […]})</code> with a second argument.</p>
+</li>
+<li>
+<p>Inside that providers array, add <code>provideRouter( routesArray )</code> (from
+<code>@angular/router</code>).</p>
+</li>
+<li>
+<p>This sets up the router provider so Angular will render components
+based on the active URL.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Define your routes</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A Route is an object with at least:<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>path: the URL fragment (e.g. “tasks”)<br></p>
+</li>
+<li>
+<p>component: the Angular component to load (e.g. <code>TasksComponent</code>)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Pass your array of routes to provideRouter.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Module-based apps</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If you use an NgModule instead of standalone bootstrapApplication, you
+do the same thing: add <code>provideRouter(routes)</code> to the module’s providers
+array.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Organize your routing setup (optional conventions)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create <code>app.routes.ts</code> → <code>export const routes: Routes = […]</code>;</p>
+</li>
+<li>
+<p>(Optionally) Create <code>app.config.ts</code> →<br>
+<code>export const appConfig: ApplicationConfig = { providers: […] };</code></p>
+</li>
+<li>
+<p>Then in <code>main.ts</code> simply import <code>appConfig</code> and/or routes, keeping your
+entry file clean.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Next steps</p>
+<div class="ulist">
+<ul>
+<li>
+<p>With routing enabled, you can now add more route definitions (child
+routes, parameters, lazy loads, etc.) to power your application’s
+navigation.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In a standalone Angular app that uses <code>bootstrapApplication</code>, what exact changes do you make in <code>main.ts</code> to turn on routing—i.e. which imports you add, which function you call, and how you pass its return value into the bootstrapApplication providers?</p>
+</li>
+<li>
+<p>If you want to extract your route definitions into a separate file, what file do you create, what constant do you export from it, and what type must that constant be annotated with?</p>
+</li>
+<li>
+<p>If instead of a standalone setup you’re using the traditional NgModule-based root module, where and how do you invoke <code>provideRouter(…)</code> to register your routes?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-06-29 16:44:58 +0300
+Last updated 2025-06-29 17:09:54 +0300
 </div>
 </div>
 </body>

@@ -1,0 +1,76 @@
+= 14. Routing & Building Multi-page Single Page Applications
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+link:udemy_angular.html[<Contents>]
+
+== 263. Module Introduction
+
+This section introduces and builds up Angular’s built-in routing system. You’ll learn:
+
+• What routing is and why it’s useful in Angular apps
+• How to configure routes and navigate between them
+• Nested (child) routes for more complex UIs
+• Advanced features like data resolvers and route guards
+
+To follow along, download the provided starter project (an app you built earlier without routing), run
+
+ 1. npm install
+ 2. npm start
+
+You should then see the existing app in your browser—note that selecting a user doesn’t work yet. Over the course of the section you’ll integrate and configure routing to make navigation (and data loading or access control) work as intended.
+
+== 264. What Is Routing
+
+Routing in Angular lets a single-page application (one HTML file served by the server) behave like a multi-page site by changing views and the browser’s URL without full reloads. As users navigate, Angular’s built-in client-side router reads and updates the URL, loads the appropriate components, and gives the illusion of separate pages—enabling deep links and shareable routes—while keeping everything in one running application.
+
+[CAUTION]
+====
+1. According to the passage, how does Angular create the illusion of multiple pages while still serving only one HTML file?  
+2. What three responsibilities does Angular’s client-side routing take care of when navigating within a single-page application?  
+3. In the task-management example mentioned, which user interactions are treated as distinct “pages” by the routing system?
+====
+
+== 265. Enabling Routing & Adding a First Route
+
+Here’s a concise summary of the steps for adding and organizing routing
+in your Angular “starting” project:
+
+[arabic]
+. Current situation
+* You have a single `AppComponent` rendered by `bootstrapApplication`.
+* You’d like the UI to change based on the URL (e.g. selecting a user
+updates the address bar and the displayed component).
+. Enable the Angular router
+* In `main.ts`, call `bootstrapApplication(AppComponent, \{ providers: […]})` with a second argument.
+* Inside that providers array, add `provideRouter( routesArray )` (from
+`@angular/router`).
+* This sets up the router provider so Angular will render components
+based on the active URL.
+. Define your routes
+* A Route is an object with at least: +
+• path: the URL fragment (e.g. “tasks”) +
+• component: the Angular component to load (e.g. `TasksComponent`)
+* Pass your array of routes to provideRouter.
+. Module-based apps
+* If you use an NgModule instead of standalone bootstrapApplication, you
+do the same thing: add `provideRouter(routes)` to the module’s providers
+array.
+. Organize your routing setup (optional conventions)
+* Create `app.routes.ts` → `export const routes: Routes = […]`;
+* (Optionally) Create `app.config.ts` → +
+`export const appConfig: ApplicationConfig = { providers: […] };`
+* Then in `main.ts` simply import `appConfig` and/or routes, keeping your
+entry file clean.
+. Next steps
+* With routing enabled, you can now add more route definitions (child
+routes, parameters, lazy loads, etc.) to power your application’s
+navigation.
+
+[CAUTION]
+====
+1. In a standalone Angular app that uses `bootstrapApplication`, what exact changes do you make in `main.ts` to turn on routing—i.e. which imports you add, which function you call, and how you pass its return value into the bootstrapApplication providers?  
+2. If you want to extract your route definitions into a separate file, what file do you create, what constant do you export from it, and what type must that constant be annotated with?  
+3. If instead of a standalone setup you’re using the traditional NgModule-based root module, where and how do you invoke `provideRouter(…)` to register your routes?
+====

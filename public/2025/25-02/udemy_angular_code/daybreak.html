@@ -512,44 +512,11 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_part_1_setting_up_your_angular_project"><strong>Part 1: Setting Up Your Angular Project</strong></a>
-<ul class="sectlevel2">
-<li><a href="#_step_1_create_a_new_angular_application"><strong>Step 1: Create a New Angular Application</strong></a></li>
-</ul>
-</li>
-<li><a href="#_part_2_integrating_angular_material"><strong>Part 2: Integrating Angular Material</strong></a>
-<ul class="sectlevel2">
-<li><a href="#_step_2_add_angular_material"><strong>Step 2: Add Angular Material</strong></a></li>
-</ul>
-</li>
-<li><a href="#_part_3_setting_up_your_firebase_project"><strong>Part 3: Setting Up Your Firebase Project</strong></a>
-<ul class="sectlevel2">
-<li><a href="#_step_3_create_a_firebase_project"><strong>Step 3: Create a Firebase Project</strong></a></li>
-<li><a href="#_step_4_set_up_firestore_and_add_data"><strong>Step 4: Set Up Firestore and Add Data</strong></a></li>
-<li><a href="#_step_5_configure_firebase_security_rules"><strong>Step 5: Configure Firebase Security Rules</strong></a></li>
-</ul>
-</li>
-<li><a href="#_part_4_connecting_angular_to_firebase"><strong>Part 4: Connecting Angular to Firebase</strong></a>
-<ul class="sectlevel2">
-<li><a href="#_step_6_install_angularfire"><strong>Step 6: Install AngularFire</strong></a></li>
-</ul>
-</li>
-<li><a href="#_part_5_building_the_application_logic"><strong>Part 5: Building the Application Logic</strong></a>
-<ul class="sectlevel2">
-<li><a href="#_step_7_create_a_poem_service"><strong>Step 7: Create a Poem Service</strong></a></li>
-<li><a href="#_step_8_create_the_poem_display_component"><strong>Step 8: Create the Poem Display Component</strong></a></li>
-</ul>
-</li>
-<li><a href="#_part_6_bringing_it_all_together"><strong>Part 6: Bringing It All Together</strong></a>
-<ul class="sectlevel2">
-<li><a href="#_step_9_update_the_main_app_component"><strong>Step 9: Update the Main App Component</strong></a></li>
-</ul>
-</li>
-<li><a href="#_part_7_run_your_application"><strong>Part 7: Run Your Application</strong></a>
-<ul class="sectlevel2">
-<li><a href="#_step_10_serve_the_application"><strong>Step 10: Serve the Application</strong></a></li>
-</ul>
-</li>
+<li><a href="#_step_1_project_setup">Step 1: Project Setup</a></li>
+<li><a href="#_step_2_configure_api_and_services">Step 2: Configure API and Services</a></li>
+<li><a href="#_step_3_global_configuration">Step 3: Global Configuration</a></li>
+<li><a href="#_step_4_build_components">Step 4: Build Components</a></li>
+<li><a href="#_step_5_routing_and_final_assembly">Step 5: Routing and Final Assembly</a></li>
 </ul>
 </div>
 </div>
@@ -559,593 +526,805 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>Can you give me step-by step plan how can i create from scratch
-Angular 20 app using standalone components
-using material design and firebase
-to show random poem from the list of poems stored in firebase.</p>
+<p>Can you give me step-by step plan how can i create from scratch Angular
+20 app using standalone components and material design to show the poem
+from the list of poems provided by REST API.</p>
 </div>
 <div class="paragraph">
-<p>In firebase i have "daybreak" collection with the following structure:</p>
+<p><strong>REST API</strong></p>
+</div>
+<div class="paragraph">
+<p>We have REST API for the poems:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Method</th>
+<th class="tableblock halign-left valign-top">Endpoint</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/poems</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List all available poem files</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/poems/{filename}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Get poem count for a specific file</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/poems/{filename}/{number}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Get a specific poem by number</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Here is the example of JSON returned by <code>/poems/{filename}/{number}</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code><span></span>&lt;daybreak&gt;
-
-&lt;poem&gt;
-&lt;id&gt;1&lt;/id&gt;
-&lt;text&gt;
-&#39;Twas brillig, and the slithy toves
-Did gyre and gimble in the wabe;
-All mimsy were the borogoves,
-And the mome raths outgrabe.
-
-&quot;Beware the Jabberwock, my son!
-The jaws that bite, the claws that catch!
-Beware the Jubjub bird, and shun
-The frumious Bandersnatch!&quot;
-&lt;/text&gt;
-&lt;/poem&gt;
-
-&lt;poem&gt;
-&lt;id&gt;2&lt;/id&gt;
-&lt;text&gt;
-He took his vorpal sword in hand:
-Long time the manxome foe he sought—
-So rested he by the Tumtum tree,
-And stood awhile in thought.
-
-And as in uffish thought he stood,
-The Jabberwock, with eyes of flame,
-Came whiffling through the tulgey wood,
-And burbled as it came!
-&lt;/text&gt;
-&lt;/poem&gt;
-
-&lt;/daybreak&gt;</code></pre>
+<pre class="pygments highlight"><code data-lang="json"><span></span><span class="tok-p">{</span>
+  <span class="tok-nt">&quot;title&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;От автора&quot;</span><span class="tok-p">,</span>
+  <span class="tok-nt">&quot;text&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;К автору этих строк  \nвек был не слишком строг:  \nв общем, не бил по рукам… по строкам  \nавтора этих строк.  \nВпрочем, и автор сам  \nих не ему писал —  \nсобственно, он их писал облакам,  \nсобственно, небесам.  \n  \nНету таких веков,  \nнету таких оков,  \nи не бывает таких дураков —  \nвзять да и променять  \nна, например, альков  \nшествие облаков —  \nвсех этих белых коней без подков  \nмедленный променад.  \n  \nЯ бы, наверно, мог  \nувековечить век —  \nили хотя бы стать с ним наравне,  \nесли б я только мог,  \nесли бы я привык  \nчислить себя в живых,  \nесли б я был человеком, а не  \nавтором этих строк.&quot;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Authorization rules in firebase are:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code><span></span>rules_version = &#39;2&#39;;
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /daybreak/{document} {
-      allow read: true;
-    }
-  }
-}</code></pre>
-</div>
-</div>
-</div>
+<p>Poem text is returned as markdown.</p>
 </div>
 <div class="paragraph">
-<p>Of course, here is a comprehensive, step-by-step plan to create an
-Angular 20 application from scratch using standalone components, Angular
-Material, and Firebase to display a random poem.</p>
+<p><strong>UI</strong></p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_part_1_setting_up_your_angular_project"><strong>Part 1: Setting Up Your Angular Project</strong></h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>This initial phase will focus on creating the foundational structure of
-your Angular application.</p>
-</div>
-<div class="sect2">
-<h3 id="_step_1_create_a_new_angular_application"><strong>Step 1: Create a New Angular Application</strong></h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Open your terminal or command prompt.</strong></p>
-</li>
-<li>
-<p><strong>Navigate to the directory where you want to create your project.</strong></p>
-</li>
-<li>
-<p><strong>Run the following command to generate a new Angular project:</strong></p>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="bash"><span></span>ng new angular-poem-app --standalone</code></pre>
-</div>
+<p>App should store in local storage these variables describing the poem
+that was displayed last time:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><code>ng new</code>: The Angular CLI command to create a new workspace.</p>
+<p>the name of poem file</p>
 </li>
 <li>
-<p><code>angular-poem-app</code>: The name of your application. You can change
-this to your preference.</p>
+<p>the number of the poem</p>
 </li>
 <li>
-<p><code>--standalone</code>: This flag ensures that your new project is set up to
-use standalone components, which simplifies the application structure by
-eliminating the need for <code>NgModules</code>.</p>
+<p>date in YYYY-MM-DD format.</p>
 </li>
 </ul>
 </div>
-</li>
-<li>
-<p><strong>Follow the command-line prompts:</strong></p>
+<div class="paragraph">
+<p>When the app is opened, it should display the poem. If current date is
+different from the stored date, then it should display the next poem,
+else the poem should be the same.</p>
+</div>
+<div class="paragraph">
+<p>After the last poem in the list we should display the first one.</p>
+</div>
+<div class="paragraph">
+<p>In the header we should have poem title and a menu.</p>
+</div>
+<div class="paragraph">
+<p>Menu should have items:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>When asked about adding Angular routing, you can select <strong>No</strong> for this
-simple application.</p>
+<p>Book</p>
 </li>
 <li>
-<p>Choose your preferred stylesheet format (e.g., CSS, SCSS).</p>
+<p>Random</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>"Book" item should open a dialog to select the name of the poem file.
+"Random" should go to the random poem in the book.</p>
+</div>
+<div class="paragraph">
+<p>In the footer the app should have 2 equally sized buttons to go the
+previous or next poem:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Prev</p>
 </li>
 <li>
-<p><strong>Navigate into your newly created project directory:</strong></p>
+<p>Next</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Font</strong></p>
+</div>
+<div class="paragraph">
+<p>App should use "Great Vibes" Google font to display the poem.</p>
+</div>
+<div class="paragraph">
+<p>Embedding code for this font:</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash"><span></span><span class="tok-nb">cd</span> angular-poem-app</code></pre>
+<pre class="pygments highlight"><code data-lang="html"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">link</span> <span class="tok-na">rel</span><span class="tok-o">=</span><span class="tok-s">&quot;preconnect&quot;</span> <span class="tok-na">href</span><span class="tok-o">=</span><span class="tok-s">&quot;https://fonts.googleapis.com&quot;</span><span class="tok-p">&gt;</span>
+<span class="tok-p">&lt;</span><span class="tok-nt">link</span> <span class="tok-na">rel</span><span class="tok-o">=</span><span class="tok-s">&quot;preconnect&quot;</span> <span class="tok-na">href</span><span class="tok-o">=</span><span class="tok-s">&quot;https://fonts.gstatic.com&quot;</span> <span class="tok-na">crossorigin</span><span class="tok-p">&gt;</span>
+<span class="tok-p">&lt;</span><span class="tok-nt">link</span> <span class="tok-na">href</span><span class="tok-o">=</span><span class="tok-s">&quot;https://fonts.googleapis.com/css2?family=Great+Vibes&amp;display=swap&quot;</span> <span class="tok-na">rel</span><span class="tok-o">=</span><span class="tok-s">&quot;stylesheet&quot;</span><span class="tok-p">&gt;</span></code></pre>
 </div>
 </div>
-</li>
-</ol>
+<div class="paragraph">
+<p>CSS class for this font:</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="css"><span></span><span class="tok-p">.</span><span class="tok-nc">great-vibes-regular</span> <span class="tok-p">{</span>
+  <span class="tok-k">font-family</span><span class="tok-p">:</span> <span class="tok-s2">&quot;Great Vibes&quot;</span><span class="tok-p">,</span> <span class="tok-kc">cursive</span><span class="tok-p">;</span>
+  <span class="tok-k">font-weight</span><span class="tok-p">:</span> <span class="tok-mi">400</span><span class="tok-p">;</span>
+  <span class="tok-k">font-style</span><span class="tok-p">:</span> <span class="tok-kc">normal</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a step-by-step plan to create your Angular 20 poetry app from
+scratch using standalone components and Angular Material.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_part_2_integrating_angular_material"><strong>Part 2: Integrating Angular Material</strong></h2>
+<h2 id="_step_1_project_setup">Step 1: Project Setup</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Now, you will add Angular Material to your project to leverage its
-pre-built UI components for a polished look.</p>
+<p>First, set up your Angular project, install Angular Material, and add
+the required Google Font.</p>
 </div>
-<div class="sect2">
-<h3 id="_step_2_add_angular_material"><strong>Step 2: Add Angular Material</strong></h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong>In your project&#8217;s root directory, run the following command:</strong></p>
+<p><strong>Install Angular CLI</strong> (if you don&#8217;t have it):</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>npm install -g @angular/cli</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Create a New Angular App</strong>: This command creates a new project named
+<code>poem-app</code> configured for standalone components and SCSS for styling.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>ng new poem-app --standalone --style<span class="tok-o">=</span>scss
+<span class="tok-nb">cd</span> poem-app</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Add Angular Material</strong>: This will automatically configure Material
+Design components for your project.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="bash"><span></span>ng add @angular/material</code></pre>
 </div>
 </div>
-</li>
-<li>
-<p><strong>The CLI will prompt you with a few questions:</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Choose a prebuilt theme name, or "custom" for a custom theme:</strong> Select
-a theme that you like (e.g., <code>Indigo/Pink</code>).</p>
-</li>
-<li>
-<p><strong>Set up global Angular Material typography styles?</strong> Choose <strong>Yes</strong>.</p>
-</li>
-<li>
-<p><strong>Include and enable animations?</strong> Choose <strong>Yes</strong>.</p>
-</li>
-</ul>
-</div>
-</li>
-</ol>
-</div>
 <div class="paragraph">
-<p>This command will install Angular Material, the Component Dev Kit (CDK),
-and Angular Animations, and will also configure your project to use
-them.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_part_3_setting_up_your_firebase_project"><strong>Part 3: Setting Up Your Firebase Project</strong></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This section covers the creation of your Firebase project and the
-configuration of the Firestore database.</p>
-</div>
-<div class="sect2">
-<h3 id="_step_3_create_a_firebase_project"><strong>Step 3: Create a Firebase Project</strong></h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Go to the <a href="https://console.firebase.google.com/">Firebase console</a>.</strong></p>
-</li>
-<li>
-<p><strong>Click on "Add project".</strong></p>
-</li>
-<li>
-<p><strong>Enter a name for your project</strong> (e.g., <code>poem-app-project</code>) and click
-<strong>Continue</strong>.</p>
-</li>
-<li>
-<p>You can choose to enable Google Analytics or not for this project.</p>
-</li>
-<li>
-<p><strong>Click "Create project".</strong></p>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_step_4_set_up_firestore_and_add_data"><strong>Step 4: Set Up Firestore and Add Data</strong></h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>From your Firebase project&#8217;s dashboard, navigate to <strong>Build &gt; Firestore
-Database</strong>.</p>
-</li>
-<li>
-<p><strong>Click "Create database".</strong></p>
-</li>
-<li>
-<p><strong>Choose "Start in test mode"</strong> and click <strong>Next</strong>. This allows for easy
-reading and writing during development.</p>
-</li>
-<li>
-<p><strong>Select a Cloud Firestore location</strong> that is geographically close to
-you.</p>
-</li>
-<li>
-<p><strong>Click "Enable".</strong></p>
-</li>
-<li>
-<p><strong>Now, you will manually add your poem data:</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Click on <strong>"+ Start collection"</strong>.</p>
-</li>
-<li>
-<p>For the <strong>Collection ID</strong>, enter <code>daybreak</code>.</p>
-</li>
-<li>
-<p>Click <strong>"Next"</strong>.</p>
-</li>
-<li>
-<p>For the first document, click on <strong>"Auto-ID"</strong> for the <strong>Document ID</strong>.</p>
-</li>
-<li>
-<p>Add two fields to this document:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Field:</strong> <code>id</code>, <strong>Type:</strong> <code>number</code>, <strong>Value:</strong> <code>1</code></p>
-</li>
-<li>
-<p><strong>Field:</strong> <code>text</code>, <strong>Type:</strong> <code>string</code>, <strong>Value:</strong> Copy and paste the
-first poem text.</p>
-</li>
-</ul>
+<p>Follow the prompts, selecting a theme of your choice.</p>
 </div>
 </li>
 <li>
-<p>Click <strong>"Save"</strong>.</p>
-</li>
-<li>
-<p>Click <strong>"+ Add document"</strong> to add the second poem in the same
-<code>daybreak</code> collection, following the same process with <code>id</code> 2 and
-its corresponding text.</p>
-</li>
-</ul>
-</div>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_step_5_configure_firebase_security_rules"><strong>Step 5: Configure Firebase Security Rules</strong></h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>In the Firestore Database section, go to the <strong>"Rules"</strong> tab.</p>
-</li>
-<li>
-<p><strong>Replace the existing rules with the following:</strong></p>
-<div class="literalblock">
-<div class="content">
-<pre>rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /daybreak/{document} {
-      allow read: true;
-      allow write: if false; // Disallow writing for security
-    }
-  }
-}</pre>
-</div>
-</div>
-</li>
-<li>
-<p><strong>Click "Publish"</strong> to save your new rules.</p>
-</li>
-</ol>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_part_4_connecting_angular_to_firebase"><strong>Part 4: Connecting Angular to Firebase</strong></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Here you will install the necessary library to communicate with Firebase
-from your Angular app.</p>
-</div>
-<div class="sect2">
-<h3 id="_step_6_install_angularfire"><strong>Step 6: Install AngularFire</strong></h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>In your terminal, within your Angular project&#8217;s root directory, run:</strong></p>
+<p><strong>Add Google Font</strong>: Open <code>src/index.html</code> and add the font links
+inside the <code>&lt;head&gt;</code> tag.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash"><span></span>ng add @angular/fire</code></pre>
+<pre class="pygments highlight"><code data-lang="html"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">link</span> <span class="tok-na">rel</span><span class="tok-o">=</span><span class="tok-s">&quot;preconnect&quot;</span> <span class="tok-na">href</span><span class="tok-o">=</span><span class="tok-s">&quot;https://fonts.googleapis.com&quot;</span><span class="tok-p">&gt;</span>
+<span class="tok-p">&lt;</span><span class="tok-nt">link</span> <span class="tok-na">rel</span><span class="tok-o">=</span><span class="tok-s">&quot;preconnect&quot;</span> <span class="tok-na">href</span><span class="tok-o">=</span><span class="tok-s">&quot;https://fonts.gstatic.com&quot;</span> <span class="tok-na">crossorigin</span><span class="tok-p">&gt;</span>
+<span class="tok-p">&lt;</span><span class="tok-nt">link</span> <span class="tok-na">href</span><span class="tok-o">=</span><span class="tok-s">&quot;https://fonts.googleapis.com/css2?family=Great+Vibes&amp;display=swap&quot;</span> <span class="tok-na">rel</span><span class="tok-o">=</span><span class="tok-s">&quot;stylesheet&quot;</span><span class="tok-p">&gt;</span></code></pre>
 </div>
 </div>
 </li>
 <li>
-<p><strong>The CLI will prompt you to select the Firebase features you want to
-set up.</strong> Use the spacebar to select <strong>Firestore</strong> and press Enter.</p>
+<p><strong>Add Font CSS</strong>: Open <code>src/styles.scss</code> and add the provided CSS
+class.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="scss"><span></span><span class="tok-nc">.great-vibes-regular</span> <span class="tok-p">{</span>
+  <span class="tok-nt">font-family</span><span class="tok-nd">:</span> <span class="tok-s2">&quot;Great Vibes&quot;</span><span class="tok-o">,</span> <span class="tok-nt">cursive</span><span class="tok-o">;</span>
+  <span class="tok-nt">font-weight</span><span class="tok-nd">:</span> <span class="tok-nt">400</span><span class="tok-o">;</span>
+  <span class="tok-nt">font-style</span><span class="tok-nd">:</span> <span class="tok-nt">normal</span><span class="tok-o">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
 </li>
 <li>
-<p>The CLI will then prompt you to log in to your Firebase account and
-select the Firebase project you created earlier.</p>
+<p><strong>Install Markdown Renderer</strong>: We&#8217;ll use <code>ngx-markdown</code> to render the
+poem text.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>npm install ngx-markdown</code></pre>
+</div>
+</div>
 </li>
 </ol>
 </div>
-<div class="paragraph">
-<p>This command will install the <code>firebase</code> and <code>@angular/fire</code>
-packages and will also update your <code>app.config.ts</code> to initialize
-Firebase.</p>
-</div>
-</div>
+<hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_part_5_building_the_application_logic"><strong>Part 5: Building the Application Logic</strong></h2>
+<h2 id="_step_2_configure_api_and_services">Step 2: Configure API and Services</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Now you will create the core components and services to fetch and
-display the poems.</p>
-</div>
-<div class="sect2">
-<h3 id="_step_7_create_a_poem_service"><strong>Step 7: Create a Poem Service</strong></h3>
-<div class="paragraph">
-<p>A service is the ideal place to handle your data interactions with
-Firebase.</p>
+<p>Create services to handle API calls and manage the application&#8217;s state.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong>Generate a new service using the Angular CLI:</strong></p>
+<p><strong>Configure Environment</strong>: It&#8217;s good practice to store your API URL in
+the environment files. Open <code>src/environments/environment.ts</code> and add
+your API&#8217;s base URL.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">export</span> <span class="tok-kd">const</span> <span class="tok-nx">environment</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+  <span class="tok-nx">production</span>: <span class="tok-kt">false</span><span class="tok-p">,</span>
+  <span class="tok-nx">apiBaseUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;https://your-api-goes-here.com/api&#39;</span> <span class="tok-c1">// Replace with your actual API URL</span>
+<span class="tok-p">};</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Create Data Interfaces</strong>: Create a file <code>src/app/poem.model.ts</code> to
+define the shape of your data.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">export</span> <span class="tok-kd">interface</span> <span class="tok-nx">Poem</span> <span class="tok-p">{</span>
+  <span class="tok-nx">title</span>: <span class="tok-kt">string</span><span class="tok-p">;</span>
+  <span class="tok-nx">text</span>: <span class="tok-kt">string</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
+
+<span class="tok-k">export</span> <span class="tok-kd">interface</span> <span class="tok-nx">PoemState</span> <span class="tok-p">{</span>
+  <span class="tok-nx">filename</span>: <span class="tok-kt">string</span><span class="tok-p">;</span>
+  <span class="tok-kt">number</span><span class="tok-o">:</span> <span class="tok-kt">number</span><span class="tok-p">;</span>
+  <span class="tok-nx">date</span>: <span class="tok-kt">string</span><span class="tok-p">;</span> <span class="tok-c1">// YYYY-MM-DD</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Create Poem Service</strong>: This service will fetch data from the REST API.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="bash"><span></span>ng generate service services/poem</code></pre>
 </div>
 </div>
-</li>
-<li>
-<p><strong>Open the newly created <code>src/app/services/poem.service.ts</code> file and
-update it with the following code:</strong></p>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Injectable</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
-<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Firestore</span><span class="tok-p">,</span> <span class="tok-nx">collectionData</span><span class="tok-p">,</span> <span class="tok-nx">collection</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/fire/firestore&#39;</span><span class="tok-p">;</span>
-<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Observable</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;rxjs&#39;</span><span class="tok-p">;</span>
-
-<span class="tok-k">export</span> <span class="tok-kd">interface</span> <span class="tok-nx">Poem</span> <span class="tok-p">{</span>
-  <span class="tok-nx">id</span>: <span class="tok-kt">number</span><span class="tok-p">;</span>
-  <span class="tok-nx">text</span>: <span class="tok-kt">string</span><span class="tok-p">;</span>
-<span class="tok-p">}</span>
-
-<span class="tok-kd">@Injectable</span><span class="tok-p">({</span>
-  <span class="tok-nx">providedIn</span><span class="tok-o">:</span> <span class="tok-s1">&#39;root&#39;</span>
-<span class="tok-p">})</span>
-<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">PoemService</span> <span class="tok-p">{</span>
-
-  <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-k">private</span> <span class="tok-nx">firestore</span>: <span class="tok-kt">Firestore</span><span class="tok-p">)</span> <span class="tok-p">{</span> <span class="tok-p">}</span>
-
-  <span class="tok-nx">getPoems</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">Poem</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span> <span class="tok-p">{</span>
-    <span class="tok-kd">const</span> <span class="tok-nx">poemsCollection</span> <span class="tok-o">=</span> <span class="tok-nx">collection</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">firestore</span><span class="tok-p">,</span> <span class="tok-s1">&#39;daybreak&#39;</span><span class="tok-p">);</span>
-    <span class="tok-k">return</span> <span class="tok-nx">collectionData</span><span class="tok-p">(</span><span class="tok-nx">poemsCollection</span><span class="tok-p">)</span> <span class="tok-kr">as</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">Poem</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span><span class="tok-p">;</span>
-  <span class="tok-p">}</span>
-<span class="tok-p">}</span></code></pre>
-</div>
-</div>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_step_8_create_the_poem_display_component"><strong>Step 8: Create the Poem Display Component</strong></h3>
 <div class="paragraph">
-<p>This will be a standalone component responsible for showing a single,
-randomly selected poem.</p>
+<p>Update <code>src/app/services/poem.service.ts</code>:</p>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Generate a new standalone component:</strong></p>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash"><span></span>ng generate component components/poem-display --standalone</code></pre>
-</div>
-</div>
-</li>
-<li>
-<p><strong>Open <code>src/app/components/poem-display/poem-display.component.ts</code>
-and update it:</strong></p>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">OnInit</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
-<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">CommonModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/common&#39;</span><span class="tok-p">;</span>
-<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatCardModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/card&#39;</span><span class="tok-p">;</span>
-<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatButtonModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/button&#39;</span><span class="tok-p">;</span>
-<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Poem</span><span class="tok-p">,</span> <span class="tok-nx">PoemService</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;../../services/poem.service&#39;</span><span class="tok-p">;</span>
+<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Injectable</span><span class="tok-p">,</span> <span class="tok-nx">inject</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">HttpClient</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/common/http&#39;</span><span class="tok-p">;</span>
 <span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Observable</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;rxjs&#39;</span><span class="tok-p">;</span>
-<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">map</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;rxjs/operators&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">environment</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;../../environments/environment&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Poem</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;../poem.model&#39;</span><span class="tok-p">;</span>
 
-<span class="tok-kd">@Component</span><span class="tok-p">({</span>
-  <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-poem-display&#39;</span><span class="tok-p">,</span>
-  <span class="tok-nx">standalone</span>: <span class="tok-kt">true</span><span class="tok-p">,</span>
-  <span class="tok-nx">imports</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-nx">CommonModule</span><span class="tok-p">,</span> <span class="tok-nx">MatCardModule</span><span class="tok-p">,</span> <span class="tok-nx">MatButtonModule</span><span class="tok-p">],</span>
-  <span class="tok-nx">templateUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./poem-display.component.html&#39;</span><span class="tok-p">,</span>
-  <span class="tok-nx">styleUrls</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-s1">&#39;./poem-display.component.css&#39;</span><span class="tok-p">]</span>
-<span class="tok-p">})</span>
-<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">PoemDisplayComponent</span> <span class="tok-k">implements</span> <span class="tok-nx">OnInit</span> <span class="tok-p">{</span>
-  <span class="tok-nx">randomPoem$</span>: <span class="tok-kt">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">Poem</span> <span class="tok-o">|</span> <span class="tok-kc">undefined</span><span class="tok-o">&gt;</span> <span class="tok-o">|</span> <span class="tok-kc">undefined</span><span class="tok-p">;</span>
+<span class="tok-kd">@Injectable</span><span class="tok-p">({</span> <span class="tok-nx">providedIn</span><span class="tok-o">:</span> <span class="tok-s1">&#39;root&#39;</span> <span class="tok-p">})</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">PoemService</span> <span class="tok-p">{</span>
+  <span class="tok-k">private</span> <span class="tok-nx">http</span> <span class="tok-o">=</span> <span class="tok-nx">inject</span><span class="tok-p">(</span><span class="tok-nx">HttpClient</span><span class="tok-p">);</span>
+  <span class="tok-k">private</span> <span class="tok-nx">apiUrl</span> <span class="tok-o">=</span> <span class="tok-sb">`</span><span class="tok-si">${</span><span class="tok-nx">environment</span><span class="tok-p">.</span><span class="tok-nx">apiBaseUrl</span><span class="tok-si">}</span><span class="tok-sb">/poems`</span><span class="tok-p">;</span>
 
-  <span class="tok-kr">constructor</span><span class="tok-p">(</span><span class="tok-k">private</span> <span class="tok-nx">poemService</span>: <span class="tok-kt">PoemService</span><span class="tok-p">)</span> <span class="tok-p">{}</span>
-
-  <span class="tok-nx">ngOnInit</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-ow">void</span> <span class="tok-p">{</span>
-    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">getRandomPoem</span><span class="tok-p">();</span>
+  <span class="tok-nx">getPoemFiles</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-kt">string</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">http</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-o">&lt;</span><span class="tok-kt">string</span><span class="tok-p">[]</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">apiUrl</span><span class="tok-p">);</span>
   <span class="tok-p">}</span>
 
-  <span class="tok-nx">getRandomPoem</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-ow">void</span> <span class="tok-p">{</span>
-    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">randomPoem$</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemService</span><span class="tok-p">.</span><span class="tok-nx">getPoems</span><span class="tok-p">().</span><span class="tok-nx">pipe</span><span class="tok-p">(</span>
-      <span class="tok-nx">map</span><span class="tok-p">(</span><span class="tok-nx">poems</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
-        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">poems</span> <span class="tok-o">&amp;&amp;</span> <span class="tok-nx">poems</span><span class="tok-p">.</span><span class="tok-nx">length</span> <span class="tok-o">&gt;</span> <span class="tok-mf">0</span><span class="tok-p">)</span> <span class="tok-p">{</span>
-          <span class="tok-kd">const</span> <span class="tok-nx">randomIndex</span> <span class="tok-o">=</span> <span class="tok-nb">Math</span><span class="tok-p">.</span><span class="tok-nx">floor</span><span class="tok-p">(</span><span class="tok-nb">Math</span><span class="tok-p">.</span><span class="tok-nx">random</span><span class="tok-p">()</span> <span class="tok-o">*</span> <span class="tok-nx">poems</span><span class="tok-p">.</span><span class="tok-nx">length</span><span class="tok-p">);</span>
-          <span class="tok-k">return</span> <span class="tok-nx">poems</span><span class="tok-p">[</span><span class="tok-nx">randomIndex</span><span class="tok-p">];</span>
-        <span class="tok-p">}</span>
-        <span class="tok-k">return</span> <span class="tok-kc">undefined</span><span class="tok-p">;</span>
-      <span class="tok-p">})</span>
-    <span class="tok-p">);</span>
+  <span class="tok-nx">getPoemCount</span><span class="tok-p">(</span><span class="tok-nx">filename</span>: <span class="tok-kt">string</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-p">{</span> <span class="tok-nx">count</span>: <span class="tok-kt">number</span> <span class="tok-p">}</span><span class="tok-o">&gt;</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">http</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-o">&lt;</span><span class="tok-p">{</span> <span class="tok-nx">count</span>: <span class="tok-kt">number</span> <span class="tok-p">}</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-sb">`</span><span class="tok-si">${</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">apiUrl</span><span class="tok-si">}</span><span class="tok-sb">/</span><span class="tok-si">${</span><span class="tok-nx">filename</span><span class="tok-si">}</span><span class="tok-sb">`</span><span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">getPoem</span><span class="tok-p">(</span><span class="tok-nx">filename</span>: <span class="tok-kt">string</span><span class="tok-p">,</span> <span class="tok-kt">number</span><span class="tok-o">:</span> <span class="tok-kt">number</span><span class="tok-p">)</span><span class="tok-o">:</span> <span class="tok-nx">Observable</span><span class="tok-o">&lt;</span><span class="tok-nx">Poem</span><span class="tok-o">&gt;</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">http</span><span class="tok-p">.</span><span class="tok-nx">get</span><span class="tok-o">&lt;</span><span class="tok-nx">Poem</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-sb">`</span><span class="tok-si">${</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">apiUrl</span><span class="tok-si">}</span><span class="tok-sb">/</span><span class="tok-si">${</span><span class="tok-nx">filename</span><span class="tok-si">}</span><span class="tok-sb">/</span><span class="tok-si">${</span><span class="tok-kt">number</span><span class="tok-si">}</span><span class="tok-sb">`</span><span class="tok-p">);</span>
   <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
 </li>
 <li>
-<p><strong>Now, update the template in
-<code>src/app/components/poem-display/poem-display.component.html</code>:</strong></p>
+<p><strong>Create State Management Service</strong>: This service will manage
+<code>localStorage</code> and the current poem state.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ng2"><span></span><span class="tok-x">&lt;div </span><span class="tok-p">*</span><span class="tok-na">ngIf</span><span class="tok-o">=</span><span class="tok-s">&quot;randomPoem$ | async as poem; else loading&quot;</span><span class="tok-x">&gt;</span>
-<span class="tok-x">  &lt;mat-card&gt;</span>
-<span class="tok-x">    &lt;mat-card-header&gt;</span>
-<span class="tok-x">      &lt;mat-card-title&gt;A Random Poem&lt;/mat-card-title&gt;</span>
-<span class="tok-x">    &lt;/mat-card-header&gt;</span>
-<span class="tok-x">    &lt;mat-card-content&gt;</span>
-<span class="tok-x">      &lt;pre&gt;</span><span class="tok-cp">{{</span> <span class="tok-nv">poem.text</span> <span class="tok-cp">}}</span><span class="tok-x">&lt;/pre&gt;</span>
-<span class="tok-x">    &lt;/mat-card-content&gt;</span>
-<span class="tok-x">    &lt;mat-card-actions&gt;</span>
-<span class="tok-x">      &lt;button mat-raised-button color=&quot;primary&quot; </span><span class="tok-p">(</span><span class="tok-na">click</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-s">&quot;getRandomPoem()&quot;</span><span class="tok-x">&gt;Show Another Poem&lt;/button&gt;</span>
-<span class="tok-x">    &lt;/mat-card-actions&gt;</span>
-<span class="tok-x">  &lt;/mat-card&gt;</span>
-<span class="tok-x">&lt;/div&gt;</span>
+<pre class="pygments highlight"><code data-lang="bash"><span></span>ng generate service services/state</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update <code>src/app/services/state.service.ts</code>. This service will contain
+the core logic for poem navigation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Injectable</span><span class="tok-p">,</span> <span class="tok-nx">inject</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">BehaviorSubject</span><span class="tok-p">,</span> <span class="tok-nx">switchMap</span><span class="tok-p">,</span> <span class="tok-nx">tap</span><span class="tok-p">,</span> <span class="tok-nx">take</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;rxjs&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Poem</span><span class="tok-p">,</span> <span class="tok-nx">PoemState</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;../poem.model&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">PoemService</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;./poem.service&#39;</span><span class="tok-p">;</span>
 
-<span class="tok-x">&lt;ng-template </span><span class="tok-p">#</span><span class="tok-na">loading</span><span class="tok-x">&gt;</span>
-<span class="tok-x">  &lt;p&gt;Loading poems...&lt;/p&gt;</span>
-<span class="tok-x">&lt;/ng-template&gt;</span></code></pre>
+<span class="tok-kd">const</span> <span class="tok-nx">STATE_KEY</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;poemAppState&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Injectable</span><span class="tok-p">({</span> <span class="tok-nx">providedIn</span><span class="tok-o">:</span> <span class="tok-s1">&#39;root&#39;</span> <span class="tok-p">})</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">StateService</span> <span class="tok-p">{</span>
+  <span class="tok-k">private</span> <span class="tok-nx">poemService</span> <span class="tok-o">=</span> <span class="tok-nx">inject</span><span class="tok-p">(</span><span class="tok-nx">PoemService</span><span class="tok-p">);</span>
+
+  <span class="tok-c1">// Default state if nothing is in local storage</span>
+  <span class="tok-k">private</span> <span class="tok-nx">defaultState</span>: <span class="tok-kt">PoemState</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-nx">filename</span><span class="tok-o">:</span> <span class="tok-s1">&#39;first-book.txt&#39;</span><span class="tok-p">,</span> <span class="tok-kt">number</span><span class="tok-o">:</span> <span class="tok-mf">1</span><span class="tok-p">,</span> <span class="tok-nx">date</span>: <span class="tok-kt">this.getTodayDate</span><span class="tok-p">()</span> <span class="tok-p">};</span>
+
+  <span class="tok-c1">// Observables for components to subscribe to</span>
+  <span class="tok-k">public</span> <span class="tok-nx">poemState$</span> <span class="tok-o">=</span> <span class="tok-ow">new</span> <span class="tok-nx">BehaviorSubject</span><span class="tok-o">&lt;</span><span class="tok-nx">PoemState</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">loadState</span><span class="tok-p">());</span>
+  <span class="tok-k">public</span> <span class="tok-nx">currentPoem$</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemState$</span><span class="tok-p">.</span><span class="tok-nx">pipe</span><span class="tok-p">(</span>
+    <span class="tok-nx">switchMap</span><span class="tok-p">(</span><span class="tok-nx">state</span> <span class="tok-p">=&gt;</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemService</span><span class="tok-p">.</span><span class="tok-nx">getPoem</span><span class="tok-p">(</span><span class="tok-nx">state</span><span class="tok-p">.</span><span class="tok-nx">filename</span><span class="tok-p">,</span> <span class="tok-nx">state</span><span class="tok-p">.</span><span class="tok-kt">number</span><span class="tok-p">))</span>
+  <span class="tok-p">);</span>
+
+  <span class="tok-kr">constructor</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">initialize</span><span class="tok-p">();</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-k">private</span> <span class="tok-nx">initialize</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-kd">const</span> <span class="tok-nx">state</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemState$</span><span class="tok-p">.</span><span class="tok-nx">getValue</span><span class="tok-p">();</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">state</span><span class="tok-p">.</span><span class="tok-nx">date</span> <span class="tok-o">!==</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">getTodayDate</span><span class="tok-p">())</span> <span class="tok-p">{</span>
+      <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">navigateToNextPoem</span><span class="tok-p">();</span>
+    <span class="tok-p">}</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-k">private</span> <span class="tok-nx">getTodayDate</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-ow">new</span> <span class="tok-nb">Date</span><span class="tok-p">().</span><span class="tok-nx">toISOString</span><span class="tok-p">().</span><span class="tok-nx">split</span><span class="tok-p">(</span><span class="tok-s1">&#39;T&#39;</span><span class="tok-p">)[</span><span class="tok-mf">0</span><span class="tok-p">];</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-k">private</span> <span class="tok-nx">loadState</span><span class="tok-p">()</span><span class="tok-o">:</span> <span class="tok-nx">PoemState</span> <span class="tok-p">{</span>
+    <span class="tok-kd">const</span> <span class="tok-nx">storedState</span> <span class="tok-o">=</span> <span class="tok-nx">localStorage</span><span class="tok-p">.</span><span class="tok-nx">getItem</span><span class="tok-p">(</span><span class="tok-nx">STATE_KEY</span><span class="tok-p">);</span>
+    <span class="tok-k">return</span> <span class="tok-nx">storedState</span> <span class="tok-o">?</span> <span class="tok-nb">JSON</span><span class="tok-p">.</span><span class="tok-nx">parse</span><span class="tok-p">(</span><span class="tok-nx">storedState</span><span class="tok-p">)</span> <span class="tok-o">:</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">defaultState</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-k">private</span> <span class="tok-nx">saveState</span><span class="tok-p">(</span><span class="tok-nx">state</span>: <span class="tok-kt">PoemState</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">localStorage</span><span class="tok-p">.</span><span class="tok-nx">setItem</span><span class="tok-p">(</span><span class="tok-nx">STATE_KEY</span><span class="tok-p">,</span> <span class="tok-nb">JSON</span><span class="tok-p">.</span><span class="tok-nx">stringify</span><span class="tok-p">(</span><span class="tok-nx">state</span><span class="tok-p">));</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemState$</span><span class="tok-p">.</span><span class="tok-nx">next</span><span class="tok-p">(</span><span class="tok-nx">state</span><span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">navigateToNextPoem</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemService</span><span class="tok-p">.</span><span class="tok-nx">getPoemCount</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemState$</span><span class="tok-p">.</span><span class="tok-nx">getValue</span><span class="tok-p">().</span><span class="tok-nx">filename</span><span class="tok-p">).</span><span class="tok-nx">pipe</span><span class="tok-p">(</span><span class="tok-nx">take</span><span class="tok-p">(</span><span class="tok-mf">1</span><span class="tok-p">)).</span><span class="tok-nx">subscribe</span><span class="tok-p">(</span><span class="tok-nx">res</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+      <span class="tok-kd">const</span> <span class="tok-nx">currentState</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemState$</span><span class="tok-p">.</span><span class="tok-nx">getValue</span><span class="tok-p">();</span>
+      <span class="tok-kd">let</span> <span class="tok-nx">nextNumber</span> <span class="tok-o">=</span> <span class="tok-nx">currentState</span><span class="tok-p">.</span><span class="tok-kt">number</span> <span class="tok-o">+</span> <span class="tok-mf">1</span><span class="tok-p">;</span>
+      <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">nextNumber</span> <span class="tok-o">&gt;</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">count</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-nx">nextNumber</span> <span class="tok-o">=</span> <span class="tok-mf">1</span><span class="tok-p">;</span> <span class="tok-c1">// Loop back to the first poem</span>
+      <span class="tok-p">}</span>
+      <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">saveState</span><span class="tok-p">({</span> <span class="tok-p">...</span><span class="tok-nx">currentState</span><span class="tok-p">,</span> <span class="tok-kt">number</span><span class="tok-o">:</span> <span class="tok-nx">nextNumber</span><span class="tok-p">,</span> <span class="tok-nx">date</span>: <span class="tok-kt">this.getTodayDate</span><span class="tok-p">()</span> <span class="tok-p">});</span>
+    <span class="tok-p">});</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">navigateToPrevPoem</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemService</span><span class="tok-p">.</span><span class="tok-nx">getPoemCount</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemState$</span><span class="tok-p">.</span><span class="tok-nx">getValue</span><span class="tok-p">().</span><span class="tok-nx">filename</span><span class="tok-p">).</span><span class="tok-nx">pipe</span><span class="tok-p">(</span><span class="tok-nx">take</span><span class="tok-p">(</span><span class="tok-mf">1</span><span class="tok-p">)).</span><span class="tok-nx">subscribe</span><span class="tok-p">(</span><span class="tok-nx">res</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+      <span class="tok-kd">const</span> <span class="tok-nx">currentState</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemState$</span><span class="tok-p">.</span><span class="tok-nx">getValue</span><span class="tok-p">();</span>
+      <span class="tok-kd">let</span> <span class="tok-nx">prevNumber</span> <span class="tok-o">=</span> <span class="tok-nx">currentState</span><span class="tok-p">.</span><span class="tok-kt">number</span> <span class="tok-o">-</span> <span class="tok-mf">1</span><span class="tok-p">;</span>
+      <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">prevNumber</span> <span class="tok-o">&lt;</span> <span class="tok-mf">1</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-nx">prevNumber</span> <span class="tok-o">=</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">count</span><span class="tok-p">;</span> <span class="tok-c1">// Loop back to the last poem</span>
+      <span class="tok-p">}</span>
+      <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">saveState</span><span class="tok-p">({</span> <span class="tok-p">...</span><span class="tok-nx">currentState</span><span class="tok-p">,</span> <span class="tok-kt">number</span><span class="tok-o">:</span> <span class="tok-nx">prevNumber</span><span class="tok-p">,</span> <span class="tok-nx">date</span>: <span class="tok-kt">this.getTodayDate</span><span class="tok-p">()</span> <span class="tok-p">});</span>
+    <span class="tok-p">});</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">navigateToRandomPoem</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemService</span><span class="tok-p">.</span><span class="tok-nx">getPoemCount</span><span class="tok-p">(</span><span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemState$</span><span class="tok-p">.</span><span class="tok-nx">getValue</span><span class="tok-p">().</span><span class="tok-nx">filename</span><span class="tok-p">).</span><span class="tok-nx">pipe</span><span class="tok-p">(</span><span class="tok-nx">take</span><span class="tok-p">(</span><span class="tok-mf">1</span><span class="tok-p">)).</span><span class="tok-nx">subscribe</span><span class="tok-p">(</span><span class="tok-nx">res</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+        <span class="tok-kd">const</span> <span class="tok-nx">currentState</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemState$</span><span class="tok-p">.</span><span class="tok-nx">getValue</span><span class="tok-p">();</span>
+        <span class="tok-kd">const</span> <span class="tok-nx">randomNumber</span> <span class="tok-o">=</span> <span class="tok-nb">Math</span><span class="tok-p">.</span><span class="tok-nx">floor</span><span class="tok-p">(</span><span class="tok-nb">Math</span><span class="tok-p">.</span><span class="tok-nx">random</span><span class="tok-p">()</span> <span class="tok-o">*</span> <span class="tok-nx">res</span><span class="tok-p">.</span><span class="tok-nx">count</span><span class="tok-p">)</span> <span class="tok-o">+</span> <span class="tok-mf">1</span><span class="tok-p">;</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">saveState</span><span class="tok-p">({</span> <span class="tok-p">...</span><span class="tok-nx">currentState</span><span class="tok-p">,</span> <span class="tok-kt">number</span><span class="tok-o">:</span> <span class="tok-nx">randomNumber</span><span class="tok-p">,</span> <span class="tok-nx">date</span>: <span class="tok-kt">this.getTodayDate</span><span class="tok-p">()</span> <span class="tok-p">});</span>
+    <span class="tok-p">});</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">changeBook</span><span class="tok-p">(</span><span class="tok-nx">newFilename</span>: <span class="tok-kt">string</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">saveState</span><span class="tok-p">({</span> <span class="tok-nx">filename</span>: <span class="tok-kt">newFilename</span><span class="tok-p">,</span> <span class="tok-kt">number</span><span class="tok-o">:</span> <span class="tok-mf">1</span><span class="tok-p">,</span> <span class="tok-nx">date</span>: <span class="tok-kt">this.getTodayDate</span><span class="tok-p">()</span> <span class="tok-p">});</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
 </div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>The <code>&lt;pre&gt;</code> tag is used to preserve the whitespace and line breaks
-in the poem&#8217;s text.</p>
-</li>
-</ul>
 </div>
 </li>
 </ol>
 </div>
-</div>
+<hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_part_6_bringing_it_all_together"><strong>Part 6: Bringing It All Together</strong></h2>
+<h2 id="_step_3_global_configuration">Step 3: Global Configuration</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Finally, you will integrate your new component into the main application
-component.</p>
+<p>Now, update your main application configuration to provide the necessary
+services and modules globally.</p>
 </div>
-<div class="sect2">
-<h3 id="_step_9_update_the_main_app_component"><strong>Step 9: Update the Main App Component</strong></h3>
+<div class="paragraph">
+<p>Open <code>src/app/app.config.ts</code> and update it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">ApplicationConfig</span><span class="tok-p">,</span> <span class="tok-nx">importProvidersFrom</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">provideRouter</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/router&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">routes</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;./app.routes&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">provideAnimationsAsync</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/platform-browser/animations/async&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">HttpClientModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/common/http&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MarkdownModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;ngx-markdown&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-k">export</span> <span class="tok-kd">const</span> <span class="tok-nx">appConfig</span>: <span class="tok-kt">ApplicationConfig</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+  <span class="tok-nx">providers</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+    <span class="tok-nx">provideRouter</span><span class="tok-p">(</span><span class="tok-nx">routes</span><span class="tok-p">),</span>
+    <span class="tok-nx">provideAnimationsAsync</span><span class="tok-p">(),</span>
+    <span class="tok-nx">importProvidersFrom</span><span class="tok-p">(</span>
+      <span class="tok-nx">HttpClientModule</span><span class="tok-p">,</span>
+      <span class="tok-nx">MarkdownModule</span><span class="tok-p">.</span><span class="tok-nx">forRoot</span><span class="tok-p">()</span> <span class="tok-c1">// Provide ngx-markdown</span>
+    <span class="tok-p">)</span>
+  <span class="tok-p">]</span>
+<span class="tok-p">};</span></code></pre>
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_4_build_components">Step 4: Build Components</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Create the UI components for the header, footer, poem view, and book
+selection dialog.</p>
+</div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong>Open <code>src/app/app.component.ts</code> and modify it to include your
-<code>PoemDisplayComponent</code>:</strong></p>
+<p><strong>Main App Component Layout</strong>: This will serve as the main container.
+Open <code>src/app/app.component.html</code> and replace its content:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="html"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">div</span> <span class="tok-na">class</span><span class="tok-o">=</span><span class="tok-s">&quot;app-container&quot;</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;</span><span class="tok-nt">app-header</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">app-header</span><span class="tok-p">&gt;</span>
+
+  <span class="tok-p">&lt;</span><span class="tok-nt">main</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">router-outlet</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">router-outlet</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;/</span><span class="tok-nt">main</span><span class="tok-p">&gt;</span>
+
+  <span class="tok-p">&lt;</span><span class="tok-nt">app-footer</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">app-footer</span><span class="tok-p">&gt;</span>
+<span class="tok-p">&lt;/</span><span class="tok-nt">div</span><span class="tok-p">&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add styles to <code>src/app/app.component.scss</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="scss"><span></span><span class="tok-nd">:host</span> <span class="tok-p">{</span>
+  <span class="tok-nt">display</span><span class="tok-nd">:</span> <span class="tok-nt">block</span><span class="tok-o">;</span>
+  <span class="tok-nt">height</span><span class="tok-nd">:</span> <span class="tok-nt">100vh</span><span class="tok-o">;</span>
+<span class="tok-p">}</span>
+
+<span class="tok-nc">.app-container</span> <span class="tok-p">{</span>
+  <span class="tok-nt">display</span><span class="tok-nd">:</span> <span class="tok-nt">flex</span><span class="tok-o">;</span>
+  <span class="tok-nt">flex-direction</span><span class="tok-nd">:</span> <span class="tok-nt">column</span><span class="tok-o">;</span>
+  <span class="tok-nt">height</span><span class="tok-nd">:</span> <span class="tok-nt">100</span><span class="tok-err">%</span><span class="tok-o">;</span>
+<span class="tok-p">}</span>
+
+<span class="tok-nt">main</span> <span class="tok-p">{</span>
+  <span class="tok-nt">flex</span><span class="tok-nd">:</span> <span class="tok-nt">1</span><span class="tok-o">;</span>
+  <span class="tok-nt">overflow-y</span><span class="tok-nd">:</span> <span class="tok-nt">auto</span><span class="tok-o">;</span>
+  <span class="tok-nt">padding</span><span class="tok-nd">:</span> <span class="tok-nt">24px</span><span class="tok-o">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Poem View Component</strong>: This will display the poem.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>ng generate component components/poem-view --standalone</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update <code>src/app/components/poem-view/poem-view.component.ts</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">inject</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">CommonModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/common&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MarkdownModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;ngx-markdown&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">StateService</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;../../services/state.service&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Component</span><span class="tok-p">({</span>
+  <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-poem-view&#39;</span><span class="tok-p">,</span>
+  <span class="tok-nx">standalone</span>: <span class="tok-kt">true</span><span class="tok-p">,</span>
+  <span class="tok-nx">imports</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-nx">CommonModule</span><span class="tok-p">,</span> <span class="tok-nx">MarkdownModule</span><span class="tok-p">],</span>
+  <span class="tok-nx">template</span><span class="tok-o">:</span> <span class="tok-sb">`</span>
+<span class="tok-sb">    @if (poem$ | async; as poem) {</span>
+<span class="tok-sb">      &lt;div class=&quot;poem-text great-vibes-regular&quot;&gt;</span>
+<span class="tok-sb">        &lt;markdown [data]=&quot;poem.text&quot;&gt;&lt;/markdown&gt;</span>
+<span class="tok-sb">      &lt;/div&gt;</span>
+<span class="tok-sb">    } @else {</span>
+<span class="tok-sb">      &lt;p&gt;Loading poem...&lt;/p&gt;</span>
+<span class="tok-sb">    }</span>
+<span class="tok-sb">  `</span><span class="tok-p">,</span>
+  <span class="tok-nx">styles</span><span class="tok-o">:</span> <span class="tok-sb">`</span>
+<span class="tok-sb">    .poem-text {</span>
+<span class="tok-sb">      white-space: pre-wrap; /* Respects newlines in the text */</span>
+<span class="tok-sb">      font-size: 1.8rem;</span>
+<span class="tok-sb">      line-height: 1.6;</span>
+<span class="tok-sb">      text-align: center;</span>
+<span class="tok-sb">    }</span>
+<span class="tok-sb">  `</span>
+<span class="tok-p">})</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">PoemViewComponent</span> <span class="tok-p">{</span>
+  <span class="tok-k">private</span> <span class="tok-nx">stateService</span> <span class="tok-o">=</span> <span class="tok-nx">inject</span><span class="tok-p">(</span><span class="tok-nx">StateService</span><span class="tok-p">);</span>
+  <span class="tok-nx">poem$</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">stateService</span><span class="tok-p">.</span><span class="tok-nx">currentPoem$</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Header Component</strong>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>ng generate component components/header --standalone</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update <code>src/app/components/header/header.component.ts</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">inject</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">CommonModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/common&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatToolbarModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/toolbar&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatButtonModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/button&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatIconModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/icon&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatMenuModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/menu&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatDialog</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/dialog&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">StateService</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;../../services/state.service&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">BookDialogComponent</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;../book-dialog/book-dialog.component&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Component</span><span class="tok-p">({</span>
+  <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-header&#39;</span><span class="tok-p">,</span>
+  <span class="tok-nx">standalone</span>: <span class="tok-kt">true</span><span class="tok-p">,</span>
+  <span class="tok-nx">imports</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-nx">CommonModule</span><span class="tok-p">,</span> <span class="tok-nx">MatToolbarModule</span><span class="tok-p">,</span> <span class="tok-nx">MatButtonModule</span><span class="tok-p">,</span> <span class="tok-nx">MatIconModule</span><span class="tok-p">,</span> <span class="tok-nx">MatMenuModule</span><span class="tok-p">],</span>
+  <span class="tok-nx">templateUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./header.component.html&#39;</span><span class="tok-p">,</span>
+  <span class="tok-nx">styleUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./header.component.scss&#39;</span>
+<span class="tok-p">})</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">HeaderComponent</span> <span class="tok-p">{</span>
+  <span class="tok-k">private</span> <span class="tok-nx">stateService</span> <span class="tok-o">=</span> <span class="tok-nx">inject</span><span class="tok-p">(</span><span class="tok-nx">StateService</span><span class="tok-p">);</span>
+  <span class="tok-k">private</span> <span class="tok-nx">dialog</span> <span class="tok-o">=</span> <span class="tok-nx">inject</span><span class="tok-p">(</span><span class="tok-nx">MatDialog</span><span class="tok-p">);</span>
+  <span class="tok-nx">poem$</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">stateService</span><span class="tok-p">.</span><span class="tok-nx">currentPoem$</span><span class="tok-p">;</span>
+
+  <span class="tok-nx">openBookSelection</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-kd">const</span> <span class="tok-nx">dialogRef</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">dialog</span><span class="tok-p">.</span><span class="tok-nx">open</span><span class="tok-p">(</span><span class="tok-nx">BookDialogComponent</span><span class="tok-p">);</span>
+    <span class="tok-nx">dialogRef</span><span class="tok-p">.</span><span class="tok-nx">afterClosed</span><span class="tok-p">().</span><span class="tok-nx">subscribe</span><span class="tok-p">(</span><span class="tok-nx">result</span> <span class="tok-p">=&gt;</span> <span class="tok-p">{</span>
+      <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">result</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+        <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">stateService</span><span class="tok-p">.</span><span class="tok-nx">changeBook</span><span class="tok-p">(</span><span class="tok-nx">result</span><span class="tok-p">);</span>
+      <span class="tok-p">}</span>
+    <span class="tok-p">});</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">selectRandom</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">stateService</span><span class="tok-p">.</span><span class="tok-nx">navigateToRandomPoem</span><span class="tok-p">();</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update <code>src/app/components/header/header.component.html</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="html+ng2"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">mat-toolbar</span> <span class="tok-na">color</span><span class="tok-o">=</span><span class="tok-s">&quot;primary&quot;</span><span class="tok-p">&gt;</span>
+  @if<span class="tok-err">(</span>poem$ | async; as poem) <span class="tok-err">{</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">span</span><span class="tok-p">&gt;</span><span class="tok-cp">{{</span> <span class="tok-nv">poem.title</span> <span class="tok-cp">}}</span><span class="tok-p">&lt;/</span><span class="tok-nt">span</span><span class="tok-p">&gt;</span>
+  }
+  <span class="tok-p">&lt;</span><span class="tok-nt">span</span> <span class="tok-na">class</span><span class="tok-o">=</span><span class="tok-s">&quot;spacer&quot;</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">span</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">mat-icon-button</span> <span class="tok-p">[</span><span class="tok-na">matMenuTriggerFor</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-s">&quot;menu&quot;</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">mat-icon</span><span class="tok-p">&gt;</span>more_vert<span class="tok-p">&lt;/</span><span class="tok-nt">mat-icon</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;</span><span class="tok-nt">mat-menu</span> <span class="tok-p">#</span><span class="tok-na">menu</span><span class="tok-o">=</span><span class="tok-s">&quot;matMenu&quot;</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">mat-menu-item</span> <span class="tok-p">(</span><span class="tok-na">click</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-s">&quot;openBookSelection()&quot;</span><span class="tok-p">&gt;</span>
+      <span class="tok-p">&lt;</span><span class="tok-nt">mat-icon</span><span class="tok-p">&gt;</span>book<span class="tok-p">&lt;/</span><span class="tok-nt">mat-icon</span><span class="tok-p">&gt;</span>
+      <span class="tok-p">&lt;</span><span class="tok-nt">span</span><span class="tok-p">&gt;</span>Book<span class="tok-p">&lt;/</span><span class="tok-nt">span</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;</span><span class="tok-nt">button</span> <span class="tok-na">mat-menu-item</span> <span class="tok-p">(</span><span class="tok-na">click</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-s">&quot;selectRandom()&quot;</span><span class="tok-p">&gt;</span>
+      <span class="tok-p">&lt;</span><span class="tok-nt">mat-icon</span><span class="tok-p">&gt;</span>shuffle<span class="tok-p">&lt;/</span><span class="tok-nt">mat-icon</span><span class="tok-p">&gt;</span>
+      <span class="tok-p">&lt;</span><span class="tok-nt">span</span><span class="tok-p">&gt;</span>Random<span class="tok-p">&lt;/</span><span class="tok-nt">span</span><span class="tok-p">&gt;</span>
+    <span class="tok-p">&lt;/</span><span class="tok-nt">button</span><span class="tok-p">&gt;</span>
+  <span class="tok-p">&lt;/</span><span class="tok-nt">mat-menu</span><span class="tok-p">&gt;</span>
+<span class="tok-p">&lt;/</span><span class="tok-nt">mat-toolbar</span><span class="tok-p">&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update <code>src/app/components/header/header.component.scss</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="scss"><span></span><span class="tok-nc">.spacer</span> <span class="tok-p">{</span>
+  <span class="tok-nt">flex</span><span class="tok-nd">:</span> <span class="tok-nt">1</span> <span class="tok-nt">1</span> <span class="tok-nt">auto</span><span class="tok-o">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Footer Component</strong>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>ng generate component components/footer --standalone</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update <code>src/app/components/footer/footer.component.ts</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">inject</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatButtonModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/button&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">StateService</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;../../services/state.service&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Component</span><span class="tok-p">({</span>
+  <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-footer&#39;</span><span class="tok-p">,</span>
+  <span class="tok-nx">standalone</span>: <span class="tok-kt">true</span><span class="tok-p">,</span>
+  <span class="tok-nx">imports</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-nx">MatButtonModule</span><span class="tok-p">],</span>
+  <span class="tok-nx">template</span><span class="tok-o">:</span> <span class="tok-sb">`</span>
+<span class="tok-sb">    &lt;div class=&quot;footer-nav&quot;&gt;</span>
+<span class="tok-sb">      &lt;button mat-flat-button color=&quot;primary&quot; (click)=&quot;prev()&quot;&gt;Prev&lt;/button&gt;</span>
+<span class="tok-sb">      &lt;button mat-flat-button color=&quot;primary&quot; (click)=&quot;next()&quot;&gt;Next&lt;/button&gt;</span>
+<span class="tok-sb">    &lt;/div&gt;</span>
+<span class="tok-sb">  `</span><span class="tok-p">,</span>
+  <span class="tok-nx">styles</span><span class="tok-o">:</span> <span class="tok-sb">`</span>
+<span class="tok-sb">    .footer-nav {</span>
+<span class="tok-sb">      display: flex;</span>
+<span class="tok-sb">      gap: 8px;</span>
+<span class="tok-sb">      padding: 8px;</span>
+<span class="tok-sb">      border-top: 1px solid #ccc;</span>
+<span class="tok-sb">      &gt; button {</span>
+<span class="tok-sb">        flex: 1;</span>
+<span class="tok-sb">      }</span>
+<span class="tok-sb">    }</span>
+<span class="tok-sb">  `</span>
+<span class="tok-p">})</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">FooterComponent</span> <span class="tok-p">{</span>
+  <span class="tok-k">private</span> <span class="tok-nx">stateService</span> <span class="tok-o">=</span> <span class="tok-nx">inject</span><span class="tok-p">(</span><span class="tok-nx">StateService</span><span class="tok-p">);</span>
+
+  <span class="tok-nx">prev</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">stateService</span><span class="tok-p">.</span><span class="tok-nx">navigateToPrevPoem</span><span class="tok-p">();</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-nx">next</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">stateService</span><span class="tok-p">.</span><span class="tok-nx">navigateToNextPoem</span><span class="tok-p">();</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Book Selection Dialog Component</strong>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>ng generate component components/book-dialog --standalone</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update <code>src/app/components/book-dialog/book-dialog.component.ts</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span><span class="tok-p">,</span> <span class="tok-nx">inject</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">CommonModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/common&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatDialogModule</span><span class="tok-p">,</span> <span class="tok-nx">MatDialogRef</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/dialog&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatListModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/list&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">MatButtonModule</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/material/button&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">PoemService</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;../../services/poem.service&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-kd">@Component</span><span class="tok-p">({</span>
+  <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-book-dialog&#39;</span><span class="tok-p">,</span>
+  <span class="tok-nx">standalone</span>: <span class="tok-kt">true</span><span class="tok-p">,</span>
+  <span class="tok-nx">imports</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-nx">CommonModule</span><span class="tok-p">,</span> <span class="tok-nx">MatDialogModule</span><span class="tok-p">,</span> <span class="tok-nx">MatListModule</span><span class="tok-p">,</span> <span class="tok-nx">MatButtonModule</span><span class="tok-p">],</span>
+  <span class="tok-nx">template</span><span class="tok-o">:</span> <span class="tok-sb">`</span>
+<span class="tok-sb">    &lt;h2 mat-dialog-title&gt;Select a Book&lt;/h2&gt;</span>
+<span class="tok-sb">    &lt;mat-dialog-content&gt;</span>
+<span class="tok-sb">      @if(books$ | async; as books) {</span>
+<span class="tok-sb">        &lt;mat-list&gt;</span>
+<span class="tok-sb">          @for(book of books; track book) {</span>
+<span class="tok-sb">            &lt;mat-list-item (click)=&quot;selectBook(book)&quot;&gt;{{ book }}&lt;/mat-list-item&gt;</span>
+<span class="tok-sb">          }</span>
+<span class="tok-sb">        &lt;/mat-list&gt;</span>
+<span class="tok-sb">      }</span>
+<span class="tok-sb">    &lt;/mat-dialog-content&gt;</span>
+<span class="tok-sb">    &lt;mat-dialog-actions&gt;</span>
+<span class="tok-sb">      &lt;button mat-button [mat-dialog-close]&gt;Cancel&lt;/button&gt;</span>
+<span class="tok-sb">    &lt;/mat-dialog-actions&gt;</span>
+<span class="tok-sb">  `</span>
+<span class="tok-p">})</span>
+<span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">BookDialogComponent</span> <span class="tok-p">{</span>
+  <span class="tok-k">private</span> <span class="tok-nx">poemService</span> <span class="tok-o">=</span> <span class="tok-nx">inject</span><span class="tok-p">(</span><span class="tok-nx">PoemService</span><span class="tok-p">);</span>
+  <span class="tok-k">public</span> <span class="tok-nx">dialogRef</span> <span class="tok-o">=</span> <span class="tok-nx">inject</span><span class="tok-p">(</span><span class="tok-nx">MatDialogRef</span><span class="tok-o">&lt;</span><span class="tok-nx">BookDialogComponent</span><span class="tok-o">&gt;</span><span class="tok-p">);</span>
+  <span class="tok-nx">books$</span> <span class="tok-o">=</span> <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">poemService</span><span class="tok-p">.</span><span class="tok-nx">getPoemFiles</span><span class="tok-p">();</span>
+
+  <span class="tok-nx">selectBook</span><span class="tok-p">(</span><span class="tok-nx">filename</span>: <span class="tok-kt">string</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">this</span><span class="tok-p">.</span><span class="tok-nx">dialogRef</span><span class="tok-p">.</span><span class="tok-nx">close</span><span class="tok-p">(</span><span class="tok-nx">filename</span><span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_5_routing_and_final_assembly">Step 5: Routing and Final Assembly</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Finally, wire up the routing and update the main app component to bring
+everything together.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Set Up Routes</strong>: Open <code>src/app/app.routes.ts</code> and define the route
+to your poem viewer.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Routes</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/router&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">PoemViewComponent</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;./components/poem-view/poem-view.component&#39;</span><span class="tok-p">;</span>
+
+<span class="tok-k">export</span> <span class="tok-kd">const</span> <span class="tok-nx">routes</span>: <span class="tok-kt">Routes</span> <span class="tok-o">=</span> <span class="tok-p">[</span>
+  <span class="tok-p">{</span> <span class="tok-nx">path</span><span class="tok-o">:</span> <span class="tok-s1">&#39;&#39;</span><span class="tok-p">,</span> <span class="tok-nx">component</span>: <span class="tok-kt">PoemViewComponent</span><span class="tok-p">,</span> <span class="tok-nx">pathMatch</span><span class="tok-o">:</span> <span class="tok-s1">&#39;full&#39;</span> <span class="tok-p">},</span>
+  <span class="tok-p">{</span> <span class="tok-nx">path</span><span class="tok-o">:</span> <span class="tok-s1">&#39;**&#39;</span><span class="tok-p">,</span> <span class="tok-nx">redirectTo</span><span class="tok-o">:</span> <span class="tok-s1">&#39;&#39;</span><span class="tok-p">,</span> <span class="tok-nx">pathMatch</span><span class="tok-o">:</span> <span class="tok-s1">&#39;full&#39;</span> <span class="tok-p">}</span>
+<span class="tok-p">];</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Assemble the App Component</strong>: Open <code>src/app/app.component.ts</code>.
+Ensure it&#8217;s standalone and imports all the child components and the
+router outlet.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="typescript"><span></span><span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">Component</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/core&#39;</span><span class="tok-p">;</span>
 <span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">RouterOutlet</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;@angular/router&#39;</span><span class="tok-p">;</span>
-<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">PoemDisplayComponent</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;./components/poem-display/poem-display.component&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">HeaderComponent</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;./components/header/header.component&#39;</span><span class="tok-p">;</span>
+<span class="tok-k">import</span> <span class="tok-p">{</span> <span class="tok-nx">FooterComponent</span> <span class="tok-p">}</span> <span class="tok-kr">from</span> <span class="tok-s1">&#39;./components/footer/footer.component&#39;</span><span class="tok-p">;</span>
 
 <span class="tok-kd">@Component</span><span class="tok-p">({</span>
   <span class="tok-nx">selector</span><span class="tok-o">:</span> <span class="tok-s1">&#39;app-root&#39;</span><span class="tok-p">,</span>
   <span class="tok-nx">standalone</span>: <span class="tok-kt">true</span><span class="tok-p">,</span>
-  <span class="tok-nx">imports</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-nx">RouterOutlet</span><span class="tok-p">,</span> <span class="tok-nx">PoemDisplayComponent</span><span class="tok-p">],</span>
+  <span class="tok-nx">imports</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-nx">RouterOutlet</span><span class="tok-p">,</span> <span class="tok-nx">HeaderComponent</span><span class="tok-p">,</span> <span class="tok-nx">FooterComponent</span><span class="tok-p">],</span>
   <span class="tok-nx">templateUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./app.component.html&#39;</span><span class="tok-p">,</span>
-  <span class="tok-nx">styleUrls</span><span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-s1">&#39;./app.component.css&#39;</span><span class="tok-p">]</span>
+  <span class="tok-nx">styleUrl</span><span class="tok-o">:</span> <span class="tok-s1">&#39;./app.component.scss&#39;</span>
 <span class="tok-p">})</span>
 <span class="tok-k">export</span> <span class="tok-kd">class</span> <span class="tok-nx">AppComponent</span> <span class="tok-p">{</span>
-  <span class="tok-nx">title</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;angular-poem-app&#39;</span><span class="tok-p">;</span>
+  <span class="tok-nx">title</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;poem-app&#39;</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
-</div>
-</div>
-</li>
-<li>
-<p><strong>Open <code>src/app/app.component.html</code> and replace its content with the
-following:</strong></p>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="html"><span></span><span class="tok-p">&lt;</span><span class="tok-nt">main</span><span class="tok-p">&gt;</span>
-  <span class="tok-p">&lt;</span><span class="tok-nt">h1</span><span class="tok-p">&gt;</span>Welcome to the Random Poem Generator!<span class="tok-p">&lt;/</span><span class="tok-nt">h1</span><span class="tok-p">&gt;</span>
-  <span class="tok-p">&lt;</span><span class="tok-nt">app-poem-display</span><span class="tok-p">&gt;&lt;/</span><span class="tok-nt">app-poem-display</span><span class="tok-p">&gt;</span>
-<span class="tok-p">&lt;/</span><span class="tok-nt">main</span><span class="tok-p">&gt;</span></code></pre>
 </div>
 </div>
 </li>
 </ol>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_part_7_run_your_application"><strong>Part 7: Run Your Application</strong></h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>You are now ready to see your application in action.</p>
+<p>You can now run your application:</p>
 </div>
-<div class="sect2">
-<h3 id="_step_10_serve_the_application"><strong>Step 10: Serve the Application</strong></h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>In your terminal, make sure you are in the root directory of your
-project and run:</strong></p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="bash"><span></span>ng serve</code></pre>
 </div>
 </div>
-</li>
-<li>
-<p><strong>Open your web browser and navigate to <code>http://localhost:4200/</code>.</strong></p>
-</li>
-</ol>
-</div>
 <div class="paragraph">
-<p>You should now see your Angular application displaying a random poem
-from your Firebase Firestore database, styled with Angular Material. You
-can click the "Show Another Poem" button to fetch and display another
-random poem.</p>
-</div>
+<p>Navigate to <code>http://localhost:4200</code> to see your poetry app in action.
+✨</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-06-28 16:00:50 +0300
+Last updated 2025-07-16 09:37:24 +0300
 </div>
 </div>
 </body>

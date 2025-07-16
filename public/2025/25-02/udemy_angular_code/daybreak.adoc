@@ -4,388 +4,629 @@
 :toc: left
 
 ====
-Can you give me step-by step plan how can i create from scratch
-Angular 20 app using standalone components
-using material design and firebase
-to show random poem from the list of poems stored in firebase.
+Can you give me step-by step plan how can i create from scratch Angular
+20 app using standalone components and material design to show the poem
+from the list of poems provided by REST API.
 
-In firebase i have "daybreak" collection with the following structure:
+**REST API**
 
-```
-<daybreak>
+We have REST API for the poems:
 
-<poem>
-<id>1</id>
-<text>
-'Twas brillig, and the slithy toves
-Did gyre and gimble in the wabe;
-All mimsy were the borogoves,
-And the mome raths outgrabe.
+[cols=",,",options="header",]
+|===
+|Method |Endpoint |Description
+|GET |`+/poems+` |List all available poem files
+|GET |`+/poems/{filename}+` |Get poem count for a specific file
+|GET |`+/poems/{filename}/{number}+` |Get a specific poem by number
+|===
 
-"Beware the Jabberwock, my son!
-The jaws that bite, the claws that catch!
-Beware the Jubjub bird, and shun
-The frumious Bandersnatch!"
-</text>
-</poem>
+Here is the example of JSON returned by `+/poems/{filename}/{number}+`:
 
-<poem>
-<id>2</id>
-<text>
-He took his vorpal sword in hand:
-Long time the manxome foe he sought—
-So rested he by the Tumtum tree,
-And stood awhile in thought.
-
-And as in uffish thought he stood,
-The Jabberwock, with eyes of flame,
-Came whiffling through the tulgey wood,
-And burbled as it came!
-</text>
-</poem>
-
-</daybreak>
+```json
+{
+  "title": "От автора",
+  "text": "К автору этих строк  \nвек был не слишком строг:  \nв общем, не бил по рукам… по строкам  \nавтора этих строк.  \nВпрочем, и автор сам  \nих не ему писал —  \nсобственно, он их писал облакам,  \nсобственно, небесам.  \n  \nНету таких веков,  \nнету таких оков,  \nи не бывает таких дураков —  \nвзять да и променять  \nна, например, альков  \nшествие облаков —  \nвсех этих белых коней без подков  \nмедленный променад.  \n  \nЯ бы, наверно, мог  \nувековечить век —  \nили хотя бы стать с ним наравне,  \nесли б я только мог,  \nесли бы я привык  \nчислить себя в живых,  \nесли б я был человеком, а не  \nавтором этих строк."
+}
 ```
 
-Authorization rules in firebase are:
+Poem text is returned as markdown.
 
+**UI**
+
+App should store in local storage these variables describing the poem
+that was displayed last time:
+
+* the name of poem file
+* the number of the poem
+* date in YYYY-MM-DD format.
+
+When the app is opened, it should display the poem. If current date is
+different from the stored date, then it should display the next poem,
+else the poem should be the same.
+
+After the last poem in the list we should display the first one.
+
+In the header we should have poem title and a menu.
+
+Menu should have items:
+
+* Book
+* Random
+
+"Book" item should open a dialog to select the name of the poem file.
+"Random" should go to the random poem in the book.
+
+In the footer the app should have 2 equally sized buttons to go the
+previous or next poem:
+
+* Prev
+* Next
+
+**Font**
+
+App should use "Great Vibes" Google font to display the poem.
+
+Embedding code for this font:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 ```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /daybreak/{document} {
-      allow read: true;
-    }
-  }
+
+CSS class for this font:
+
+```css
+.great-vibes-regular {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 ```
 ====
 
-Of course, here is a comprehensive, step-by-step plan to create an
-Angular 20 application from scratch using standalone components, Angular
-Material, and Firebase to display a random poem.
+Here's a step-by-step plan to create your Angular 20 poetry app from
+scratch using standalone components and Angular Material.
 
-== *Part 1: Setting Up Your Angular Project*
+== Step 1: Project Setup
 
-This initial phase will focus on creating the foundational structure of
-your Angular application.
-
-=== *Step 1: Create a New Angular Application*
+First, set up your Angular project, install Angular Material, and add
+the required Google Font.
 
 [arabic]
-. *Open your terminal or command prompt.*
-. *Navigate to the directory where you want to create your project.*
-. *Run the following command to generate a new Angular project:*
+. *Install Angular CLI* (if you don't have it):
 +
-[source,bash]
-----
-ng new angular-poem-app --standalone
-----
-* `+ng new+`: The Angular CLI command to create a new workspace.
-* `+angular-poem-app+`: The name of your application. You can change
-this to your preference.
-* `+--standalone+`: This flag ensures that your new project is set up to
-use standalone components, which simplifies the application structure by
-eliminating the need for `+NgModules+`.
-. *Follow the command-line prompts:*
-* When asked about adding Angular routing, you can select *No* for this
-simple application.
-* Choose your preferred stylesheet format (e.g., CSS, SCSS).
-. *Navigate into your newly created project directory:*
+```bash
+npm install -g @angular/cli
+```
+. *Create a New Angular App*: This command creates a new project named
+`+poem-app+` configured for standalone components and SCSS for styling.
 +
-[source,bash]
-----
-cd angular-poem-app
-----
-
-== *Part 2: Integrating Angular Material*
-
-Now, you will add Angular Material to your project to leverage its
-pre-built UI components for a polished look.
-
-=== *Step 2: Add Angular Material*
-
-[arabic]
-. *In your project's root directory, run the following command:*
+```bash
+ng new poem-app --standalone --style=scss
+cd poem-app
+```
+. *Add Angular Material*: This will automatically configure Material
+Design components for your project.
 +
-[source,bash]
-----
+```bash
 ng add @angular/material
-----
-. *The CLI will prompt you with a few questions:*
-* *Choose a prebuilt theme name, or "custom" for a custom theme:* Select
-a theme that you like (e.g., `+Indigo/Pink+`).
-* *Set up global Angular Material typography styles?* Choose *Yes*.
-* *Include and enable animations?* Choose *Yes*.
-
-This command will install Angular Material, the Component Dev Kit (CDK),
-and Angular Animations, and will also configure your project to use
-them.
-
-== *Part 3: Setting Up Your Firebase Project*
-
-This section covers the creation of your Firebase project and the
-configuration of the Firestore database.
-
-=== *Step 3: Create a Firebase Project*
-
-[arabic]
-. *Go to the https://console.firebase.google.com/[Firebase console].*
-. *Click on "Add project".*
-. *Enter a name for your project* (e.g., `+poem-app-project+`) and click
-*Continue*.
-. You can choose to enable Google Analytics or not for this project.
-. *Click "Create project".*
-
-=== *Step 4: Set Up Firestore and Add Data*
-
-[arabic]
-. From your Firebase project's dashboard, navigate to *Build > Firestore
-Database*.
-. *Click "Create database".*
-. *Choose "Start in test mode"* and click *Next*. This allows for easy
-reading and writing during development.
-. *Select a Cloud Firestore location* that is geographically close to
-you.
-. *Click "Enable".*
-. *Now, you will manually add your poem data:*
-* Click on *"+ Start collection"*.
-* For the *Collection ID*, enter `+daybreak+`.
-* Click *"Next"*.
-* For the first document, click on *"Auto-ID"* for the *Document ID*.
-* Add two fields to this document:
-** *Field:* `+id+`, *Type:* `+number+`, *Value:* `+1+`
-** *Field:* `+text+`, *Type:* `+string+`, *Value:* Copy and paste the
-first poem text.
-* Click *"Save"*.
-* Click *"+ Add document"* to add the second poem in the same
-`+daybreak+` collection, following the same process with `+id+` 2 and
-its corresponding text.
-
-=== *Step 5: Configure Firebase Security Rules*
-
-[arabic]
-. In the Firestore Database section, go to the *"Rules"* tab.
-. *Replace the existing rules with the following:*
+```
 +
-....
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /daybreak/{document} {
-      allow read: true;
-      allow write: if false; // Disallow writing for security
-    }
-  }
+Follow the prompts, selecting a theme of your choice.
+. *Add Google Font*: Open `+src/index.html+` and add the font links
+inside the `+<head>+` tag.
++
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+```
+. *Add Font CSS*: Open `+src/styles.scss+` and add the provided CSS
+class.
++
+```scss
+.great-vibes-regular {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
-....
-. *Click "Publish"* to save your new rules.
+```
+. *Install Markdown Renderer*: We'll use `+ngx-markdown+` to render the
+poem text.
++
+```bash
+npm install ngx-markdown
+```
 
-== *Part 4: Connecting Angular to Firebase*
+'''''
 
-Here you will install the necessary library to communicate with Firebase
-from your Angular app.
+== Step 2: Configure API and Services
 
-=== *Step 6: Install AngularFire*
+Create services to handle API calls and manage the application's state.
 
 [arabic]
-. *In your terminal, within your Angular project's root directory, run:*
+. *Configure Environment*: It's good practice to store your API URL in
+the environment files. Open `+src/environments/environment.ts+` and add
+your API's base URL.
 +
-[source,bash]
-----
-ng add @angular/fire
-----
-. *The CLI will prompt you to select the Firebase features you want to
-set up.* Use the spacebar to select *Firestore* and press Enter.
-. The CLI will then prompt you to log in to your Firebase account and
-select the Firebase project you created earlier.
-
-This command will install the `+firebase+` and `+@angular/fire+`
-packages and will also update your `+app.config.ts+` to initialize
-Firebase.
-
-== *Part 5: Building the Application Logic*
-
-Now you will create the core components and services to fetch and
-display the poems.
-
-=== *Step 7: Create a Poem Service*
-
-A service is the ideal place to handle your data interactions with
-Firebase.
-
-[arabic]
-. *Generate a new service using the Angular CLI:*
+```typescript
+export const environment = {
+  production: false,
+  apiBaseUrl: 'https://your-api-goes-here.com/api' // Replace with your actual API URL
+};
+```
+. *Create Data Interfaces*: Create a file `+src/app/poem.model.ts+` to
+define the shape of your data.
 +
-[source,bash]
-----
-ng generate service services/poem
-----
-. *Open the newly created `+src/app/services/poem.service.ts+` file and
-update it with the following code:*
-+
-[source,typescript]
-----
-import { Injectable } from '@angular/core';
-import { Firestore, collectionData, collection } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-
+```typescript
 export interface Poem {
-  id: number;
+  title: string;
   text: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface PoemState {
+  filename: string;
+  number: number;
+  date: string; // YYYY-MM-DD
+}
+```
+. *Create Poem Service*: This service will fetch data from the REST API.
++
+```bash
+ng generate service services/poem
+```
++
+Update `+src/app/services/poem.service.ts+`:
++
+```typescript
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { Poem } from '../poem.model';
+
+@Injectable({ providedIn: 'root' })
 export class PoemService {
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiBaseUrl}/poems`;
 
-  constructor(private firestore: Firestore) { }
+  getPoemFiles(): Observable<string[]> {
+    return this.http.get<string[]>(this.apiUrl);
+  }
 
-  getPoems(): Observable<Poem[]> {
-    const poemsCollection = collection(this.firestore, 'daybreak');
-    return collectionData(poemsCollection) as Observable<Poem[]>;
+  getPoemCount(filename: string): Observable<{ count: number }> {
+    return this.http.get<{ count: number }>(`${this.apiUrl}/${filename}`);
+  }
+
+  getPoem(filename: string, number: number): Observable<Poem> {
+    return this.http.get<Poem>(`${this.apiUrl}/${filename}/${number}`);
   }
 }
-----
+```
+. *Create State Management Service*: This service will manage
+`+localStorage+` and the current poem state.
++
+```bash
+ng generate service services/state
+```
++
+Update `+src/app/services/state.service.ts+`. This service will contain
+the core logic for poem navigation.
++
+```typescript
+import { Injectable, inject } from '@angular/core';
+import { BehaviorSubject, switchMap, tap, take } from 'rxjs';
+import { Poem, PoemState } from '../poem.model';
+import { PoemService } from './poem.service';
 
-=== *Step 8: Create the Poem Display Component*
+const STATE_KEY = 'poemAppState';
 
-This will be a standalone component responsible for showing a single,
-randomly selected poem.
+@Injectable({ providedIn: 'root' })
+export class StateService {
+  private poemService = inject(PoemService);
+
+  // Default state if nothing is in local storage
+  private defaultState: PoemState = { filename: 'first-book.txt', number: 1, date: this.getTodayDate() };
+
+  // Observables for components to subscribe to
+  public poemState$ = new BehaviorSubject<PoemState>(this.loadState());
+  public currentPoem$ = this.poemState$.pipe(
+    switchMap(state => this.poemService.getPoem(state.filename, state.number))
+  );
+
+  constructor() {
+    this.initialize();
+  }
+
+  private initialize() {
+    const state = this.poemState$.getValue();
+    if (state.date !== this.getTodayDate()) {
+      this.navigateToNextPoem();
+    }
+  }
+
+  private getTodayDate(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  private loadState(): PoemState {
+    const storedState = localStorage.getItem(STATE_KEY);
+    return storedState ? JSON.parse(storedState) : this.defaultState;
+  }
+
+  private saveState(state: PoemState) {
+    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    this.poemState$.next(state);
+  }
+
+  navigateToNextPoem() {
+    this.poemService.getPoemCount(this.poemState$.getValue().filename).pipe(take(1)).subscribe(res => {
+      const currentState = this.poemState$.getValue();
+      let nextNumber = currentState.number + 1;
+      if (nextNumber > res.count) {
+        nextNumber = 1; // Loop back to the first poem
+      }
+      this.saveState({ ...currentState, number: nextNumber, date: this.getTodayDate() });
+    });
+  }
+
+  navigateToPrevPoem() {
+    this.poemService.getPoemCount(this.poemState$.getValue().filename).pipe(take(1)).subscribe(res => {
+      const currentState = this.poemState$.getValue();
+      let prevNumber = currentState.number - 1;
+      if (prevNumber < 1) {
+        prevNumber = res.count; // Loop back to the last poem
+      }
+      this.saveState({ ...currentState, number: prevNumber, date: this.getTodayDate() });
+    });
+  }
+
+  navigateToRandomPoem() {
+    this.poemService.getPoemCount(this.poemState$.getValue().filename).pipe(take(1)).subscribe(res => {
+        const currentState = this.poemState$.getValue();
+        const randomNumber = Math.floor(Math.random() * res.count) + 1;
+        this.saveState({ ...currentState, number: randomNumber, date: this.getTodayDate() });
+    });
+  }
+
+  changeBook(newFilename: string) {
+    this.saveState({ filename: newFilename, number: 1, date: this.getTodayDate() });
+  }
+}
+```
+
+'''''
+
+== Step 3: Global Configuration
+
+Now, update your main application configuration to provide the necessary
+services and modules globally.
+
+Open `+src/app/app.config.ts+` and update it:
+
+```typescript
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { HttpClientModule } from '@angular/common/http';
+import { MarkdownModule } from 'ngx-markdown';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    provideAnimationsAsync(),
+    importProvidersFrom(
+      HttpClientModule,
+      MarkdownModule.forRoot() // Provide ngx-markdown
+    )
+  ]
+};
+```
+
+'''''
+
+== Step 4: Build Components
+
+Create the UI components for the header, footer, poem view, and book
+selection dialog.
 
 [arabic]
-. *Generate a new standalone component:*
+. *Main App Component Layout*: This will serve as the main container.
+Open `+src/app/app.component.html+` and replace its content:
 +
-[source,bash]
-----
-ng generate component components/poem-display --standalone
-----
-. *Open `+src/app/components/poem-display/poem-display.component.ts+`
-and update it:*
+```html
+<div class="app-container">
+  <app-header></app-header>
+
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+
+  <app-footer></app-footer>
+</div>
+```
 +
-[source,typescript]
-----
-import { Component, OnInit } from '@angular/core';
+Add styles to `+src/app/app.component.scss+`:
++
+```scss
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+```
+. *Poem View Component*: This will display the poem.
++
+```bash
+ng generate component components/poem-view --standalone
+```
++
+Update `+src/app/components/poem-view/poem-view.component.ts+`:
++
+```typescript
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { Poem, PoemService } from '../../services/poem.service';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { MarkdownModule } from 'ngx-markdown';
+import { StateService } from '../../services/state.service';
 
 @Component({
-  selector: 'app-poem-display',
+  selector: 'app-poem-view',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule],
-  templateUrl: './poem-display.component.html',
-  styleUrls: ['./poem-display.component.css']
+  imports: [CommonModule, MarkdownModule],
+  template: `
+    @if (poem$ | async; as poem) {
+      <div class="poem-text great-vibes-regular">
+        <markdown [data]="poem.text"></markdown>
+      </div>
+    } @else {
+      <p>Loading poem...</p>
+    }
+  `,
+  styles: `
+    .poem-text {
+      white-space: pre-wrap; /* Respects newlines in the text */
+      font-size: 1.8rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+  `
 })
-export class PoemDisplayComponent implements OnInit {
-  randomPoem$: Observable<Poem | undefined> | undefined;
+export class PoemViewComponent {
+  private stateService = inject(StateService);
+  poem$ = this.stateService.currentPoem$;
+}
+```
+. *Header Component*:
++
+```bash
+ng generate component components/header --standalone
+```
++
+Update `+src/app/components/header/header.component.ts+`:
++
+```typescript
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDialog } from '@angular/material/dialog';
+import { StateService } from '../../services/state.service';
+import { BookDialogComponent } from '../book-dialog/book-dialog.component';
 
-  constructor(private poemService: PoemService) {}
+@Component({
+  selector: 'app-header',
+  standalone: true,
+  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule],
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.scss'
+})
+export class HeaderComponent {
+  private stateService = inject(StateService);
+  private dialog = inject(MatDialog);
+  poem$ = this.stateService.currentPoem$;
 
-  ngOnInit(): void {
-    this.getRandomPoem();
+  openBookSelection() {
+    const dialogRef = this.dialog.open(BookDialogComponent);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.stateService.changeBook(result);
+      }
+    });
   }
 
-  getRandomPoem(): void {
-    this.randomPoem$ = this.poemService.getPoems().pipe(
-      map(poems => {
-        if (poems && poems.length > 0) {
-          const randomIndex = Math.floor(Math.random() * poems.length);
-          return poems[randomIndex];
-        }
-        return undefined;
-      })
-    );
+  selectRandom() {
+    this.stateService.navigateToRandomPoem();
   }
 }
-----
-. *Now, update the template in
-`+src/app/components/poem-display/poem-display.component.html+`:*
+```
 +
-[source,ng2]
-----
-<div *ngIf="randomPoem$ | async as poem; else loading">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>A Random Poem</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <pre>{{ poem.text }}</pre>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="getRandomPoem()">Show Another Poem</button>
-    </mat-card-actions>
-  </mat-card>
-</div>
+Update `+src/app/components/header/header.component.html+`:
++
+```html+ng2
+<mat-toolbar color="primary">
+  @if(poem$ | async; as poem) {
+    <span>{{ poem.title }}</span>
+  }
+  <span class="spacer"></span>
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="openBookSelection()">
+      <mat-icon>book</mat-icon>
+      <span>Book</span>
+    </button>
+    <button mat-menu-item (click)="selectRandom()">
+      <mat-icon>shuffle</mat-icon>
+      <span>Random</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>
+```
++
+Update `+src/app/components/header/header.component.scss+`:
++
+```scss
+.spacer {
+  flex: 1 1 auto;
+}
+```
+. *Footer Component*:
++
+```bash
+ng generate component components/footer --standalone
+```
++
+Update `+src/app/components/footer/footer.component.ts+`:
++
+```typescript
+import { Component, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { StateService } from '../../services/state.service';
 
-<ng-template #loading>
-  <p>Loading poems...</p>
-</ng-template>
-----
-* The `+<pre>+` tag is used to preserve the whitespace and line breaks
-in the poem's text.
+@Component({
+  selector: 'app-footer',
+  standalone: true,
+  imports: [MatButtonModule],
+  template: `
+    <div class="footer-nav">
+      <button mat-flat-button color="primary" (click)="prev()">Prev</button>
+      <button mat-flat-button color="primary" (click)="next()">Next</button>
+    </div>
+  `,
+  styles: `
+    .footer-nav {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      border-top: 1px solid #ccc;
+      > button {
+        flex: 1;
+      }
+    }
+  `
+})
+export class FooterComponent {
+  private stateService = inject(StateService);
 
-== *Part 6: Bringing It All Together*
+  prev() {
+    this.stateService.navigateToPrevPoem();
+  }
 
-Finally, you will integrate your new component into the main application
-component.
+  next() {
+    this.stateService.navigateToNextPoem();
+  }
+}
+```
+. *Book Selection Dialog Component*:
++
+```bash
+ng generate component components/book-dialog --standalone
+```
++
+Update `+src/app/components/book-dialog/book-dialog.component.ts+`:
++
+```typescript
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { PoemService } from '../../services/poem.service';
 
-=== *Step 9: Update the Main App Component*
+@Component({
+  selector: 'app-book-dialog',
+  standalone: true,
+  imports: [CommonModule, MatDialogModule, MatListModule, MatButtonModule],
+  template: `
+    <h2 mat-dialog-title>Select a Book</h2>
+    <mat-dialog-content>
+      @if(books$ | async; as books) {
+        <mat-list>
+          @for(book of books; track book) {
+            <mat-list-item (click)="selectBook(book)">{{ book }}</mat-list-item>
+          }
+        </mat-list>
+      }
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-button [mat-dialog-close]>Cancel</button>
+    </mat-dialog-actions>
+  `
+})
+export class BookDialogComponent {
+  private poemService = inject(PoemService);
+  public dialogRef = inject(MatDialogRef<BookDialogComponent>);
+  books$ = this.poemService.getPoemFiles();
+
+  selectBook(filename: string) {
+    this.dialogRef.close(filename);
+  }
+}
+```
+
+'''''
+
+== Step 5: Routing and Final Assembly
+
+Finally, wire up the routing and update the main app component to bring
+everything together.
 
 [arabic]
-. *Open `+src/app/app.component.ts+` and modify it to include your
-`+PoemDisplayComponent+`:*
+. *Set Up Routes*: Open `+src/app/app.routes.ts+` and define the route
+to your poem viewer.
 +
-[source,typescript]
-----
+```typescript
+import { Routes } from '@angular/router';
+import { PoemViewComponent } from './components/poem-view/poem-view.component';
+
+export const routes: Routes = [
+  { path: '', component: PoemViewComponent, pathMatch: 'full' },
+  { path: '**', redirectTo: '', pathMatch: 'full' }
+];
+```
+. *Assemble the App Component*: Open `+src/app/app.component.ts+`.
+Ensure it's standalone and imports all the child components and the
+router outlet.
++
+```typescript
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { PoemDisplayComponent } from './components/poem-display/poem-display.component';
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, PoemDisplayComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'angular-poem-app';
+  title = 'poem-app';
 }
-----
-. *Open `+src/app/app.component.html+` and replace its content with the
-following:*
-+
-[source,html]
-----
-<main>
-  <h1>Welcome to the Random Poem Generator!</h1>
-  <app-poem-display></app-poem-display>
-</main>
-----
+```
 
-== *Part 7: Run Your Application*
+You can now run your application:
 
-You are now ready to see your application in action.
-
-=== *Step 10: Serve the Application*
-
-[arabic]
-. *In your terminal, make sure you are in the root directory of your
-project and run:*
-+
-[source,bash]
-----
+```bash
 ng serve
-----
-. *Open your web browser and navigate to `+http://localhost:4200/+`.*
+```
 
-You should now see your Angular application displaying a random poem
-from your Firebase Firestore database, styled with Angular Material. You
-can click the "Show Another Poem" button to fetch and display another
-random poem.
-
+Navigate to `+http://localhost:4200+` to see your poetry app in action.
+✨

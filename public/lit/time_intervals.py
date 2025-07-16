@@ -58,6 +58,7 @@ from datetime import datetime
 
 st.set_page_config(
     page_title="T-Int",
+    layout="wide",
 )
 
 # Print banner
@@ -116,9 +117,9 @@ def process():
         records.append({
             'start_datetime': start,
             'end_datetime': end,
-            'task_code': task_code,
-            'comment': comment,
-            'duration_hours': duration
+            'Task': task_code,
+            'Comment': comment,
+            'Hours': duration
         })
 
     # Create DataFrame
@@ -128,21 +129,24 @@ def process():
 #
 # ::
     
-    grouped_df = df.groupby('task_code', as_index=False).agg({
-        'duration_hours': 'sum',
-        'comment': lambda x: ' // '.join(x)
+    grouped_df = df.groupby('Task', as_index=False).agg({
+        'Hours': 'sum',
+        'Comment': lambda x: ' // '.join(dict.fromkeys(x))
     })
+    grouped_df['Hours'] = grouped_df['Hours'].round(1)
 
+    
 # Display results
 #
 # ::
     
-    # st.write("### Detailed DataFrame:")
-    # st.table(df)
-
-    st.write("### Grouped DataFrame (Total Duration by Task):")
+    st.write("### Duration by Task")
     st.table(grouped_df)
     
+    # Calculate total hours
+    total_hours = grouped_df['Hours'].sum()
+    st.write(f"**Total Hours: {total_hours}**")
+
 # Click button
 #
 # ::

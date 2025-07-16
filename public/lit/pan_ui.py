@@ -54,7 +54,7 @@ ext_names = {
 
 ext_formats = {
     ".md": "gfm", #"markdown",
-    ".rst": "rest",
+    ".rst": "rst",
     ".adoc": "asciidoc"
 }
 
