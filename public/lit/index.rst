@@ -13,7 +13,7 @@ Literate Programs
    ai_note.py
    ai_obsidian.py
    o_ed.py
-   explain_java.py
+   neo_rag.py
    o_chat.py
    book_lc.py
    book_chat.py
@@ -21,6 +21,7 @@ Literate Programs
    L1_Router_Engine.py   
    udemy.py
    time_intervals.py
+   explain_java.py
    md_view.py
    pan_ui.py
    firebase_edit.py
