@@ -46,10 +46,13 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>2025-06-13</p></td>
+<tr class="row-even"><td><p>2025-07-30</p></td>
+<td><p>Cache in <cite>select</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>2025-06-13</p></td>
 <td><p>New elements come first</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-even"><td></td>
 <td><p>Copied from: <a class="reference external" href="explain_java.py.html#persisted-list">explain_java.py</a></p></td>
 </tr>
 </tbody>
@@ -121,6 +124,9 @@
 <span class="sd">        Move *selected_name* to the top of the list (inserting it if it</span>
 <span class="sd">        wasn’t present) and persist the change.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if 1st element of `self.names` equals to `selected_name` then return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">selected_name</span><span class="p">:</span>
+            <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_strings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="p">[</span><span class="n">selected_name</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">selected_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_to_file</span><span class="p">()</span>

@@ -68,22 +68,39 @@
 <tr class="row-odd"><td><p>Using Chroma in LangChain</p></td>
 <td><p><a class="reference external" href="https://python.langchain.com/docs/integrations/vectorstores/chroma/">https://python.langchain.com/docs/integrations/vectorstores/chroma/</a></p></td>
 </tr>
+<tr class="row-even"><td><p>OpenAI Embeddings Prices</p></td>
+<td><p><a class="reference external" href="https://platform.openai.com/docs/pricing#embeddings">https://platform.openai.com/docs/pricing#embeddings</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Gemini Models</p></td>
+<td><p><a class="reference external" href="https://ai.google.dev/gemini-api/docs/models">https://ai.google.dev/gemini-api/docs/models</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Gemini Rate Limits</p></td>
+<td><p><a class="reference external" href="https://ai.google.dev/gemini-api/docs/rate-limits">https://ai.google.dev/gemini-api/docs/rate-limits</a></p></td>
+</tr>
 </tbody>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">streamlit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">st</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pyperclip</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain.chains</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetrievalQA</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_google_genai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatGoogleGenerativeAI</span><span class="p">,</span> <span class="n">GoogleGenerativeAIEmbeddings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span><span class="p">,</span> <span class="n">OpenAIEmbeddings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_community.document_loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnstructuredHTMLLoader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_chroma</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chroma</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain.text_splitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecursiveCharacterTextSplitter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain.chains</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_retrieval_chain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain.chains.combine_documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_stuff_documents_chain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.prompts</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatPromptTemplate</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.tracers.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">tracing_v2_enabled</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">nullcontext</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tiktoken</span>
+</pre></div>
+</div>
+<p>See: <a class="reference external" href="PersistedList.py.html">PersistedList</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">PersistedList</span><span class="w"> </span><span class="kn">import</span> <span class="n">PersistedList</span>
 </pre></div>
 </div>
 <p>Prints a stylized banner to the console when the application starts.</p>
@@ -94,19 +111,9 @@
 <span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        ,---,.                           ,-.             ,----..    ,---,                   ___</span>
-<span class="s2">      ,&#39;  .&#39;  </span><span class="se">\\</span><span class="s2">                      ,--/ /|            /   /   </span><span class="se">\\</span><span class="s2"> ,--.&#39; |                 ,--.&#39;|_</span>
-<span class="s2">    ,---.&#39; .&#39; |   ,---.     ,---.  ,--. :/ |     ,---,.|   :     :|  |  :                 |  | :,&#39;</span>
-<span class="s2">    |   |  |: |  &#39;   ,&#39;</span><span class="se">\\</span><span class="s2">   &#39;   ,&#39;</span><span class="se">\\</span><span class="s2"> :  : &#39; /    ,&#39;  .&#39; |.   |  ;. /:  :  :                 :  : &#39; :</span>
-<span class="s2">    :   :  :  / /   /   | /   /   ||  &#39;  /   ,---.&#39;   ,.   ; /--` :  |  |,--.  ,--.--.  .;__,&#39;  /</span>
-<span class="s2">    :   |    ; .   ; ,. :.   ; ,. :&#39;  |  :   |   |    |;   | ;    |  :  &#39;   | /       </span><span class="se">\\</span><span class="s2"> |  |   |</span>
-<span class="s2">    |   :     </span><span class="se">\\</span><span class="s2">&#39;   | |: :&#39;   | |: :|  |   </span><span class="se">\\</span><span class="s2">  :   :  .&#39; |   : |    |  |   /&#39; :.--.  .-. |:__,&#39;| :</span>
-<span class="s2">    |   |   . |&#39;   | .; :&#39;   | .; :&#39;  : |. </span><span class="se">\\</span><span class="s2"> :   |.&#39;   .   | &#39;___ &#39;  :  | | | </span><span class="se">\\</span><span class="s2">__</span><span class="se">\\</span><span class="s2">/: . .  &#39;  : |__</span>
-<span class="s2">    &#39;   :  &#39;; ||   :    ||   :    ||  | &#39; </span><span class="se">\\</span><span class="s2"> </span><span class="se">\\</span><span class="s2">`---&#39;     &#39;   ; : .&#39;||  |  &#39; | : ,</span><span class="se">\&quot;</span><span class="s2"> .--.; |  |  | &#39;.&#39;|</span>
-<span class="s2">    |   |  | ;  </span><span class="se">\\</span><span class="s2">   </span><span class="se">\\</span><span class="s2">  /  </span><span class="se">\\</span><span class="s2">   </span><span class="se">\\</span><span class="s2">  / &#39;  : |--&#39;           &#39;   | &#39;/  :|  :  :_:,&#39;/  /  ,.  |  ;  :    ;</span>
-<span class="s2">    |   :   /    `----&#39;    `----&#39;  ;  |,&#39;              |   :    / |  | ,&#39;   ;  :   .&#39;   </span><span class="se">\\</span><span class="s2"> |  ,   /</span>
-<span class="s2">    |   | ,&#39;                       &#39;--&#39;                 </span><span class="se">\\</span><span class="s2">   </span><span class="se">\\</span><span class="s2"> .&#39;  `--&#39;&#39;     |  ,     .-./  ---`-&#39;</span>
-<span class="s2">    `----&#39;                                               `---`               `--`---&#39;</span>
+<span class="s2">    ___  ____ ____ _  _    ____ _  _ ____ ___</span>
+<span class="s2">    |__] |  | |  | |_/  __ |    |__| |__|  |</span>
+<span class="s2">    |__] |__| |__| | </span><span class="se">\\</span><span class="s2">_    |___ |  | |  |  |</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">1</span>
 
@@ -124,38 +131,38 @@
 </pre></div>
 </div>
 <p>Select Embeddings</p>
-<table class="docutils align-default" id="id3">
-<caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
-<colgroup>
-<col style="width: 25.0%" />
-<col style="width: 75.0%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>URL</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Gemini Models</p></td>
-<td><p><a class="reference external" href="https://ai.google.dev/gemini-api/docs/models">https://ai.google.dev/gemini-api/docs/models</a></p></td>
-</tr>
-<tr class="row-odd"><td><p>Gemini Rate Limits</p></td>
-<td><p><a class="reference external" href="https://ai.google.dev/gemini-api/docs/rate-limits">https://ai.google.dev/gemini-api/docs/rate-limits</a></p></td>
-</tr>
-</tbody>
-</table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">embedding_models</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;text-embedding-004&quot;</span><span class="p">,</span>           <span class="c1"># April 2024</span>
-    <span class="s2">&quot;gemini-embedding-exp-03-07&quot;</span><span class="p">,</span>   <span class="c1"># March 2025 # Exceeds rate limit when selected</span>
-    <span class="s2">&quot;embedding-001&quot;</span><span class="p">,</span>                <span class="c1"># December 2023</span>
+    <span class="s2">&quot;openai/text-embedding-3-small&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;google/text-embedding-004&quot;</span><span class="p">,</span>           <span class="c1"># April 2024</span>
+    <span class="s2">&quot;google/gemini-embedding-exp-03-07&quot;</span><span class="p">,</span>   <span class="c1"># March 2025 # Exceeds rate limit when selected</span>
+    <span class="s2">&quot;google/embedding-001&quot;</span><span class="p">,</span>                <span class="c1"># December 2023</span>
 <span class="p">]</span>
-<span class="n">embed_model_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;Embedding&quot;</span><span class="p">,</span> <span class="n">embedding_models</span><span class="p">)</span>
 
-<span class="n">embedding</span> <span class="o">=</span> <span class="n">GoogleGenerativeAIEmbeddings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;models/</span><span class="si">{</span><span class="n">embed_model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
+<span class="n">embedding_prices</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;openai/text-embedding-3-small&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+    <span class="s2">&quot;google/text-embedding-004&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">&quot;google/gemini-embedding-exp-03-07&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">&quot;google/embedding-001&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">embedding_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.book-chat-embeddings&quot;</span><span class="p">)</span>
+<span class="n">embedding_models</span> <span class="o">=</span> <span class="n">embedding_models_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span><span class="n">embedding_models</span><span class="p">)</span>
+
+<span class="n">embedding_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;Embedding&quot;</span><span class="p">,</span> <span class="n">embedding_models</span><span class="p">)</span>
+
+<span class="c1"># split `embedding_model` into `model_vendor` before &quot;/&quot; and `embed_model_name` after</span>
+<span class="n">embedding_model_vendor</span><span class="p">,</span> <span class="n">embed_model_name</span> <span class="o">=</span> <span class="n">embedding_model</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">embedding_model_vendor</span> <span class="o">==</span> <span class="s2">&quot;google&quot;</span><span class="p">:</span>
+    <span class="n">embedding</span> <span class="o">=</span> <span class="n">GoogleGenerativeAIEmbeddings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;models/</span><span class="si">{</span><span class="n">embed_model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">embedding_model_vendor</span> <span class="o">==</span> <span class="s2">&quot;openai&quot;</span><span class="p">:</span>
+    <span class="n">embedding</span> <span class="o">=</span> <span class="n">OpenAIEmbeddings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">embed_model_name</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Folder to save index</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">index_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;vectors/book-</span><span class="si">{</span><span class="n">embed_model_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="n">embedding_models_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">embedding_model</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Input HTML file with the book’s contents and a log of the questions asked.</p>
@@ -170,19 +177,49 @@
 </div>
 <p>Select LLM</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;gemini-2.5-pro-exp-03-25&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gemma-3-27b-it&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;google/gemini-2.5-flash-preview-04-17&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;google/gemini-2.0-flash&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;google/gemma-3-27b-it&quot;</span><span class="p">,</span>
 <span class="p">]</span>
-<span class="n">llm_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;LLM&quot;</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
 
-<span class="n">llm</span> <span class="o">=</span> <span class="n">ChatGoogleGenerativeAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
+<span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;gpt-4.1-mini&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4.1-nano&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4.1&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o&quot;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
+
+    <span class="s2">&quot;o3-mini&quot;</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">,</span>
+    <span class="s2">&quot;o3&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="s2">&quot;o3-pro&quot;</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">llm_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.book-chat-models&quot;</span><span class="p">)</span>
+<span class="n">llm_models</span> <span class="o">=</span> <span class="n">llm_models_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span><span class="n">llm_models</span><span class="p">)</span>
+
+<span class="n">llm_model_selected</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;LLM&quot;</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
+<span class="n">llm_model_vendor</span><span class="p">,</span> <span class="n">llm_model</span> <span class="o">=</span> <span class="n">llm_model_selected</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">llm_model_vendor</span> <span class="o">==</span> <span class="s2">&quot;google&quot;</span><span class="p">:</span>
+    <span class="n">llm</span> <span class="o">=</span> <span class="n">ChatGoogleGenerativeAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">llm_model_vendor</span> <span class="o">==</span> <span class="s2">&quot;openai&quot;</span><span class="p">:</span>
+    <span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">llm_models_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">llm_model_selected</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Load history</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">update_history</span><span class="p">(</span><span class="n">new_text</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_history</span><span class="p">(</span><span class="n">prompt</span><span class="p">):</span>
+    <span class="c1"># Add current date in YYYY-MM-DD format</span>
+    <span class="n">current_date</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">new_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="se">\n\n</span><span class="si">{</span><span class="n">current_date</span><span class="si">}</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="c1"># If contents of history_file already starts with new_text then don&#39;t update history.</span>
+    <span class="k">if</span> <span class="n">history</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">new_text</span><span class="p">):</span>
+        <span class="k">return</span>
+
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">history_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">new_text</span> <span class="o">+</span> <span class="n">history</span><span class="p">)</span>
 
@@ -192,9 +229,9 @@
 
 <span class="n">history</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;History&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">history</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;:recycle: &amp;nbsp; Update history&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="n">update_history</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;History updated&#39;</span><span class="p">)</span>
+<span class="c1">#if st.sidebar.button(&quot;:recycle: &amp;nbsp; Update history&quot;, use_container_width=True):</span>
+<span class="c1">#    update_history(&quot;&quot;)</span>
+<span class="c1">#    st.toast(f&#39;History updated&#39;)</span>
 </pre></div>
 </div>
 <section id="id1">
@@ -239,16 +276,18 @@
 </div>
 <p>Handle indexing logic</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">index_folder</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s2">&quot;vstore&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-        <span class="n">load_index</span><span class="p">(</span><span class="n">index_folder</span><span class="p">)</span>
+    <span class="c1"># if &quot;vstore&quot; not in st.session_state:</span>
+    <span class="n">load_index</span><span class="p">(</span><span class="n">index_folder</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="c1"># No index folder</span>
     <span class="n">chunks</span> <span class="o">=</span> <span class="n">create_doc_chunks</span><span class="p">(</span><span class="n">book_html</span><span class="p">)</span>
 
-    <span class="n">enc</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">&quot;gpt-4o-nano&quot;</span><span class="p">)</span>
+    <span class="n">enc</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">)</span>
     <span class="n">total_tokens</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">enc</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">page_content</span><span class="p">))</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">)</span>
-    <span class="n">cents</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tokens</span> <span class="o">/</span> <span class="mi">1_000_000</span><span class="p">)</span> <span class="o">*</span> <span class="n">embedding_prices</span><span class="p">[</span><span class="n">embedding_model</span><span class="p">]</span>
+    <span class="n">cents</span> <span class="o">=</span> <span class="n">cost</span><span class="o">/</span><span class="mi">100</span>
 
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;**Embeddings price**&quot;</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        | Chunks | Tokens | Cents |</span>
 <span class="s1">        |---|---|---|</span>
@@ -264,13 +303,21 @@
 </pre></div>
 </div>
 <p>Setup QA chain</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;qa&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">retriever</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">vstore</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">()</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">qa</span> <span class="o">=</span> <span class="n">RetrievalQA</span><span class="o">.</span><span class="n">from_chain_type</span><span class="p">(</span>
-        <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">,</span>
-        <span class="n">retriever</span><span class="o">=</span><span class="n">retriever</span><span class="p">,</span>
-        <span class="n">chain_type</span><span class="o">=</span><span class="s2">&quot;stuff&quot;</span>
-    <span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt</span> <span class="o">=</span> <span class="n">ChatPromptTemplate</span><span class="o">.</span><span class="n">from_template</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Answer the user&#39;s question based only on the following context.</span>
+<span class="s2">If the context doesn&#39;t contain the answer, state that you don&#39;t have enough information.</span>
+
+<span class="s2">Context:</span>
+<span class="si">{context}</span>
+
+<span class="s2">Question: </span><span class="si">{input}</span>
+
+<span class="s2">Answer:</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+
+<span class="n">retriever</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">vstore</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">()</span>
+<span class="n">doc_chain</span> <span class="o">=</span> <span class="n">create_stuff_documents_chain</span><span class="p">(</span><span class="n">llm</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+<span class="n">rag_chain</span> <span class="o">=</span> <span class="n">create_retrieval_chain</span><span class="p">(</span><span class="n">retriever</span><span class="p">,</span> <span class="n">doc_chain</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -279,18 +326,18 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">question</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Question&quot;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;:question: &amp;nbsp; Ask&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="n">update_history</span><span class="p">(</span><span class="n">question</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">update_history</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">with</span> <span class="n">tracing_context</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">qa</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">rag_chain</span><span class="o">.</span><span class="n">invoke</span><span class="p">({</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">})</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
 <span class="k">if</span> <span class="s2">&quot;response&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">])</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;:clipboard: &amp;nbsp; Copy to clipboard&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">])</span>
+        <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">])</span>
         <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
 </pre></div>
 </div>

@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
 <meta name="author" content="Ben Auffarth, Leonid Kuligin">
-<title>Generative AI with LangChain:</title>
+<title>Generative AI with LangChain</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,7 +438,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Generative AI with LangChain:</h1>
+<h1>Generative AI with LangChain</h1>
 <div class="details">
 <span id="author" class="author">Ben Auffarth, Leonid Kuligin</span><br>
 </div>
@@ -450,6 +450,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_1_1_the_modern_llm_landscape">1.1 The modern LLM landscape</a></li>
 <li><a href="#_1_2_from_models_to_agentic_applications">1.2 From models to agentic applications</a></li>
 <li><a href="#_1_3_introducing_langchain">1.3 Introducing LangChain</a></li>
+</ul>
+</li>
+<li><a href="#_chapter_2_first_steps_with_langchain">Chapter 2: First Steps with LangChain</a>
+<ul class="sectlevel2">
+<li><a href="#_2_2_exploring_langchains_building_blocks">2.2 Exploring LangChain’s building blocks</a></li>
+<li><a href="#_2_3_running_local_models">2.3 Running local models</a></li>
+<li><a href="#_2_4_multimodal_ai_applications">2.4 Multimodal AI applications</a>
+<ul class="sectlevel3">
+<li><a href="#_text_to_image_generation_with_langchain">Text-to-Image Generation with LangChain</a></li>
+<li><a href="#_image_understanding_with_multimodal_models">Image Understanding with Multimodal Models</a></li>
+<li><a href="#_summary">Summary</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -945,10 +958,476 @@ AI application development widely adopted across industries.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_chapter_2_first_steps_with_langchain">Chapter 2: First Steps with LangChain</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_2_2_exploring_langchains_building_blocks">2.2 Exploring LangChain’s building blocks</h3>
+<div class="paragraph">
+<p>The document provides a comprehensive overview of working with large
+language models (LLMs) and chat models using LangChain, focusing on
+practical application development, model interfaces, prompt engineering,
+and the new LangChain Expression Language (LCEL).</p>
+</div>
+<div class="paragraph">
+<p><strong>Key points include:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Model Interfaces and Usage:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>LangChain offers a unified interface to interact with various LLM
+providers (OpenAI, Google Gemini, Anthropic Claude, etc.), enabling easy
+switching between models with consistent code.</p>
+</li>
+<li>
+<p>The traditional LLM interface (string input/output) is being
+deprecated in favor of chat-based models, which handle multi-turn
+conversations with structured messages (SystemMessage, HumanMessage,
+AIMessage).</p>
+</li>
+<li>
+<p>Example code demonstrates invoking jokes from OpenAI and Gemini models
+using the same <code>invoke()</code> method.</p>
+</li>
+<li>
+<p>Development testing can use <code>FakeListLLM</code> to simulate responses
+without API calls.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Chat Models and Advanced Features:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Chat models expect full conversation history as structured messages
+each time, aligning with provider APIs.</p>
+</li>
+<li>
+<p>Anthropic Claude 3.7 Sonnet supports "extended thinking," allowing the
+model to show step-by-step reasoning before final answers, configurable
+via token budgets.</p>
+</li>
+<li>
+<p>Other providers (OpenAI, DeepSeek) offer reasoning control through
+parameters like <code>reasoning_effort</code>.</p>
+</li>
+<li>
+<p>Model behavior can be finely controlled using parameters such as
+temperature, top-k, top-p, max tokens, presence/frequency penalties, and
+stop sequences, with provider-specific nuances.</p>
+</li>
+<li>
+<p>Parameter tuning depends on application needs: low temperature for
+factual consistency, higher for creativity.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Prompt Engineering and Templates:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>LangChain’s prompt templates enable dynamic, maintainable, and
+testable prompt generation with variable substitution.</p>
+</li>
+<li>
+<p>Chat prompt templates support role-based structured messages for chat
+models.</p>
+</li>
+<li>
+<p>Templates improve consistency, maintainability, readability, and
+scalability in production environments.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>LangChain Expression Language (LCEL):</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>LCEL is a declarative, pipe-based syntax introduced in 2023 for
+building complex LLM workflows by connecting components (prompts, LLMs,
+parsers, functions) as Runnables.</p>
+</li>
+<li>
+<p>The pipe operator (<code>|</code>) chains components sequentially, simplifying
+workflow construction and improving readability.</p>
+</li>
+<li>
+<p>LCEL supports synchronous/asynchronous execution, streaming, batching,
+and easy integration with LangChain ecosystem tools (LangSmith,
+LangServe).</p>
+</li>
+<li>
+<p>Examples show simple joke generation and complex multi-stage workflows
+(story generation + analysis) preserving context and structured outputs.</p>
+</li>
+<li>
+<p>LCEL automatically converts functions and dictionaries into Runnable
+components, enabling flexible data transformations and branching.</p>
+</li>
+<li>
+<p>LCEL replaces older Chain classes, offering faster development, better
+composability, and runtime optimization.</p>
+</li>
+<li>
+<p>For advanced state management and branching, LangGraph is recommended
+(covered in later chapters).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Deployment Flexibility:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>LangChain supports both cloud-based and local model deployments
+seamlessly, allowing developers to choose based on their needs.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Summary:</strong> This guide emphasizes modern best practices for building
+LLM-powered applications with LangChain, advocating chat-based models,
+prompt templates, and especially the new LCEL declarative syntax for
+composing workflows. It covers practical coding examples, model behavior
+tuning, reasoning capabilities, and scalable prompt management,
+providing a solid foundation for developing robust, maintainable, and
+flexible LLM applications.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does LangChain’s LangChain Expression Language (LCEL) enable seamless chaining of multiple LLM calls while preserving and transforming data throughout the workflow, and what are the key components or utilities involved in managing structured outputs and context in such complex chains?</p>
+</li>
+<li>
+<p>What are the differences in usage and advantages between the deprecated traditional LLM interface and the recommended chat model interface in LangChain, including how message roles and content are structured and why chat models are preferred for modern multi-turn conversational workflows?</p>
+</li>
+<li>
+<p>How can developers control and fine-tune the behavior of different LLM providers (such as OpenAI, Anthropic, and Google Gemini) using parameters like temperature, top-k, top-p, and reasoning effort within LangChain, and what provider-specific considerations should be taken into account for achieving desired output consistency or creativity?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_3_running_local_models">2.3 Running local models</h3>
+<div class="paragraph">
+<p>The content discusses considerations and practical guidance for running
+large language models (LLMs) locally versus in the cloud when building
+LangChain applications.</p>
+</div>
+<div class="paragraph">
+<p><strong>Local vs Cloud Models:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Local models</em> offer full data control, privacy, no API costs, offline
+use, and parameter tuning but require hardware and setup.</p>
+</li>
+<li>
+<p><em>Cloud models</em> provide access to powerful, up-to-date models with
+elastic scaling and no infrastructure management but depend on internet
+and incur costs.</p>
+</li>
+<li>
+<p>Local models are ideal for privacy-sensitive, offline, development, or
+cost-sensitive high-volume use cases.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Running Local Models with LangChain:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Ollama Integration:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Ollama enables easy local use of open-source models.</p>
+</li>
+<li>
+<p>Installation: <code>pip install langchain-ollama</code></p>
+</li>
+<li>
+<p>Pull models via CLI (e.g., <code>ollama pull deepseek-r1:1.5b</code>) and start
+server (<code>ollama serve</code>).</p>
+</li>
+<li>
+<p>LangChain’s LCEL chains work seamlessly with Ollama models without API
+keys.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Hugging Face Integration:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>HuggingFacePipeline</code> for local model runs.</p>
+</li>
+<li>
+<p>Example with TinyLlama model for text generation.</p>
+</li>
+<li>
+<p>Initial downloads may be slow; usage is similar to other LangChain
+LLMs.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Other Local Integrations:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>llama.cpp for efficient LLaMA model inference on consumer hardware.</p>
+</li>
+<li>
+<p>GPT4All for lightweight local models.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Tips for Local Model Usage:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Resource Management:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use quantized models (e.g., 4-bit) to reduce memory footprint.</p>
+</li>
+<li>
+<p>Configure GPU and CPU threads according to hardware.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Error Handling:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Implement retry logic for common errors like out-of-memory or
+timeouts.</p>
+</li>
+<li>
+<p>Handle model loading failures and context length issues gracefully.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Example code snippets demonstrate configuring models and safe
+invocation with retries.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Summary:</strong></p>
+</div>
+<div class="paragraph">
+<p>LangChain supports flexible deployment of LLMs locally or in the cloud,
+with developer-friendly integrations like Ollama and Hugging Face for
+local use. Proper resource tuning and error handling are key to robust
+local deployments. This foundation enables building text-based
+applications and sets the stage for extending to multimodal AI
+capabilities such as image generation and understanding.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How can you configure Ollama’s local model parameters in LangChain to optimize memory usage and processing speed on a consumer-grade desktop with a single GPU and 4 CPU cores?</p>
+</li>
+<li>
+<p>What is a recommended Python error-handling pattern for safely invoking local LLMs in LangChain that addresses common issues like CUDA out-of-memory errors and model loading failures?</p>
+</li>
+<li>
+<p>How does the LangChain LCEL chaining pattern maintain model-agnosticism when switching from cloud-based LLMs to local models such as Ollama or Hugging Face pipelines?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_4_multimodal_ai_applications">2.4 Multimodal AI applications</h3>
+<div class="paragraph">
+<p>The content explains the distinction between two advanced AI
+capabilities:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Multimodal Understanding</strong> – AI models that simultaneously process and
+reason across multiple input types (text, images, audio, video,
+structured data). Examples include Gemini 2.5, GPT-4V, Sonnet 3.7, and
+Llama 4. These models can analyze relationships between modalities and
+perform complex reasoning, such as interpreting a chart image alongside
+a text question.</p>
+</li>
+<li>
+<p><strong>Content Generation</strong> – Specialized AI models focused on creating
+specific media types with high quality, such as text-to-image
+(Midjourney, DALL-E, Stable Diffusion), text-to-video (Sora, Pika), and
+text-to-audio (Suno, ElevenLabs). These models excel at generating
+content but have limited understanding capabilities.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The LangChain framework supports both workflows, enabling developers to
+integrate multimodal understanding and content generation into
+applications easily.</p>
+</div>
+<div class="sect3">
+<h4 id="_text_to_image_generation_with_langchain">Text-to-Image Generation with LangChain</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>LangChain provides wrappers for popular image generation models like
+OpenAI’s DALL-E and Stability AI’s Stable Diffusion 3.5 Large.</p>
+</li>
+<li>
+<p>Example code demonstrates generating images from text prompts using
+DALL-E and Stable Diffusion, with control over parameters like image
+size, quality, prompt strength, and style.</p>
+</li>
+<li>
+<p>Images generated illustrate the models’ ability to create detailed
+technical diagrams and artistic visuals.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_image_understanding_with_multimodal_models">Image Understanding with Multimodal Models</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Modern multimodal models (e.g., Gemini 1.5 Pro, GPT-4 Vision) can
+interpret images contextually, going beyond traditional computer vision
+tasks.</p>
+</li>
+<li>
+<p>LangChain uses a unified <code>ChatModel</code> interface to handle multimodal
+inputs, allowing mixing of text and images in prompts.</p>
+</li>
+<li>
+<p>Images can be sent by value (base64-encoded) or by reference (e.g.,
+Google Cloud Storage URIs).</p>
+</li>
+<li>
+<p>Examples show how to send images and videos for analysis, including
+specifying video segments.</p>
+</li>
+<li>
+<p>GPT-4 Vision integration enables detailed image analysis and answering
+questions about visual content, demonstrated with a futuristic cityscape
+image.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_summary">Summary</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Multimodal understanding AI models enable reasoning across diverse
+data types simultaneously.</p>
+</li>
+<li>
+<p>Content generation models specialize in producing high-quality media
+from text prompts.</p>
+</li>
+<li>
+<p>LangChain facilitates both by providing standardized interfaces and
+integrations for image generation and multimodal input handling.</p>
+</li>
+<li>
+<p>Practical examples illustrate generating images with DALL-E and Stable
+Diffusion, and analyzing images with Gemini and GPT-4 Vision.</p>
+</li>
+<li>
+<p>These capabilities empower developers to build sophisticated
+applications combining visual and textual reasoning.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How does LangChain’s unified interface handle multimodal inputs differently when sending image data by value (base64 encoding) versus by reference (e.g., Google Cloud Storage URIs), and what are the practical implications for model providers like Gemini?</p>
+</li>
+<li>
+<p>What specific parameter settings (e.g., prompt_strength, cfg, steps, aspect_ratio) are recommended for Stable Diffusion 3.5 Large within LangChain to balance image quality and prompt adherence, and how do these parameters influence the generated image characteristics?</p>
+</li>
+<li>
+<p>In the example of GPT-4 Vision analyzing a futuristic cityscape image, how does the model’s multimodal reasoning manifest in its detailed responses about objects, mood, and presence of people, illustrating the difference between traditional computer vision and modern multimodal understanding?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-07-29 21:29:15 +0300
+Last updated 2025-07-31 00:10:47 +0300
 </div>
 </div>
 </body>

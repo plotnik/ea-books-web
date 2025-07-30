@@ -5,11 +5,12 @@
 #    :header: "Date", "Comment"
 #    :widths: 10 30
 #
+#    "2025-07-30", "Cache in `select`"
 #    "2025-06-13", "New elements come first"
 #    "", "Copied from: `explain_java.py`_"
 #
 # .. _explain_java.py: explain_java.py.html#persisted-list
-#   
+#  
 # ::
 
 from typing import List
@@ -79,6 +80,9 @@ class PersistedList:
         Move *selected_name* to the top of the list (inserting it if it
         wasn’t present) and persist the change.
         """
+        # if 1st element of `self.names` equals to `selected_name` then return
+        if self.names and self.names[0] == selected_name:
+            return
         self.names = self._remove_strings(self.names, [selected_name])
         self.names.insert(0, selected_name)
         self._write_to_file()
