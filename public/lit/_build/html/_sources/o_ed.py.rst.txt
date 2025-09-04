@@ -4,9 +4,9 @@ Obsidian Web Editor
 
 Edit markdown source for Obsidian page in ``textarea``
 
-By the way, jbang_ version appears to be more stable.
+By the way, SpringBoot_ version appears to be more stable.
 
-.. _jbang: https://github.com/a-services/jbang-catalog/blob/main/o_ed.java
+.. _SpringBoot: https://github.com/plotnik/obsidian-web-editor
 
 ::
 
@@ -73,7 +73,7 @@ Get subfolders of Obsidian folder.
   all_dir_items = os.listdir(note_home)
   subfolders = [item for item in all_dir_items if os.path.isdir(os.path.join(note_home, item)) and item != ".obsidian"]
   subfolders.insert(0, ".")
-      
+    
   subfolder = st.sidebar.selectbox(
      "Folder",
      subfolders,
@@ -138,5 +138,5 @@ Save updates.
   if st.button('Save'):
       with open(file_path, 'w') as file:
           file.write(note_text)  
-      
+    
       st.write(f'Page saved: `{note_name}`')    

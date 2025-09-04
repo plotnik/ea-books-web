@@ -1,6 +1,8 @@
 # Upload File
 # -----------
 #
+# Save the uploaded zip file in the specified directory.
+#
 # ::
 
 import streamlit as st
@@ -31,17 +33,12 @@ def print_banner():
 
 print_banner()
 
-# Save the uploaded zip file in the specified directory.
-#
-# ::
-    
-def save_uploadedfile(uploadedfile):
-    with open(os.path.join(SAVE_PATH, uploadedfile.name), "wb") as f:
-        f.write(uploadedfile.getbuffer())
-    st.write(f"Saved file: `{uploadedfile.name}` to `{SAVE_PATH}`")
 
-up_type = st.radio("Upload type:", ["jpg", "webp", "zip", "md"])
+up_type = st.radio("Upload type:", ["jpg", "png", "webp", "zip", "md"])
 
 uploaded_file = st.file_uploader(f"Choose {up_type} file", type=up_type)
 if uploaded_file is not None:
-    save_uploadedfile(uploaded_file)
+    st.write(uploaded_file)
+    with open(os.path.join(SAVE_PATH, uploaded_file.name), "wb") as f:
+        f.write(uploaded_file.getbuffer())
+    st.write(f"Saved file: `{uploaded_file.name}` to `{SAVE_PATH}`")

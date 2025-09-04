@@ -4,9 +4,9 @@
 #
 # Edit markdown source for Obsidian page in ``textarea``
 #
-# By the way, jbang_ version appears to be more stable.
+# By the way, SpringBoot_ version appears to be more stable.
 #
-# .. _jbang: https://github.com/a-services/jbang-catalog/blob/main/o_ed.java
+# .. _SpringBoot: https://github.com/plotnik/obsidian-web-editor
 #
 # ::
 

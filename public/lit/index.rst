@@ -11,15 +11,16 @@ Literate Programs
    :caption: Contents:
 
    ai_note.py
+   udemy.py
    ai_obsidian.py
    o_ed.py
+   o-bases.py
    neo_rag.py
    o_chat.py
    book_lc.py
    book_chat.py
    li_extract.py
    L1_Router_Engine.py   
-   udemy.py
    time_intervals.py
    explain_java.py
    md_view.py
@@ -45,6 +46,8 @@ Literate Programs
    pi_keys.py
    create_image.py
    albums.py
+   st_gmail.py
    youtube_transcript.py
+   bi.py
    PersistedList.py
 

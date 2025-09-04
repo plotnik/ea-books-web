@@ -16,8 +16,8 @@
 #    :widths: 10 30
 #  
 #    "LM Arena", https://lmarena.ai/leaderboard
+#    "OpenAI Model Pricing", https://platform.openai.com/docs/pricing#latest-models
 #    "OpenAI Models", https://platform.openai.com/docs/models
-#    "GPT-4.1 Prompting Guide", https://cookbook.openai.com/examples/gpt4-1_prompting_guide 
 #    "OpenAI Cookbook", https://cookbook.openai.com/
 #    "OpenAI Resources and guides", https://openai.com/business/guides-and-resources/
 #  
@@ -45,6 +45,14 @@ import os
 import ollama
 import pyperclip
 
+# See: PersistedList_
+#
+# .. _PersistedList: PersistedList.py.html
+#   
+# ::
+
+from PersistedList import PersistedList
+
 # Prints a stylized banner to the console when the application starts.
 #
 # ::
@@ -56,11 +64,11 @@ st.set_page_config(
 @st.cache_data
 def print_banner():
     print("""
-        _   __      __             ___    ____
-       / | / /___  / /____        /   |  /  _/
-      /  |/ / __ \/ __/ _ \______/ /| |  / /  
-     / /|  / /_/ / /_/  __/_____/ ___ |_/ /   
-    /_/ |_/\____/\__/\___/     /_/  |_/___/                                                        
+        _   __      __             ___    ____              
+       / | / /___  / /____        /   |  /  _/              
+      /  |/ / __ \\/ __/ _ \\______/ /| |  / /                
+     / /|  / /_/ / /_/  __/_____/ ___ |_/ /                 
+    /_/ |_/\\____/\\__/\\___/     /_/  |_/___/                                                       
     """)
     return 1
 
@@ -74,6 +82,16 @@ st.logo("https://ea-books.netlify.app/lit/ai_note.svg")
 # ::
 
 client = OpenAI()
+
+# Gemini client
+#
+# ::
+
+g_key = os.getenv("GEMINI_API_KEY")
+g_client = OpenAI(
+    api_key=g_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
 
 # Load LLM prompts
 # ----------------
@@ -101,59 +119,9 @@ text = st.text_area(f"Note", height=300)
 #
 # ::
 
-def read_list_from_file(filename):
-    try:
-        with open(filename, 'r') as file:
-            # Read all lines and remove leading/trailing whitespace
-            lines = [line.strip() for line in file.readlines()]  
-        return lines
-    except FileNotFoundError:
-        return []
-    except Exception as e:
-        print(f"Error reading {filename}: {e}")
-        return []
-
-# Write a list of strings to a text file
-#
-# ::
-
-def write_list_to_file(filename, list_of_strings):
-    try:
-        with open(filename, 'w') as file:  
-            for string in list_of_strings:
-                file.write(string + '\n') 
-    except Exception as e:
-        print(f"Error writing {filename}: {e}")
-
-# Removes specified strings from a list of strings.  
-#
-# ::
-
-def remove_strings_from_list(string_list, strings_to_remove):
-  return [s for s in string_list if s not in strings_to_remove]
- 
-# Collect all tags into a single set
-#
-# ::
-
-tags_file = "openai_tags.txt"
-
-def sort_by_pattern(all_tags):
-    tags_order = read_list_from_file(tags_file)
-
-    # Create a mapping from tag to priority index for known tags.
-    tag_priority = { tag: index for index, tag in enumerate(tags_order) }
-
-    # Sort the all_tags list.
-    # For tags in tags_order, the key is (0, priority) and for others (1, tag)
-    sorted_tags = sorted(all_tags,
-                         key=lambda tag: (0, tag_priority[tag]) if tag in tag_priority
-                                           else (1, tag))
-    return sorted_tags 
-
 all_tags_set = {tag for item in prompts for tag in item.get('tags', [])}
-all_tags = sort_by_pattern(list(all_tags_set))
-all_tags.insert(0, "all")
+tags_persisted = PersistedList(".tags")
+all_tags = tags_persisted.sort_by_pattern(list(all_tags_set))
 
 tag_name = st.sidebar.selectbox(
    "Tag",
@@ -188,17 +156,21 @@ st.write(prompt)
 #
 # ::
 
-model_type = st.sidebar.radio("Model Type", ["Gemini", "OpenAI", "Ollama"])
+model_type = st.sidebar.radio("Model Type", ["OpenAI", "Gemini", "Ollama"])
 
 if model_type=="Gemini":    
     llm_models = [
         "gemini-2.5-flash-preview-05-20",
         "gemini-2.0-flash", 
         "gemma-3-27b-it",
+        "gemma-3n-e4b-it",
     ]
   
 elif model_type=="OpenAI":    
     openai_prices = {
+        "gpt-5": 1.25,
+        "gpt-5-mini": 0.25,
+        "gpt-5-nano": 0.05,
         "gpt-4.1-mini": 0.4,
         "gpt-4.1-nano": 0.1,
         "gpt-4.1": 2.0,
@@ -216,10 +188,34 @@ else:
     llm_models = [
         "ollama llama3.2",
     ]
+    
+# Configure LLM-specific prameters
+#
+# ::
+
+def get_llm_properties(llm_model):
+    if llm_model.startswith("gemini"):
+        return {"google": True, "temperature": True, "xml": False}
+
+    elif llm_model.startswith("gemma"):
+        return {"google": True, "temperature": True, "xml": True}
+
+    elif llm_model.startswith("gpt-5"):
+        return {"google": False, "temperature": False, "xml": False}
+        
+    elif llm_model.startswith("gpt"):
+        return {"google": False, "temperature": True, "xml": False}
+
+    else: #o3
+        return {"google": False, "temperature": False, "xml": False}
+
+# Select LLM model
+#
+# ::
 
 llm_temperatures = [0, 0.1, 0.7, 1]
 
-openai_model = st.sidebar.selectbox(
+llm_model = st.sidebar.selectbox(
    "LLM Model",
    llm_models,
    index = 0
@@ -238,12 +234,6 @@ llm_temperature = st.sidebar.select_slider(
 #
 # .. _tiktoken: https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
 #
-# .. csv-table:: Useful Links
-#    :header: "Name", "URL"
-#    :widths: 10 30
-#
-#    "Model Pricing", https://platform.openai.com/docs/pricing#latest-models
-#
 # ::
     
 if model_type=="OpenAI":
@@ -251,7 +241,7 @@ if model_type=="OpenAI":
     encoding = tiktoken.encoding_for_model("gpt-4o-mini")
     tokens = encoding.encode(text)
 
-    cents = round(len(tokens) * openai_prices[openai_model]/10000, 5)
+    cents = round(len(tokens) * openai_prices[llm_model]/10000, 5)
 
     st.sidebar.write(f'''
         | Characters | Tokens | Cents |
@@ -269,37 +259,7 @@ if model_type=="OpenAI":
 #
 #    "Reasoning with o1", https://learn.deeplearning.ai/courses/reasoning-with-o1/lesson/1/introduction
 #
-# ::
-
-def call_o_model(prompt, text):
-    messages = [
-        #{"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
-        {"role": "developer", "content": prompt},
-        {"role": "user", "content": text},
-    ]
-    response = client.chat.completions.create(
-        model=openai_model,
-        messages=messages,
-    )
-    return response.choices[0]
-
-# Call ``gpt`` model
-# ------------------
 #
-# ::
-
-def call_gpt_model(prompt, text):
-    messages = [
-        {"role": "developer", "content": prompt},
-        {"role": "user", "content": text},
-    ] 
-    response = client.chat.completions.create(
-            model=openai_model,
-            messages=messages,
-            temperature=llm_temperature,
-        )
-    return response.choices[0]
-
 # Call Ollama
 # -----------
 #
@@ -313,7 +273,7 @@ def call_gpt_model(prompt, text):
 # ::
 
 def call_ollama(prompt, text):
-    model = openai_model[len("ollama "):]
+    model = llm_model[len("ollama "):]
     messages = [
         {"role": "system", "content": prompt},
         {"role": "user", "content": text},
@@ -335,44 +295,9 @@ def call_ollama(prompt, text):
 #    "Example applications", https://ai.google.dev/gemini-api/docs/models/generative-models#example-applications
 #    "Model variants", https://ai.google.dev/gemini-api/docs/models/gemini#model-variations
 #    "Google Gen AI SDKs", https://ai.google.dev/gemini-api/docs/sdks
+#    "Gemma releases", https://ai.google.dev/gemma/docs/releases
 #
-# ::
-
-def call_gemini(prompt, text):
-    g_key = os.getenv("GEMINI_API_KEY")
-    g_client = OpenAI(
-        api_key=g_key,
-        base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-    )
-    messages = [
-        {"role": "developer", "content": prompt},
-        {"role": "user", "content": text},
-    ] 
-    response = g_client.chat.completions.create(
-            model=openai_model,
-            messages=messages,
-            temperature=llm_temperature,
-        )
-    return response.choices[0]
-
-def call_gemma(prompt, text):
-    g_key = os.getenv("GEMINI_API_KEY")
-    g_client = OpenAI(
-        api_key=g_key,
-        base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-    )    
-    messages = [
-        {"role": "user", "content": f"<instructions>{prompt}</instructions>\n<user_input>{text}</user_input>"},
-        #{"role": "developer", "content": prompt},
-        {"role": "user", "content": text},
-    ]
-    response = g_client.chat.completions.create(
-            model=openai_model,
-            messages=messages,
-            temperature=llm_temperature,
-        )
-    return response.choices[0]
-
+#
 # When the user clicks a button to call OpenAI:
 #
 # - The application sends the selected prompt and user input to the OpenAI API.
@@ -388,31 +313,50 @@ def call_gemma(prompt, text):
 #    "OpenAI Chat API", https://platform.openai.com/docs/api-reference/chat
 #    "Streamlit emoji shortcodes", https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
 #    "Emoji Cheat Sheet", https://www.webfx.com/tools/emoji-cheat-sheet/
+#    "GPT-4.1 Prompting Guide", https://cookbook.openai.com/examples/gpt4-1_prompting_guide 
 #
 # ::
-    
+
+def call_llm(text, prompt):
+    props = get_llm_properties(llm_model)
+    llm_client = g_client if props["google"] else client
+
+    if props["xml"]:
+        messages = [
+            {"role": "user", "content": f"<prompt>{prompt}</prompt>\n<query>{text}</query>"},
+        ]
+    else:
+        messages = [
+            {"role": "developer", "content": prompt},
+            {"role": "user", "content": text},
+        ]
+
+    if props["temperature"]:
+        response = llm_client.chat.completions.create(
+            model=llm_model,
+            messages=messages,
+            temperature=llm_temperature,
+        )
+    else:
+        response = llm_client.chat.completions.create(
+            model=llm_model,
+            messages=messages,
+        )
+    return response.choices[0]
+
 # Concatenate request
 def concat_request(prompt, text):
     return prompt + "\n\n```\n" + text + "\n```\n"
 
-if st.button(':thinking_face: &nbsp; Query', type="primary", use_container_width=True):
+# :thinking_face: &nbsp; 
+if st.button('Query', type="primary", icon=":material/cyclone:", width="stretch"):
 
     start_time = time.time()
-  
-    if openai_model.startswith("ollama "): 
-        response = call_ollama(prompt, text)
-      
-    elif openai_model.startswith("o"):
-        response = call_o_model(prompt, text)
-
-    elif openai_model.startswith("gemini"): 
-        response = call_gemini(prompt, text)
-  
-    elif openai_model.startswith("gemma"): 
-        response = call_gemma(prompt, text)
-
-    else:
-        response = call_gpt_model(prompt, text)
+    
+    if llm_model.startswith("ollama "):
+        response = call_ollama(prompt, text)  
+    else:    
+        response = call_llm(text, prompt)
 
     st.session_state.openai_result = response.message.content
     st.write(st.session_state.openai_result)
@@ -420,12 +364,10 @@ if st.button(':thinking_face: &nbsp; Query', type="primary", use_container_width
     # Calculate and print execution time
     end_time = time.time()
     execution_time = end_time - start_time
-    # print(f'Execution time: `{execution_time:.1f}` seconds')
+    st.session_state.execution_time = end_time - start_time
 
     # Move selected tag to the beginning of the list
-    all_tags = remove_strings_from_list(all_tags, ["all", tag_name])
-    all_tags.insert(0, tag_name)
-    write_list_to_file(tags_file, all_tags)
+    all_tags = tags_persisted.select(tag_name)
 
     if platform.system() == 'Darwin':
         os.system("afplay /System/Library/Sounds/Glass.aiff")
@@ -457,14 +399,14 @@ else:
 note_name = st.text_input("Note Name:")
 
 save_formats = ["Markdown", "XML"]
-out_format = st.radio(openai_model + ":", ["Clipboard", "Request"] + save_formats, horizontal=True)
+out_format = st.radio(llm_model + ":", ["Clipboard", "Request"] + save_formats, horizontal=True)
 
 button_name = "Save" if out_format in save_formats else "Copy"
 
 def save_note_disabled():
     return len(note_name.strip())==0 and out_format in save_formats
 
-if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
+if st.button(button_name, disabled=save_note_disabled(), icon=":material/content_copy:"):
     if out_format == "Clipboard":
         pyperclip.copy(st.session_state.openai_result)
         st.write(f'Copied to clipboard')
@@ -488,7 +430,12 @@ if st.button(':spiral_note_pad: ' + button_name, disabled=save_note_disabled()):
         with open(out_file, 'w') as file:
             file.write(st.session_state.openai_result)
         st.write(f'Note saved: `{out_file}`')
+        
+# Show last execution time
 
+if "execution_time" in st.session_state:
+    st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
+    
 # Environment Setup
 # -----------------
 #
