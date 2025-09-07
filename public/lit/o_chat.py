@@ -35,6 +35,10 @@ from llama_index.core import (
 #
 # ::
 
+st.set_page_config(
+    page_title="O-Chat"
+)
+
 @st.cache_data
 def print_banner():
     print("""

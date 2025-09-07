@@ -145,6 +145,10 @@ npm install ngx-markdown
 
 Create services to handle API calls and manage the application's state.
 
+```bash
+ng generate environments
+```
+
 [arabic]
 . *Configure Environment*: It's good practice to store your API URL in
 the environment files. Open `+src/environments/environment.ts+` and add
@@ -174,7 +178,7 @@ export interface PoemState {
 . *Create Poem Service*: This service will fetch data from the REST API.
 +
 ```bash
-ng generate service services/poem
+ng generate service services/poem.service
 ```
 +
 Update `+src/app/services/poem.service.ts+`:
@@ -208,7 +212,7 @@ export class PoemService {
 `+localStorage+` and the current poem state.
 +
 ```bash
-ng generate service services/state
+ng generate service services/state.service
 ```
 +
 Update `+src/app/services/state.service.ts+`. This service will contain
@@ -371,10 +375,10 @@ main {
 . *Poem View Component*: This will display the poem.
 +
 ```bash
-ng generate component components/poem-view --standalone
+ng generate component components/poem-view
 ```
 +
-Update `+src/app/components/poem-view/poem-view.component.ts+`:
+Update `+src/app/components/poem-view/poem-view.ts+`:
 +
 ```typescript
 import { Component, inject } from '@angular/core';
@@ -404,7 +408,7 @@ import { StateService } from '../../services/state.service';
     }
   `
 })
-export class PoemViewComponent {
+export class PoemView {
   private stateService = inject(StateService);
   poem$ = this.stateService.currentPoem$;
 }
@@ -412,10 +416,10 @@ export class PoemViewComponent {
 . *Header Component*:
 +
 ```bash
-ng generate component components/header --standalone
+ng generate component components/header 
 ```
 +
-Update `+src/app/components/header/header.component.ts+`:
+Update `+src/app/components/header/header.ts+`:
 +
 ```typescript
 import { Component, inject } from '@angular/core';
@@ -426,16 +430,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { StateService } from '../../services/state.service';
-import { BookDialogComponent } from '../book-dialog/book-dialog.component';
+import { BookDialog } from '../book-dialog/book-dialog';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+  templateUrl: './header.html',
+  styleUrl: './header.css'
 })
-export class HeaderComponent {
+export class Header {
   private stateService = inject(StateService);
   private dialog = inject(MatDialog);
   poem$ = this.stateService.currentPoem$;
@@ -455,7 +459,7 @@ export class HeaderComponent {
 }
 ```
 +
-Update `+src/app/components/header/header.component.html+`:
+Update `+src/app/components/header/header.html+`:
 +
 ```html+ng2
 <mat-toolbar color="primary">
@@ -479,7 +483,7 @@ Update `+src/app/components/header/header.component.html+`:
 </mat-toolbar>
 ```
 +
-Update `+src/app/components/header/header.component.scss+`:
+Update `+src/app/components/header/header.css+`:
 +
 ```scss
 .spacer {
@@ -489,7 +493,7 @@ Update `+src/app/components/header/header.component.scss+`:
 . *Footer Component*:
 +
 ```bash
-ng generate component components/footer --standalone
+ng generate component components/footer 
 ```
 +
 Update `+src/app/components/footer/footer.component.ts+`:
@@ -521,7 +525,7 @@ import { StateService } from '../../services/state.service';
     }
   `
 })
-export class FooterComponent {
+export class Footer {
   private stateService = inject(StateService);
 
   prev() {
@@ -536,7 +540,7 @@ export class FooterComponent {
 . *Book Selection Dialog Component*:
 +
 ```bash
-ng generate component components/book-dialog --standalone
+ng generate component components/book-dialog 
 ```
 +
 Update `+src/app/components/book-dialog/book-dialog.component.ts+`:
@@ -569,9 +573,9 @@ import { PoemService } from '../../services/poem.service';
     </mat-dialog-actions>
   `
 })
-export class BookDialogComponent {
+export class BookDialog {
   private poemService = inject(PoemService);
-  public dialogRef = inject(MatDialogRef<BookDialogComponent>);
+  public dialogRef = inject(MatDialogRef<BookDialog>);
   books$ = this.poemService.getPoemFiles();
 
   selectBook(filename: string) {

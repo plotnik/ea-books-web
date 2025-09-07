@@ -12,11 +12,11 @@ Literate Programs
 
    ai_note.py
    udemy.py
+   o_chat.py
    ai_obsidian.py
    o_ed.py
    o-bases.py
    neo_rag.py
-   o_chat.py
    book_lc.py
    book_chat.py
    li_extract.py
