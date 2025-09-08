@@ -1,0 +1,456 @@
+= Bilingua Server
+:source-highlighter: pygments
+:icons: font
+:toc: left
+:hardbreaks-option:
+
+== Prompt
+
+====
+Can you give me step-by step plan how can I create Spring Boot application that will provide REST API to compare two texts in different languages.
+
+Texts are provided as markdown files. Comparison is done by paragraphs.
+
+Application name is "bilingua-server".
+
+When started it should read "bi.properties" file in "bilingua" folder located in user home folder.
+This file should contain the following properties:
+
+`book`: Path to Obsidian folder
+`left_name`: The name of the first markdown file relative to Obsidian folder
+`right_name`: The name of the second markdown file relative to Obsidian folder
+
+Application should read each `left_name` and `right_name` files to the lists of paragraph as strings as `leftPars` and `rightPars`
+
+In the same "bilingua" folder application should maintain "ptr.txt" file with the number of the currently selected paragraph.
+It should be read to `ptr` variable. If this file is missing then the default value for `ptr` is 0.
+
+Application should provide the following REST API:
+
+GET /ptr : +
+Returns current value of `ptr`
+
+POST /ptr?n=<value> : +
+Set current value of `ptr` to `value`.
+Value shouldn't be integer greater that 0.
+
+GET /pars?shift=<shift> : +
+Returns JSON with 2 fields: "left" and "right", each containing text of paragraph at `ptr + shift` position.
+If `ptr` if greater than appropriate list of paragraphs, then return the empty string.
+`shift` by default is 0.
+
+POST /save : +
+Body: { "left": <leftText>, "right": <rightText> } +
+Set paragraph text in appropriate list to `leftText` or `rightText` at `ptr` position.
+If new text is different from the previous one then update `left_name` or `right_name` files and re-read paragraph lists.
+
+====
+
+== Gemini Pro 2.5
+
+Of course! Here is a step-by-step plan to create your
+`+bilingua-server+` application using Spring Boot.
+
+This guide will walk you through setting up the project, managing
+configuration, building the core service logic, and exposing the
+functionality through a REST API.
+
+'''''
+
+=== Step 1: Project Setup with Spring Initializr 🚀
+
+First, we need to create the basic structure of our Spring Boot
+application. The easiest way is using the *Spring Initializr*.
+
+[arabic]
+. Go to https://start.spring.io[start.spring.io].
+. Fill in the project metadata:
+* *Project*: Maven
+* *Language*: Java
+* *Spring Boot*: A recent stable version (e.g., 3.x.x)
+* *Group*: `+com.example+` (or your own domain)
+* *Artifact*: `+bilingua-server+`
+* *Packaging*: Jar
+* *Java*: 17 or newer
+. Add the necessary dependencies:
+* *Spring Web*: Required for building REST APIs.
+* *Lombok*: Optional, but highly recommended to reduce boilerplate code
+(like getters, setters, and constructors).
+. Click *"GENERATE"* to download a ZIP file of your project.
+. Unzip the file and open it in your favorite IDE (like IntelliJ IDEA or
+VS Code).
+
+Your `+pom.xml+` file should contain these dependencies:
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+    </dependencies>
+```
+
+'''''
+
+=== Step 2: Configuration Management ⚙️
+
+We need a way to read properties from the external
+`+~/bilingua/bi.properties+` file. We'll create a configuration class to
+load and hold these values.
+
+Create a new Java class `+BilinguaConfig.java+`. This class will find
+the user's home directory and load the properties when the application
+starts.
+
+`+src/main/java/com/example/bilinguaserver/config/BilinguaConfig.java+`
+
+```java
+package com.example.bilinguaserver.config;
+
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import org.springframework.stereotype.Component;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Properties;
+
+@Component
+@Getter
+public class BilinguaConfig {
+
+    private Path bilinguaDir;
+    private String book;
+    private String leftName;
+    private String rightName;
+
+    @PostConstruct
+    public void init() throws IOException {
+        String userHome = System.getProperty("user.home");
+        this.bilinguaDir = Paths.get(userHome, "bilingua");
+
+        Path propertiesFile = bilinguaDir.resolve("bi.properties");
+
+        Properties properties = new Properties();
+        try (FileReader reader = new FileReader(propertiesFile.toFile())) {
+            properties.load(reader);
+            this.book = properties.getProperty("book");
+            this.leftName = properties.getProperty("left_name");
+            this.rightName = properties.getProperty("right_name");
+        }
+    }
+}
+```
+
+*Explanation:*
+
+* `+@Component+`: Marks this class as a Spring bean, so Spring will
+manage its lifecycle.
+* `+@Getter+`: A Lombok annotation to automatically generate getter
+methods for all fields.
+* `+@PostConstruct+`: This annotation ensures the `+init()+` method is
+executed after the bean has been created.
+* The `+init()+` method locates the `+bilingua+` directory and loads the
+`+bi.properties+` file into the class fields.
+
+'''''
+
+=== Step 3: Core Business Logic (The Service Layer) 🧠
+
+The service layer will handle all the file reading/writing and state
+management (`+ptr+`, `+leftPars+`, `+rightPars+`).
+
+First, let's create a DTO (Data Transfer Object) to represent a pair of
+paragraphs for our API. A Java `+record+` is perfect for this.
+
+`+src/main/java/com/example/bilinguaserver/dto/ParagraphPair.java+`
+
+```java
+package com.example.bilinguaserver.dto;
+
+// This record will be used for both JSON responses and request bodies
+public record ParagraphPair(String left, String right) {
+}
+```
+
+Now, create the main service class `+BilinguaService.java+`.
+
+`+src/main/java/com/example/bilinguaserver/service/BilinguaService.java+`
+
+```java
+package com.example.bilinguaserver.service;
+
+import com.example.bilinguaserver.config.BilinguaConfig;
+import com.example.bilinguaserver.dto.ParagraphPair;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class BilinguaService {
+
+    private final BilinguaConfig config; // Injected by Spring
+
+    private int ptr;
+    private List<String> leftPars;
+    private List<String> rightPars;
+
+    private Path ptrFile;
+
+    @PostConstruct
+    public void initialize() throws IOException {
+        this.ptrFile = config.getBilinguaDir().resolve("ptr.txt");
+        loadPtr();
+        loadBooks();
+    }
+
+    // --- Public API Methods ---
+
+    public synchronized int getPtr() {
+        return ptr;
+    }
+
+    public synchronized void setPtr(int newPtr) throws IOException {
+        if (newPtr < 0) {
+            throw new IllegalArgumentException("Pointer value cannot be negative.");
+        }
+        this.ptr = newPtr;
+        Files.writeString(ptrFile, String.valueOf(this.ptr));
+    }
+
+    public synchronized ParagraphPair getPars(int shift) {
+        int index = this.ptr + shift;
+        String left = getParagraphSafe(leftPars, index);
+        String right = getParagraphSafe(rightPars, index);
+        return new ParagraphPair(left, right);
+    }
+
+    public synchronized void save(ParagraphPair pair) throws IOException {
+        boolean leftChanged = updateParagraph(leftPars, ptr, pair.left());
+        boolean rightChanged = updateParagraph(rightPars, ptr, pair.right());
+
+        if (leftChanged) {
+            writeBookFile(config.getLeftName(), leftPars);
+        }
+        if (rightChanged) {
+            writeBookFile(config.getRightName(), rightPars);
+        }
+
+        // If any file was changed, reload everything to ensure consistency
+        if (leftChanged || rightChanged) {
+            loadBooks();
+        }
+    }
+
+    // --- Private Helper Methods ---
+
+    private void loadPtr() {
+        try {
+            String content = Files.readString(ptrFile);
+            this.ptr = Integer.parseInt(content.trim());
+        } catch (IOException | NumberFormatException e) {
+            // If file is missing, empty, or corrupt, default to 0
+            this.ptr = 0;
+        }
+    }
+
+    public void loadBooks() throws IOException {
+        this.leftPars = readBookFile(config.getLeftName());
+        this.rightPars = readBookFile(config.getRightName());
+    }
+
+    private List<String> readBookFile(String fileName) throws IOException {
+        Path filePath = Paths.get(config.getBook(), fileName);
+        if (!Files.exists(filePath)) {
+            return Collections.emptyList();
+        }
+        String content = Files.readString(filePath);
+        // Split by one or more blank lines to get paragraphs
+        return Arrays.asList(content.split("\\n\\s*\\n"));
+    }
+
+    private void writeBookFile(String fileName, List<String> paragraphs) throws IOException {
+        Path filePath = Paths.get(config.getBook(), fileName);
+        // Join paragraphs with two newlines
+        String content = String.join("\n\n", paragraphs);
+        Files.writeString(filePath, content);
+    }
+
+    private String getParagraphSafe(List<String> list, int index) {
+        return (index >= 0 && index < list.size()) ? list.get(index) : "";
+    }
+
+    private boolean updateParagraph(List<String> list, int index, String newText) {
+        if (index >= 0 && index < list.size()) {
+            String oldText = list.get(index);
+            if (!oldText.equals(newText)) {
+                list.set(index, newText);
+                return true; // Text was changed
+            }
+        }
+        return false; // No change
+    }
+}
+```
+
+*Key Points:*
+
+* `+@Service+`: Marks this as a service bean.
+* `+@RequiredArgsConstructor+`: A Lombok annotation that creates a
+constructor for all `+final+` fields, allowing Spring to perform
+dependency injection.
+* `+synchronized+`: This keyword is used on public methods to prevent
+race conditions if multiple API requests happen at the same time. It
+ensures that only one thread can modify the state (ptr, lists) at a
+time.
+* *Paragraph Splitting*: `+content.split("\\n\\s*\\n")+` is a regular
+expression that splits the text by one or more blank lines, which is a
+robust way to identify paragraphs in Markdown.
+
+'''''
+
+=== Step 4: The REST API Controller Layer 📡
+
+The controller is the entry point for HTTP requests. It will delegate
+all the work to the `+BilinguaService+`.
+
+Create `+BilinguaController.java+`.
+
+`+src/main/java/com/example/bilinguaserver/controller/BilinguaController.java+`
+
+```java
+package com.example.bilinguaserver.controller;
+
+import com.example.bilinguaserver.dto.ParagraphPair;
+import com.example.bilinguaserver.service.BilinguaService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+
+@RestController
+@RequiredArgsConstructor
+public class BilinguaController {
+
+    private final BilinguaService bilinguaService;
+
+    @GetMapping("/ptr")
+    public int getPointer() {
+        return bilinguaService.getPtr();
+    }
+
+    @PostMapping("/ptr")
+    public ResponseEntity<Void> setPointer(@RequestParam("n") int value) {
+        try {
+            bilinguaService.setPtr(value);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build(); // Return 400 Bad Request for negative values
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build(); // Return 500 for file errors
+        }
+    }
+
+    @GetMapping("/pars")
+    public ParagraphPair getParagraphs(@RequestParam(defaultValue = "0") int shift) {
+        return bilinguaService.getPars(shift);
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<Void> saveParagraphs(@RequestBody ParagraphPair body) {
+        try {
+            bilinguaService.save(body);
+            return ResponseEntity.ok().build();
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+}
+```
+
+*Explanation:*
+
+* `+@RestController+`: Combines `+@Controller+` and `+@ResponseBody+`,
+marking this class as a request handler and converting return values to
+JSON.
+* `+@GetMapping+`, `+@PostMapping+`: Map HTTP GET and POST requests to
+specific methods.
+* `+@RequestParam+`: Extracts values from the query string (e.g.,
+`+?n=5+`).
+* `+@RequestBody+`: Deserializes the JSON request body into a
+`+ParagraphPair+` object.
+* `+ResponseEntity+`: Allows us to control the full HTTP response,
+including the status code (e.g., 200 OK, 400 Bad Request).
+
+'''''
+
+=== Step 5: Prepare and Run 🏃
+
+[arabic]
+. *Create the Configuration Directory and Files:*
+* In your user home directory (e.g., `+/home/user+` or
+`+C:\Users\user+`), create a folder named `+bilingua+`.
+* Inside `+~/bilingua/+`, create the `+bi.properties+` file with content
+like this (use actual paths for your system):
++
++
+```properties
+# Path to your main folder containing the markdown files
+book=/home/user/Documents/ObsidianVault/MyBook
+
+# Name of the first markdown file
+left_name=english_version.md
+
+# Name of the second markdown file
+right_name=lithuanian_version.md
+```
+. *Create Your Markdown Files:*
+* In the folder you specified for `+book+`, create the two markdown
+files (`+english_version.md+` and `+lithuanian_version.md+`).
+* Populate them with some text, separating paragraphs with a blank line.
++
+_Example `+english_version.md+`_:
++
+```markdown
+This is the first paragraph.
+It can have multiple lines.
+
+This is the second paragraph.
+```
++
+_Example `+lithuanian_version.md+`_:
++
+```markdown
+Tai yra pirmoji pastraipa.
+Ji gali turėti kelias eilutes.
+
+Tai yra antroji pastraipa.
+```
+. *Run the Application:*
+* Open a terminal in your project's root directory.
+* Run the application using the Maven wrapper:
++
+```bash
+./mvnw spring-boot:run
+```
+* Your REST API will be available at `+http://localhost:8080+`.
+
