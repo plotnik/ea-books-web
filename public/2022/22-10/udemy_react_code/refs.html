@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Maximilian Schwarzmüller">
-<title>React - The Complete Guide (incl Hooks, React Router, Redux)</title>
+<title>Working with Refs &amp; Portals</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,106 +437,89 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><strong>React - The Complete Guide (incl Hooks, React Router, Redux)</strong></h1>
-<div class="details">
-<span id="author" class="author">Maximilian Schwarzmüller</span><br>
-</div>
+<h1>Working with Refs &amp; Portals</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_1_getting_started">1. Getting Started</a></li>
-<li><a href="#_2_javascript_refresher">2. JavaScript Refresher</a></li>
-<li><a href="#_3_react_basics_and_working_with_components">3. React Basics and Working With Components</a></li>
-<li><a href="#_4_react_essentials_deep_dive">4. React Essentials - Deep Dive</a></li>
-<li><a href="#_5_react_essentials_practice_project">5. React Essentials - Practice Project</a></li>
-<li><a href="#_6_styling_react_components">6. Styling React Components</a></li>
-<li><a href="#_7_debugging_react_apps">7. Debugging React Apps</a></li>
-<li><a href="#_8_working_with_refs_portals">8. Working with Refs &amp; Portals</a></li>
-<li><a href="#_26_a_pretty_deep_dive_introduction_to_next_js">26. A (Pretty Deep Dive) Introduction to Next.js</a></li>
+<li><a href="#_131_module_introduction_starting_project">131. Module Introduction &amp; Starting Project</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Course on Udemy</dt>
-<dd>
-<p><a href="https://www.udemy.com/course/react-the-complete-guide-incl-redux/" class="bare">https://www.udemy.com/course/react-the-complete-guide-incl-redux/</a></p>
-</dd>
-<dt class="hdlist1">Course source code on GitHub</dt>
-<dd>
-<p><a href="https://github.com/academind/react-complete-guide-course-resources" class="bare">https://github.com/academind/react-complete-guide-course-resources</a></p>
-</dd>
-</dl>
-</div>
-</div>
+<div class="paragraph">
+<p><a href="udemy_react.html">&lt;Contents&gt;</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_getting_started">1. <a href="getting_started.html">Getting Started</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_2_javascript_refresher">2. <a href="js_refresh.html">JavaScript Refresher</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_3_react_basics_and_working_with_components">3. <a href="react_basics.html">React Basics and Working With Components</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_4_react_essentials_deep_dive">4. <a href="react_essentials.html">React Essentials - Deep Dive</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_5_react_essentials_practice_project">5. <a href="react_essentials_practice.html">React Essentials - Practice Project</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_6_styling_react_components">6. <a href="styling.html">Styling React Components</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_7_debugging_react_apps">7. <a href="debugging.html">Debugging React Apps</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_8_working_with_refs_portals">8. <a href="refs.html">Working with Refs &amp; Portals</a></h2>
+<h2 id="_131_module_introduction_starting_project">131. Module Introduction &amp; Starting Project</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>&#8230;&#8203;</p>
+<p>Summary:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>Focus: React Refs and Portals—optional but powerful tools for specific
+problems.</p>
+</li>
+<li>
+<p>Refs:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Provide direct access to DOM elements.</p>
+</li>
+<li>
+<p>Store mutable values that shouldn’t trigger re-renders (not state).</p>
+</li>
+<li>
+<p>Let components expose an API (e.g., callable functions) to other
+components.</p>
+</li>
+</ul>
 </div>
+</li>
+<li>
+<p>Portals:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Render elements in a different place in the DOM than where they
+appear in JSX (e.g., modals/overlays).</p>
+</li>
+</ul>
 </div>
-<div class="sect1">
-<h2 id="_26_a_pretty_deep_dive_introduction_to_next_js">26. <a href="nextjs.html">A (Pretty Deep Dive) Introduction to Next.js</a></h2>
-<div class="sectionbody">
-
+</li>
+<li>
+<p>Demo project:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Build a timer challenge game using Refs, Portals, components, and
+state.</p>
+</li>
+<li>
+<p>Starter projects available (local and CodeSandbox).</p>
+</li>
+<li>
+<p>Initial setup includes a basic App and Player component; the input’s
+“Set Name” button doesn’t work yet—fixing it will be the first Refs
+example.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-10-01 05:03:19 +0300
+Last updated 2025-10-01 05:05:45 +0300
 </div>
 </div>
 </body>

@@ -70,6 +70,10 @@ Select OpenAI LLM.
 ::
 
   llm_prices = {
+      "gpt-5": 1.25,
+      "gpt-5-mini": 0.25,
+      "gpt-5-nano": 0.05,
+        
       "o4-mini": 1.10,
       "o3-mini": 1.10,
       "o3": 2.0,
@@ -95,10 +99,10 @@ Select OpenAI LLM.
       elif llm_model.startswith("gemma"):
           return {"google": True, "temperature": True, "xml": True}
 
-      elif llm_model.startswith("gpt"):
+      elif llm_model.startswith("gpt-4"):
           return {"google": False, "temperature": True, "xml": False}
 
-      else: #o3
+      else: # o3 | gpt-5
           return {"google": False, "temperature": False, "xml": False}
         
   def reset_execution_time():
