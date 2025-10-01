@@ -41,49 +41,51 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">is_within</span><span class="p">(</span><span class="n">child</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>We can move matching files to a separate folder or just create Obsidian base with the list of matching files</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">move_files</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># When False, do not move files; create a {target}.base file listing matches.</span>
+</pre></div>
+</div>
+<p>Check if child path is within parent path</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">is_within</span><span class="p">(</span><span class="n">child</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">child</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>Move src into dst_dir. If a file with the same name exists, append a numeric suffix.
+Returns the final destination path.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="k">def</span><span class="w"> </span><span class="nf">safe_move</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dst_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+     <span class="n">dst_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+     <span class="n">target</span> <span class="o">=</span> <span class="n">dst_dir</span> <span class="o">/</span> <span class="n">src</span><span class="o">.</span><span class="n">name</span>
+     <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+         <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+         <span class="k">return</span> <span class="n">target</span>
 
+     <span class="n">stem</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">stem</span>
+     <span class="n">suffix</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">suffix</span>
+     <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+         <span class="n">candidate</span> <span class="o">=</span> <span class="n">dst_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stem</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">)</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+         <span class="k">if</span> <span class="ow">not</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+             <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">candidate</span><span class="p">))</span>
+             <span class="k">return</span> <span class="n">candidate</span>
+         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">safe_move</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dst_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Move src into dst_dir. If a file with the same name exists, append a numeric suffix.</span>
-<span class="sd">    Returns the final destination path.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dst_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">target</span> <span class="o">=</span> <span class="n">dst_dir</span> <span class="o">/</span> <span class="n">src</span><span class="o">.</span><span class="n">name</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">target</span>
-
-    <span class="n">stem</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">stem</span>
-    <span class="n">suffix</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">suffix</span>
-    <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">candidate</span> <span class="o">=</span> <span class="n">dst_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stem</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">)</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">candidate</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">candidate</span>
-        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">file_contains_pattern</span><span class="p">(</span>
+<span class="n">Returns</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">the</span> <span class="n">file</span> <span class="n">contains</span> <span class="n">the</span> <span class="n">pattern</span><span class="o">.</span>
+<span class="o">-</span> <span class="n">By</span> <span class="n">default</span><span class="p">,</span> <span class="n">treats</span> <span class="n">pattern</span> <span class="k">as</span> <span class="n">a</span> <span class="n">plain</span> <span class="n">substring</span> <span class="p">(</span><span class="ow">not</span> <span class="n">regex</span><span class="p">)</span><span class="o">.</span>
+<span class="o">-</span> <span class="n">Set</span> <span class="n">use_regex</span><span class="o">=</span><span class="kc">True</span> <span class="n">to</span> <span class="n">interpret</span> <span class="n">pattern</span> <span class="k">as</span> <span class="n">a</span> <span class="n">regular</span> <span class="n">expression</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">file_contains_pattern</span><span class="p">(</span>
     <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
     <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">ignore_case</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">use_regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns True if the file contains the pattern.</span>
-<span class="sd">    - By default, treats pattern as a plain substring (not regex).</span>
-<span class="sd">    - Set use_regex=True to interpret pattern as a regular expression.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">use_regex</span><span class="p">:</span>
         <span class="n">flags</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="k">if</span> <span class="n">ignore_case</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="n">rx</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
@@ -110,9 +112,12 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">False</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">move_matching_markdown</span><span class="p">(</span>
+</pre></div>
+</div>
+<p>Move .md files under vault_path that contain pattern to target.
+- target may be absolute or relative; if relative, it’s created under vault_path.
+- Skips files already inside target directory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">move_matching_markdown</span><span class="p">(</span>
     <span class="n">vault_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
     <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -120,11 +125,6 @@
     <span class="n">use_regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Move .md files under vault_path that contain pattern to target.</span>
-<span class="sd">    - target may be absolute or relative; if relative, it&#39;s created under vault_path.</span>
-<span class="sd">    - Skips files already inside target directory.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">vault_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">vault_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vault path does not exist or is not a directory: </span><span class="si">{</span><span class="n">vault_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -138,6 +138,7 @@
     <span class="n">total_matched</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">total_moved</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">total_skipped_in_target</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">matched_file_stems</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Collect for .base file when move_files is False</span>
 
     <span class="k">for</span> <span class="n">md_file</span> <span class="ow">in</span> <span class="n">vault_path</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.md&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">md_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
@@ -149,22 +150,72 @@
 
         <span class="n">total_scanned</span> <span class="o">+=</span> <span class="mi">1</span>
 
+
         <span class="k">if</span> <span class="n">file_contains_pattern</span><span class="p">(</span><span class="n">md_file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">ignore_case</span><span class="o">=</span><span class="n">ignore_case</span><span class="p">,</span> <span class="n">use_regex</span><span class="o">=</span><span class="n">use_regex</span><span class="p">):</span>
             <span class="n">total_matched</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">relative_path</span> <span class="o">=</span> <span class="n">md_file</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">vault_path</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
-                <span class="n">relative_path</span> <span class="o">=</span> <span class="n">md_file</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">vault_path</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[DRY-RUN] </span><span class="si">{</span><span class="n">relative_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># Dry-run shows what would happen (either move or appear in base file)</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="s2">&quot;MOVE&quot;</span> <span class="k">if</span> <span class="n">move_files</span> <span class="k">else</span> <span class="s2">&quot;LIST&quot;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[DRY-RUN:</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">relative_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">final_path</span> <span class="o">=</span> <span class="n">safe_move</span><span class="p">(</span><span class="n">md_file</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Moved: </span><span class="si">{</span><span class="n">md_file</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">final_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">total_moved</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">move_files</span><span class="p">:</span>
+                    <span class="n">final_path</span> <span class="o">=</span> <span class="n">safe_move</span><span class="p">(</span><span class="n">md_file</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Moved: </span><span class="si">{</span><span class="n">md_file</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">final_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">total_moved</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Collect stem (file name without extension) for base file list</span>
+                    <span class="n">matched_file_stems</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md_file</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
+
+    <span class="c1"># If we&#39;re not moving files and not in dry-run, write the .base file inside the vault root</span>
+    <span class="n">base_file_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">move_files</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dry_run</span><span class="p">:</span>
+        <span class="c1"># Use the (original) target directory name (last path component) for base filename</span>
+        <span class="n">base_name</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># after resolution above</span>
+        <span class="n">base_file_path</span> <span class="o">=</span> <span class="n">vault_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">.base&quot;</span>
+        <span class="n">unique_stems</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">stem</span> <span class="ow">in</span> <span class="n">matched_file_stems</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">stem</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="n">unique_stems</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stem</span><span class="p">)</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">stem</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">esc</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Build YAML content</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;views:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;  - type: table&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    name: Table&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    sort:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;      - property: file.mtime&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;        direction: DESC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    filters:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;      or:&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">stem</span> <span class="ow">in</span> <span class="n">unique_stems</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;        - file.name == </span><span class="se">\&quot;</span><span class="si">{</span><span class="n">esc</span><span class="p">(</span><span class="n">stem</span><span class="p">)</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">base_file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created base file: </span><span class="si">{</span><span class="n">base_file_path</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_stems</span><span class="p">)</span><span class="si">}</span><span class="s2"> entries)&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write base file </span><span class="si">{</span><span class="n">base_file_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Summary:&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Scanned .md files: </span><span class="si">{</span><span class="n">total_scanned</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Matched pattern:   </span><span class="si">{</span><span class="n">total_matched</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Moved files:       </span><span class="si">{</span><span class="n">total_moved</span><span class="si">}{</span><span class="s1">&#39; (dry-run)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">dry_run</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Already in target: </span><span class="si">{</span><span class="n">total_skipped_in_target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Target directory:  </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">move_files</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Target directory:  </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Base file (planned): </span><span class="si">{</span><span class="n">vault_path</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;.base&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Base file:          </span><span class="si">{</span><span class="n">base_file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Parse arguments</p>
@@ -302,6 +353,7 @@
 <li class="toctree-l1"><a class="reference internal" href="st_gmail.py.html">GMail Clean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkers.py.html">Шашки</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PersistedList.py.html">Persisted List</a></li>
 </ul>
 

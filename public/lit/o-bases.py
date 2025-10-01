@@ -11,6 +11,11 @@ import re
 import shutil
 from pathlib import Path
 
+# We can move matching files to a separate folder or just create Obsidian base with the list of matching files
+
+move_files = False  # When False, do not move files; create a {target}.base file listing matches.
+
+# Check if child path is within parent path
 
 def is_within(child: Path, parent: Path) -> bool:
     try:
@@ -20,11 +25,12 @@ def is_within(child: Path, parent: Path) -> bool:
         return False
 
 
+# Move src into dst_dir. If a file with the same name exists, append a numeric suffix.
+# Returns the final destination path.
+#
+# ::
+
 def safe_move(src: Path, dst_dir: Path) -> Path:
-    """
-    Move src into dst_dir. If a file with the same name exists, append a numeric suffix.
-    Returns the final destination path.
-    """
     dst_dir.mkdir(parents=True, exist_ok=True)
     target = dst_dir / src.name
     if not target.exists():
@@ -41,6 +47,9 @@ def safe_move(src: Path, dst_dir: Path) -> Path:
             return candidate
         i += 1
 
+#  Returns True if the file contains the pattern.
+#  - By default, treats pattern as a plain substring (not regex).
+#  - Set use_regex=True to interpret pattern as a regular expression.
 
 def file_contains_pattern(
     file_path: Path,
@@ -48,11 +57,6 @@ def file_contains_pattern(
     ignore_case: bool = True,
     use_regex: bool = False,
 ) -> bool:
-    """
-    Returns True if the file contains the pattern.
-    - By default, treats pattern as a plain substring (not regex).
-    - Set use_regex=True to interpret pattern as a regular expression.
-    """
     if use_regex:
         flags = re.IGNORECASE if ignore_case else 0
         rx = re.compile(pattern, flags)
@@ -80,7 +84,10 @@ def file_contains_pattern(
             return False
         return False
 
-
+# Move .md files under vault_path that contain pattern to target.
+# - target may be absolute or relative; if relative, it's created under vault_path.
+# - Skips files already inside target directory.
+    
 def move_matching_markdown(
     vault_path: Path,
     pattern: str,
@@ -89,11 +96,6 @@ def move_matching_markdown(
     use_regex: bool = False,
     dry_run: bool = False,
 ) -> None:
-    """
-    Move .md files under vault_path that contain pattern to target.
-    - target may be absolute or relative; if relative, it's created under vault_path.
-    - Skips files already inside target directory.
-    """
     if not vault_path.exists() or not vault_path.is_dir():
         raise ValueError(f"Vault path does not exist or is not a directory: {vault_path}")
 
@@ -107,6 +109,7 @@ def move_matching_markdown(
     total_matched = 0
     total_moved = 0
     total_skipped_in_target = 0
+    matched_file_stems: list[str] = []  # Collect for .base file when move_files is False
 
     for md_file in vault_path.rglob("*.md"):
         if not md_file.is_file():
@@ -118,22 +121,72 @@ def move_matching_markdown(
 
         total_scanned += 1
 
+        
         if file_contains_pattern(md_file, pattern, ignore_case=ignore_case, use_regex=use_regex):
             total_matched += 1
+            relative_path = md_file.relative_to(vault_path)
             if dry_run:
-                relative_path = md_file.relative_to(vault_path)
-                print(f"[DRY-RUN] {relative_path}")
+                # Dry-run shows what would happen (either move or appear in base file)
+                action = "MOVE" if move_files else "LIST"
+                print(f"[DRY-RUN:{action}] {relative_path}")
             else:
-                final_path = safe_move(md_file, target)
-                print(f"Moved: {md_file} -> {final_path}")
-                total_moved += 1
+                if move_files:
+                    final_path = safe_move(md_file, target)
+                    print(f"Moved: {md_file} -> {final_path}")
+                    total_moved += 1
+                else:
+                    # Collect stem (file name without extension) for base file list
+                    matched_file_stems.append(md_file.stem)
+
+    # If we're not moving files and not in dry-run, write the .base file inside the vault root
+    base_file_path = None
+    if not move_files and not dry_run:
+        # Use the (original) target directory name (last path component) for base filename
+        base_name = target.name  # after resolution above
+        base_file_path = vault_path / f"{base_name}.base"
+        unique_stems = []
+        seen = set()
+        for stem in matched_file_stems:
+            if stem not in seen:
+                unique_stems.append(stem)
+                seen.add(stem)
+
+        def esc(s: str) -> str:
+            return s.replace('"', '\\"')
+
+        # Build YAML content
+        lines = [
+            "views:",
+            "  - type: table",
+            "    name: Table",
+            "    sort:",
+            "      - property: file.mtime",
+            "        direction: DESC",
+            "    filters:",
+            "      or:",
+        ]
+        for stem in unique_stems:
+            lines.append(f"        - file.name == \"{esc(stem)}\"")
+        content = "\n".join(lines) + "\n"
+        try:
+            with open(base_file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+            print(f"Created base file: {base_file_path} ({len(unique_stems)} entries)")
+        except Exception as e:
+            print(f"Failed to write base file {base_file_path}: {e}")
 
     print("\nSummary:")
     print(f"  Scanned .md files: {total_scanned}")
     print(f"  Matched pattern:   {total_matched}")
     print(f"  Moved files:       {total_moved}{' (dry-run)' if dry_run else ''}")
     print(f"  Already in target: {total_skipped_in_target}")
-    print(f"  Target directory:  {target}")
+    if move_files:
+        print(f"  Target directory:  {target}")
+    else:
+        if dry_run:
+            print(f"  Base file (planned): {vault_path / (target.name + '.base')}")
+        else:
+            print(f"  Base file:          {base_file_path}")
 
 # Parse arguments
 

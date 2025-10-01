@@ -124,7 +124,7 @@ Read a list of strings from a file
   all_tags = tags_persisted.sort_by_pattern(list(all_tags_set))
 
   tag_name = st.sidebar.selectbox(
-     "Tag",
+     "Category",
      all_tags,
   )
 

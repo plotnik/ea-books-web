@@ -79,6 +79,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
     <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;T-Int&quot;</span><span class="p">,</span>
@@ -109,6 +111,29 @@
 </div>
 <p>Regular expression pattern to extract intervals</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{4}</span><span class="s1"> \d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">)\n; ([\w\-]+) (.*?)\n(\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{4}</span><span class="s1"> \d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Highlight task</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_task_colors</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;task_colors.yml&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="n">task_colors</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">task_colors</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">color</span>
+
+    <span class="k">return</span> <span class="n">task_colors</span>
+
+<span class="n">task_colors</span> <span class="o">=</span> <span class="n">load_task_colors</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">highlight_task</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">task_colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">color</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;background-color: #</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">; color: white;&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 </pre></div>
 </div>
 <p>Process input</p>
@@ -150,7 +175,7 @@
 </div>
 <p>Display results</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Duration by Task&quot;</span><span class="p">)</span>
-<span class="n">st</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">grouped_df</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span><span class="n">grouped_df</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">highlight_task</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">]))</span>
 
 <span class="c1"># Calculate total hours</span>
 <span class="n">total_hours</span> <span class="o">=</span> <span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Hours&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -238,6 +263,7 @@
 <li class="toctree-l1"><a class="reference internal" href="st_gmail.py.html">GMail Clean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkers.py.html">Шашки</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PersistedList.py.html">Persisted List</a></li>
 </ul>
 

@@ -9,15 +9,31 @@ Process CSV file exported from JIRA filter with all columns.
   import pandas as pd
   import os
 
+Page header
+
+::
+
   st.set_page_config(
       page_title="JIRA-Stats",
   )
+
+List CSV files
+
+::
 
   csv_files = [f for f in os.listdir('.') if f.endswith('.csv')]
   csv_files.sort()
   csv_file = st.sidebar.radio("Select exported JIRA filter CSV file to process:", csv_files)
 
+Read dataframe
+
+::
+
   df = pd.read_csv(csv_file)
+
+Drop unnecessary columns
+
+::
 
   def drop_columns_from_list():
       with open("drop_columns.txt", "r") as f:
@@ -41,13 +57,21 @@ Process CSV file exported from JIRA filter with all columns.
   drop_columns_by_prefix()
   # df.drop(columns=drop_columns_from_list(), inplace=True)
 
+Print stats
+
+::
+
   st.sidebar.write("---")
   num_rows = df.shape[0]
   st.sidebar.write(f"Jiras: `{num_rows}`")
 
   total_time_spent = df['Time Spent'].sum()
   hours = round(total_time_spent/3600)
-  st.sidebar.write(f"Total time spent: `{hours}` h")
+  st.sidebar.write(f"Time spent: `{hours}` h")
+
+  remaining_estimate = df['Remaining Estimate'].sum()
+  hours = round(remaining_estimate/3600)
+  st.sidebar.write(f"Remaining Estimate: `{hours}` h")
 
 Select row
 
@@ -80,8 +104,7 @@ Create report
               status = row.get('Status', 'N/A')
               assignee = row.get('Assignee', 'N/A')
             
-              f.write(f'{issue_key} - {assignee} - {status} - \n')
-              f.write(f'{summary}\n')
+              f.write(f'{issue_key} {summary}\n')
               f.write('\n')
     
       st.sidebar.success(f"Report created: {report_name}")

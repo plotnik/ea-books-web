@@ -55,6 +55,8 @@ import streamlit as st
 import pandas as pd
 import re
 from datetime import datetime
+import yaml 
+import os
 
 st.set_page_config(
     page_title="T-Int",
@@ -92,6 +94,45 @@ data = st.text_area("Time Intervals", height=300)
     
 pattern = re.compile(r'(\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2})\n; ([\w\-]+) (.*?)\n(\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2})', re.DOTALL)
 
+# Highlight task
+
+def load_task_colors(path: str = "task_colors.yml") -> dict:
+    if not os.path.exists(path):
+        return {}
+
+    with open(path, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f) or []
+    task_colors = {}
+    for item in data:
+        color = str(item["color"]).strip().upper()
+        task_colors[str(item["task"]).strip()] = color 
+        
+    return task_colors
+    
+def load_prev_tasks(path: str = "prev_sprint.csv") -> dict:
+    if not os.path.exists(path):
+        return {}
+    result = []    
+
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            task_name = line.strip()
+            if task_name:  # Only add non-empty lines
+                result.append(task_name)
+    
+    return result 
+
+task_colors = load_task_colors()
+prev_tasks = load_prev_tasks()
+
+def highlight_task(val):
+    color = task_colors.get(val)
+    if color:
+        return f"background-color: #{color}; color: white;"
+    if val in prev_tasks:  
+        return f"background-color: #CCFFCC; color: black;"
+    return ""
+    
 # Process input
 #
 # ::
@@ -141,8 +182,8 @@ def process():
 # ::
     
     st.write("### Duration by Task")
-    st.table(grouped_df)
-    
+    st.dataframe(grouped_df.style.applymap(highlight_task, subset=["Task"]))
+
     # Calculate total hours
     total_hours = grouped_df['Hours'].sum()
     st.write(f"**Total Hours: {total_hours}**")

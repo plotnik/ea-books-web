@@ -124,7 +124,7 @@ tags_persisted = PersistedList(".tags")
 all_tags = tags_persisted.sort_by_pattern(list(all_tags_set))
 
 tag_name = st.sidebar.selectbox(
-   "Tag",
+   "Category",
    all_tags,
 )
 
@@ -156,7 +156,11 @@ st.write(prompt)
 #
 # ::
 
-model_type = st.sidebar.radio("Model Type", ["OpenAI", "Gemini", "Ollama"])
+model_type = st.sidebar.radio("Model Type", horizontal=True, options=[
+    "OpenAI", 
+    "Gemini", 
+    # "Ollama"
+])
 
 if model_type=="Gemini":    
     llm_models = [

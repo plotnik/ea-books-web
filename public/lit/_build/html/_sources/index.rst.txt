@@ -49,5 +49,6 @@ Literate Programs
    st_gmail.py
    youtube_transcript.py
    bi.py
+   checkers.py
    PersistedList.py
 
