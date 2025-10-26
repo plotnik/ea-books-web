@@ -445,3 +445,103 @@ applications combining visual and textual reasoning.
 
 3. In the example of GPT-4 Vision analyzing a futuristic cityscape image, how does the model’s multimodal reasoning manifest in its detailed responses about objects, mood, and presence of people, illustrating the difference between traditional computer vision and modern multimodal understanding?
 ====
+
+== Chapter 3: Building Workflows with LangGraph
+
+=== 3.1 LangGraph fundamentals
+
+
+Purpose and differentiator
+
+* LangGraph (from LangChain) is an orchestration framework for complex
+AI workflows. It supports features many others don’t: cycles in graphs
+(not only DAGs), streaming, pre-built loops/components for generative AI
+(e.g., human moderation), and a low-level API for granular control.
+* Recommendation: take the free LangGraph course at
+academy.langchain.com for deeper learning.
+
+Basic concepts
+
+* Graphs/workflows: composed of nodes (Python functions) and edges;
+START and END are reserved nodes.
+* State: a workflow-wide context (think Python dict / TypedDict /
+dataclass / Pydantic model). Nodes receive an immutable snapshot of
+state and must return a dict of key-value updates. LangGraph merges
+these updates into the master state—preventing side effects and making
+changes explicit.
+* Execution model: runs in discrete iterations called supersteps
+(inspired by Pregel), possibly executing nodes in parallel and merging
+their state updates. You can control recursion limits and max supersteps
+to avoid infinite cycles.
+
+Conditional edges and control flow
+
+* Conditional edges allow branching based on current state. A
+conditional function takes state and returns a destination (or a typed
+Literal). If no type hint is present, you can pass an explicit mapping
+to add_conditional_edges.
+
+Reducers (how state keys are merged)
+
+* Default reducer replaces values.
+* Built-in/add reducers: use typing.Annotated with an operator (e.g.,
+add) to concatenate lists.
+* Custom reducers: you can supply your own function to control how old
+and new values merge.
+* add_messages reducer and MessagesState exist to handle conversational
+message merging (useful for chat/LLM workflows).
+
+Configurability
+
+* Nodes can accept a second argument: RunnableConfig (typed dict). It
+includes execution controls (e.g., recursion_limit) and a configurable
+dict for user parameters (e.g., switching model_provider/model_name at
+runtime).
+
+Controlled/structured generation and output parsing
+
+* LLM outputs are often free text; to feed downstream steps reliably,
+use controlled generation and output parsers.
+* LangChain provides OutputParsers (Enum, JSON, CSV, Pydantic,
+DataFrame, etc.), each implementing BaseGenerationOutputParser.
+* Example: EnumOutputParser converts text like "YES" / "NO" into Enum
+values. Parsers can be chained with LLMs and embedded inside LangGraph
+nodes.
+
+Error handling and robustness
+
+* Failures can occur anywhere (API/network/LLM outputs). Recommended
+tactics:
+** Catch exceptions, log them, and return safe/default outputs so the
+workflow can continue.
+** Convert exceptions into text for downstream LLMs to reason about
+recovery.
+** Use fake chat models provided by LangChain for testing
+(GenericFakeChatModel, FakeChatModel, FakeListChatModel).
+* Retries:
+** Generic Runnable retry via .with_retry (configure exception types,
+wait/backoff, attempts).
+** Node-level RetryPolicy in LangGraph (retry_on, max_attempts).
+** Semantic retry (RetryWithErrorOutputParser): when parsing fails, feed
+the original prompt, completion, and parse error back to an LLM that
+attempts to fix the output.
+* Fallbacks:
+** Define alternative runnables/chains to run if primary execution fails
+(with_fallbacks).
+
+Takeaways
+
+* LangGraph provides a stateful, flexible orchestration model optimized
+for generative AI workflows: explicit immutable state updates, reducers
+to manage merged values, conditional edges and cycles, configurable
+execution, and built-in mechanisms for parsing, retrying, and falling
+back when integrating LLMs.
+* For complex agentic or multi-step workflows, refer to later chapters
+(5 and 6) and LangChain docs/examples for advanced patterns.
+
+[WARNING]
+====
+1. What are the reserved built-in nodes used to mark the beginning and end of a LangGraph workflow?
+2. How does LangGraph provide state to nodes and how must nodes update the workflow state?
+3. What is a "superstep" in LangGraph and which system inspired this execution model?
+====

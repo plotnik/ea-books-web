@@ -1,32 +1,38 @@
-Book Chat (LC)
-==============
+Book Chat (LC) - Updated for LangChain v1
+==========================================
 
-*Answer Questions About Book Contents Using RAG with LangChain and Chroma*
+*Answer Questions About Book Contents Using RAG with LangChain v1 and Chroma*
+
+This script has been updated to work with LangChain v1.0, which deprecated
+the legacy chains (create_retrieval_chain, create_stuff_documents_chain) in favor
+of a more direct approach using retrievers and manual prompt formatting.
 
 1. Use Calibre to convert EPUB files into HTMLZ format.
 2. Unpack the HTMLZ archive into an ``html`` folder.
 3. This script will analyze the ``html/index.html`` file and save the embeddings into a Chroma database.
 
+Installation for LangChain v1:
+
+.. code:: shell
+
+    pip install -U langchain langchain-core langchain-community
+    pip install -U langchain-google-genai langchain-openai langchain-text-splitters
+    pip install -U streamlit pyperclip tiktoken
+    pip install -U chromadb langchain-chroma
 
 .. _RAG: https://en.wikipedia.org/wiki/Retrieval-augmented_generation
 .. _LangChain: https://python.langchain.com/docs/introduction/
 .. _Chroma: https://www.trychroma.com/
 
-.. code:: shell
-
-    pip install -U chromadb langchain-chroma
-
 .. csv-table:: Useful Links
    :header: "Name", "URL"
    :widths: 10 30
 
+   "Build a semantic search engine with LangChain", https://docs.langchain.com/oss/python/langchain/knowledge-base
    "LangGraph Studio", https://studio.langchain.com/
    "Trace with LangSmith", https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langchain
    "tracers - LangChain documentation", https://python.langchain.com/api_reference/core/tracers.html
    "Using Chroma in LangChain", https://python.langchain.com/docs/integrations/vectorstores/chroma/
-   "OpenAI Embeddings Prices", https://platform.openai.com/docs/pricing#embeddings
-   "Gemini Models", https://ai.google.dev/gemini-api/docs/models
-   "Gemini Rate Limits", https://ai.google.dev/gemini-api/docs/rate-limits
 
 ::
 
@@ -40,14 +46,20 @@ Book Chat (LC)
   from langchain_openai import ChatOpenAI, OpenAIEmbeddings
   from langchain_community.document_loaders import UnstructuredHTMLLoader
   from langchain_chroma import Chroma 
-  from langchain.text_splitter import RecursiveCharacterTextSplitter
-  from langchain.chains import create_retrieval_chain
-  from langchain.chains.combine_documents import create_stuff_documents_chain
-  from langchain_core.prompts import ChatPromptTemplate
+  from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-  from langchain_core.tracers.context import tracing_v2_enabled
+  try:
+      from langchain_core.tracers.context import tracing_v2_enabled
+  except ImportError:
+      def tracing_v2_enabled():
+          return nullcontext()
+
   from contextlib import nullcontext
-  import tiktoken
+
+  try:
+      import tiktoken
+  except ImportError:
+      tiktoken = None
 
 See: PersistedList_
 
@@ -92,9 +104,18 @@ Get ``GEMINI_API_KEY``
 
 Select Embeddings
 
+.. csv-table:: Useful Links
+   :header: "Name", "URL"
+   :widths: 10 30
+
+   "OpenAI Embeddings Prices", https://platform.openai.com/docs/pricing#embeddings
+   "Gemini Models", https://ai.google.dev/gemini-api/docs/models
+   "Gemini Rate Limits", https://ai.google.dev/gemini-api/docs/rate-limits
+
 ::
 
   embedding_models = [
+      "google/gemini-embedding-001",
       "openai/text-embedding-3-small",
       "google/text-embedding-004",           # April 2024
       "google/gemini-embedding-exp-03-07",   # March 2025 # Exceeds rate limit when selected
@@ -105,7 +126,8 @@ Select Embeddings
       "openai/text-embedding-3-small": 0.02,
       "google/text-embedding-004": 0.0,          
       "google/gemini-embedding-exp-03-07": 0.0,  
-      "google/embedding-001": 0.0,                
+      "google/embedding-001": 0.0,      
+      "google/gemini-embedding-001": 0.0,          
   }
 
   embedding_models_persisted = PersistedList(".book-chat-embeddings")
@@ -117,9 +139,21 @@ Select Embeddings
   embedding_model_vendor, embed_model_name = embedding_model.split("/", 1)
 
   if embedding_model_vendor == "google":
+      import asyncio
+      try:
+          # Try to get the current event loop
+          loop = asyncio.get_event_loop()
+      except RuntimeError:
+          # No event loop exists, create a new one
+          loop = asyncio.new_event_loop()
+          asyncio.set_event_loop(loop)
+    
       embedding = GoogleGenerativeAIEmbeddings(model=f"models/{embed_model_name}", google_api_key=g_key)
   elif embedding_model_vendor == "openai":
       embedding = OpenAIEmbeddings(model=embed_model_name)
+  else:
+      st.error(f"Unsupported embedding model vendor: {embedding_model_vendor}")
+      st.stop()
   
 Folder to save index
 
@@ -142,6 +176,10 @@ Print current folder name as a title
 
   current_folder = os.path.basename(os.getcwd())
   st.write(f"### {current_folder}")
+
+  if not os.path.exists(book_html):
+      st.error(f"Book HTML file not found: {book_html}")
+      st.stop()
 
 Select LLM
 
@@ -200,7 +238,7 @@ Load history
       with open(history_file, "r", encoding="utf-8") as fin:
           history = fin.read()
 
-  history = st.sidebar.text_area(f"History", value=history.strip(), height=200)
+  history = st.sidebar.text_area(f"History", value=history.strip(), height=400)
 
   #if st.sidebar.button(":recycle: &nbsp; Update history", use_container_width=True):
   #    update_history("")
@@ -226,8 +264,12 @@ Create or load index
       chunks = text_splitter.split_documents(docs) 
       return chunks
 
-  def create_index(input_file, persist_dir, chunks):
-      # Create a *persistent* Chroma collection in one step
+Create a persistent Chroma collection in one step
+
+::
+
+  def create_index(persist_dir, chunks):
+      global embedding
       vectorstore = Chroma.from_documents(
           chunks,
           embedding,
@@ -260,10 +302,25 @@ Handle indexing logic
       # No index folder
       chunks = create_doc_chunks(book_html)
 
-      enc = tiktoken.encoding_for_model("text-embedding-3-small")
-      total_tokens = sum(len(enc.encode(chunk.page_content)) for chunk in chunks)
-      cost = (total_tokens / 1_000_000) * embedding_prices[embedding_model]
-      cents = cost/100
+      # Calculate token count and cost if tiktoken is available
+      if tiktoken:
+          try:
+              enc = tiktoken.encoding_for_model("text-embedding-3-small")
+              total_tokens = sum(len(enc.encode(chunk.page_content)) for chunk in chunks)
+              cost = (total_tokens / 1_000_000) * embedding_prices[embedding_model]
+              cents = cost/100
+          except Exception:
+              # Fallback to character count estimation
+              total_chars = sum(len(chunk.page_content) for chunk in chunks)
+              total_tokens = total_chars // 4  # Rough approximation
+              cost = (total_tokens / 1_000_000) * embedding_prices[embedding_model]
+              cents = cost/100
+      else:
+          # Fallback to character count estimation
+          total_chars = sum(len(chunk.page_content) for chunk in chunks)
+          total_tokens = total_chars // 4  # Rough approximation
+          cost = (total_tokens / 1_000_000) * embedding_prices[embedding_model]
+          cents = cost/100
   
       st.sidebar.write("**Embeddings price**")
       st.sidebar.write(f'''
@@ -274,7 +331,7 @@ Handle indexing logic
   
       if st.sidebar.button(':construction: &nbsp; Create Index', type='primary', use_container_width=True):
           with tracing_context:
-              create_index(book_html, index_folder, chunks)
+              create_index(index_folder, chunks)
           st.rerun()
       else:
           st.stop()
@@ -283,21 +340,24 @@ Setup QA chain
 
 ::
 
-  prompt = ChatPromptTemplate.from_template("""
-  Answer the user's question based only on the following context.
+  def create_rag_prompt(context: str, question: str) -> str:
+      """Create a simple RAG prompt combining context and question."""
+      return f"""Answer the user's question based only on the following context.
   If the context doesn't contain the answer, state that you don't have enough information.
 
   Context:
   {context}
 
-  Question: {input}
+  Question: {question}
 
   Answer:
-  """)
+  """
+
+  def format_docs(docs) -> str:
+      """Format retrieved documents into a single string."""
+      return "\n\n".join(doc.page_content for doc in docs)
 
   retriever = st.session_state.vstore.as_retriever()
-  doc_chain = create_stuff_documents_chain(llm, prompt)
-  rag_chain = create_retrieval_chain(retriever, doc_chain)
 
 Ask a question
 --------------
@@ -310,7 +370,19 @@ Ask a question
       update_history(question)
       start_time = time.time()
       with tracing_context:
-          st.session_state.response = rag_chain.invoke({"input": question})
+          # Retrieve relevant documents
+          docs = retriever.invoke(question)
+          # Format documents and create prompt
+          context = format_docs(docs)
+          prompt = create_rag_prompt(context, question)
+          # Get answer from LLM
+          answer = llm.invoke(prompt)
+        
+          # Format response to match original structure
+          st.session_state.response = {
+              "answer": answer.content if hasattr(answer, 'content') else str(answer),
+              "context": docs
+          }
       end_time = time.time()
       st.session_state.execution_time = end_time - start_time
       st.rerun()

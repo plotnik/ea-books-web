@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Book Chat (LC) &#8212; lit  documentation</title>
+    <title>Book Chat (LC) - Updated for LangChain v1 &#8212; lit  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
@@ -33,15 +33,22 @@
 
           <div class="body" role="main">
             
-  <section id="book-chat-lc">
-<h1>Book Chat (LC)<a class="headerlink" href="#book-chat-lc" title="Link to this heading">¶</a></h1>
-<p><em>Answer Questions About Book Contents Using RAG with LangChain and Chroma</em></p>
+  <section id="book-chat-lc-updated-for-langchain-v1">
+<h1>Book Chat (LC) - Updated for LangChain v1<a class="headerlink" href="#book-chat-lc-updated-for-langchain-v1" title="Link to this heading">¶</a></h1>
+<p><em>Answer Questions About Book Contents Using RAG with LangChain v1 and Chroma</em></p>
+<p>This script has been updated to work with LangChain v1.0, which deprecated
+the legacy chains (create_retrieval_chain, create_stuff_documents_chain) in favor
+of a more direct approach using retrievers and manual prompt formatting.</p>
 <ol class="arabic simple">
 <li><p>Use Calibre to convert EPUB files into HTMLZ format.</p></li>
 <li><p>Unpack the HTMLZ archive into an <code class="docutils literal notranslate"><span class="pre">html</span></code> folder.</p></li>
 <li><p>This script will analyze the <code class="docutils literal notranslate"><span class="pre">html/index.html</span></code> file and save the embeddings into a Chroma database.</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>chromadb<span class="w"> </span>langchain-chroma
+<p>Installation for LangChain v1:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>langchain<span class="w"> </span>langchain-core<span class="w"> </span>langchain-community
+pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>langchain-google-genai<span class="w"> </span>langchain-openai<span class="w"> </span>langchain-text-splitters
+pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>streamlit<span class="w"> </span>pyperclip<span class="w"> </span>tiktoken
+pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>chromadb<span class="w"> </span>langchain-chroma
 </pre></div>
 </div>
 <table class="docutils align-default" id="id2">
@@ -56,26 +63,20 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>LangGraph Studio</p></td>
+<tr class="row-even"><td><p>Build a semantic search engine with LangChain</p></td>
+<td><p><a class="reference external" href="https://docs.langchain.com/oss/python/langchain/knowledge-base">https://docs.langchain.com/oss/python/langchain/knowledge-base</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>LangGraph Studio</p></td>
 <td><p><a class="reference external" href="https://studio.langchain.com/">https://studio.langchain.com/</a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Trace with LangSmith</p></td>
+<tr class="row-even"><td><p>Trace with LangSmith</p></td>
 <td><p><a class="reference external" href="https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langchain">https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langchain</a></p></td>
 </tr>
-<tr class="row-even"><td><p>tracers - LangChain documentation</p></td>
+<tr class="row-odd"><td><p>tracers - LangChain documentation</p></td>
 <td><p><a class="reference external" href="https://python.langchain.com/api_reference/core/tracers.html">https://python.langchain.com/api_reference/core/tracers.html</a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Using Chroma in LangChain</p></td>
+<tr class="row-even"><td><p>Using Chroma in LangChain</p></td>
 <td><p><a class="reference external" href="https://python.langchain.com/docs/integrations/vectorstores/chroma/">https://python.langchain.com/docs/integrations/vectorstores/chroma/</a></p></td>
-</tr>
-<tr class="row-even"><td><p>OpenAI Embeddings Prices</p></td>
-<td><p><a class="reference external" href="https://platform.openai.com/docs/pricing#embeddings">https://platform.openai.com/docs/pricing#embeddings</a></p></td>
-</tr>
-<tr class="row-odd"><td><p>Gemini Models</p></td>
-<td><p><a class="reference external" href="https://ai.google.dev/gemini-api/docs/models">https://ai.google.dev/gemini-api/docs/models</a></p></td>
-</tr>
-<tr class="row-even"><td><p>Gemini Rate Limits</p></td>
-<td><p><a class="reference external" href="https://ai.google.dev/gemini-api/docs/rate-limits">https://ai.google.dev/gemini-api/docs/rate-limits</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -89,14 +90,20 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span><span class="p">,</span> <span class="n">OpenAIEmbeddings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_community.document_loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnstructuredHTMLLoader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_chroma</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chroma</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain.text_splitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecursiveCharacterTextSplitter</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain.chains</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_retrieval_chain</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain.chains.combine_documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_stuff_documents_chain</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.prompts</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatPromptTemplate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_text_splitters</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecursiveCharacterTextSplitter</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.tracers.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">tracing_v2_enabled</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.tracers.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">tracing_v2_enabled</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tracing_v2_enabled</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">nullcontext</span><span class="p">()</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">nullcontext</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">tiktoken</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tiktoken</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">tiktoken</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
 <p>See: <a class="reference external" href="PersistedList.py.html">PersistedList</a></p>
@@ -131,7 +138,31 @@
 </pre></div>
 </div>
 <p>Select Embeddings</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>URL</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>OpenAI Embeddings Prices</p></td>
+<td><p><a class="reference external" href="https://platform.openai.com/docs/pricing#embeddings">https://platform.openai.com/docs/pricing#embeddings</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Gemini Models</p></td>
+<td><p><a class="reference external" href="https://ai.google.dev/gemini-api/docs/models">https://ai.google.dev/gemini-api/docs/models</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Gemini Rate Limits</p></td>
+<td><p><a class="reference external" href="https://ai.google.dev/gemini-api/docs/rate-limits">https://ai.google.dev/gemini-api/docs/rate-limits</a></p></td>
+</tr>
+</tbody>
+</table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">embedding_models</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;google/gemini-embedding-001&quot;</span><span class="p">,</span>
     <span class="s2">&quot;openai/text-embedding-3-small&quot;</span><span class="p">,</span>
     <span class="s2">&quot;google/text-embedding-004&quot;</span><span class="p">,</span>           <span class="c1"># April 2024</span>
     <span class="s2">&quot;google/gemini-embedding-exp-03-07&quot;</span><span class="p">,</span>   <span class="c1"># March 2025 # Exceeds rate limit when selected</span>
@@ -143,6 +174,7 @@
     <span class="s2">&quot;google/text-embedding-004&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="s2">&quot;google/gemini-embedding-exp-03-07&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="s2">&quot;google/embedding-001&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">&quot;google/gemini-embedding-001&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">embedding_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.book-chat-embeddings&quot;</span><span class="p">)</span>
@@ -154,9 +186,21 @@
 <span class="n">embedding_model_vendor</span><span class="p">,</span> <span class="n">embed_model_name</span> <span class="o">=</span> <span class="n">embedding_model</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">embedding_model_vendor</span> <span class="o">==</span> <span class="s2">&quot;google&quot;</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Try to get the current event loop</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+        <span class="c1"># No event loop exists, create a new one</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+
     <span class="n">embedding</span> <span class="o">=</span> <span class="n">GoogleGenerativeAIEmbeddings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;models/</span><span class="si">{</span><span class="n">embed_model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
 <span class="k">elif</span> <span class="n">embedding_model_vendor</span> <span class="o">==</span> <span class="s2">&quot;openai&quot;</span><span class="p">:</span>
     <span class="n">embedding</span> <span class="o">=</span> <span class="n">OpenAIEmbeddings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">embed_model_name</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported embedding model vendor: </span><span class="si">{</span><span class="n">embedding_model_vendor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Folder to save index</p>
@@ -173,6 +217,10 @@
 <p>Print current folder name as a title</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">current_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;### </span><span class="si">{</span><span class="n">current_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">book_html</span><span class="p">):</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Book HTML file not found: </span><span class="si">{</span><span class="n">book_html</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Select LLM</p>
@@ -227,7 +275,7 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">history_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">history</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
-<span class="n">history</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;History&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">history</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;History&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">history</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 
 <span class="c1">#if st.sidebar.button(&quot;:recycle: &amp;nbsp; Update history&quot;, use_container_width=True):</span>
 <span class="c1">#    update_history(&quot;&quot;)</span>
@@ -249,9 +297,11 @@
 
     <span class="n">chunks</span> <span class="o">=</span> <span class="n">text_splitter</span><span class="o">.</span><span class="n">split_documents</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">chunks</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">create_index</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">persist_dir</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
-    <span class="c1"># Create a *persistent* Chroma collection in one step</span>
+</pre></div>
+</div>
+<p>Create a persistent Chroma collection in one step</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_index</span><span class="p">(</span><span class="n">persist_dir</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">embedding</span>
     <span class="n">vectorstore</span> <span class="o">=</span> <span class="n">Chroma</span><span class="o">.</span><span class="n">from_documents</span><span class="p">(</span>
         <span class="n">chunks</span><span class="p">,</span>
         <span class="n">embedding</span><span class="p">,</span>
@@ -282,10 +332,25 @@
     <span class="c1"># No index folder</span>
     <span class="n">chunks</span> <span class="o">=</span> <span class="n">create_doc_chunks</span><span class="p">(</span><span class="n">book_html</span><span class="p">)</span>
 
-    <span class="n">enc</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">)</span>
-    <span class="n">total_tokens</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">enc</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">page_content</span><span class="p">))</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">)</span>
-    <span class="n">cost</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tokens</span> <span class="o">/</span> <span class="mi">1_000_000</span><span class="p">)</span> <span class="o">*</span> <span class="n">embedding_prices</span><span class="p">[</span><span class="n">embedding_model</span><span class="p">]</span>
-    <span class="n">cents</span> <span class="o">=</span> <span class="n">cost</span><span class="o">/</span><span class="mi">100</span>
+    <span class="c1"># Calculate token count and cost if tiktoken is available</span>
+    <span class="k">if</span> <span class="n">tiktoken</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">)</span>
+            <span class="n">total_tokens</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">enc</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">page_content</span><span class="p">))</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">)</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tokens</span> <span class="o">/</span> <span class="mi">1_000_000</span><span class="p">)</span> <span class="o">*</span> <span class="n">embedding_prices</span><span class="p">[</span><span class="n">embedding_model</span><span class="p">]</span>
+            <span class="n">cents</span> <span class="o">=</span> <span class="n">cost</span><span class="o">/</span><span class="mi">100</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># Fallback to character count estimation</span>
+            <span class="n">total_chars</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">page_content</span><span class="p">)</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">)</span>
+            <span class="n">total_tokens</span> <span class="o">=</span> <span class="n">total_chars</span> <span class="o">//</span> <span class="mi">4</span>  <span class="c1"># Rough approximation</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tokens</span> <span class="o">/</span> <span class="mi">1_000_000</span><span class="p">)</span> <span class="o">*</span> <span class="n">embedding_prices</span><span class="p">[</span><span class="n">embedding_model</span><span class="p">]</span>
+            <span class="n">cents</span> <span class="o">=</span> <span class="n">cost</span><span class="o">/</span><span class="mi">100</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Fallback to character count estimation</span>
+        <span class="n">total_chars</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">page_content</span><span class="p">)</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">)</span>
+        <span class="n">total_tokens</span> <span class="o">=</span> <span class="n">total_chars</span> <span class="o">//</span> <span class="mi">4</span>  <span class="c1"># Rough approximation</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tokens</span> <span class="o">/</span> <span class="mi">1_000_000</span><span class="p">)</span> <span class="o">*</span> <span class="n">embedding_prices</span><span class="p">[</span><span class="n">embedding_model</span><span class="p">]</span>
+        <span class="n">cents</span> <span class="o">=</span> <span class="n">cost</span><span class="o">/</span><span class="mi">100</span>
 
     <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;**Embeddings price**&quot;</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
@@ -296,28 +361,31 @@
 
     <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:construction: &amp;nbsp; Create Index&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">tracing_context</span><span class="p">:</span>
-            <span class="n">create_index</span><span class="p">(</span><span class="n">book_html</span><span class="p">,</span> <span class="n">index_folder</span><span class="p">,</span> <span class="n">chunks</span><span class="p">)</span>
+            <span class="n">create_index</span><span class="p">(</span><span class="n">index_folder</span><span class="p">,</span> <span class="n">chunks</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Setup QA chain</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt</span> <span class="o">=</span> <span class="n">ChatPromptTemplate</span><span class="o">.</span><span class="n">from_template</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Answer the user&#39;s question based only on the following context.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_rag_prompt</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a simple RAG prompt combining context and question.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Answer the user&#39;s question based only on the following context.</span>
 <span class="s2">If the context doesn&#39;t contain the answer, state that you don&#39;t have enough information.</span>
 
 <span class="s2">Context:</span>
-<span class="si">{context}</span>
+<span class="si">{</span><span class="n">context</span><span class="si">}</span>
 
-<span class="s2">Question: </span><span class="si">{input}</span>
+<span class="s2">Question: </span><span class="si">{</span><span class="n">question</span><span class="si">}</span>
 
 <span class="s2">Answer:</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">format_docs</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format retrieved documents into a single string.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">)</span>
 
 <span class="n">retriever</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">vstore</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">()</span>
-<span class="n">doc_chain</span> <span class="o">=</span> <span class="n">create_stuff_documents_chain</span><span class="p">(</span><span class="n">llm</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
-<span class="n">rag_chain</span> <span class="o">=</span> <span class="n">create_retrieval_chain</span><span class="p">(</span><span class="n">retriever</span><span class="p">,</span> <span class="n">doc_chain</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -329,7 +397,19 @@
     <span class="n">update_history</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">with</span> <span class="n">tracing_context</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">rag_chain</span><span class="o">.</span><span class="n">invoke</span><span class="p">({</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">})</span>
+        <span class="c1"># Retrieve relevant documents</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="n">retriever</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+        <span class="c1"># Format documents and create prompt</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">format_docs</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="n">create_rag_prompt</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">question</span><span class="p">)</span>
+        <span class="c1"># Get answer from LLM</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">llm</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+
+        <span class="c1"># Format response to match original structure</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="n">answer</span><span class="o">.</span><span class="n">content</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">answer</span><span class="p">),</span>
+            <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="n">docs</span>
+        <span class="p">}</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
@@ -384,7 +464,7 @@
 <li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o-bases.py.html">Obsidian Bases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neo_rag.py.html">Neo RAG</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Book Chat (LC)</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Book Chat (LC) - Updated for LangChain v1</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#id1">Chroma</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ask-a-question">Ask a question</a></li>
 </ul>
@@ -393,12 +473,15 @@
 <li class="toctree-l1"><a class="reference internal" href="li_extract.py.html">LlamaIndex Extractors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_intervals.py.html">Time Intervals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="explain_java.py.html">Explain Java</a></li>
 <li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_panels.py.html">Grafana Panels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explain_java.py.html">Explain Java</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="firebase_edit.py.html">FB Prompts Edit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="firebase_xml_sync.py.html">FB Prompts Xml</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
 <li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
 <li class="toctree-l1"><a class="reference internal" href="epub_toc.py.html">EPUB TOC</a></li>
@@ -409,8 +492,6 @@
 <li class="toctree-l1"><a class="reference internal" href="curl_clean.py.html">curl clean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
-<li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ollama_chat.py.html">Ollama Chat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>

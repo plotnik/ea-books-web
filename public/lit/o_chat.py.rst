@@ -10,10 +10,8 @@ To find the Obsidian folder, this script searches the current directory for the 
    :widths: 10 30
 
    "LlamaIndex Google GenAI Embeddings", https://github.com/run-llama/llama_index/blob/main/docs/docs/examples/embeddings/google_genai.ipynb  
-   "Google Embeddings", https://ai.google.dev/gemini-api/docs/embeddings
    "Using VectorStoreIndex - Guide", https://github.com/run-llama/llama_index/blob/main/docs/docs/module_guides/indexing/vector_store_index.md
-   "Gemini Model variants", https://ai.google.dev/gemini-api/docs/models/gemini#model-variations
-
+   
 ::
 
   import streamlit as st
@@ -61,6 +59,12 @@ Folder to save index
 
 Select LLM
 
+.. csv-table:: LlamaIndex Links
+   :header: "Name", "URL"
+   :widths: 10 30
+   
+   "Gemini Model variants", https://ai.google.dev/gemini-api/docs/models/gemini#model-variations
+   
 ::
 
   g_key = os.getenv("GEMINI_API_KEY")
@@ -86,6 +90,12 @@ Select LLM
 
 Select Embeddings
 
+.. csv-table:: LlamaIndex Links
+   :header: "Name", "URL"
+   :widths: 10 30
+   
+   "Google Embeddings", https://ai.google.dev/gemini-api/docs/embeddings
+      
 ::
 
   embed_model_names = [

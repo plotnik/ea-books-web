@@ -22,12 +22,15 @@ Literate Programs
    li_extract.py
    L1_Router_Engine.py   
    time_intervals.py
-   explain_java.py
    md_view.py
    pan_ui.py
+   grafana_panels.py
+   grafana_stats.py   
+   jira_stats.py
+   explain_java.py
+   code_review.py
    firebase_edit.py
    firebase_xml_sync.py
-   code_review.py
    doc_note.py
    up_file.py
    epub_toc.py
@@ -38,8 +41,6 @@ Literate Programs
    curl_clean.py
    cmp_folders.py
    adoc_links.py
-   jira_stats.py
-   grafana_stats.py
    google_search.py
    ollama_chat.py
    cmp_props.py

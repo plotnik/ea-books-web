@@ -465,6 +465,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
+<li><a href="#_chapter_3_building_workflows_with_langgraph">Chapter 3: Building Workflows with LangGraph</a>
+<ul class="sectlevel2">
+<li><a href="#_3_1_langgraph_fundamentals">3.1 LangGraph fundamentals</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1424,10 +1429,226 @@ applications combining visual and textual reasoning.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_chapter_3_building_workflows_with_langgraph">Chapter 3: Building Workflows with LangGraph</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_3_1_langgraph_fundamentals">3.1 LangGraph fundamentals</h3>
+<div class="paragraph">
+<p>Purpose and differentiator</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>LangGraph (from LangChain) is an orchestration framework for complex
+AI workflows. It supports features many others don’t: cycles in graphs
+(not only DAGs), streaming, pre-built loops/components for generative AI
+(e.g., human moderation), and a low-level API for granular control.</p>
+</li>
+<li>
+<p>Recommendation: take the free LangGraph course at
+academy.langchain.com for deeper learning.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Basic concepts</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Graphs/workflows: composed of nodes (Python functions) and edges;
+START and END are reserved nodes.</p>
+</li>
+<li>
+<p>State: a workflow-wide context (think Python dict / TypedDict /
+dataclass / Pydantic model). Nodes receive an immutable snapshot of
+state and must return a dict of key-value updates. LangGraph merges
+these updates into the master state—preventing side effects and making
+changes explicit.</p>
+</li>
+<li>
+<p>Execution model: runs in discrete iterations called supersteps
+(inspired by Pregel), possibly executing nodes in parallel and merging
+their state updates. You can control recursion limits and max supersteps
+to avoid infinite cycles.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Conditional edges and control flow</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Conditional edges allow branching based on current state. A
+conditional function takes state and returns a destination (or a typed
+Literal). If no type hint is present, you can pass an explicit mapping
+to add_conditional_edges.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Reducers (how state keys are merged)</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Default reducer replaces values.</p>
+</li>
+<li>
+<p>Built-in/add reducers: use typing.Annotated with an operator (e.g.,
+add) to concatenate lists.</p>
+</li>
+<li>
+<p>Custom reducers: you can supply your own function to control how old
+and new values merge.</p>
+</li>
+<li>
+<p>add_messages reducer and MessagesState exist to handle conversational
+message merging (useful for chat/LLM workflows).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Configurability</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Nodes can accept a second argument: RunnableConfig (typed dict). It
+includes execution controls (e.g., recursion_limit) and a configurable
+dict for user parameters (e.g., switching model_provider/model_name at
+runtime).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Controlled/structured generation and output parsing</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>LLM outputs are often free text; to feed downstream steps reliably,
+use controlled generation and output parsers.</p>
+</li>
+<li>
+<p>LangChain provides OutputParsers (Enum, JSON, CSV, Pydantic,
+DataFrame, etc.), each implementing BaseGenerationOutputParser.</p>
+</li>
+<li>
+<p>Example: EnumOutputParser converts text like "YES" / "NO" into Enum
+values. Parsers can be chained with LLMs and embedded inside LangGraph
+nodes.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Error handling and robustness</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Failures can occur anywhere (API/network/LLM outputs). Recommended
+tactics:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Catch exceptions, log them, and return safe/default outputs so the
+workflow can continue.</p>
+</li>
+<li>
+<p>Convert exceptions into text for downstream LLMs to reason about
+recovery.</p>
+</li>
+<li>
+<p>Use fake chat models provided by LangChain for testing
+(GenericFakeChatModel, FakeChatModel, FakeListChatModel).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Retries:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Generic Runnable retry via .with_retry (configure exception types,
+wait/backoff, attempts).</p>
+</li>
+<li>
+<p>Node-level RetryPolicy in LangGraph (retry_on, max_attempts).</p>
+</li>
+<li>
+<p>Semantic retry (RetryWithErrorOutputParser): when parsing fails, feed
+the original prompt, completion, and parse error back to an LLM that
+attempts to fix the output.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Fallbacks:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Define alternative runnables/chains to run if primary execution fails
+(with_fallbacks).</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Takeaways</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>LangGraph provides a stateful, flexible orchestration model optimized
+for generative AI workflows: explicit immutable state updates, reducers
+to manage merged values, conditional edges and cycles, configurable
+execution, and built-in mechanisms for parsing, retrying, and falling
+back when integrating LLMs.</p>
+</li>
+<li>
+<p>For complex agentic or multi-step workflows, refer to later chapters
+(5 and 6) and LangChain docs/examples for advanced patterns.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>What are the reserved built-in nodes used to mark the beginning and end of a LangGraph workflow?</p>
+</li>
+<li>
+<p>How does LangGraph provide state to nodes and how must nodes update the workflow state?</p>
+</li>
+<li>
+<p>What is a "superstep" in LangGraph and which system inspired this execution model?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-07-31 00:10:47 +0300
+Last updated 2025-10-26 12:21:19 +0200
 </div>
 </div>
 </body>

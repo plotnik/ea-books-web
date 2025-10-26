@@ -1,10 +1,8 @@
 # Create Image
 # ============
 #
-# ----
 # | **OpenAI Create image API:**
 # | https://platform.openai.com/docs/api-reference/images/create
-# ----
 #
 # ::
 
@@ -84,11 +82,11 @@ def update_history(prompt):
     # Add current date in YYYY-MM-DD format
     current_date = date.today().strftime("%Y-%m-%d")
     new_text = f"{prompt}\n\n{current_date}\n---\n"
-    
+  
     # If contents of history_file already starts with new_text then don't update history.
     if history.startswith(new_text):
         return
-    
+  
     with open(history_file, 'w', encoding="utf-8") as file:
         file.write(new_text + history)
 
@@ -102,7 +100,7 @@ image_url = None
 
 def generate_image(prompt):
     client = OpenAI()
-    
+  
     start_time = time.time()
 
     img = client.images.generate(
@@ -111,10 +109,10 @@ def generate_image(prompt):
         n=1,
         size=image_size
     )
-    
+  
     end_time = time.time()
     st.session_state.execution_time = end_time - start_time
-    
+  
     print("-------------------")
     print(img)
     print("-------------------")
@@ -122,10 +120,10 @@ def generate_image(prompt):
         image_bytes = base64.b64decode(img.data[0].b64_json)
         with open(image_file, "wb") as f:
             f.write(image_bytes)
-            
+          
     global revised_prompt
     revised_prompt = img.data[0].revised_prompt
-    
+  
     global image_url
     image_url = img.data[0].url
 
@@ -137,7 +135,7 @@ col1, col2 = st.columns(2)
 
 def button_disabled():
     return len(image_title) == 0
-    
+  
 with col1:
     prompt = st.text_area(f"Prompt", height=300)
     if st.button("Generate", type="primary", use_container_width=True, disabled=button_disabled()):
@@ -149,7 +147,7 @@ with col2:
     if st.button("Update", use_container_width=True):
         with open(history_file, 'w', encoding="utf-8") as file:
             file.write(history)
-            
+          
 # Show image
 #
 # ::

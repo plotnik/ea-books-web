@@ -1,10 +1,8 @@
 Create Image
 ============
 
-----
 | **OpenAI Create image API:**
 | https://platform.openai.com/docs/api-reference/images/create
-----
 
 ::
 
