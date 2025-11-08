@@ -21,7 +21,6 @@ Script is written in `literate programming`_.
    :widths: 10 30
 
    "OpenAI API Examples", https://platform.openai.com/examples
-   "How to count tokens with tiktoken", https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
 
 ::
 
@@ -38,6 +37,14 @@ Script is written in `literate programming`_.
   from pathlib import Path
   from typing import List
   from collections import namedtuple
+
+See: PersistedList_
+
+.. _PersistedList: PersistedList.py.html
+ 
+::
+
+  from PersistedList import PersistedList
 
 Print banner.
 
@@ -101,136 +108,45 @@ Prompts
 Select LLM
 ----------
 
-.. csv-table:: Useful Links
-   :header: "Name", "URL"
+.. csv-table:: OpenAI
    :widths: 10 30
+   :width: 100%
 
    "OpenAI Models", https://platform.openai.com/docs/models
+   "OpenAI Pricing", https://platform.openai.com/docs/pricing#latest-models
+  
+.. csv-table:: Gemini
+   :widths: 10 30
+   :width: 100%
+  
    "Gemini Models", https://ai.google.dev/gemini-api/docs/models
-
+   "Gemini Pricing", https://ai.google.dev/gemini-api/docs/pricing
+  
 ::
 
   llm_prices = {
       "gemini-2.5-flash-preview-05-20": 0.0,
       "gemma-3-27b-it": 0.0,
       "gemini-2.0-flash": 0.0,
-
-      "gpt-4.1-mini": 0.4,
-      "gpt-4.1-nano": 0.1,
-      "gpt-4.1": 2.0,
-      "gpt-4o-mini": 0.15,
-      "gpt-4o": 2.5,
-
-      "o3-mini": 1.10,
-      "o3": 2.0,
-      "o3-pro": 20.0,
+  
+      "gpt-5": 1.25,
+      "gpt-5-mini": 0.25,
+      "gpt-5-nano": 0.05,
   }
 
   def get_llm_properties(llm_model):
       if llm_model.startswith("gemini"):
           return {"google": True, "temperature": True, "xml": False}
-        
+    
       elif llm_model.startswith("gemma"): 
           return {"google": True, "temperature": True, "xml": True}
-    
-      elif llm_model.startswith("gpt"): 
-          return {"google": False, "temperature": True, "xml": False}
         
-      else: #o3
+      elif llm_model.startswith("gpt-5"): 
           return {"google": False, "temperature": False, "xml": False}
         
-Persisted List   
---------------    
-
-.. csv-table:: History
-   :header: "Date", "Comment"
-   :widths: 10 30
-
-   "2025-06-13", "New elements come first"
-   "", "Copied from: `explain_java.py`_"
-
-.. _explain_java.py: explain_java.py.html#persisted-list
-  
-::
-
-  class PersistedList:
-      """
-      A tiny helper that remembers a list of strings on disk.
-      """
-
-      def __init__(self, filename: str) -> None:
-          self.filename = Path(filename)
-          self.names: List[str] = self._read_from_file()
-
-      # ──────────────────────────────────────────────────────────────
-      # Private helpers
-      # ──────────────────────────────────────────────────────────────
-
-      def _read_from_file(self) -> List[str]:
-          """
-          Return the list stored on disk (empty if the file is missing).
-          """
-          if self.filename.exists():
-              with self.filename.open("r", encoding="utf-8") as fh:
-                  return [line.strip() for line in fh if line.strip()]
-          return []
-
-      def _write_to_file(self) -> None:
-          """
-          Persist the current list to disk (one item per line).
-          """
-          self.filename.parent.mkdir(parents=True, exist_ok=True)
-          with self.filename.open("w", encoding="utf-8") as fh:
-              fh.write("\n".join(self.names))
-
-      @staticmethod
-      def _remove_strings(source: List[str], to_remove: List[str]) -> List[str]:
-          """
-          Return a copy of *source* without any element that occurs in *to_remove*.
-          """
-          removal_set = set(to_remove)
-          return [s for s in source if s not in removal_set]
-
-      # ──────────────────────────────────────────────────────────────
-      # Public API
-      # ──────────────────────────────────────────────────────────────
-
-      def sort_by_pattern(self, all_names: List[str]) -> List[str]:
-          """
-          Sort *all_names* so that previously‑stored names keep their old
-          ordering, and every new name is appended alphabetically.
-          The internal list is updated and re‑written to disk.
-          """
-          priority = {name: idx for idx, name in enumerate(self.names)}
-
-          sorted_names = sorted(
-              all_names,
-              key=lambda n: (1, priority[n]) if n in priority else (0, n)
-          )
-
-          self.names = sorted_names
-          self._write_to_file()
-          return sorted_names
-
-      def select(self, selected_name: str) -> None:
-          """
-          Move *selected_name* to the top of the list (inserting it if it
-          wasn’t present) and persist the change.
-          """
-          self.names = self._remove_strings(self.names, [selected_name])
-          self.names.insert(0, selected_name)
-          self._write_to_file()
-
-      # ──────────────────────────────────────────────────────────────
-      # Convenience
-      # ──────────────────────────────────────────────────────────────
-
-      def __iter__(self):
-          return iter(self.names)
-
-      def __repr__(self) -> str:
-          return f"{self.__class__.__name__}({self.filename!s}, {self.names})"
-
+      else: #o3
+          return {"google": False, "temperature": True, "xml": False}
+    
 Select LLM.
 Remember which LLM was used last time.
 ::
@@ -262,7 +178,7 @@ Select Obsidian folder from recent vaults.
           del st.session_state["llm_result"]
       if "note_name" in st.session_state:
           del st.session_state["note_name"]
-    
+
   home_folder = os.path.expanduser('~')
   obsidian_json_path = f"{home_folder}/Library/Application Support/obsidian/obsidian.json"
   with open(obsidian_json_path, "r") as json_file:
@@ -342,6 +258,12 @@ Get the number of tokens.
 Tokens & Price
 --------------
 
+.. csv-table:: Useful Links
+   :header: "Name", "URL"
+   :widths: 10 30
+
+   "How to count tokens with tiktoken", https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
+
 Certain models are not compatible with ``tiktoken 0.7.0``, 
 so we have added a separate configuration for them.
 
@@ -353,10 +275,10 @@ so we have added a separate configuration for them.
       encoding = tiktoken.encoding_for_model(llm_model_tiktoken)
       tokens = encoding.encode(text)
 
-      cents = round(len(tokens) * llm_prices[llm_model]/10000, 5)
+      cents = round(len(tokens) * llm_prices[llm_model]/10000, 3)
 
       st.sidebar.write(f'''
-          | Characters | Tokens | Cents |
+          | Chars | Tokens | Cents |
           |---|---|---|
           | {len(text)} | {len(tokens)} | {cents} |
           ''')
@@ -392,9 +314,9 @@ Generic LLM call.
 
       # Call LLM
       props = get_llm_properties(llm_model)
-    
+
       llm_client = g_client if props["google"] else client
-    
+
       if props["xml"]:
           messages = [
               {"role": "user", "content": f"<prompt>{prompt}</prompt>\n<query>{text}</query>"},
@@ -404,7 +326,7 @@ Generic LLM call.
               {"role": "developer", "content": prompt},
               {"role": "user", "content": text},
           ] 
-        
+    
       if props["temperature"]:    
           response = llm_client.chat.completions.create(
               model=llm_model,
@@ -416,9 +338,9 @@ Generic LLM call.
               model=llm_model,
               messages=messages,
           )        
-    
+
       choice = response.choices[0]
-  
+
       # Save result in session       
       st.session_state.llm_result = choice.message.content 
       st.session_state.note_name = note_name
@@ -463,7 +385,7 @@ Sidebar buttons
 
   if "llm_result" in st.session_state and st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
       pyperclip.copy(st.session_state.llm_result)
-    
+
   st.sidebar.write('---')
 
   if st.sidebar.button(f' `Summarize` {"&nbsp;"*8} :test_tube: `v.2`'):

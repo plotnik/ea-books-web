@@ -34,7 +34,122 @@
             
   <section id="persisted-list">
 <h1>Persisted List<a class="headerlink" href="#persisted-list" title="Link to this heading">¶</a></h1>
-<table class="docutils align-default" id="id1">
+<p>A tiny helper that remembers a list of strings on disk.</p>
+<details class="admonition-example admonition">
+<summary class="admonition-title">Example</summary>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.persisted&quot;</span><span class="p">)</span>
+<span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Email&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Home phone&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Mobile phone&quot;</span>
+<span class="p">]</span>
+<span class="n">ordered</span> <span class="o">=</span> <span class="n">persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">streamlit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">st</span>
+
+<span class="n">option</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
+    <span class="s2">&quot;How would you like to be contacted?&quot;</span><span class="p">,</span>
+    <span class="n">ordered</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;You selected:&quot;</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
+<span class="n">persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+</pre></div>
+</div>
+</details>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PersistedList</span><span class="p">:</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="init__">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#init__" title="Link to this definition">¶</a></dt>
+<dd><p>Set <code class="docutils literal notranslate"><span class="pre">filename</span></code>.</p>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="sort_by_pattern">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sort_by_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sort_by_pattern" title="Link to this definition">¶</a></dt>
+<dd><p>Sort <code class="docutils literal notranslate"><span class="pre">all_names</span></code> so that previously‑stored names keep their old
+ordering, and every new name is appended alphabetically.
+The internal list is updated and re‑written to disk.</p>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">sort_by_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_from_file</span><span class="p">()</span>
+
+    <span class="n">priority</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)}</span>
+
+    <span class="n">sorted_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="n">all_names</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">priority</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">priority</span> <span class="k">else</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">sorted_names</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_write_to_file</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">sorted_names</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="select">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select" title="Link to this definition">¶</a></dt>
+<dd><p>Move <code class="docutils literal notranslate"><span class="pre">selected_name</span></code> to the top of the list (inserting it if it
+wasn’t present) and persist the change.</p>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># if 1st element of `self.names` equals to `selected_name` then return</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">selected_name</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_strings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="p">[</span><span class="n">selected_name</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">selected_name</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_write_to_file</span><span class="p">()</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>Private helpers</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_read_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the list stored on disk (empty if the file is missing).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fh</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="p">[]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Persist the current list to disk (one item per line).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">))</span>
+
+<span class="nd">@staticmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_remove_strings</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">to_remove</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a copy of *source* without any element that occurs in *to_remove*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">removal_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">to_remove</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">removal_set</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Convenience</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">!s}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="si">}</span><span class="s2">)&quot;</span>
+</pre></div>
+</div>
+<table class="docutils align-default" id="id1" style="width: 100%">
 <caption><span class="caption-text">History</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
@@ -46,102 +161,20 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>2025-07-30</p></td>
+<tr class="row-even"><td><p>2025-11-07</p></td>
+<td><p>Read file in <cite>sort_by_pattern</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>2025-07-30</p></td>
 <td><p>Cache in <cite>select</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>2025-06-13</p></td>
+<tr class="row-even"><td><p>2025-06-13</p></td>
 <td><p>New elements come first</p></td>
 </tr>
-<tr class="row-even"><td></td>
+<tr class="row-odd"><td></td>
 <td><p>Copied from: <a class="reference external" href="explain_java.py.html#persisted-list">explain_java.py</a></p></td>
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">PersistedList</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A tiny helper that remembers a list of strings on disk.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_from_file</span><span class="p">()</span>
-
-    <span class="c1"># ──────────────────────────────────────────────────────────────</span>
-    <span class="c1"># Private helpers</span>
-    <span class="c1"># ──────────────────────────────────────────────────────────────</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_read_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the list stored on disk (empty if the file is missing).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fh</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
-        <span class="k">return</span> <span class="p">[]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_write_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Persist the current list to disk (one item per line).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-            <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">))</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_strings</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">to_remove</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a copy of *source* without any element that occurs in *to_remove*.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">removal_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">to_remove</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">removal_set</span><span class="p">]</span>
-
-    <span class="c1"># ──────────────────────────────────────────────────────────────</span>
-    <span class="c1"># Public API</span>
-    <span class="c1"># ──────────────────────────────────────────────────────────────</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">sort_by_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sort *all_names* so that previously‑stored names keep their old</span>
-<span class="sd">        ordering, and every new name is appended alphabetically.</span>
-<span class="sd">        The internal list is updated and re‑written to disk.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">priority</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)}</span>
-
-        <span class="n">sorted_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-            <span class="n">all_names</span><span class="p">,</span>
-            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">priority</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">priority</span> <span class="k">else</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">sorted_names</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_write_to_file</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">sorted_names</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Move *selected_name* to the top of the list (inserting it if it</span>
-<span class="sd">        wasn’t present) and persist the change.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># if 1st element of `self.names` equals to `selected_name` then return</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">selected_name</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_strings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="p">[</span><span class="n">selected_name</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">selected_name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_write_to_file</span><span class="p">()</span>
-
-    <span class="c1"># ──────────────────────────────────────────────────────────────</span>
-    <span class="c1"># Convenience</span>
-    <span class="c1"># ──────────────────────────────────────────────────────────────</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">!s}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="si">}</span><span class="s2">)&quot;</span>
-</pre></div>
-</div>
 </section>
 
 
@@ -179,7 +212,7 @@
 <li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o-bases.py.html">Obsidian Bases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neo_rag.py.html">Neo RAG</a></li>
-<li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC) - Updated for LangChain v1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_chat.py.html">Book Chat (LI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="li_extract.py.html">LlamaIndex Extractors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
@@ -207,13 +240,19 @@
 <li class="toctree-l1"><a class="reference internal" href="ollama_chat.py.html">Ollama Chat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_image.py.html">Create Image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
 <li class="toctree-l1"><a class="reference internal" href="st_gmail.py.html">GMail Clean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
-<li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fw_picture.py.html">FW Picture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="checkers.py.html">Шашки</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Persisted List</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Persisted List</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#init__"><code class="docutils literal notranslate"><span class="pre">__init__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sort_by_pattern"><code class="docutils literal notranslate"><span class="pre">sort_by_pattern()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#select"><code class="docutils literal notranslate"><span class="pre">select()</span></code></a></li>
+</ul>
+</li>
 </ul>
 
 <div class="relations">

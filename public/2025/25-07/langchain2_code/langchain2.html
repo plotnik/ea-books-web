@@ -468,6 +468,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_chapter_3_building_workflows_with_langgraph">Chapter 3: Building Workflows with LangGraph</a>
 <ul class="sectlevel2">
 <li><a href="#_3_1_langgraph_fundamentals">3.1 LangGraph fundamentals</a></li>
+<li><a href="#_3_2_prompt_engineering">3.2 Prompt engineering</a></li>
 </ul>
 </li>
 </ul>
@@ -1435,7 +1436,7 @@ applications combining visual and textual reasoning.</p>
 <div class="sect2">
 <h3 id="_3_1_langgraph_fundamentals">3.1 LangGraph fundamentals</h3>
 <div class="paragraph">
-<p>Purpose and differentiator</p>
+<p><strong>Purpose and differentiator</strong></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1446,29 +1447,29 @@ AI workflows. It supports features many others don’t: cycles in graphs
 (e.g., human moderation), and a low-level API for granular control.</p>
 </li>
 <li>
-<p>Recommendation: take the free LangGraph course at
-academy.langchain.com for deeper learning.</p>
+<p><em>Recommendation:</em> take the free LangGraph course at
+<a href="https://academy.langchain.com/" class="bare">https://academy.langchain.com/</a> for deeper learning.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Basic concepts</p>
+<p><strong>Basic concepts</strong></p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Graphs/workflows: composed of nodes (Python functions) and edges;
+<p><em>Graphs/workflows:</em> composed of nodes (Python functions) and edges;
 START and END are reserved nodes.</p>
 </li>
 <li>
-<p>State: a workflow-wide context (think Python dict / TypedDict /
+<p><em>State:</em> a workflow-wide context (think Python dict / TypedDict /
 dataclass / Pydantic model). Nodes receive an immutable snapshot of
 state and must return a dict of key-value updates. LangGraph merges
 these updates into the master state—preventing side effects and making
 changes explicit.</p>
 </li>
 <li>
-<p>Execution model: runs in discrete iterations called supersteps
+<p><em>Execution model:</em> runs in discrete iterations called supersteps
 (inspired by Pregel), possibly executing nodes in parallel and merging
 their state updates. You can control recursion limits and max supersteps
 to avoid infinite cycles.</p>
@@ -1476,7 +1477,7 @@ to avoid infinite cycles.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Conditional edges and control flow</p>
+<p><strong>Conditional edges and control flow</strong></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1484,12 +1485,12 @@ to avoid infinite cycles.</p>
 <p>Conditional edges allow branching based on current state. A
 conditional function takes state and returns a destination (or a typed
 Literal). If no type hint is present, you can pass an explicit mapping
-to add_conditional_edges.</p>
+to <code>add_conditional_edges</code>.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Reducers (how state keys are merged)</p>
+<p><strong>Reducers (how state keys are merged)</strong></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1497,34 +1498,34 @@ to add_conditional_edges.</p>
 <p>Default reducer replaces values.</p>
 </li>
 <li>
-<p>Built-in/add reducers: use typing.Annotated with an operator (e.g.,
+<p><em>Built-in/add reducers:</em> use <code>typing.Annotated</code> with an operator (e.g.,
 add) to concatenate lists.</p>
 </li>
 <li>
-<p>Custom reducers: you can supply your own function to control how old
+<p><em>Custom reducers:</em> you can supply your own function to control how old
 and new values merge.</p>
 </li>
 <li>
-<p>add_messages reducer and MessagesState exist to handle conversational
+<p><code>add_messages</code> reducer and <code>MessagesState</code> exist to handle conversational
 message merging (useful for chat/LLM workflows).</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Configurability</p>
+<p><strong>Configurability</strong></p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Nodes can accept a second argument: RunnableConfig (typed dict). It
-includes execution controls (e.g., recursion_limit) and a configurable
-dict for user parameters (e.g., switching model_provider/model_name at
+<p>Nodes can accept a second argument: <code>RunnableConfig</code> (typed dict). It
+includes execution controls (e.g., <code>recursion_limit</code>) and a configurable
+dict for user parameters (e.g., switching <code>model_provider</code>/<code>model_name</code> at
 runtime).</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Controlled/structured generation and output parsing</p>
+<p><strong>Controlled/structured generation and output parsing</strong></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1534,17 +1535,17 @@ use controlled generation and output parsers.</p>
 </li>
 <li>
 <p>LangChain provides OutputParsers (Enum, JSON, CSV, Pydantic,
-DataFrame, etc.), each implementing BaseGenerationOutputParser.</p>
+DataFrame, etc.), each implementing <code>BaseGenerationOutputParser</code>.</p>
 </li>
 <li>
-<p>Example: EnumOutputParser converts text like "YES" / "NO" into Enum
+<p>Example: <code>EnumOutputParser</code> converts text like "YES" / "NO" into Enum
 values. Parsers can be chained with LLMs and embedded inside LangGraph
 nodes.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Error handling and robustness</p>
+<p><strong>Error handling and robustness</strong></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1563,7 +1564,7 @@ recovery.</p>
 </li>
 <li>
 <p>Use fake chat models provided by LangChain for testing
-(GenericFakeChatModel, FakeChatModel, FakeListChatModel).</p>
+(<code>GenericFakeChatModel</code>, <code>FakeChatModel</code>, <code>FakeListChatModel</code>).</p>
 </li>
 </ul>
 </div>
@@ -1573,14 +1574,14 @@ recovery.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Generic Runnable retry via .with_retry (configure exception types,
+<p>Generic Runnable retry via <code>.with_retry</code> (configure exception types,
 wait/backoff, attempts).</p>
 </li>
 <li>
-<p>Node-level RetryPolicy in LangGraph (retry_on, max_attempts).</p>
+<p>Node-level RetryPolicy in LangGraph (<code>retry_on</code>, <code>max_attempts</code>).</p>
 </li>
 <li>
-<p>Semantic retry (RetryWithErrorOutputParser): when parsing fails, feed
+<p>Semantic retry (<code>RetryWithErrorOutputParser</code>): when parsing fails, feed
 the original prompt, completion, and parse error back to an LLM that
 attempts to fix the output.</p>
 </li>
@@ -1593,7 +1594,7 @@ attempts to fix the output.</p>
 <ul>
 <li>
 <p>Define alternative runnables/chains to run if primary execution fails
-(with_fallbacks).</p>
+(<code>with_fallbacks</code>).</p>
 </li>
 </ul>
 </div>
@@ -1601,7 +1602,7 @@ attempts to fix the output.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Takeaways</p>
+<p><strong>Takeaways</strong></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1643,12 +1644,195 @@ back when integrating LLMs.</p>
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_3_2_prompt_engineering">3.2 Prompt engineering</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Prompt engineering vs prompt design</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Prompt engineering: tuning a prompt (or template) to improve
+performance on a specific task.</p>
+</li>
+<li>
+<p>Prompt design: creating more general prompts that elicit better
+responses across many tasks.</p>
+</li>
+<li>
+<p>Both build on in-context learning: LLMs can adapt to new tasks via
+natural‑language instructions and examples.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Key prompt abstractions in LangChain</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>PromptTemplate:</strong> serializable runnable template that substitutes
+variables at runtime.</p>
+</li>
+<li>
+<p><strong>ChatPromptTemplate / message templates:</strong> build chat-style inputs
+(system/human/assistant). You can pass messages as a list or as tuples
+for convenience.</p>
+</li>
+<li>
+<p><strong>Placeholders / MessagesPlaceholder:</strong> insert lists of messages at
+runtime (common use: conversation history).</p>
+</li>
+<li>
+<p><strong>Partial templates and composition:</strong> partially fill templates, add
+functions as values, concatenate templates, or use
+PipelinePromptTemplate to build larger prompts.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Zero-shot vs few-shot prompting</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Zero-shot:</strong> task description without examples. Useful tricks: set a
+role/persona and be explicit about style (creative, concise, factual).</p>
+</li>
+<li>
+<p><strong>Gemini guideline:</strong> include persona, task, relevant context, and
+desired format.</p>
+</li>
+<li>
+<p><strong>Few-shot:</strong> include input–output examples to steer behavior. For large
+example sets, load examples from files/db instead of hard-coding.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Dynamic few-shot / example selection</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Select examples per input (semantic similarity, length/freshness
+limits). LangChain provides built-in example selectors
+(<code>langchain_core.example_selectors</code>) that can be plugged into
+<strong>FewShotPromptTemplate</strong>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Chain-of-Thought (CoT)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>CoT prompts ask the model to show intermediate step-by-step reasoning
+(e.g., <em>“Let’s think step by step”</em>), improving complex reasoning and math
+performance.</p>
+</li>
+<li>
+<p>Often used zero-shot or with few-shot examples; many
+reasoning-oriented models are trained in CoT format.</p>
+</li>
+<li>
+<p>Practical pattern: run a CoT chain, then parse/extract a concise
+final answer from the CoT output.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Self-consistency</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Sample multiple outputs at higher temperature, then aggregate (e.g.,
+majority vote) to improve reliability for low-dimensional outputs like
+classifications or extractions.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Model/provider considerations</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Providers have different prompting recommendations (e.g., Anthropic
+favors XML-like tags). Reasoning models (<code>o3-mini</code>, <code>gemini-flash-thinking</code>)
+may have their own best practices and sometimes don’t need CoT/few-shot.</p>
+</li>
+<li>
+<p>When switching providers, re-evaluate prompts and end-to-end
+performance; you may need multiple prompt templates and dynamic
+selection by provider.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Tools &amp; references</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Papers: “The Prompt Report” (Schulhoff et al.) for prompt taxonomy;
+CoT paper by Jason Wei et al.</p>
+</li>
+<li>
+<p>LangSmith Hub and LangChain utilities provide reusable prompt
+artifacts and example prompt templates.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Next concern</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If prompts grow too long and exceed a model’s context window,
+additional strategies are needed (topic introduced as lead-in to the
+next chapter).</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the <code>MessagesPlaceholder</code> example, after invoking <code>chat_prompt_template.invoke</code> with <code>job_description="fake"</code> and <code>history=[("human", "hi!"), ("ai", "hi!")]</code>, how many messages are in the resulting messages list?</p>
+</li>
+<li>
+<p>In the partial <code>PromptTemplate</code> example where <code>system_template.partial(a="a")</code> is invoked with <code>{"b": "b"}</code>, what exact text is printed?</p>
+</li>
+<li>
+<p>What concise answer does the <code>final_chain.invoke</code> return for the question "Solve equation 2*x+5=15" in the Chain-of-Thought extraction example?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-10-26 12:21:19 +0200
+Last updated 2025-11-08 23:06:43 +0200
 </div>
 </div>
 </body>

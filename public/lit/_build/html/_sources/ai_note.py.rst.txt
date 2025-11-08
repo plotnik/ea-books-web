@@ -156,7 +156,11 @@ Select OpenAI LLM
 
 ::
 
-  model_type = st.sidebar.radio("Model Type", ["OpenAI", "Gemini", "Ollama"])
+  model_type = st.sidebar.radio("Model Type", horizontal=True, options=[
+      "OpenAI", 
+      "Gemini", 
+      # "Ollama"
+  ])
 
   if model_type=="Gemini":    
       llm_models = [
@@ -244,7 +248,7 @@ If a button in the sidebar is clicked, the application counts the number of toke
       cents = round(len(tokens) * openai_prices[llm_model]/10000, 5)
 
       st.sidebar.write(f'''
-          | Characters | Tokens | Cents |
+          | Chars | Tokens | Cents |
           |---|---|---|
           | {len(text)} | {len(tokens)} | {cents} |
           ''')  

@@ -45,11 +45,13 @@ Literate Programs
    ollama_chat.py
    cmp_props.py
    pi_keys.py
+   bi.py
+
    create_image.py
    albums.py
    st_gmail.py
    youtube_transcript.py
-   bi.py
+   fw_picture.py
    checkers.py
    PersistedList.py
 

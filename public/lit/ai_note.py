@@ -248,7 +248,7 @@ if model_type=="OpenAI":
     cents = round(len(tokens) * openai_prices[llm_model]/10000, 5)
 
     st.sidebar.write(f'''
-        | Characters | Tokens | Cents |
+        | Chars | Tokens | Cents |
         |---|---|---|
         | {len(text)} | {len(tokens)} | {cents} |
         ''')  

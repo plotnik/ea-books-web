@@ -1,11 +1,8 @@
-Book Chat (LC) - Updated for LangChain v1
-==========================================
+Book Chat (LC) 
+==============
 
 *Answer Questions About Book Contents Using RAG with LangChain v1 and Chroma*
 
-This script has been updated to work with LangChain v1.0, which deprecated
-the legacy chains (create_retrieval_chain, create_stuff_documents_chain) in favor
-of a more direct approach using retrievers and manual prompt formatting.
 
 1. Use Calibre to convert EPUB files into HTMLZ format.
 2. Unpack the HTMLZ archive into an ``html`` folder.
