@@ -442,6 +442,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_131_module_introduction_starting_project">131. Module Introduction &amp; Starting Project</a></li>
+<li><a href="#_132_repetition_managing_user_input_with_state_two_way_binding">132. Repetition - Managing User Input with State (Two-Way-Binding)</a></li>
+<li><a href="#_134_introducing_refs_connecting_accessing_html_elements_via_refs">134. Introducing Refs - Connecting &amp; Accessing HTML Elements via Refs</a></li>
+<li><a href="#_135_manipulating_the_dom_via_refs">135. Manipulating the DOM via Refs</a></li>
+<li><a href="#_136_refs_vs_state_values">136. Refs vs State Values</a></li>
+<li><a href="#_137_adding_challenges_to_the_demo_project">137. Adding Challenges to the Demo Project</a></li>
+<li><a href="#_138_setting_timers_managing_state">138. Setting Timers &amp; Managing State</a></li>
+<li><a href="#_139_using_refs_for_more_than_dom_element_connections">139. Using Refs for More Than DOM Element Connections</a></li>
+<li><a href="#_140_adding_a_modal_component">140. Adding a Modal Component</a></li>
+<li><a href="#_141_forwarding_refs_to_custom_components">141. Forwarding Refs to Custom Components</a></li>
+<li><a href="#_142_exposing_component_apis_via_the_useimperativehandle_hook">142. Exposing Component APIs via the useImperativeHandle Hook</a></li>
+<li><a href="#_143_more_examples_when_to_use_refs_state">143. More Examples - When To Use Refs &amp; State</a></li>
+<li><a href="#_144_sharing_state_across_components">144. Sharing State Across Components</a></li>
 </ul>
 </div>
 </div>
@@ -456,17 +468,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect1">
 <h2 id="_131_module_introduction_starting_project">131. Module Introduction &amp; Starting Project</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Summary:</p>
-</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Focus: React Refs and Portals—optional but powerful tools for specific
+<p><strong>Focus:</strong> React Refs and Portals—optional but powerful tools for specific
 problems.</p>
 </li>
 <li>
-<p>Refs:</p>
+<p><strong>Refs:</strong></p>
 <div class="ulist">
 <ul>
 <li>
@@ -483,18 +492,18 @@ components.</p>
 </div>
 </li>
 <li>
-<p>Portals:</p>
+<p><strong>Portals:</strong></p>
 <div class="ulist">
 <ul>
 <li>
 <p>Render elements in a different place in the DOM than where they
-appear in JSX (e.g., modals/overlays).</p>
+appear in JSX (e.g., <code>modals/overlays</code>).</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>Demo project:</p>
+<p><strong>Demo project:</strong></p>
 <div class="ulist">
 <ul>
 <li>
@@ -514,12 +523,663 @@ example.</p>
 </li>
 </ul>
 </div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/tree/main/code/08%20Refs%20Portals" target="_blank">
+code/08 Refs Portals</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_132_repetition_managing_user_input_with_state_two_way_binding">132. Repetition - Managing User Input with State (Two-Way-Binding)</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Use useState (imported from React) to manage input and submit state: e.g. [enteredPlayerName, setEnteredPlayerName] = useState('') and [submitted, setSubmitted] = useState(false).</p>
+</li>
+<li>
+<p>Add handleChange connected to input onChange; setEnteredPlayerName(event.target.value) and bind the input value to enteredPlayerName so it stays controlled.</p>
+</li>
+<li>
+<p>Add handleClick connected to button onClick; setSubmitted(true).</p>
+</li>
+<li>
+<p>Render the welcome text conditionally: if submitted is true show enteredPlayerName, otherwise show "unknown entity" (ternary inside JSX).</p>
+</li>
+<li>
+<p>Behavior: after clicking "Set Name" the entered name appears. If you keep typing afterwards the displayed name will change (because enteredPlayerName is reflected), unless you reset submitted to false inside handleChange to revert to "unknown entity" while editing.</p>
+</li>
+<li>
+<p>Conclusion: this works but requires managing keystroke updates and a second state flag — a case where using refs could simplify reading the input value at submit time.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_134_introducing_refs_connecting_accessing_html_elements_via_refs">134. Introducing Refs - Connecting &amp; Accessing HTML Elements via Refs</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>What a ref is</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A <code>ref</code> in React is a React-managed value object (created with <code>useRef</code>)
+that holds a <code>.current</code> property.</p>
+</li>
+<li>
+<p>You typically use refs to get direct access to a DOM element (or to
+hold a mutable value that persists across renders).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>How to create and connect a ref</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create: <code>const inputRef = useRef()</code></p>
+</li>
+<li>
+<p>Connect to JSX:</p>
+</li>
+<li>
+<p>The connected DOM element is available as <code>inputRef.current</code> after
+mount.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>How this simplifies the component</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Instead of updating component state on every keystroke with an
+<code>onChange</code> handler (controlled input), attach a ref to the input and read
+<code>inputRef.current.value</code> only when you need it (for example on button
+click).</p>
+</li>
+<li>
+<p>This removes the need for the per-keystroke handler, the input value
+prop, and intermediate submitted state — fewer props and less code.</p>
+</li>
+<li>
+<p>Example flow:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>useRef</code> to create <code>inputRef</code></p>
+</li>
+<li>
+<p>On button click: <code>const value = inputRef.current.value;</code>
+setEnteredPlayerName(value)</p>
+</li>
+<li>
+<p>Render <code>enteredPlayerName</code> (with a fallback like 'Unknown' if empty)</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Small note about fallback operators</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The speaker mentioned "two question marks" (<code>??</code>) as a shortcut for
+fallback. <code>??</code> is the nullish coalescing operator (falls back only on
+null/undefined). If you want to treat empty string as fallback, use <code>||</code>
+instead.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Short example (conceptual)</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>const inputRef = useRef()</code></p>
+</li>
+<li>
+<p><code>&lt;input ref={inputRef} /&gt;</code></p>
+</li>
+<li>
+<p><code>function handleClick() { setEnteredPlayerName(inputRef.current.value) }</code></p>
+</li>
+<li>
+<p>Remove <code>onChange</code>, <code>value</code> prop, and any submitted state</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Result: you update state only when needed (on click), read the real DOM
+input value via ref, and keep the component leaner.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_135_manipulating_the_dom_via_refs">135. Manipulating the DOM via Refs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The lecture explains that refs can be used to clear an input (e.g., setting playerName.current.value = '') which is concise and works. However, directly setting DOM values is imperative and conflicts with React’s declarative philosophy — reading a ref is fine, but mutating DOM via refs is a departure from letting React manage state and UI. For simple, isolated cases (like clearing an uncontrolled input) using a ref can be acceptable and save code, but you should avoid relying on refs to read/manipulate many values; prefer state and declarative patterns when the input is part of app state.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_136_refs_vs_state_values">136. Refs vs State Values</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Refs can hold a reference to a DOM element (e.g., an input) and let you read its current value directly.</p>
+</li>
+<li>
+<p>On the first render the <code>ref</code> connection (<code>ref.current</code>) is not yet established, so <code>ref.current</code> can be undefined. Accessing <code>ref.current.value</code> then causes an error unless you check <code>ref.current</code> is truthy first.</p>
+</li>
+<li>
+<p>Crucially, changing a <code>ref</code> does NOT cause the component function to re-run (no re-render). That’s why replacing state with a ref-only approach meant the UI didn’t update when the input value changed.</p>
+</li>
+<li>
+<p>State updates (via <code>setState</code>) do cause the component to re-execute and re-render, so state should be used for values that must be reflected in the UI.</p>
+</li>
+<li>
+<p>Use refs for behind-the-scenes values or direct DOM access where re-rendering is not required. Use state for any values that need to update the UI.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Both concepts are important and serve different purposes.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_137_adding_challenges_to_the_demo_project">137. Adding Challenges to the Demo Project</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Add a new TimerChallenge component (default export) that returns a
+section with class "challenge" (uses the project&#8217;s CSS).</p>
+</li>
+<li>
+<p>Structure inside the section:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>h2 that displays a title prop.</p>
+</li>
+<li>
+<p>p.challenge-time that displays the target time (e.g., "1 second" or
+"5 seconds") with conditional pluralization (add "s" only if targetTime
+&gt; 1).</p>
+</li>
+<li>
+<p>p with a button that will toggle the timer text between "start
+challenge" and "stop challenge" (controlled by state later).</p>
+</li>
+<li>
+<p>p whose class is "active" only when the timer is running; its text
+should read "time is running" when running or "timer inactive" when not.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>In App, import the component and render four instances inside the
+div#challenges:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>"easy" — targetTime 1</p>
+</li>
+<li>
+<p>"not easy" — targetTime 5</p>
+</li>
+<li>
+<p>"getting tough" — targetTime 10</p>
+</li>
+<li>
+<p>"pros only" — targetTime 15</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Note: Buttons are currently non-functional; state (and later refs)
+will be added to control starting/stopping and the running status.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_138_setting_timers_managing_state">138. Setting Timers &amp; Managing State</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Goal: start a countdown when the "Start Challenge" button is pressed
+and detect when it expires.</p>
+</li>
+<li>
+<p>Implementation:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create <code>handleStart</code> that uses JavaScript <code>setTimeout</code> (not
+React-specific) with <code>delay = targetTime * 1000</code> (convert seconds → ms).</p>
+</li>
+<li>
+<p>Use <code>useState</code> for two pieces of state:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>timerExpired</code> (initial false) — set to true inside the timeout
+callback; when true show a "You lost" paragraph.</p>
+</li>
+<li>
+<p><code>timerStarted</code> (initial false) — set to true immediately when starting
+the timer; used to change UI (button text from "Start Challenge" →
+"Stop", add an active class, and show "Time is running" vs "Timer
+inactive").</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Connect <code>handleStart</code> to the button <code>onClick</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Next step: implement <code>handleStop</code> to clear the timer. To access the
+timeout ID from <code>handleStop</code>, store it in a ref (<code>useRef</code>) so you can call
+<code>clearTimeout</code> on it.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_139_using_refs_for_more_than_dom_element_connections">139. Using Refs for More Than DOM Element Connections</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>To stop a timer you call <code>clearTimeout</code> with the ID returned by
+<code>setTimeout</code> — so you must keep a reference to that ID.</p>
+</li>
+<li>
+<p>Storing the timer ID in a plain variable inside the component fails
+because the component function re-executes on state changes and that
+variable is recreated. The <code>handleStop</code> will see a different/unstored
+value.</p>
+</li>
+<li>
+<p>Moving the variable outside the component makes it persist across
+renders, but then it’s shared by all component instances. Starting one
+instance overwrites the ID of another, so stopping one can fail to clear
+the other’s timer.</p>
+</li>
+<li>
+<p>The correct solution is to use a ref (<code>useRef</code>):</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a ref in the component: <code>const timerRef = useRef(null)</code>.</p>
+</li>
+<li>
+<p>Save the ID: <code>timerRef.current = setTimeout(&#8230;&#8203;)</code>.</p>
+</li>
+<li>
+<p>Clear it: <code>clearTimeout(timerRef.current)</code>.</p>
+</li>
+<li>
+<p>A ref is instance-specific (not shared across component instances),
+persists across re-renders, and changing <code>.current</code> does not trigger a
+rerender.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Use refs for values that must persist across renders but do not
+directly drive UI updates (timers, mutable handles, etc.).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_140_adding_a_modal_component">140. Adding a Modal Component</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Added a new <code>ResultModal</code> component to show a pop-up when the timer ends (won or lost) and later to show the score (based on how close to expiry the timer was).</p>
+</li>
+<li>
+<p>ResultModal returns the native HTML <code>&lt;dialog&gt;</code> element with an <code>h2</code> for the result, a paragraph showing the target time (and later the seconds left), a form with <code>method="dialog"</code> and a close button so the dialog can be closed without extra JS, and a <code>className</code> for styling.</p>
+</li>
+<li>
+<p><code>TimerChallenge</code> will import and render <code>ResultModal</code> conditionally (for example when the timer expired). The component was placed alongside the existing section by wrapping the JSX in a fragment, and the old inline conditional paragraph was removed.</p>
+</li>
+<li>
+<p>Important detail: simply adding the <code>open</code> attribute to <code>&lt;dialog&gt;</code> makes it visible but does not show the built-in backdrop. To get the backdrop you must open the dialog programmatically (e.g., using the <code>dialog.showModal()</code> API), which requires accessing the dialog element via a ref from the parent component (<code>TimerChallenge</code>).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_141_forwarding_refs_to_custom_components">141. Forwarding Refs to Custom Components</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/08-forwarding-refs/src/components/ResultModal.jsx" target="_blank">
+08 Refs Portals/08-forwarding-refs/src/components/ResultModal.jsx</a>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Goal: access the native element inside <code>ResultModal</code> from the
+<code>TimerChallenge</code> component using a ref so <code>TimerChallenge</code> can call
+<code>dialog.showModal()</code> when the timer expires.</p>
+</li>
+<li>
+<p>Modern React (≥19) approach:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a ref in <code>TimerChallenge</code> (e.g., <code>dialog</code>).</p>
+</li>
+<li>
+<p>Pass that ref as a prop to (or any prop name you choose).</p>
+</li>
+<li>
+<p>In <code>ResultModal</code> assign that received ref to the dialog element’s ref
+attribute so <code>dialog.current</code> points to the element.</p>
+</li>
+<li>
+<p>Call <code>dialog.current.showModal()</code> from <code>TimerChallenge</code> when needed. The
+dialog element’s <code>showModal()</code> is a standard browser API.</p>
+</li>
+<li>
+<p>Keep <code>ResultModal</code> rendered (it can be invisible) so the dialog element
+exists.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Older React (&lt;19) issue:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Older React versions do not allow accepting a ref as a normal prop
+and will error if you try.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Compatible solution for older React:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Wrap the <code>ResultModal</code> function with <code>React.forwardRef</code>.</p>
+</li>
+<li>
+<p><code>forwardRef</code> returns an adjusted component that receives props as the
+first parameter and the forwarded ref as a second parameter.</p>
+</li>
+<li>
+<p>Use that second parameter to attach the ref to the dialog element and
+export the wrapped component.</p>
+</li>
+<li>
+<p>This <code>forwardRef</code> pattern is optional in modern React but required when
+working with older versions.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Practical note: both approaches work; <code>forwardRef</code> is commonly seen in
+codebases and necessary for compatibility with older React.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_142_exposing_component_apis_via_the_useimperativehandle_hook">142. Exposing Component APIs via the useImperativeHandle Hook</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/09-exposing-cmp-apis-useimperative-handle/src/components/ResultModal.jsx" target="_blank">
+08 Refs Portals/09-exposing-cmp-apis-useimperative-handle/src/components/ResultModal.jsx</a>
+</div>
+</div>
+<div class="paragraph">
+<p>Summary — exposing a stable, callable API from a component with
+useImperativeHandle</p>
+</div>
+<div class="paragraph">
+<p>Problem</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Calling DOM methods (e.g., dialog.showModal()) from a parent via a ref
+couples the parent to the child’s internal markup. If the child changes
+(dialog → div), the parent breaks.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Solution</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Let the child expose a stable function-based API via
+useImperativeHandle (optionally combined with forwardRef). The parent
+calls that public method (e.g., open()) instead of calling internal DOM
+methods.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>How it works (implementation outline)</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the child (ResultModal):</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create an internal ref for the dialog element: const dialog =
+useRef().</p>
+</li>
+<li>
+<p>Wrap the component with forwardRef (or accept a ref prop in React
+19+).</p>
+</li>
+<li>
+<p>Call <code>useImperativeHandle(ref, () &#8658; ({ open: () &#8658; dialog.current.showModal() }))</code>.</p>
+</li>
+<li>
+<p>Attach dialog to the dialog element: &#8230;&#8203;</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>In the parent:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Hold a ref and pass it to .</p>
+</li>
+<li>
+<p>Call dialogRef.current.open() — this calls the child’s exposed open
+method.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Notes / benefits</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Decouples parent from child implementation details; the child can
+change internals while keeping the same exposed API.</p>
+</li>
+<li>
+<p>Prefer props/state for normal interaction; useImperativeHandle for
+imperative APIs (like showing a modal).</p>
+</li>
+<li>
+<p>forwardRef is needed in older React versions; with React 19+ you can
+accept the ref as a prop instead.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_143_more_examples_when_to_use_refs_state">143. More Examples - When To Use Refs &amp; State</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Replace <code>setTimeout</code> with <code>setInterval</code> so you can track remaining time continuously (example uses 10 ms intervals; choose a sensible value for performance).</p>
+</li>
+<li>
+<p>Manage a single piece of state: <code>timeRemaining</code> (in milliseconds). Initialize it to <code>targetTime * 1000</code>.</p>
+</li>
+<li>
+<p>In the interval callback update state with the functional form: <code>setTimeRemaining(prev &#8658; prev - 10)</code>.</p>
+</li>
+<li>
+<p>Keep the interval id in a ref (not state or a plain variable) so you can clear it later with clearInterval(ref.current).</p>
+</li>
+<li>
+<p>Derive whether the timer is active from <code>timeRemaining</code> (e.g., active when <code>timeRemaining &gt; 0 &amp;&amp; timeRemaining &lt; targetTime*1000</code>) and use that derived value to conditionally render/buttons and behavior.</p>
+</li>
+<li>
+<p>Detect expiration in the component body (if <code>timeRemaining &#8656; 0</code>): clear the interval, reset timeRemaining to the initial value, and open the result modal. Note the caution about calling state setters inside the component body — it’s safe here because the if condition won’t be true after updating state.</p>
+</li>
+<li>
+<p>Also clear the interval and open the same modal in <code>handleStop</code> (manual stop). The modal open call is the same in both cases; the message can differ (you won if you stopped it manually, you lost if it expired).</p>
+</li>
+<li>
+<p>Next necessary step: pass the correct information (win/loss and a score computed from remaining time) into the modal.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Key code ideas:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">intervalIdRef.current = setInterval(...);
+setTimeRemaining(prev =&gt; prev - 10);
+clearInterval(intervalIdRef.current);
+dialogRef.current.open();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_144_sharing_state_across_components">144. Sharing State Across Components</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Replace the old result prop with a <code>remainingTime</code> prop on the result
+modal and pass the timer&#8217;s <code>timeRemaining</code> state to it.</p>
+</li>
+<li>
+<p>In <code>ResultModal</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Destructure <code>remainingTime</code>.</p>
+</li>
+<li>
+<p>Compute a <code>userLost</code> boolean: <code>userLost = remainingTime &#8656; 0</code>.</p>
+</li>
+<li>
+<p>Conditionally show an "You lost" message when <code>userLost</code> is true.</p>
+</li>
+<li>
+<p>Format <code>remainingTime</code> (stored in milliseconds) to seconds by dividing
+by 1000 and using <code>toFixed(2)</code> for a two-decimal display, and show that
+value.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Remove the obsolete result prop.</p>
+</li>
+<li>
+<p>Fix a bug: <code>TimerChallenge</code> was resetting <code>timeRemaining</code> back to the
+initial value exactly when the timer expired, so the modal saw a
+positive time and couldn&#8217;t detect the loss. Solution:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Move the reset logic into a separate <code>handleReset</code> function.</p>
+</li>
+<li>
+<p>Pass <code>handleReset</code> into <code>ResultModal</code> as an <code>onReset</code> prop.</p>
+</li>
+<li>
+<p>In <code>ResultModal</code>, destructure <code>onReset</code> and attach it to the form&#8217;s
+<code>onSubmit</code> so the timer is reset when the modal is closed/submitted.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Outcome: when the timer expires the modal now correctly shows "You
+lost" and 0.00 seconds, and closing the modal triggers the reset so the
+timer can be restarted.</p>
+</li>
+<li>
+<p>Next step: show a success message and calculate/display a score when
+the timer is stopped in time.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-10-01 05:05:45 +0300
+Last updated 2026-02-03 10:25:34 +0200
 </div>
 </div>
 </body>

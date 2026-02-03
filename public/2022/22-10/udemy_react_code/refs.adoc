@@ -6,23 +6,297 @@ link:udemy_react.html[<Contents>]
 
 == 131. Module Introduction & Starting Project
 
-Summary:
-
-* Focus: React Refs and Portals—optional but powerful tools for specific
+* *Focus:* React Refs and Portals—optional but powerful tools for specific
 problems.
-* Refs:
+
+* *Refs:*
 ** Provide direct access to DOM elements.
 ** Store mutable values that shouldn’t trigger re-renders (not state).
 ** Let components expose an API (e.g., callable functions) to other
 components.
-* Portals:
+
+* *Portals:*
 ** Render elements in a different place in the DOM than where they
-appear in JSX (e.g., modals/overlays).
-* Demo project:
+appear in JSX (e.g., `modals/overlays`).
+
+* *Demo project:*
 ** Build a timer challenge game using Refs, Portals, components, and
 state.
 ** Starter projects available (local and CodeSandbox).
 ** Initial setup includes a basic App and Player component; the input’s
 “Set Name” button doesn’t work yet—fixing it will be the first Refs
 example.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/tree/main/code/08%20Refs%20Portals" target="_blank">
+code/08 Refs Portals</a>
+++++
+====
+
+== 132. Repetition - Managing User Input with State (Two-Way-Binding)
+
+
+- Use useState (imported from React) to manage input and submit state: e.g. [enteredPlayerName, setEnteredPlayerName] = useState('') and [submitted, setSubmitted] = useState(false).
+- Add handleChange connected to input onChange; setEnteredPlayerName(event.target.value) and bind the input value to enteredPlayerName so it stays controlled.
+- Add handleClick connected to button onClick; setSubmitted(true).
+- Render the welcome text conditionally: if submitted is true show enteredPlayerName, otherwise show "unknown entity" (ternary inside JSX).
+- Behavior: after clicking "Set Name" the entered name appears. If you keep typing afterwards the displayed name will change (because enteredPlayerName is reflected), unless you reset submitted to false inside handleChange to revert to "unknown entity" while editing.
+- Conclusion: this works but requires managing keystroke updates and a second state flag — a case where using refs could simplify reading the input value at submit time.
+
+== 134. Introducing Refs - Connecting & Accessing HTML Elements via Refs
+
+
+* What a ref is
+** A `ref` in React is a React-managed value object (created with `useRef`)
+that holds a `.current` property.
+** You typically use refs to get direct access to a DOM element (or to
+hold a mutable value that persists across renders).
+* How to create and connect a ref
+** Create: `const inputRef = useRef()`
+** Connect to JSX:
+** The connected DOM element is available as `inputRef.current` after
+mount.
+* How this simplifies the component
+** Instead of updating component state on every keystroke with an
+`onChange` handler (controlled input), attach a ref to the input and read
+`inputRef.current.value` only when you need it (for example on button
+click).
+** This removes the need for the per-keystroke handler, the input value
+prop, and intermediate submitted state — fewer props and less code.
+** Example flow:
+*** `useRef` to create `inputRef`
+*** On button click: `const value = inputRef.current.value;`
+setEnteredPlayerName(value)
+*** Render `enteredPlayerName` (with a fallback like 'Unknown' if empty)
+* Small note about fallback operators
+** The speaker mentioned "two question marks" (`??`) as a shortcut for
+fallback. `??` is the nullish coalescing operator (falls back only on
+null/undefined). If you want to treat empty string as fallback, use `||`
+instead.
+
+Short example (conceptual)
+
+* `const inputRef = useRef()`
+* `<input ref={inputRef} />`
++
+* `function handleClick() { setEnteredPlayerName(inputRef.current.value) }`
+* Remove `onChange`, `value` prop, and any submitted state
+
+Result: you update state only when needed (on click), read the real DOM
+input value via ref, and keep the component leaner.
+
+== 135. Manipulating the DOM via Refs
+
+The lecture explains that refs can be used to clear an input (e.g., setting playerName.current.value = '') which is concise and works. However, directly setting DOM values is imperative and conflicts with React’s declarative philosophy — reading a ref is fine, but mutating DOM via refs is a departure from letting React manage state and UI. For simple, isolated cases (like clearing an uncontrolled input) using a ref can be acceptable and save code, but you should avoid relying on refs to read/manipulate many values; prefer state and declarative patterns when the input is part of app state.
+
+== 136. Refs vs State Values
+
+- Refs can hold a reference to a DOM element (e.g., an input) and let you read its current value directly.
+- On the first render the `ref` connection (`ref.current`) is not yet established, so `ref.current` can be undefined. Accessing `ref.current.value` then causes an error unless you check `ref.current` is truthy first.
+- Crucially, changing a `ref` does NOT cause the component function to re-run (no re-render). That’s why replacing state with a ref-only approach meant the UI didn’t update when the input value changed.
+- State updates (via `setState`) do cause the component to re-execute and re-render, so state should be used for values that must be reflected in the UI.
+- Use refs for behind-the-scenes values or direct DOM access where re-rendering is not required. Use state for any values that need to update the UI.
+
+Both concepts are important and serve different purposes.
+
+== 137. Adding Challenges to the Demo Project
+
+* Add a new TimerChallenge component (default export) that returns a
+section with class "challenge" (uses the project's CSS).
+* Structure inside the section:
+** h2 that displays a title prop.
+** p.challenge-time that displays the target time (e.g., "1 second" or
+"5 seconds") with conditional pluralization (add "s" only if targetTime
+> 1).
+** p with a button that will toggle the timer text between "start
+challenge" and "stop challenge" (controlled by state later).
+** p whose class is "active" only when the timer is running; its text
+should read "time is running" when running or "timer inactive" when not.
+* In App, import the component and render four instances inside the
+div#challenges:
+** "easy" — targetTime 1
+** "not easy" — targetTime 5
+** "getting tough" — targetTime 10
+** "pros only" — targetTime 15
+* Note: Buttons are currently non-functional; state (and later refs)
+will be added to control starting/stopping and the running status.
+
+== 138. Setting Timers & Managing State
+
+* Goal: start a countdown when the "Start Challenge" button is pressed
+and detect when it expires.
+* Implementation:
+** Create `handleStart` that uses JavaScript `setTimeout` (not
+React-specific) with `delay = targetTime * 1000` (convert seconds → ms).
+** Use `useState` for two pieces of state:
+*** `timerExpired` (initial false) — set to true inside the timeout
+callback; when true show a "You lost" paragraph.
+*** `timerStarted` (initial false) — set to true immediately when starting
+the timer; used to change UI (button text from "Start Challenge" →
+"Stop", add an active class, and show "Time is running" vs "Timer
+inactive").
+** Connect `handleStart` to the button `onClick`.
+* Next step: implement `handleStop` to clear the timer. To access the
+timeout ID from `handleStop`, store it in a ref (`useRef`) so you can call
+`clearTimeout` on it.
+
+== 139. Using Refs for More Than DOM Element Connections
+
+* To stop a timer you call `clearTimeout` with the ID returned by
+`setTimeout` — so you must keep a reference to that ID.
+* Storing the timer ID in a plain variable inside the component fails
+because the component function re-executes on state changes and that
+variable is recreated. The `handleStop` will see a different/unstored
+value.
+* Moving the variable outside the component makes it persist across
+renders, but then it’s shared by all component instances. Starting one
+instance overwrites the ID of another, so stopping one can fail to clear
+the other’s timer.
+* The correct solution is to use a ref (`useRef`):
+** Create a ref in the component: `const timerRef = useRef(null)`.
+** Save the ID: `timerRef.current = setTimeout(...)`.
+** Clear it: `clearTimeout(timerRef.current)`.
+** A ref is instance-specific (not shared across component instances),
+persists across re-renders, and changing `.current` does not trigger a
+rerender.
+* Use refs for values that must persist across renders but do not
+directly drive UI updates (timers, mutable handles, etc.).
+
+== 140. Adding a Modal Component
+
+- Added a new `ResultModal` component to show a pop-up when the timer ends (won or lost) and later to show the score (based on how close to expiry the timer was).
+- ResultModal returns the native HTML `<dialog>` element with an `h2` for the result, a paragraph showing the target time (and later the seconds left), a form with `method="dialog"` and a close button so the dialog can be closed without extra JS, and a `className` for styling.
+- `TimerChallenge` will import and render `ResultModal` conditionally (for example when the timer expired). The component was placed alongside the existing section by wrapping the JSX in a fragment, and the old inline conditional paragraph was removed.
+- Important detail: simply adding the `open` attribute to `<dialog>` makes it visible but does not show the built-in backdrop. To get the backdrop you must open the dialog programmatically (e.g., using the `dialog.showModal()` API), which requires accessing the dialog element via a ref from the parent component (`TimerChallenge`).
+
+== 141. Forwarding Refs to Custom Components
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/08-forwarding-refs/src/components/ResultModal.jsx" target="_blank">
+08 Refs Portals/08-forwarding-refs/src/components/ResultModal.jsx</a>
+++++
+====
+
+* Goal: access the native element inside `ResultModal` from the
+`TimerChallenge` component using a ref so `TimerChallenge` can call
+`dialog.showModal()` when the timer expires.
+* Modern React (≥19) approach:
+** Create a ref in `TimerChallenge` (e.g., `dialog`).
+** Pass that ref as a prop to (or any prop name you choose).
+** In `ResultModal` assign that received ref to the dialog element’s ref
+attribute so `dialog.current` points to the element.
+** Call `dialog.current.showModal()` from `TimerChallenge` when needed. The
+dialog element’s `showModal()` is a standard browser API.
+** Keep `ResultModal` rendered (it can be invisible) so the dialog element
+exists.
+* Older React (<19) issue:
+** Older React versions do not allow accepting a ref as a normal prop
+and will error if you try.
+* Compatible solution for older React:
+** Wrap the `ResultModal` function with `React.forwardRef`.
+** `forwardRef` returns an adjusted component that receives props as the
+first parameter and the forwarded ref as a second parameter.
+** Use that second parameter to attach the ref to the dialog element and
+export the wrapped component.
+** This `forwardRef` pattern is optional in modern React but required when
+working with older versions.
+* Practical note: both approaches work; `forwardRef` is commonly seen in
+codebases and necessary for compatibility with older React.
+
+== 142. Exposing Component APIs via the useImperativeHandle Hook
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/09-exposing-cmp-apis-useimperative-handle/src/components/ResultModal.jsx" target="_blank">
+08 Refs Portals/09-exposing-cmp-apis-useimperative-handle/src/components/ResultModal.jsx</a>
+++++
+====
+
+Summary — exposing a stable, callable API from a component with
+useImperativeHandle
+
+Problem
+
+* Calling DOM methods (e.g., dialog.showModal()) from a parent via a ref
+couples the parent to the child’s internal markup. If the child changes
+(dialog → div), the parent breaks.
+
+Solution
+
+* Let the child expose a stable function-based API via
+useImperativeHandle (optionally combined with forwardRef). The parent
+calls that public method (e.g., open()) instead of calling internal DOM
+methods.
+
+How it works (implementation outline)
+
+[arabic]
+. In the child (ResultModal):
+* Create an internal ref for the dialog element: const dialog =
+useRef().
+* Wrap the component with forwardRef (or accept a ref prop in React
+19+).
+* Call `useImperativeHandle(ref, () => ({ open: () => dialog.current.showModal() }))`.
+* Attach dialog to the dialog element: ...
+. In the parent:
+* Hold a ref and pass it to .
+* Call dialogRef.current.open() — this calls the child’s exposed open
+method.
+
+Notes / benefits
+
+* Decouples parent from child implementation details; the child can
+change internals while keeping the same exposed API.
+* Prefer props/state for normal interaction; useImperativeHandle for
+imperative APIs (like showing a modal).
+* forwardRef is needed in older React versions; with React 19+ you can
+accept the ref as a prop instead.
+
+== 143. More Examples - When To Use Refs & State
+
+- Replace `setTimeout` with `setInterval` so you can track remaining time continuously (example uses 10 ms intervals; choose a sensible value for performance).
+- Manage a single piece of state: `timeRemaining` (in milliseconds). Initialize it to `targetTime * 1000`.
+- In the interval callback update state with the functional form: `setTimeRemaining(prev => prev - 10)`.
+- Keep the interval id in a ref (not state or a plain variable) so you can clear it later with clearInterval(ref.current).
+- Derive whether the timer is active from `timeRemaining` (e.g., active when `timeRemaining > 0 && timeRemaining < targetTime*1000`) and use that derived value to conditionally render/buttons and behavior.
+- Detect expiration in the component body (if `timeRemaining <= 0`): clear the interval, reset timeRemaining to the initial value, and open the result modal. Note the caution about calling state setters inside the component body — it’s safe here because the if condition won’t be true after updating state.
+- Also clear the interval and open the same modal in `handleStop` (manual stop). The modal open call is the same in both cases; the message can differ (you won if you stopped it manually, you lost if it expired).
+- Next necessary step: pass the correct information (win/loss and a score computed from remaining time) into the modal.
+
+Key code ideas: 
+
+```js
+intervalIdRef.current = setInterval(...); 
+setTimeRemaining(prev => prev - 10); 
+clearInterval(intervalIdRef.current); 
+dialogRef.current.open();
+```
+
+== 144. Sharing State Across Components
+
+* Replace the old result prop with a `remainingTime` prop on the result
+modal and pass the timer's `timeRemaining` state to it.
+* In `ResultModal`:
+** Destructure `remainingTime`.
+** Compute a `userLost` boolean: `userLost = remainingTime <= 0`.
+** Conditionally show an "You lost" message when `userLost` is true.
+** Format `remainingTime` (stored in milliseconds) to seconds by dividing
+by 1000 and using `toFixed(2)` for a two-decimal display, and show that
+value.
+* Remove the obsolete result prop.
+* Fix a bug: `TimerChallenge` was resetting `timeRemaining` back to the
+initial value exactly when the timer expired, so the modal saw a
+positive time and couldn't detect the loss. Solution:
+** Move the reset logic into a separate `handleReset` function.
+** Pass `handleReset` into `ResultModal` as an `onReset` prop.
+** In `ResultModal`, destructure `onReset` and attach it to the form's
+`onSubmit` so the timer is reset when the modal is closed/submitted.
+* Outcome: when the timer expires the modal now correctly shows "You
+lost" and 0.00 seconds, and closing the modal triggers the reset so the
+timer can be restarted.
+* Next step: show a success message and calculate/display a score when
+the timer is stopped in time.
+
 
