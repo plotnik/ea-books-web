@@ -172,18 +172,13 @@ Select OpenAI LLM
   
   elif model_type=="OpenAI":    
       openai_prices = {
+          "gpt-5.1": 1.25,
           "gpt-5": 1.25,
           "gpt-5-mini": 0.25,
           "gpt-5-nano": 0.05,
-          "gpt-4.1-mini": 0.4,
-          "gpt-4.1-nano": 0.1,
-          "gpt-4.1": 2.0,
-          "gpt-4o-mini": 0.15, 
-          "o4-mini": 1.10,
-          "o3-mini": 1.10,
-          "gpt-4o": 2.5, 
-          "o3": 2.0, 
-          "o3-pro": 20.0, 
+        
+          "gpt-5.1-chat-latest": 1.25,
+          "gpt-5.1-codex": 1.25,
       }    
 
       llm_models = list(openai_prices.keys())

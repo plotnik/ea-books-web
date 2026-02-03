@@ -106,6 +106,10 @@ LLM
       raise ValueError(f"Unknown provider: {provider}")
 
 
+Use ``ChatPromptTemplate`` to separate prompt and user input
+
+::
+
   def build_chain(llm):
       prompt = ChatPromptTemplate.from_messages(
           [

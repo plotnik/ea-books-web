@@ -10,6 +10,7 @@ Literate Programs
    :maxdepth: 2
    :caption: Contents:
 
+   note_openai.py
    ai_note.py
    udemy.py
    o_chat.py
@@ -24,6 +25,7 @@ Literate Programs
    time_intervals.py
    md_view.py
    pan_ui.py
+   grafana_json.py
    grafana_panels.py
    grafana_stats.py   
    jira_stats.py
@@ -43,6 +45,7 @@ Literate Programs
    adoc_links.py
    google_search.py
    ollama_chat.py
+   cmp_text.py
    cmp_props.py
    pi_keys.py
    bi.py

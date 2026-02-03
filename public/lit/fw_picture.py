@@ -106,6 +106,8 @@ def get_llm(model_id: str):
     raise ValueError(f"Unknown provider: {provider}")
 
 
+# Use ``ChatPromptTemplate`` to separate prompt and user input
+
 def build_chain(llm):
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -149,7 +151,7 @@ diary_text = st.text_area(
     key="diary_text",
 )
 
-if st.button("Suggest picture plot", type="primary"):
+if st.button("Suggest picture plot", type="primary", width="stretch"):
     if not diary_text.strip():
         st.warning("Please enter a diary entry.")
         st.stop()

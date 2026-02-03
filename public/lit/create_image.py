@@ -50,7 +50,7 @@ image_file = image_title + ".png"
 #
 # ::
 
-llm_models = ["gpt-image-1", "dall-e-3", "dall-e-2"]
+llm_models = ["gpt-image-1.5", "gpt-image-1", "dall-e-3", "dall-e-2"]
 
 llm_model = st.sidebar.radio("LLM Model", llm_models)
 
@@ -59,6 +59,7 @@ llm_model = st.sidebar.radio("LLM Model", llm_models)
 # ::
 
 image_size_names = {
+    "gpt-image-1.5":["1024x1024", "1536x1024 (Landscape)", "1024x1536 (Portrait)"],
     "gpt-image-1":["1024x1024", "1536x1024 (Landscape)", "1024x1536 (Portrait)"],
     "dall-e-3": ["1024x1024", "1792x1024", "1024x1792"],
     "dall-e-2": ["1024x1024", "512x512", "256x256"]

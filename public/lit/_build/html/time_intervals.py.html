@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=0c176c8a" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -110,10 +111,22 @@
 </pre></div>
 </div>
 <p>Regular expression pattern to extract intervals</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{4}</span><span class="s1"> \d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">)\n; ([\w\-]+) (.*?)\n(\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{4}</span><span class="s1"> \d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{4}</span><span class="s1"> \d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">)\n; ([\w\-]+):? (.*?)\n(\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{2}</span><span class="s1">\.\d</span><span class="si">{4}</span><span class="s1"> \d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Highlight task</p>
+<p>We can highlight some tasks using <code class="docutils literal notranslate"><span class="pre">task_colors.yml</span></code> file in current folder that has
+the following structure:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">task</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TASK-1234</span>
+<span class="w">  </span><span class="nt">color</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yellow</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">task</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TASK-5678</span>
+<span class="w">  </span><span class="nt">color</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">green</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="load_task_colors">
+<span class="sig-name descname"><span class="pre">load_task_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'task_colors.yml'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#load_task_colors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_task_colors</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;task_colors.yml&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{}</span>
@@ -126,13 +139,44 @@
         <span class="n">task_colors</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">color</span>
 
     <span class="k">return</span> <span class="n">task_colors</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="load_prev_tasks">
+<span class="sig-name descname"><span class="pre">load_prev_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'prev_sprint.csv'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#load_prev_tasks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<span class="n">task_colors</span> <span class="o">=</span> <span class="n">load_task_colors</span><span class="p">()</span>
+<p>We can also highlight tasks from the previous sprint in <code class="docutils literal notranslate"><span class="pre">prev_sprint.csv</span></code>.
+This is essentially text file with the list of tasks, one per line.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_prev_tasks</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;prev_sprint.csv&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">task_name</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">task_name</span><span class="p">:</span>  <span class="c1"># Only add non-empty lines</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="highlight_task">
+<span class="sig-name descname"><span class="pre">highlight_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#highlight_task" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Apply highlighting methods.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">task_colors</span> <span class="o">=</span> <span class="n">load_task_colors</span><span class="p">()</span>
+<span class="n">prev_tasks</span> <span class="o">=</span> <span class="n">load_prev_tasks</span><span class="p">()</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">highlight_task</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
     <span class="n">color</span> <span class="o">=</span> <span class="n">task_colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">color</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;background-color: #</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">; color: white;&quot;</span>
+    <span class="k">if</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">prev_tasks</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;background-color: #CCFFCC; color: black;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 </pre></div>
 </div>
@@ -166,20 +210,26 @@
 </pre></div>
 </div>
 <p>Group by task_code, sum durations, and join comments</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grouped_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">grouped_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span>
     <span class="s1">&#39;Hours&#39;</span><span class="p">:</span> <span class="s1">&#39;sum&#39;</span><span class="p">,</span>
     <span class="s1">&#39;Comment&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39; // &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 <span class="p">})</span>
-<span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Hours&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Hours&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Hours&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Hours&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Display results</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Duration by Task&quot;</span><span class="p">)</span>
-<span class="n">st</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span><span class="n">grouped_df</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">highlight_task</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">]))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;grouped_df&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Duration by Task&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">grouped_df</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">highlight_task</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">]),</span>
+        <span class="n">key</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+        <span class="n">on_select</span><span class="o">=</span><span class="s2">&quot;rerun&quot;</span><span class="p">,</span>
+        <span class="n">selection_mode</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;multi-row&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
 
-<span class="c1"># Calculate total hours</span>
-<span class="n">total_hours</span> <span class="o">=</span> <span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Hours&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Total Hours: </span><span class="si">{</span><span class="n">total_hours</span><span class="si">}</span><span class="s2">**&quot;</span><span class="p">)</span>
+    <span class="c1"># Calculate total hours</span>
+    <span class="n">total_hours</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">grouped_df</span><span class="p">[</span><span class="s1">&#39;Hours&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Total Hours: </span><span class="si">{</span><span class="n">total_hours</span><span class="si">}</span><span class="s2">**&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Click button</p>
@@ -218,6 +268,7 @@
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o_chat.py.html">Obsidian Chat (LI)</a></li>
@@ -238,6 +289,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_json.py.html">Grafana Record</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grafana_panels.py.html">Grafana Panels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
@@ -257,6 +309,7 @@
 <li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
 <li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ollama_chat.py.html">Ollama Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_text.py.html">Compare Text</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
@@ -291,7 +344,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2025, EA.
+      &#169;2026, EA.
       
       |
       Powered by 

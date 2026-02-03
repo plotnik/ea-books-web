@@ -31,11 +31,11 @@
 #    24.03.2025 23:29:38
 #    ; TASK-1234 Estimate new features
 #    24.03.2025 22:50:13
-#  
+# 
 #    25.03.2025 10:15:00
 #    ; TASK-1234 Implement feature A
 #    25.03.2025 09:00:00
-#  
+# 
 #    26.03.2025 12:00:00
 #    ; TASK-5678 Bug fixing
 #    26.03.2025 11:00:00
@@ -76,7 +76,7 @@ def print_banner():
         |  |    |______|  | |  . `  |     |  |             
         |  |           |  | |  |\\   |     |  |            
         |__|           |__| |__| \\__|     |__|            
-                                                                                      
+                                                                                    
     """)
     return 1
 
@@ -92,9 +92,22 @@ data = st.text_area("Time Intervals", height=300)
 #
 # ::
     
-pattern = re.compile(r'(\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2})\n; ([\w\-]+) (.*?)\n(\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2})', re.DOTALL)
+pattern = re.compile(r'(\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2})\n; ([\w\-]+):? (.*?)\n(\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2})', re.DOTALL)
 
-# Highlight task
+
+# We can highlight some tasks using ``task_colors.yml`` file in current folder that has
+# the following structure:
+#
+# .. code:: yaml
+#
+#    - task: TASK-1234
+#      color: yellow
+#    - task: TASK-5678
+#      color: green
+#
+# .. function:: load_task_colors(path: str = "task_colors.yml") -> dict
+#
+# ::
 
 def load_task_colors(path: str = "task_colors.yml") -> dict:
     if not os.path.exists(path):
@@ -106,8 +119,15 @@ def load_task_colors(path: str = "task_colors.yml") -> dict:
     for item in data:
         color = str(item["color"]).strip().upper()
         task_colors[str(item["task"]).strip()] = color 
-        
+      
     return task_colors
+    
+# .. function:: load_prev_tasks(path: str = "prev_sprint.csv") -> dict     
+#
+# We can also highlight tasks from the previous sprint in ``prev_sprint.csv``.
+# This is essentially text file with the list of tasks, one per line.
+#
+# ::
     
 def load_prev_tasks(path: str = "prev_sprint.csv") -> dict:
     if not os.path.exists(path):
@@ -119,9 +139,15 @@ def load_prev_tasks(path: str = "prev_sprint.csv") -> dict:
             task_name = line.strip()
             if task_name:  # Only add non-empty lines
                 result.append(task_name)
-    
+  
     return result 
-
+    
+# .. function:: highlight_task(val)
+#
+# Apply highlighting methods.
+#
+# ::
+    
 task_colors = load_task_colors()
 prev_tasks = load_prev_tasks()
 
@@ -132,7 +158,7 @@ def highlight_task(val):
     if val in prev_tasks:  
         return f"background-color: #CCFFCC; color: black;"
     return ""
-    
+  
 # Process input
 #
 # ::
@@ -170,22 +196,28 @@ def process():
 #
 # ::
     
-    grouped_df = df.groupby('Task', as_index=False).agg({
+    st.session_state.grouped_df = df.groupby('Task', as_index=False).agg({
         'Hours': 'sum',
         'Comment': lambda x: ' // '.join(dict.fromkeys(x))
     })
-    grouped_df['Hours'] = grouped_df['Hours'].round(1)
+    st.session_state.grouped_df['Hours'] = st.session_state.grouped_df['Hours'].round(1)
 
-    
+  
 # Display results
 #
 # ::
-    
+
+if "grouped_df" in st.session_state:
     st.write("### Duration by Task")
-    st.dataframe(grouped_df.style.applymap(highlight_task, subset=["Task"]))
+    st.dataframe(
+        st.session_state.grouped_df.style.applymap(highlight_task, subset=["Task"]),
+        key="data",
+        on_select="rerun",
+        selection_mode=["multi-row"],
+    )
 
     # Calculate total hours
-    total_hours = grouped_df['Hours'].sum()
+    total_hours = st.session_state.grouped_df['Hours'].sum()
     st.write(f"**Total Hours: {total_hours}**")
 
 # Click button
