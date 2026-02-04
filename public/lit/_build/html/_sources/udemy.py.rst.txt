@@ -70,6 +70,12 @@ Select OpenAI LLM.
 ::
 
   llm_prices = {
+      "gpt-5.2": 1.75,
+      "gpt-5.1": 1.25,
+
+      "gpt-5.1-chat-latest": 1.25,
+      "gpt-5.1-codex": 1.25,
+    
       "gpt-5": 1.25,
       "gpt-5-mini": 0.25,
       "gpt-5-nano": 0.05,
@@ -82,12 +88,6 @@ Select OpenAI LLM.
       "gemini-2.5-flash-preview-05-20": 0.0,
       "gemma-3-27b-it": 0.0,
       "gemini-2.0-flash": 0.0,
-    
-      "gpt-4.1-mini": 0.4,
-      "gpt-4.1-nano": 0.1,
-      "gpt-4.1": 2.0,
-      "gpt-4o-mini": 0.15,
-      "gpt-4o": 2.5,
   }
 
   llm_temperature = 0.1

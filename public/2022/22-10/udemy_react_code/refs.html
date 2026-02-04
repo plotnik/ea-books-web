@@ -534,27 +534,60 @@ code/08 Refs Portals</a>
 <div class="sect1">
 <h2 id="_132_repetition_managing_user_input_with_state_two_way_binding">132. Repetition - Managing User Input with State (Two-Way-Binding)</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>The text walks through implementing a React “player” component that
+replaces “unknown entity” with a user-entered name <strong>using <code>useState</code> (no
+refs)</strong>:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Use useState (imported from React) to manage input and submit state: e.g. [enteredPlayerName, setEnteredPlayerName] = useState('') and [submitted, setSubmitted] = useState(false).</p>
+<p>Import <code>useState</code> and create state <code>enteredPlayerName</code> (initially
+<code>''</code>).</p>
 </li>
 <li>
-<p>Add handleChange connected to input onChange; setEnteredPlayerName(event.target.value) and bind the input value to enteredPlayerName so it stays controlled.</p>
+<p>Add <code>handleChange</code> and wire it to the input’s <code>onChange</code> to store
+<code>event.target.value</code> in state.</p>
 </li>
 <li>
-<p>Add handleClick connected to button onClick; setSubmitted(true).</p>
+<p>Make the input a controlled component by binding
+<code>value={enteredPlayerName}</code>.</p>
 </li>
 <li>
-<p>Render the welcome text conditionally: if submitted is true show enteredPlayerName, otherwise show "unknown entity" (ternary inside JSX).</p>
+<p>Add a second state, e.g. <code>submitted</code> (initially <code>false</code>), plus
+<code>handleClick</code> on the button to set <code>submitted(true)</code>.</p>
 </li>
 <li>
-<p>Behavior: after clicking "Set Name" the entered name appears. If you keep typing afterwards the displayed name will change (because enteredPlayerName is reflected), unless you reset submitted to false inside handleChange to revert to "unknown entity" while editing.</p>
+<p>Conditionally render after “Welcome” via a ternary:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>if <code>submitted</code> → show <code>enteredPlayerName</code></p>
 </li>
 <li>
-<p>Conclusion: this works but requires managing keystroke updates and a second state flag — a case where using refs could simplify reading the input value at submit time.</p>
+<p>else → show <code>"unknown entity"</code></p>
 </li>
 </ul>
+</div>
+</li>
+<li>
+<p>Notes a behavior issue: after submitting, the displayed name updates
+on every keystroke because it uses <code>enteredPlayerName</code>. To avoid that,
+you can reset <code>submitted</code> to <code>false</code> in <code>handleChange</code>, but that causes
+the UI to jump back to “unknown entity” while typing.</p>
+</li>
+<li>
+<p><strong>Conclusion:</strong> this is a case where the state-based approach becomes
+verbose/awkward for simply reading the input value on button click,
+motivating the use of <strong>refs</strong> to simplify the component.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/02-user-input-with-state/src/components/Player.jsx" target="_blank">
+02-user-input-with-state/src/components/Player.jsx</a>
+</div>
 </div>
 </div>
 </div>
@@ -1179,7 +1212,7 @@ the timer is stopped in time.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-02-03 10:25:34 +0200
+Last updated 2026-02-04 10:30:24 +0200
 </div>
 </div>
 </body>

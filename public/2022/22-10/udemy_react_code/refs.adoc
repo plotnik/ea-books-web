@@ -37,12 +37,35 @@ code/08 Refs Portals</a>
 == 132. Repetition - Managing User Input with State (Two-Way-Binding)
 
 
-- Use useState (imported from React) to manage input and submit state: e.g. [enteredPlayerName, setEnteredPlayerName] = useState('') and [submitted, setSubmitted] = useState(false).
-- Add handleChange connected to input onChange; setEnteredPlayerName(event.target.value) and bind the input value to enteredPlayerName so it stays controlled.
-- Add handleClick connected to button onClick; setSubmitted(true).
-- Render the welcome text conditionally: if submitted is true show enteredPlayerName, otherwise show "unknown entity" (ternary inside JSX).
-- Behavior: after clicking "Set Name" the entered name appears. If you keep typing afterwards the displayed name will change (because enteredPlayerName is reflected), unless you reset submitted to false inside handleChange to revert to "unknown entity" while editing.
-- Conclusion: this works but requires managing keystroke updates and a second state flag — a case where using refs could simplify reading the input value at submit time.
+The text walks through implementing a React “player” component that
+replaces “unknown entity” with a user-entered name *using `useState` (no
+refs)*:
+
+* Import `useState` and create state `enteredPlayerName` (initially
+`''`).
+* Add `handleChange` and wire it to the input’s `onChange` to store
+`event.target.value` in state.
+* Make the input a controlled component by binding
+`value=++{++enteredPlayerName}`.
+* Add a second state, e.g. `submitted` (initially `false`), plus
+`handleClick` on the button to set `submitted(true)`.
+* Conditionally render after “Welcome” via a ternary:
+** if `submitted` → show `enteredPlayerName`
+** else → show `"unknown entity"`
+* Notes a behavior issue: after submitting, the displayed name updates
+on every keystroke because it uses `enteredPlayerName`. To avoid that,
+you can reset `submitted` to `false` in `handleChange`, but that causes
+the UI to jump back to “unknown entity” while typing.
+* *Conclusion:* this is a case where the state-based approach becomes
+verbose/awkward for simply reading the input value on button click,
+motivating the use of *refs* to simplify the component.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/02-user-input-with-state/src/components/Player.jsx" target="_blank">
+02-user-input-with-state/src/components/Player.jsx</a>
+++++
+====
 
 == 134. Introducing Refs - Connecting & Accessing HTML Elements via Refs
 
