@@ -454,6 +454,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_142_exposing_component_apis_via_the_useimperativehandle_hook">142. Exposing Component APIs via the useImperativeHandle Hook</a></li>
 <li><a href="#_143_more_examples_when_to_use_refs_state">143. More Examples - When To Use Refs &amp; State</a></li>
 <li><a href="#_144_sharing_state_across_components">144. Sharing State Across Components</a></li>
+<li><a href="#_145_enhancing_the_demo_app_resultmodal">145. Enhancing the Demo App ResultModal</a></li>
+<li><a href="#_147_introducing_understanding_portals">147. Introducing &amp; Understanding Portals</a></li>
 </ul>
 </div>
 </div>
@@ -497,7 +499,7 @@ components.</p>
 <ul>
 <li>
 <p>Render elements in a different place in the DOM than where they
-appear in JSX (e.g., <code>modals/overlays</code>).</p>
+appear in JSX (e.g., modals/overlays).</p>
 </li>
 </ul>
 </div>
@@ -536,8 +538,8 @@ code/08 Refs Portals</a>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The text walks through implementing a React “player” component that
-replaces “unknown entity” with a user-entered name <strong>using <code>useState</code> (no
-refs)</strong>:</p>
+replaces “unknown entity” with a user-entered name
+using <code>useState</code> (no refs):</p>
 </div>
 <div class="ulist">
 <ul>
@@ -597,7 +599,7 @@ motivating the use of <strong>refs</strong> to simplify the component.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>What a ref is</p>
+<p><strong>What a ref is</strong></p>
 <div class="ulist">
 <ul>
 <li>
@@ -612,14 +614,14 @@ hold a mutable value that persists across renders).</p>
 </div>
 </li>
 <li>
-<p>How to create and connect a ref</p>
+<p><strong>How to create and connect a ref</strong></p>
 <div class="ulist">
 <ul>
 <li>
 <p>Create: <code>const inputRef = useRef()</code></p>
 </li>
 <li>
-<p>Connect to JSX:</p>
+<p>Connect to element in JSX: <code>&lt;input ref={inputRef} /&gt;</code></p>
 </li>
 <li>
 <p>The connected DOM element is available as <code>inputRef.current</code> after
@@ -629,7 +631,7 @@ mount.</p>
 </div>
 </li>
 <li>
-<p>How this simplifies the component</p>
+<p><strong>How this simplifies the component</strong></p>
 <div class="ulist">
 <ul>
 <li>
@@ -651,7 +653,7 @@ prop, and intermediate submitted state — fewer props and less code.</p>
 </li>
 <li>
 <p>On button click: <code>const value = inputRef.current.value;</code>
-setEnteredPlayerName(value)</p>
+<code>setEnteredPlayerName(value)</code></p>
 </li>
 <li>
 <p>Render <code>enteredPlayerName</code> (with a fallback like 'Unknown' if empty)</p>
@@ -663,13 +665,13 @@ setEnteredPlayerName(value)</p>
 </div>
 </li>
 <li>
-<p>Small note about fallback operators</p>
+<p><strong>Small note about fallback operators</strong></p>
 <div class="ulist">
 <ul>
 <li>
 <p>The speaker mentioned "two question marks" (<code>??</code>) as a shortcut for
 fallback. <code>??</code> is the nullish coalescing operator (falls back only on
-null/undefined). If you want to treat empty string as fallback, use <code>||</code>
+<code>null/undefined</code>). If you want to treat empty string as fallback, use <code>||</code>
 instead.</p>
 </li>
 </ul>
@@ -678,7 +680,7 @@ instead.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Short example (conceptual)</p>
+<p><strong>Short example (conceptual)</strong></p>
 </div>
 <div class="ulist">
 <ul>
@@ -697,8 +699,14 @@ instead.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Result: you update state only when needed (on click), read the real DOM
+<p><strong>Result:</strong> you update state only when needed (on click), read the real DOM
 input value via ref, and keep the component leaner.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/03-introducing-refs-connecting-elements/src/components/Player.jsx" target="_blank">
+03-introducing-refs-connecting-elements/src/components/Player.jsx</a>
+</div>
 </div>
 </div>
 </div>
@@ -706,7 +714,13 @@ input value via ref, and keep the component leaner.</p>
 <h2 id="_135_manipulating_the_dom_via_refs">135. Manipulating the DOM via Refs</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The lecture explains that refs can be used to clear an input (e.g., setting playerName.current.value = '') which is concise and works. However, directly setting DOM values is imperative and conflicts with React’s declarative philosophy — reading a ref is fine, but mutating DOM via refs is a departure from letting React manage state and UI. For simple, isolated cases (like clearing an uncontrolled input) using a ref can be acceptable and save code, but you should avoid relying on refs to read/manipulate many values; prefer state and declarative patterns when the input is part of app state.</p>
+<p>Refs can be used to reset an input after setting a name by imperatively clearing it (e.g., <code>playerName.current.value = ''</code>). This works, but it’s less “React-like” because React encourages declarative UI updates rather than direct DOM manipulation. Reading a value via a ref is relatively mild, but changing the DOM through the ref is imperative. For simple, isolated cases like clearing an input not tied to other state, this can be acceptable and reduces code—but refs shouldn’t become a general tool for manipulating many DOM values, since that goes against React’s intended approach.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/04-manipulating-dom-with-refs/src/components/Player.jsx" target="_blank">
+04-manipulating-dom-with-refs/src/components/Player.jsx</a>
+</div>
 </div>
 </div>
 </div>
@@ -740,60 +754,78 @@ input value via ref, and keep the component leaner.</p>
 <div class="sect1">
 <h2 id="_137_adding_challenges_to_the_demo_project">137. Adding Challenges to the Demo Project</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>A new reusable <strong>TimerChallenge</strong> React component is added to build a
+timer-based challenges app and set up a use case for refs.</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Add a new TimerChallenge component (default export) that returns a
-section with class "challenge" (uses the project&#8217;s CSS).</p>
+<p>Create <code>TimerChallenge</code> (default export) that renders a
+<code>&lt;section class="challenge"&gt;</code> (styling comes from an existing
+CSS file).</p>
 </li>
 <li>
-<p>Structure inside the section:</p>
+<p>The component takes props:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>h2 that displays a title prop.</p>
+<p><code>title</code> to display in an <code>&lt;h2&gt;</code>.</p>
 </li>
 <li>
-<p>p.challenge-time that displays the target time (e.g., "1 second" or
-"5 seconds") with conditional pluralization (add "s" only if targetTime
-&gt; 1).</p>
-</li>
-<li>
-<p>p with a button that will toggle the timer text between "start
-challenge" and "stop challenge" (controlled by state later).</p>
-</li>
-<li>
-<p>p whose class is "active" only when the timer is running; its text
-should read "time is running" when running or "timer inactive" when not.</p>
+<p><code>targetTime</code> to display in a paragraph with class <code>challenge-time</code>,
+formatted as “X second(s)” with the “s” added only when
+<code>targetTime &gt; 1</code>.</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>In App, import the component and render four instances inside the
-div#challenges:</p>
+<p>Add UI elements for timer behavior (to be wired up later with state):</p>
 <div class="ulist">
 <ul>
 <li>
-<p>"easy" — targetTime 1</p>
+<p>A button that should toggle between “Start Challenge” and “Stop
+Challenge” depending on whether the timer is running.</p>
 </li>
 <li>
-<p>"not easy" — targetTime 5</p>
-</li>
-<li>
-<p>"getting tough" — targetTime 10</p>
-</li>
-<li>
-<p>"pros only" — targetTime 15</p>
+<p>A status paragraph that conditionally shows “Time is running…” (and
+applies an “active” class) or “Timer inactive”.</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>Note: Buttons are currently non-functional; state (and later refs)
-will be added to control starting/stopping and the running status.</p>
+<p>Use this component inside <code>App</code> within the <code>#challenges</code> div by
+importing it and rendering four instances:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>“Easy” (1 second)</p>
+</li>
+<li>
+<p>“Not easy” (5 seconds)</p>
+</li>
+<li>
+<p>“Getting tough” (10 seconds)</p>
+</li>
+<li>
+<p>“Pros only” (15 seconds)</p>
 </li>
 </ul>
+</div>
+</li>
+<li>
+<p>At this stage the buttons don’t work yet; next steps will add <strong>state</strong>
+and then <strong>refs</strong> to implement the timer logic.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/05-setting-timers-managing-state/src/components/TimerChallenge.jsx" target="_blank">
+05-setting-timers-managing-state/src/components/TimerChallenge.jsx</a>
+</div>
 </div>
 </div>
 </div>
@@ -803,11 +835,11 @@ will be added to control starting/stopping and the running status.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Goal: start a countdown when the "Start Challenge" button is pressed
+<p><strong>Goal:</strong> start a countdown when the "Start Challenge" button is pressed
 and detect when it expires.</p>
 </li>
 <li>
-<p>Implementation:</p>
+<p><strong>Implementation:</strong></p>
 <div class="ulist">
 <ul>
 <li>
@@ -838,7 +870,7 @@ inactive").</p>
 </div>
 </li>
 <li>
-<p>Next step: implement <code>handleStop</code> to clear the timer. To access the
+<p><strong>Next step:</strong> implement <code>handleStop</code> to clear the timer. To access the
 timeout ID from <code>handleStop</code>, store it in a ref (<code>useRef</code>) so you can call
 <code>clearTimeout</code> on it.</p>
 </li>
@@ -894,6 +926,12 @@ directly drive UI updates (timers, mutable handles, etc.).</p>
 </li>
 </ul>
 </div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/06-refs-for-more-than-dom-elements/src/components/TimerChallenge.jsx" target="_blank">
+06-refs-for-more-than-dom-elements/src/components/TimerChallenge.jsx</a>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -905,36 +943,36 @@ directly drive UI updates (timers, mutable handles, etc.).</p>
 <p>Added a new <code>ResultModal</code> component to show a pop-up when the timer ends (won or lost) and later to show the score (based on how close to expiry the timer was).</p>
 </li>
 <li>
-<p>ResultModal returns the native HTML <code>&lt;dialog&gt;</code> element with an <code>h2</code> for the result, a paragraph showing the target time (and later the seconds left), a form with <code>method="dialog"</code> and a close button so the dialog can be closed without extra JS, and a <code>className</code> for styling.</p>
+<p><code>ResultModal</code> returns the native HTML <code>&lt;dialog&gt;</code> element with an <code>h2</code> for the result, a paragraph showing the target time (and later the seconds left), a form with <code>method="dialog"</code> and a close button so the dialog can be closed without extra JS, and a <code>className</code> for styling.</p>
 </li>
 <li>
 <p><code>TimerChallenge</code> will import and render <code>ResultModal</code> conditionally (for example when the timer expired). The component was placed alongside the existing section by wrapping the JSX in a fragment, and the old inline conditional paragraph was removed.</p>
 </li>
 <li>
-<p>Important detail: simply adding the <code>open</code> attribute to <code>&lt;dialog&gt;</code> makes it visible but does not show the built-in backdrop. To get the backdrop you must open the dialog programmatically (e.g., using the <code>dialog.showModal()</code> API), which requires accessing the dialog element via a ref from the parent component (<code>TimerChallenge</code>).</p>
+<p><strong>Important detail:</strong> simply adding the <code>open</code> attribute to <code>&lt;dialog&gt;</code> makes it visible but does not show the built-in backdrop. To get the backdrop you must open the dialog programmatically (e.g., using the <code>dialog.showModal()</code> API), which requires accessing the dialog element via a ref from the parent component (<code>TimerChallenge</code>).</p>
 </li>
 </ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/07-adding-a-modal-cmp/src/components/ResultModal.jsx" target="_blank">
+07-adding-a-modal-cmp/src/components/ResultModal.jsx</a>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_141_forwarding_refs_to_custom_components">141. Forwarding Refs to Custom Components</h2>
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/08-forwarding-refs/src/components/ResultModal.jsx" target="_blank">
-08 Refs Portals/08-forwarding-refs/src/components/ResultModal.jsx</a>
-</div>
-</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Goal: access the native element inside <code>ResultModal</code> from the
+<p><strong>Goal:</strong> access the native element inside <code>ResultModal</code> from the
 <code>TimerChallenge</code> component using a ref so <code>TimerChallenge</code> can call
 <code>dialog.showModal()</code> when the timer expires.</p>
 </li>
 <li>
-<p>Modern React (≥19) approach:</p>
+<p><strong>Modern React (≥19) approach:</strong></p>
 <div class="ulist">
 <ul>
 <li>
@@ -959,7 +997,7 @@ exists.</p>
 </div>
 </li>
 <li>
-<p>Older React (&lt;19) issue:</p>
+<p><strong>Older React (&lt;19) issue:</strong></p>
 <div class="ulist">
 <ul>
 <li>
@@ -970,7 +1008,7 @@ and will error if you try.</p>
 </div>
 </li>
 <li>
-<p>Compatible solution for older React:</p>
+<p><strong>Compatible solution for older React:</strong></p>
 <div class="ulist">
 <ul>
 <li>
@@ -992,67 +1030,65 @@ working with older versions.</p>
 </div>
 </li>
 <li>
-<p>Practical note: both approaches work; <code>forwardRef</code> is commonly seen in
+<p><strong>Practical note:</strong> both approaches work; <code>forwardRef</code> is commonly seen in
 codebases and necessary for compatibility with older React.</p>
 </li>
 </ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/08-forwarding-refs/src/components/ResultModal.jsx" target="_blank">
+08-forwarding-refs/src/components/ResultModal.jsx</a>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_142_exposing_component_apis_via_the_useimperativehandle_hook">142. Exposing Component APIs via the useImperativeHandle Hook</h2>
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/09-exposing-cmp-apis-useimperative-handle/src/components/ResultModal.jsx" target="_blank">
-08 Refs Portals/09-exposing-cmp-apis-useimperative-handle/src/components/ResultModal.jsx</a>
-</div>
+<div class="paragraph">
+<p><strong>Summary</strong> — exposing a stable, callable API from a component with
+<code>useImperativeHandle</code></p>
 </div>
 <div class="paragraph">
-<p>Summary — exposing a stable, callable API from a component with
-useImperativeHandle</p>
-</div>
-<div class="paragraph">
-<p>Problem</p>
+<p><strong>Problem</strong></p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Calling DOM methods (e.g., dialog.showModal()) from a parent via a ref
+<p>Calling DOM methods (e.g., <code>dialog.showModal()</code>) from a parent via a ref
 couples the parent to the child’s internal markup. If the child changes
 (dialog → div), the parent breaks.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Solution</p>
+<p><strong>Solution</strong></p>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p>Let the child expose a stable function-based API via
-useImperativeHandle (optionally combined with forwardRef). The parent
-calls that public method (e.g., open()) instead of calling internal DOM
+<code>useImperativeHandle</code> (optionally combined with <code>forwardRef</code>). The parent
+calls that public method (e.g., <code>open()</code>) instead of calling internal DOM
 methods.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>How it works (implementation outline)</p>
+<p><strong>How it works (implementation outline)</strong></p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>In the child (ResultModal):</p>
+<p>In the child (<code>ResultModal</code>):</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Create an internal ref for the dialog element: const dialog =
-useRef().</p>
+<p>Create an internal ref for the dialog element: <code>const dialog = useRef()</code>.</p>
 </li>
 <li>
-<p>Wrap the component with forwardRef (or accept a ref prop in React
-19+).</p>
+<p>Wrap the component with forwardRef (or accept a ref prop in React 19+).</p>
 </li>
 <li>
 <p>Call <code>useImperativeHandle(ref, () &#8658; ({ open: () &#8658; dialog.current.showModal() }))</code>.</p>
@@ -1071,7 +1107,7 @@ useRef().</p>
 <p>Hold a ref and pass it to .</p>
 </li>
 <li>
-<p>Call dialogRef.current.open() — this calls the child’s exposed open
+<p>Call <code>dialogRef.current.open()</code> — this calls the child’s exposed open
 method.</p>
 </li>
 </ul>
@@ -1080,7 +1116,7 @@ method.</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>Notes / benefits</p>
+<p><strong>Notes / benefits</strong></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1089,7 +1125,7 @@ method.</p>
 change internals while keeping the same exposed API.</p>
 </li>
 <li>
-<p>Prefer props/state for normal interaction; useImperativeHandle for
+<p>Prefer props/state for normal interaction; <code>useImperativeHandle</code> for
 imperative APIs (like showing a modal).</p>
 </li>
 <li>
@@ -1097,6 +1133,12 @@ imperative APIs (like showing a modal).</p>
 accept the ref as a prop instead.</p>
 </li>
 </ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/09-exposing-cmp-apis-useimperative-handle/src/components/ResultModal.jsx" target="_blank">
+09-exposing-cmp-apis-useimperative-handle/src/components/ResultModal.jsx</a>
+</div>
 </div>
 </div>
 </div>
@@ -1115,7 +1157,7 @@ accept the ref as a prop instead.</p>
 <p>In the interval callback update state with the functional form: <code>setTimeRemaining(prev &#8658; prev - 10)</code>.</p>
 </li>
 <li>
-<p>Keep the interval id in a ref (not state or a plain variable) so you can clear it later with clearInterval(ref.current).</p>
+<p>Keep the interval id in a ref (not state or a plain variable) so you can clear it later with <code>clearInterval(ref.current)</code>.</p>
 </li>
 <li>
 <p>Derive whether the timer is active from <code>timeRemaining</code> (e.g., active when <code>timeRemaining &gt; 0 &amp;&amp; timeRemaining &lt; targetTime*1000</code>) and use that derived value to conditionally render/buttons and behavior.</p>
@@ -1209,10 +1251,64 @@ the timer is stopped in time.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_145_enhancing_the_demo_app_resultmodal">145. Enhancing the Demo App ResultModal</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The text explains how to compute and display a game “score” in a Result
+Modal:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Calculate score using the formula:<br>
+<strong>score = (1 − (remainingTime / (targetTime * 1000))) * 100</strong>,
+then <strong>round</strong> it to get a value between <strong>0 and 100</strong>.</p>
+</li>
+<li>
+<p>Only show “Your score: …” if the user <strong>didn’t lose</strong>.</p>
+</li>
+<li>
+<p>Convert <code>targetTime</code> from <strong>seconds to milliseconds</strong> by multiplying by
+<strong>1000</strong>, since <code>remainingTime</code> is in milliseconds.</p>
+</li>
+<li>
+<p>Add parentheses so the <code>targetTime * 1000</code> calculation happens
+before division.</p>
+</li>
+<li>
+<p>After saving, stopping the timer in time shows the score and remaining
+time; getting closer to zero remaining time yields a better score, and
+this works across all challenge durations.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_147_introducing_understanding_portals">147. Introducing &amp; Understanding Portals</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>React portals let you render a component’s JSX in a different place in the DOM than where the component is used in the React component tree. This is useful for overlays/modals: although they’re triggered inside a nested component (e.g., <code>TimerChallenge</code>), it’s often better for accessibility and styling to place the modal markup near the <code>&lt;body&gt;</code> root (so it isn’t deeply nested or potentially clipped/hidden).</p>
+</div>
+<div class="paragraph">
+<p>To create a portal, import <code>createPortal</code> from <strong><code>react-dom</code></strong> (not <code>react</code>). Wrap the JSX you want to “teleport” with <code>createPortal(jsx, targetElement)</code>, where <code>targetElement</code> is an existing DOM node in <code>index.html</code> (e.g., a <code>&lt;div id="modal"&gt;&lt;/div&gt;</code>). You typically select it with <code>document.getElementById('modal')</code>.</p>
+</div>
+<div class="paragraph">
+<p>After applying this, the modal behaves the same visually, but inspecting the DOM shows the dialog rendered inside the <code>#modal</code> container instead of nested inside the component’s normal DOM location—common for modals and other overlays.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/08%20Refs%20Portals/10-portals-finished/src/components/ResultModal.jsx" target="_blank">
+10-portals-finished/src/components/ResultModal.jsx</a>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-02-04 10:30:24 +0200
+Last updated 2026-02-05 11:06:07 +0200
 </div>
 </div>
 </body>

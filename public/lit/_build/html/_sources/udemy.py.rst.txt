@@ -375,7 +375,7 @@ Show OpenAI result.
       st.session_state.execution_time = end_time - start_time
       st.rerun()
  
-  if st.sidebar.button(':thumbsup: &nbsp; Improve', use_container_width=True):
+  if st.sidebar.button(':pencil2: &nbsp; Improve', use_container_width=True):
       start_time = time.time()
       call_llm(text, prompt_improve)
       end_time = time.time()
