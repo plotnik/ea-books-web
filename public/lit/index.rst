@@ -12,22 +12,23 @@ Literate Programs
 
    note_openai.py
    ai_note.py
+   md_view.py
    udemy.py
    o_chat.py
    ai_obsidian.py
    o_ed.py
    o-bases.py
+   grafana_npe.py
+   grafana_json.py
+   grafana_panels.py
+   grafana_stats.py     
    neo_rag.py
    book_lc.py
    book_chat.py
    li_extract.py
    L1_Router_Engine.py   
    time_intervals.py
-   md_view.py
-   pan_ui.py
-   grafana_json.py
-   grafana_panels.py
-   grafana_stats.py   
+   pan_ui.py 
    jira_stats.py
    explain_java.py
    code_review.py

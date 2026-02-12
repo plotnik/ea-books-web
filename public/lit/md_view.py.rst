@@ -1,5 +1,5 @@
 Markdown Viewer
----------------
+===============
 
 ::
 
@@ -39,7 +39,7 @@ We can show ``.q.md`` files only.
       md_files = [f for f in os.listdir('.') if f.endswith('.q.md')]
 
   else:
-  
+
 Find all files in the current directory with a ``.md`` extension (these may contain LLM-generated text).
 
 Exclude any question files with the ``.q.md`` suffix. If a response file corresponds to a specific question, that question will be stored separately in a file sharing the same base name and ending in ``.q.md``; do not include those ``.q.md`` files in the final list.
@@ -68,7 +68,7 @@ Adds a prefix to each line of a multi-line string.
       lines = query.splitlines()
       prefixed_lines = [prefix + line for line in lines]
       return "\n".join(prefixed_lines)
-  
+
 Check if query file exists.
 
 ::
@@ -77,16 +77,29 @@ Check if query file exists.
   if os.path.exists(query_file_path):
       with open(query_file_path, 'r', encoding='utf-8') as file:
           query = file.read()
+      st.write("### Query")      
       st.write(prefix_lines(query, "> "))     
       st.write("---");
+    
+Check if summary file exists.
 
+::
+
+  summary_file_path = f".md-view/{selected_file[:-3]}.summary.md"
+  if os.path.exists(summary_file_path):
+      with open(summary_file_path, 'r', encoding='utf-8') as file:
+          summary = file.read()
+      st.write("### Summary")     
+      st.write(prefix_lines(summary, "> ")) 
+      st.write("---");
+    
 Read the contents of selected file
 
 ::
 
   with open(selected_file, 'r', encoding='utf-8') as file:
       md_text = file.read()
-  
+
 Display the contents of the file that has been selected.
 
 ::
@@ -94,6 +107,9 @@ Display the contents of the file that has been selected.
   st.write(md_text)    
 
   html_format = st.sidebar.radio("Output HTML:", options=["Tailwind", "Bootstrap"], horizontal=True)
+
+Tailwind CSS
+------------
 
 Parse HTML and add Tailwind CSS classes to improve styling.
 
@@ -162,7 +178,10 @@ Parse HTML and add Tailwind CSS classes to improve styling.
               </body>
               </html>
               """
-          
+            
+Bootstrap CSS
+-------------
+
 Parse HTML and add Bootstrap CSS classes to improve styling.
 
 ::
@@ -233,7 +252,10 @@ Parse HTML and add Bootstrap CSS classes to improve styling.
           </body>
           </html>
           """
-      
+
+Save HTML
+---------
+
 Convert Markdown to HTML and enhance it with Tailwind or Booststrap styles.
 Then save the resulting HTML file.
 
@@ -250,7 +272,7 @@ Then save the resulting HTML file.
           html_text = enhance_html_with_bootstrap(html_text, filename)
       elif html_format == "Tailwind":
           html_text = enhance_html_with_tailwind(html_text, filename)
-   
+ 
       filename += ".html"
       with open(filename, 'w', encoding='utf-8') as file:
           file.write(html_text)
@@ -262,3 +284,37 @@ Add a button to save the markdown text as an HTML file
 
   if st.sidebar.button("Save HTML", use_container_width=True):
       save_html(md_text, selected_file[:-3])
+
+Summarize
+
+::
+
+  prompt_summarize = """You will be provided with statements in markdown,
+  and your task is to summarize the content you are provided.
+  """
+
+  from openai import OpenAI
+
+  class OpenAI_Helper:
+     
+      def __init__(self):
+          self.client = OpenAI()
+          self.llm_model = "gpt-5-mini"
+        
+      def call_llm(self, input_text, prompt):
+          response = self.client.responses.create(
+              model=self.llm_model,
+              instructions=prompt,
+              input=input_text
+          )
+    
+          return response.output_text
+
+  openai_helper = OpenAI_Helper()
+
+  def summarize(md_text, filename):
+      summary = openai_helper.call_llm(md_text, prompt_summarize)
+      print(summary)
+    
+  if st.sidebar.button("Summarize", use_container_width=True):
+      summarize(md_text, selected_file[:-3])

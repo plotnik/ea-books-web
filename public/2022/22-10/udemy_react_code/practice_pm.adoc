@@ -1,0 +1,86 @@
+= 9. Practice Project: Project Management App (with Components, State, Refs & More)
+:icons: font
+:toc: left
+
+link:udemy_react.html[<Contents>]
+
+== 150. Module Introduction & Starting Project
+
+This section is a hands-on practice project to apply React fundamentals and some advanced concepts by building a simple Project Management app. The app will let users create and view projects, add and clear tasks, and delete projects, combining concepts like components, state, refs, portals, and styling.
+
+A starter project is provided in both local and CodeSandbox forms (equivalent). The local version requires installing dependencies and starting the dev server; CodeSandbox runs immediately. Tailwind CSS is already set up in the starter, so learners can use its utility classes (optionally referencing the Tailwind docs), but the priority is correct React functionality over styling. Learners are encouraged to attempt building the app independently before following the instructor’s step-by-step solution starting next lecture.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/01-starting-project/src/App.jsx" target="_blank">
+01-starting-project/src/App.jsx</a>
+++++
+====
+
+== 151. Adding a Projects Sidebar Component
+
+You create a new `components` folder under `src` and add a
+`ProjectsSidebar.jsx` component. That component returns an `aside`
+containing an `h2` (“Your Projects”) and a button (“{plus} Add Project”)
+meant for starting a new project (project list will be added later).
+Then, in `App`, you import and render `ProjectsSidebar`, replacing the
+old `h1` and wrapping the layout in a `main` element to hold the sidebar
+and future project details. After confirming it renders, you note the
+next step is styling.
+
+== 152. Styling the Sidebar & Button with Tailwind CSS
+
+The text describes adding Tailwind CSS classes to style a React app
+layout and a `ProjectsSidebar`:
+
+* *App component*: add `h-screen` so the layout fills the full viewport
+height (so the sidebar can later stretch full height), and `my-8` for
+vertical margin.
+* *Sidebar (`aside`) styling*: set width to `w-1/3`, add padding
+`px-8 py-16`, dark background `bg-stone-900`, light text
+`text-stone-50`, use a fixed width on medium{plus} screens with
+`md:w-72`, and round only the right corners with `rounded-r-xl`.
+* *Sidebar title (`h2`) styling*: add bottom margin, `font-bold`,
+`uppercase`, larger text on bigger screens, and adjust to a lighter gray
+color.
+* *Button styling*: add padding, `text-xs` with `md:text-base`,
+`rounded-md`, `bg-stone-700`, `text-stone-400`, and hover styles
+`hover:bg-stone-600 hover:text-stone-100`.
+
+It ends by noting the next step: make the button clickable to show a
+component/screen for entering details of a new project.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/02-styling-sidebar/src/components/ProjectsSidebar.jsx" target="_blank">
+02-styling-sidebar/src/components/ProjectsSidebar.jsx</a>
+++++
+====
+
+== 153. Adding the New Project Component & A Reusable Input Component
+
+A new `NewProject` React component is created to collect data for a new
+project. It renders a `div` with a `menu` containing *Cancel* and *Save*
+buttons, and below that it shows inputs for *Title*, *Description*, and
+*Due Date* (with *Description* using a `textarea`).
+
+To avoid repeating similar JSX and Tailwind classes, a reusable `Input`
+component is added (`Input.jsx`). It renders a `label` plus either an
+`input` or `textarea` depending on a `textarea` prop, and it accepts a
+`label` prop while spreading remaining props onto the rendered control
+for full configurability.
+
+`NewProject` then imports and uses `Input` three times with the
+appropriate labels, enabling `textarea` for the description field.
+Finally, `NewProject` is imported into the main `App` component and
+displayed next to the sidebar by making the main container a flex layout
+(`flex` with `gap-8`), ensuring the sidebar stretches to full height and
+the new project inputs appear beside it.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/03-styling-buttons-inputs/src/components/NewProject.jsx" target="_blank">
+03-styling-buttons-inputs/src/components/NewProject.jsx</a>
+++++
+====
+

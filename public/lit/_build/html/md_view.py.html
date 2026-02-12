@@ -15,8 +15,8 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Pandoc UI" href="pan_ui.py.html" />
-    <link rel="prev" title="Time Intervals" href="time_intervals.py.html" />
+    <link rel="next" title="Udemy" href="udemy.py.html" />
+    <link rel="prev" title="Note-AI" href="ai_note.py.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -95,7 +95,18 @@
 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">query_file_path</span><span class="p">):</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">query_file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">query</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Query&quot;</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prefix_lines</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="s2">&quot;&gt; &quot;</span><span class="p">))</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Check if summary file exists.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">summary_file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;.md-view/</span><span class="si">{</span><span class="n">selected_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">.summary.md&quot;</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">summary_file_path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">summary_file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Summary&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prefix_lines</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="s2">&quot;&gt; &quot;</span><span class="p">))</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -110,6 +121,8 @@
 <span class="n">html_format</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Output HTML:&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Tailwind&quot;</span><span class="p">,</span> <span class="s2">&quot;Bootstrap&quot;</span><span class="p">],</span> <span class="n">horizontal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<section id="tailwind-css">
+<h2>Tailwind CSS<a class="headerlink" href="#tailwind-css" title="Link to this heading">¶</a></h2>
 <p>Parse HTML and add Tailwind CSS classes to improve styling.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">enhance_html_with_tailwind</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
@@ -176,6 +189,9 @@
 <span class="s2">            &quot;&quot;&quot;</span>
 </pre></div>
 </div>
+</section>
+<section id="bootstrap-css">
+<h2>Bootstrap CSS<a class="headerlink" href="#bootstrap-css" title="Link to this heading">¶</a></h2>
 <p>Parse HTML and add Bootstrap CSS classes to improve styling.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">enhance_html_with_bootstrap</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
@@ -245,6 +261,9 @@
 <span class="s2">        &quot;&quot;&quot;</span>
 </pre></div>
 </div>
+</section>
+<section id="save-html">
+<h2>Save HTML<a class="headerlink" href="#save-html" title="Link to this heading">¶</a></h2>
 <p>Convert Markdown to HTML and enhance it with Tailwind or Booststrap styles.
 Then save the resulting HTML file.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">save_html</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
@@ -270,6 +289,39 @@ Then save the resulting HTML file.</p>
     <span class="n">save_html</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span>
 </pre></div>
 </div>
+<p>Summarize</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_summarize</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
+<span class="s2">and your task is to summarize the content you are provided.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OpenAI_Helper</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-5-mini&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">call_llm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">responses</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_model</span><span class="p">,</span>
+            <span class="n">instructions</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">input_text</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">output_text</span>
+
+<span class="n">openai_helper</span> <span class="o">=</span> <span class="n">OpenAI_Helper</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">openai_helper</span><span class="o">.</span><span class="n">call_llm</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">prompt_summarize</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Summarize&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">summarize</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -302,22 +354,28 @@ Then save the resulting HTML file.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Markdown Viewer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tailwind-css">Tailwind CSS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bootstrap-css">Bootstrap CSS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#save-html">Save HTML</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o_chat.py.html">Obsidian Chat (LI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o-bases.py.html">Obsidian Bases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_npe.py.html">Grafana NPE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_json.py.html">Grafana Record</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_panels.py.html">Grafana Panels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neo_rag.py.html">Neo RAG</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_chat.py.html">Book Chat (LI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="li_extract.py.html">LlamaIndex Extractors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_intervals.py.html">Time Intervals</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Markdown Viewer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="grafana_json.py.html">Grafana Record</a></li>
-<li class="toctree-l1"><a class="reference internal" href="grafana_panels.py.html">Grafana Panels</a></li>
-<li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="explain_java.py.html">Explain Java</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
@@ -352,8 +410,8 @@ Then save the resulting HTML file.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="time_intervals.py.html" title="previous chapter">Time Intervals</a></li>
-      <li>Next: <a href="pan_ui.py.html" title="next chapter">Pandoc UI</a></li>
+      <li>Previous: <a href="ai_note.py.html" title="previous chapter">Note-AI</a></li>
+      <li>Next: <a href="udemy.py.html" title="next chapter">Udemy</a></li>
   </ul></li>
 </ul>
 </div>
