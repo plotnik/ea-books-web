@@ -14,6 +14,7 @@ Literate Programs
    ai_note.py
    md_view.py
    udemy.py
+   qr_code.py
    o_chat.py
    ai_obsidian.py
    o_ed.py
@@ -41,6 +42,7 @@ Literate Programs
    exc_yaml.py
    exc_ui.py
    exc_histo.py
+   extract_chunk.py
    curl_clean.py
    cmp_folders.py
    adoc_links.py
