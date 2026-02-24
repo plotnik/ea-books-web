@@ -115,3 +115,47 @@ a new project.
 03-styling-buttons-inputs/src/components/NewProject.jsx</a>
 ++++
 ====
+
+== 155. Splitting Components to Split JSX & Tailwind Styles
+
+* Add a fallback UI that’s shown when no project is selected and the
+user is not currently adding a new project.
+
+* Create a new component `NoProjectSelected` that renders:
+** An image (`no-projects.png` imported from the `assets` folder),
+** An `h2` heading (“No Project Selected”),
+** A paragraph prompting the user to select or create a project,
+** A “Create new project” button that should trigger showing the
+`NewProject` screen.
+
+* Apply Tailwind styling:
+** Wrapper `div`: top margin, centered text, width `2/3`.
+** Image: `w-16 h-16 object-contain mx-auto`.
+** Heading: `text-xl font-bold text-stone-500 my-4`.
+** Text paragraph: `text-stone-400` plus spacing.
+
+* Avoid duplicating button Tailwind classes by creating a reusable
+`Button` component:
+** Move the button markup and classes from `ProjectsSidebar` into
+`Button`.
+** Support flexible content via `children`.
+** Forward all additional props (`...props`) onto the underlying
+`++<++button++>++` so it can receive handlers/attributes later.
+
+* Replace the existing buttons in both `ProjectsSidebar` and
+`NoProjectSelected` with the new `Button` component (imported from
+`button.jsx`), removing repeated `className` definitions.
+
+* Temporarily render `NoProjectSelected` in `App` instead of
+`NewProject` to preview it.
+
+* Next step: implement conditional rendering in `App` so clicking the
+“Create new project” button switches the UI to the `NewProject`
+component.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/04-managing-state-to-switch-cmp/src/components/NoProjectSelected.jsx" target="_blank">
+04-managing-state-to-switch-cmp/src/components/NoProjectSelected.jsx</a>
+++++
+====

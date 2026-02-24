@@ -446,6 +446,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_152_styling_the_sidebar_button_with_tailwind_css">152. Styling the Sidebar &amp; Button with Tailwind CSS</a></li>
 <li><a href="#_153_adding_the_new_project_component_a_reusable_input_component">153. Adding the New Project Component &amp; A Reusable Input Component</a></li>
 <li><a href="#_154_styling_buttons_inputs_with_tailwind_css">154. Styling Buttons &amp; Inputs with Tailwind CSS</a></li>
+<li><a href="#_155_splitting_components_to_split_jsx_tailwind_styles">155. Splitting Components to Split JSX &amp; Tailwind Styles</a></li>
 </ul>
 </div>
 </div>
@@ -627,10 +628,101 @@ a new project.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_155_splitting_components_to_split_jsx_tailwind_styles">155. Splitting Components to Split JSX &amp; Tailwind Styles</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Add a fallback UI that’s shown when no project is selected and the
+user is not currently adding a new project.</p>
+</li>
+<li>
+<p>Create a new component <code>NoProjectSelected</code> that renders:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>An image (<code>no-projects.png</code> imported from the <code>assets</code> folder),</p>
+</li>
+<li>
+<p>An <code>h2</code> heading (“No Project Selected”),</p>
+</li>
+<li>
+<p>A paragraph prompting the user to select or create a project,</p>
+</li>
+<li>
+<p>A “Create new project” button that should trigger showing the
+<code>NewProject</code> screen.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Apply Tailwind styling:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Wrapper <code>div</code>: top margin, centered text, width <code>2/3</code>.</p>
+</li>
+<li>
+<p>Image: <code>w-16 h-16 object-contain mx-auto</code>.</p>
+</li>
+<li>
+<p>Heading: <code>text-xl font-bold text-stone-500 my-4</code>.</p>
+</li>
+<li>
+<p>Text paragraph: <code>text-stone-400</code> plus spacing.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Avoid duplicating button Tailwind classes by creating a reusable
+<code>Button</code> component:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Move the button markup and classes from <code>ProjectsSidebar</code> into
+<code>Button</code>.</p>
+</li>
+<li>
+<p>Support flexible content via <code>children</code>.</p>
+</li>
+<li>
+<p>Forward all additional props (<code>&#8230;&#8203;props</code>) onto the underlying
+<code>&lt;button&gt;</code> so it can receive handlers/attributes later.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Replace the existing buttons in both <code>ProjectsSidebar</code> and
+<code>NoProjectSelected</code> with the new <code>Button</code> component (imported from
+<code>button.jsx</code>), removing repeated <code>className</code> definitions.</p>
+</li>
+<li>
+<p>Temporarily render <code>NoProjectSelected</code> in <code>App</code> instead of
+<code>NewProject</code> to preview it.</p>
+</li>
+<li>
+<p>Next step: implement conditional rendering in <code>App</code> so clicking the
+“Create new project” button switches the UI to the <code>NewProject</code>
+component.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/04-managing-state-to-switch-cmp/src/components/NoProjectSelected.jsx" target="_blank">
+04-managing-state-to-switch-cmp/src/components/NoProjectSelected.jsx</a>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-02-23 10:14:41 +0200
+Last updated 2026-02-24 10:58:51 +0200
 </div>
 </div>
 </body>
