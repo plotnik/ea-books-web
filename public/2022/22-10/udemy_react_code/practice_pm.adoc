@@ -153,9 +153,51 @@ user is not currently adding a new project.
 “Create new project” button switches the UI to the `NewProject`
 component.
 
+
+== 156. Managing State to Switch Between Components
+
+* Use React state in the `App` component to decide whether to show
+`NoProjectSelected` or `NewProject`, since conditional rendering should
+be controlled where the decision is made.
+
+* Add `useState` (imported from React) and manage a single state object
+named `projectsState` containing:
+** `selectedProjectId`: initially `undefined`
+** `projects`: initially an empty array
+
+* Define meaning for `selectedProjectId`:
+** `undefined`: no project selected and not adding a new one (show
+fallback screen)
+** `null`: user is starting to add a new project (show `NewProject`)
+** later: an actual project ID when a project is selected
+
+* Add `handleStartAddProject` in `App` to set `selectedProjectId` to
+`null`, using the functional
+`setProjectsState(prev =++>++ (++{++ ...prev, selectedProjectId: null }))`
+form to avoid losing existing state (like saved projects).
+
+* Pass this handler down as `onStartAddProject` to both
+`NoProjectSelected` and `ProjectSidebar`, and wire it to their “Add
+Project” buttons via `onClick`.
+
+* In `App`, compute a `content` variable:
+** if `selectedProjectId === null` → render `++<++NewProject /++>++`
+** else if `selectedProjectId === undefined` → render
+`++<++NoProjectSelected onStartAddProject=++{++...} /++>++`
+** (later, this will be extended to render a selected project view)
+
+* Render `++{++content}` next to the sidebar. Result: initial load shows
+the fallback screen; clicking either “Add Project” button switches to
+the `NewProject` component.
+
+
+* Next step mentioned: collect input values to actually create and store
+a new project and make the other buttons work.
+
 ====
 ++++
 <a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/04-managing-state-to-switch-cmp/src/components/NoProjectSelected.jsx" target="_blank">
 04-managing-state-to-switch-cmp/src/components/NoProjectSelected.jsx</a>
 ++++
 ====
+
