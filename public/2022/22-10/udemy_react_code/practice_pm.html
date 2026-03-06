@@ -448,6 +448,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_154_styling_buttons_inputs_with_tailwind_css">154. Styling Buttons &amp; Inputs with Tailwind CSS</a></li>
 <li><a href="#_155_splitting_components_to_split_jsx_tailwind_styles">155. Splitting Components to Split JSX &amp; Tailwind Styles</a></li>
 <li><a href="#_156_managing_state_to_switch_between_components">156. Managing State to Switch Between Components</a></li>
+<li><a href="#_157_collecting_user_input_with_refs_forwarded_refs">157. Collecting User Input with Refs &amp; Forwarded Refs</a></li>
+<li><a href="#_158_handling_project_creation_updating_the_ui">158. Handling Project Creation &amp; Updating the UI</a></li>
+<li><a href="#_159_validating_user_input_showing_an_error_modal_via_useimperativehandle">159. Validating User Input &amp; Showing an Error Modal via useImperativeHandle</a></li>
 </ul>
 </div>
 </div>
@@ -802,10 +805,295 @@ a new project and make the other buttons work.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_157_collecting_user_input_with_refs_forwarded_refs">157. Collecting User Input with Refs &amp; Forwarded Refs</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Goal</dt>
+<dd>
+<p>When clicking <strong>Save</strong> in <code>NewProject</code>, collect input values,
+validate them (show an error modal if any are empty), and on success add
+the new project to state so it appears in the sidebar (validation &#43;
+closing view will come next; this section implements the success path
+first).</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Input value collection approach: Instead of controlled inputs with
+<code>onChange</code> &#43; state, use <strong>refs</strong> because values are only needed on
+save.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Import <code>useRef</code> and create three refs: <code>title</code>, <code>description</code>,
+<code>dueDate</code>.</p>
+</li>
+<li>
+<p>Attach refs to the three input components.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Ref forwarding for a custom <code>Input</code> component:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In <strong>React 19&#43;</strong>, passing a <code>ref</code> prop to a custom component works
+like a normal prop.</p>
+</li>
+<li>
+<p>In <strong>React 18 and earlier</strong>, you must wrap the <code>Input</code> component with
+<code>forwardRef</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Import <code>forwardRef</code> from React.</p>
+</li>
+<li>
+<p>Wrap the component and accept <code>(props, ref)</code>.</p>
+</li>
+<li>
+<p>Assign <code>ref</code> to the underlying native <code>&lt;input&gt;</code> or
+<code>&lt;textarea&gt;</code> (depending on whether <code>textarea</code> prop is used).</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Save handling in <code>NewProject</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Add <code>handleSave</code> and connect it to the Save button via <code>onClick</code>.</p>
+</li>
+<li>
+<p>Inside <code>handleSave</code>, read values via <code>ref.current.value</code> for all
+three fields.</p>
+</li>
+<li>
+<p>Call a prop callback (e.g., <code>onAdd</code>) and pass an object:
+<code>{ title, description, dueDate }</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Lifting state to <code>App</code> to actually add projects:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In <code>App</code>, add <code>handleAddProject(projectData)</code> to update the projects
+state using the functional <code>setState</code> form.</p>
+</li>
+<li>
+<p>Preserve existing state and append a new project object to the
+<code>projects</code> array.</p>
+</li>
+<li>
+<p>Add an <code>id</code> to the new project (using <code>Math.random()</code> as a simple
+stand-in).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Wiring:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Pass <code>handleAddProject</code> to <code>NewProject</code> as <code>onAdd</code>.</p>
+</li>
+<li>
+<p>Confirm via <code>console.log</code> that the projects array updates when
+saving.</p>
+</li>
+<li>
+<p>Note: double logs occur due to <code>StrictMode</code> causing components to run
+twice in development.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Input improvements:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Set due date input <code>type="date"</code> to get a date picker.</p>
+</li>
+<li>
+<p>Set title input <code>type="text"</code> for completeness.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Next steps (not implemented yet in the described part):</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Validate inputs and show an error modal if invalid.</p>
+</li>
+<li>
+<p>Render newly added projects in the sidebar.</p>
+</li>
+<li>
+<p>Close/hide the <code>NewProject</code> form after a successful save.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/05-handling-project-creation-updating-ui/src/components/NewProject.jsx" target="_blank">
+05-handling-project-creation-updating-ui/src/components/NewProject.jsx</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_158_handling_project_creation_updating_the_ui">158. Handling Project Creation &amp; Updating the UI</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>To close the “New Project” component after saving, the <code>App</code> component
+must reset <code>selectedProjectId</code> away from <code>null</code> (because <code>null</code> is what
+keeps the new-project screen visible).</p>
+</li>
+<li>
+<p>In <code>handleAddProject</code>, set <code>selectedProjectId</code> to <code>undefined</code> so the
+UI returns to the fallback/overview screen after saving. (Alternative
+mentioned: set it to the newly created project’s id to auto-select it,
+but that’s deferred since selection/details aren’t implemented yet.)</p>
+</li>
+<li>
+<p>To show created projects in the sidebar:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Pass the projects array down to the sidebar via a <code>projects</code> prop
+(e.g., <code>projectsState.projects</code>).</p>
+</li>
+<li>
+<p>In the sidebar component, map over <code>projects</code> to render an
+<code>&lt;li&gt;</code> per project, using <code>project.id</code> as the <code>key</code>.</p>
+</li>
+<li>
+<p>Inside each list item, render a <code>&lt;button&gt;</code> that displays
+<code>project.title</code> (preparing for future “select project” behavior).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Add Tailwind styling to the buttons (full width, left-aligned text,
+padding, rounded corners, margins, light text on dark background, hover
+styles) and add <code>mt-8</code> to the <code>&lt;ul&gt;</code> for extra spacing above the
+list.</p>
+</li>
+<li>
+<p>Next steps planned: make the Cancel button work in the new-project
+form, and show a validation error modal if Save is clicked with missing
+input values.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/05-handling-project-creation-updating-ui/src/components/ProjectsSidebar.jsx" target="_blank">
+05-handling-project-creation-updating-ui/src/components/ProjectsSidebar.jsx</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_159_validating_user_input_showing_an_error_modal_via_useimperativehandle">159. Validating User Input &amp; Showing an Error Modal via useImperativeHandle</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Add input validation in the <strong>NewProject</strong> component: trim <code>title</code>,
+<code>description</code>, and <code>date</code> and treat them as invalid if any are empty
+strings. If invalid, show an error modal and <code>return</code> to prevent <code>onAdd</code>
+from running.</p>
+</li>
+<li>
+<p>Create a reusable <strong>Modal.jsx</strong> component built on the native
+<code>&lt;dialog&gt;</code> element.</p>
+</li>
+<li>
+<p>Render the modal via a <strong>React portal</strong> into a <code>#modal-root</code> div using
+<code>createPortal(&#8230;&#8203;)</code> and <code>document.getElementById('modal-root')</code>.</p>
+</li>
+<li>
+<p>Make the modal controllable from outside without exposing internal
+<code>&lt;dialog&gt;</code> details by using:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>forwardRef</code> (for React 18 and compatibility; not required in React
+19&#43;)</p>
+</li>
+<li>
+<p><code>useImperativeHandle</code> to expose an <code>open()</code> method</p>
+</li>
+<li>
+<p>an internal <code>useRef</code> to call <code>dialogRef.current.showModal()</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>In <strong>NewProject</strong>, create <code>modalRef</code>, attach it to
+<code>&lt;Modal ref={modalRef} /&gt;</code>, and call
+<code>modalRef.current.open()</code> when validation fails.</p>
+</li>
+<li>
+<p>Provide modal content in <strong>NewProject</strong> via <code>children</code> (e.g., “Invalid
+input” &#43; explanatory paragraphs).</p>
+</li>
+<li>
+<p>Add a close mechanism inside <code>Modal</code>: a
+<code>&lt;form method="dialog"&gt;</code> with a submit button to close the
+dialog.</p>
+</li>
+<li>
+<p>Improve reusability by accepting a <code>buttonCaption</code> prop to customize
+the close button text (e.g., “Close” or “Okay”).</p>
+</li>
+<li>
+<p>Result: modal appears on saving with empty/invalid fields; styling
+isn’t polished yet but functionality works.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/06-styling-modal/src/components/Modal.jsx" target="_blank">
+06-styling-modal/src/components/Modal.jsx</a>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-02-26 09:58:27 +0200
+Last updated 2026-03-06 10:06:11 +0200
 </div>
 </div>
 </body>

@@ -201,3 +201,144 @@ a new project and make the other buttons work.
 ++++
 ====
 
+== 157. Collecting User Input with Refs & Forwarded Refs
+
+====
+Goal::
+When clicking *Save* in `NewProject`, collect input values,
+validate them (show an error modal if any are empty), and on success add
+the new project to state so it appears in the sidebar (validation {plus}
+closing view will come next; this section implements the success path
+first).
+====
+
+* Input value collection approach: Instead of controlled inputs with
+`onChange` {plus} state, use *refs* because values are only needed on
+save.
+** Import `useRef` and create three refs: `title`, `description`,
+`dueDate`.
+** Attach refs to the three input components.
+* Ref forwarding for a custom `Input` component:
+** In *React 19{plus}*, passing a `ref` prop to a custom component works
+like a normal prop.
+** In *React 18 and earlier*, you must wrap the `Input` component with
+`forwardRef`:
+*** Import `forwardRef` from React.
+*** Wrap the component and accept `(props, ref)`.
+*** Assign `ref` to the underlying native `++<++input++>++` or
+`++<++textarea++>++` (depending on whether `textarea` prop is used).
+
+* Save handling in `NewProject`:
+** Add `handleSave` and connect it to the Save button via `onClick`.
+** Inside `handleSave`, read values via `ref.current.value` for all
+three fields.
+** Call a prop callback (e.g., `onAdd`) and pass an object:
+`++{++ title, description, dueDate }`.
+* Lifting state to `App` to actually add projects:
+** In `App`, add `handleAddProject(projectData)` to update the projects
+state using the functional `setState` form.
+** Preserve existing state and append a new project object to the
+`projects` array.
+** Add an `id` to the new project (using `Math.random()` as a simple
+stand-in).
+
+* Wiring:
+** Pass `handleAddProject` to `NewProject` as `onAdd`.
+** Confirm via `console.log` that the projects array updates when
+saving.
+** Note: double logs occur due to `StrictMode` causing components to run
+twice in development.
+
+* Input improvements:
+** Set due date input `type="date"` to get a date picker.
+** Set title input `type="text"` for completeness.
+* Next steps (not implemented yet in the described part):
+** Validate inputs and show an error modal if invalid.
+** Render newly added projects in the sidebar.
+** Close/hide the `NewProject` form after a successful save.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/05-handling-project-creation-updating-ui/src/components/NewProject.jsx" target="_blank">
+05-handling-project-creation-updating-ui/src/components/NewProject.jsx</a>
+++++
+====
+
+== 158. Handling Project Creation & Updating the UI
+
+* To close the “New Project” component after saving, the `App` component
+must reset `selectedProjectId` away from `null` (because `null` is what
+keeps the new-project screen visible).
+
+* In `handleAddProject`, set `selectedProjectId` to `undefined` so the
+UI returns to the fallback/overview screen after saving. (Alternative
+mentioned: set it to the newly created project’s id to auto-select it,
+but that’s deferred since selection/details aren’t implemented yet.)
+
+* To show created projects in the sidebar:
+** Pass the projects array down to the sidebar via a `projects` prop
+(e.g., `projectsState.projects`).
+** In the sidebar component, map over `projects` to render an
+`++<++li++>++` per project, using `project.id` as the `key`.
+** Inside each list item, render a `++<++button++>++` that displays
+`project.title` (preparing for future “select project” behavior).
+
+* Add Tailwind styling to the buttons (full width, left-aligned text,
+padding, rounded corners, margins, light text on dark background, hover
+styles) and add `mt-8` to the `++<++ul++>++` for extra spacing above the
+list.
+
+* Next steps planned: make the Cancel button work in the new-project
+form, and show a validation error modal if Save is clicked with missing
+input values.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/05-handling-project-creation-updating-ui/src/components/ProjectsSidebar.jsx" target="_blank">
+05-handling-project-creation-updating-ui/src/components/ProjectsSidebar.jsx</a>
+++++
+====
+
+== 159. Validating User Input & Showing an Error Modal via useImperativeHandle
+
+* Add input validation in the *NewProject* component: trim `title`,
+`description`, and `date` and treat them as invalid if any are empty
+strings. If invalid, show an error modal and `return` to prevent `onAdd`
+from running.
+
+* Create a reusable *Modal.jsx* component built on the native
+`++<++dialog++>++` element.
+
+* Render the modal via a *React portal* into a `#modal-root` div using
+`createPortal(...)` and `document.getElementById('modal-root')`.
+
+* Make the modal controllable from outside without exposing internal
+`++<++dialog++>++` details by using:
+** `forwardRef` (for React 18 and compatibility; not required in React
+19{plus})
+** `useImperativeHandle` to expose an `open()` method
+** an internal `useRef` to call `dialogRef.current.showModal()`
+
+* In *NewProject*, create `modalRef`, attach it to
+`++<++Modal ref=++{++modalRef} /++>++`, and call
+`modalRef.current.open()` when validation fails.
+
+* Provide modal content in *NewProject* via `children` (e.g., “Invalid
+input” {plus} explanatory paragraphs).
+
+* Add a close mechanism inside `Modal`: a
+`++<++form method="dialog"++>++` with a submit button to close the
+dialog.
+
+* Improve reusability by accepting a `buttonCaption` prop to customize
+the close button text (e.g., “Close” or “Okay”).
+
+* Result: modal appears on saving with empty/invalid fields; styling
+isn’t polished yet but functionality works.
+
+====
+++++
+<a href="https://github.com/academind/react-complete-guide-course-resources/blob/main/code/09%20Practice%20Project%20-%20Project%20Management/06-styling-modal/src/components/Modal.jsx" target="_blank">
+06-styling-modal/src/components/Modal.jsx</a>
+++++
+====
