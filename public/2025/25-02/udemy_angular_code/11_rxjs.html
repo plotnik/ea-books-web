@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Maximilian Schwarzmüller">
-<title>Angular - The Complete Guide (2025 Edition)</title>
+<title>11. Working with RxJS (Observables) - Deep Dive</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,76 +437,99 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><strong>Angular - The Complete Guide (2025 Edition)</strong></h1>
-<div class="details">
-<span id="author" class="author">Maximilian Schwarzmüller</span><br>
-</div>
+<h1>11. Working with RxJS (Observables) - Deep Dive</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_2_angular_essentials_components_templates_services_more">2. Angular Essentials - Components, Templates, Services &amp; More</a></li>
-<li><a href="#_3_angular_essentials_working_with_modules">3. Angular Essentials - Working with Modules</a></li>
-<li><a href="#_10_making_sense_of_change_detection_deep_dive">10. Making Sense of Change Detection - Deep Dive</a></li>
-<li><a href="#_11_working_with_rxjs_observables_deep_dive">11. Working with RxJS (Observables) - Deep Dive</a></li>
-<li><a href="#_14_routing_building_multi_page_single_page_applications">14. Routing &amp; Building Multi-page Single Page Applications</a></li>
+<li><a href="#_208_module_introduction">208. Module Introduction</a></li>
+<li><a href="#_209_what_are_observables_what_is_rxjs">209. What Are Observables &amp; What Is RxJS</a></li>
+<li><a href="#_210_creating_using_an_observable">210. Creating &amp; Using an Observable</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
+<div class="paragraph">
+<p><a href="udemy_angular.html">&lt;Contents&gt;</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_208_module_introduction">208. Module Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The text says the section will dive deeper into RxJS by explaining
+<strong>observables</strong> (noting that <strong>subjects are a type of observable</strong>). It will
+cover <strong>what observables are</strong>, <strong>how to create and use them</strong>, how to use
+<strong>observable operators</strong> to <strong>transform/manipulate emitted values</strong>, and it
+will <strong>compare observables with signals</strong>. It ends by posing the question:
+“What exactly are observables?”</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_209_what_are_observables_what_is_rxjs">209. What Are Observables &amp; What Is RxJS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Observables in Angular aren’t an Angular-only feature—they come from the RxJS library, which Angular uses internally. An observable is an object that creates and manages a stream of data over time. Angular features can provide observables (data streams), but to understand them, you can also create observables yourself.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_210_creating_using_an_observable">210. Creating &amp; Using an Observable</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>A simple Angular starter project is used to experiment with <strong>RxJS
+observables</strong> (not building a full demo app).</p>
+</li>
+<li>
+<p>Recap: <strong>BehaviorSubject</strong> is a special RxJS “subject” that you manually
+<strong>emit values</strong> into; it’s an observable-like stream used to broadcast
+values to subscribers (somewhat comparable to Angular Signals, with
+differences to be discussed).</p>
+</li>
+<li>
+<p>Observables can also be created <strong>without subjects</strong> using RxJS creation
+functions, e.g. <strong><code>interval()</code></strong>.</p>
+</li>
+<li>
+<p>In <code>AppComponent</code>, implement <code>OnInit</code> and create an observable via
+<code>interval(1000)</code>, which <strong>automatically emits incrementing numbers every
+second</strong>.</p>
+</li>
+<li>
+<p>To make an observable actually run, you must <strong>subscribe</strong>; without
+subscribers, RxJS won’t emit values.</p>
+</li>
+<li>
+<p><code>subscribe()</code> accepts an observer with up to three handlers: <strong><code>next</code></strong>
+(per value), <strong><code>error</code></strong>, and <strong><code>complete</code></strong> (often never called for
+<code>interval()</code> since it runs indefinitely). The example only uses <code>next</code>
+to log values.</p>
+</li>
+<li>
+<p>Important best practice: <strong>store the subscription and unsubscribe on
+component destroy</strong> to prevent memory leaks. The example uses Angular’s
+<code>DestroyRef</code> (injected via <code>inject</code>) to run cleanup and call
+<code>unsubscribe()</code> when the component is removed.</p>
+</li>
+</ul>
+</div>
 <div class="exampleblock">
 <div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Course on Udemy</dt>
-<dd>
-<p><a href="https://www.udemy.com/course/the-complete-guide-to-angular-2/" class="bare">https://www.udemy.com/course/the-complete-guide-to-angular-2/</a></p>
-</dd>
-<dt class="hdlist1">GitHub</dt>
-<dd>
-<p><a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/" class="bare">https://github.com/mschwarzmueller/angular-complete-guide-course-resources/</a></p>
-</dd>
-</dl>
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/11-rxjs/02-interval-observable/src/app/app.component.ts" target="_blank">
+02-interval-observable/src/app/app.component.ts</a>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_2_angular_essentials_components_templates_services_more"><a href="2_essentials.html">2. Angular Essentials - Components, Templates, Services &amp; More</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_3_angular_essentials_working_with_modules"><a href="3_modules.html">3. Angular Essentials - Working with Modules</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_10_making_sense_of_change_detection_deep_dive"><a href="10_zonejs.html">10. Making Sense of Change Detection - Deep Dive</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_11_working_with_rxjs_observables_deep_dive"><a href="11_rxjs.html">11. Working with RxJS (Observables) - Deep Dive</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_14_routing_building_multi_page_single_page_applications"><a href="14_routing.html">14. Routing &amp; Building Multi-page Single Page Applications</a></h2>
-<div class="sectionbody">
-
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-10 20:00:36 +0200
+Last updated 2026-03-10 20:24:14 +0200
 </div>
 </div>
 </body>

@@ -1,0 +1,52 @@
+= 11. Working with RxJS (Observables) - Deep Dive
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+
+link:udemy_angular.html[<Contents>]
+
+== 208. Module Introduction
+
+The text says the section will dive deeper into RxJS by explaining
+*observables* (noting that *subjects are a type of observable*). It will
+cover *what observables are*, *how to create and use them*, how to use
+*observable operators* to *transform/manipulate emitted values*, and it
+will *compare observables with signals*. It ends by posing the question:
+“What exactly are observables?”
+
+== 209. What Are Observables & What Is RxJS
+
+Observables in Angular aren’t an Angular-only feature—they come from the RxJS library, which Angular uses internally. An observable is an object that creates and manages a stream of data over time. Angular features can provide observables (data streams), but to understand them, you can also create observables yourself.
+
+== 210. Creating & Using an Observable
+
+* A simple Angular starter project is used to experiment with *RxJS
+observables* (not building a full demo app).
+* Recap: *BehaviorSubject* is a special RxJS “subject” that you manually
+*emit values* into; it’s an observable-like stream used to broadcast
+values to subscribers (somewhat comparable to Angular Signals, with
+differences to be discussed).
+* Observables can also be created *without subjects* using RxJS creation
+functions, e.g. *`interval()`*.
+* In `AppComponent`, implement `OnInit` and create an observable via
+`interval(1000)`, which *automatically emits incrementing numbers every
+second*.
+* To make an observable actually run, you must *subscribe*; without
+subscribers, RxJS won’t emit values.
+* `subscribe()` accepts an observer with up to three handlers: *`next`*
+(per value), *`error`*, and *`complete`* (often never called for
+`interval()` since it runs indefinitely). The example only uses `next`
+to log values.
+* Important best practice: *store the subscription and unsubscribe on
+component destroy* to prevent memory leaks. The example uses Angular’s
+`DestroyRef` (injected via `inject`) to run cleanup and call
+`unsubscribe()` when the component is removed.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/11-rxjs/02-interval-observable/src/app/app.component.ts" target="_blank">
+02-interval-observable/src/app/app.component.ts</a>
+++++
+====
+
