@@ -450,6 +450,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_199_using_the_onpush_strategy">199. Using the OnPush Strategy</a></li>
 <li><a href="#_200_understanding_the_onpush_strategy">200. Understanding the OnPush Strategy</a></li>
 <li><a href="#_201_working_with_onpush_signals">201. Working with OnPush &amp; Signals</a></li>
+<li><a href="#_202_using_signals_for_sharing_data_across_components_with_onpush">202. Using Signals for Sharing Data Across Components (with OnPush)</a></li>
+<li><a href="#_203_the_problem_with_onpush_cross_component_data_not_using_signals">203. The Problem With OnPush, Cross-Component Data &amp; Not Using Signals</a></li>
+<li><a href="#_204_triggering_change_detection_manually_using_rxjs_subjects">204. Triggering Change Detection Manually &amp; Using RxJS Subjects</a></li>
+<li><a href="#_205_introducing_the_async_pipe">205. Introducing The async Pipe</a></li>
+<li><a href="#_207_going_zoneless">207. Going Zoneless!</a></li>
 </ul>
 </div>
 </div>
@@ -749,10 +754,372 @@ will demonstrate that scenario.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_202_using_signals_for_sharing_data_across_components_with_onpush">202. Using Signals for Sharing Data Across Components (with OnPush)</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>A new <code>messages.service.ts</code> is introduced (placed next to
+<code>messages.component</code>) to centralize message state. It uses a <strong>signal</strong> to
+store an array of strings, exposes a <strong>read-only</strong> signal for consumers,
+and provides an <code>addMessage()</code> method to update the array.</p>
+</li>
+<li>
+<p><code>new-message.component</code> is refactored to <strong>inject</strong> <code>MessagesService</code>
+(using Angular’s <code>inject()</code>), remove the <code>@Output</code>, and call
+<code>messagesService.addMessage(enteredText)</code> on submit instead of emitting
+an event.</p>
+</li>
+<li>
+<p><code>messages.component</code> is simplified: it no longer holds a local
+<code>messages</code> signal, no longer has an <code>onAddMessage()</code> handler, and
+removes now-unneeded signal-related imports and template bindings.</p>
+</li>
+<li>
+<p><code>messages-list</code> is also refactored: it removes the <code>@Input</code> and
+instead injects <code>MessagesService</code>. It defines a public <code>messages</code>
+property pointing to <code>MessagesService.allMessages</code> (keeping it as a
+signal reference, not calling it), so the template can read it like
+before.</p>
+</li>
+<li>
+<p>All involved components (<code>messages-list</code>, <code>new-message</code>, and
+<code>messages-component</code>) use <strong>OnPush</strong> change detection. With the
+<strong>signal-based</strong> service, everything continues to work correctly (messages
+appear and logs behave as before).</p>
+</li>
+<li>
+<p>The setup is used to motivate the next step: migrating the service
+from <strong>signals to non-signal state</strong>, which will reveal an OnPush-related
+update problem.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/10-change-detection/04-onpush-signals/src/app/messages/messages.service.ts" target="_blank">
+04-onpush-signals/src/app/messages/messages.service.ts</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_203_the_problem_with_onpush_cross_component_data_not_using_signals">203. The Problem With OnPush, Cross-Component Data &amp; Not Using Signals</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Migrated an Angular <code>MessagesService</code> from using <strong>Signals</strong> to using a
+<strong>plain array property</strong> (<code>string[]</code>), initialized empty.</p>
+</li>
+<li>
+<p>Updated:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>allMessages()</code> to return a <strong>copy</strong> of the array.</p>
+</li>
+<li>
+<p><code>addMessage()</code> to create a <strong>new copied array</strong> with the new message
+appended (immutably replacing the property).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>In <code>NewMessageComponent</code>, kept calling <code>addMessage()</code> the same way;
+optionally changed entered text from a Signal to a normal <code>string</code> and
+reset it by assignment. Template bindings stay the same.</p>
+</li>
+<li>
+<p>In <code>MessagesListComponent</code>, replaced Signal-based access with a getter
+that returns <code>messagesService.allMessages()</code>, and updated the template
+to use the array directly (no Signal “read” call).</p>
+</li>
+<li>
+<p>Result: adding messages still works in the service, but <strong>the list UI
+doesn’t update</strong>.</p>
+</li>
+<li>
+<p>Cause: <code>MessagesListComponent</code> uses <strong>OnPush</strong> change detection, and it
+has:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>no changing <code>@Input()</code>,</p>
+</li>
+<li>
+<p>no local events triggering checks,</p>
+</li>
+<li>
+<p>no Signals changing inside the component, so <strong>change detection never
+runs</strong> for it, and the new message isn’t rendered.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Next step indicated: explore ways to handle this scenario (manual
+triggering, different patterns, etc.) in subsequent lectures.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/10-change-detection/05-problem-without-signals/src/app/messages/messages.service.ts" target="_blank">
+05-problem-without-signals/src/app/messages/messages.service.ts</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_204_triggering_change_detection_manually_using_rxjs_subjects">204. Triggering Change Detection Manually &amp; Using RxJS Subjects</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>To make <code>MessagesListComponent</code> update again (especially with
+<code>OnPush</code>), change detection must be triggered manually using
+<code>ChangeDetectorRef</code> (e.g., <code>markForCheck()</code>), but <strong>it must be called
+inside the component</strong>, not inside the service.</p>
+</li>
+<li>
+<p>Since the service is where the data changes, the component needs a
+<strong>notification mechanism</strong> to learn about those changes. This is done with
+<strong>RxJS</strong>, using a <code>BehaviorSubject</code> to wrap the messages array and emit
+updates.</p>
+</li>
+<li>
+<p>In the service:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create <code>messages$</code> (naming convention: <code>$</code> for RxJS streams) as
+<code>new BehaviorSubject&lt;string[]&gt;(initialValue)</code>.</p>
+</li>
+<li>
+<p>After updating the internal <code>messages</code> array in <code>addMessage</code>, call
+<code>messages$.next(updatedMessages)</code> to emit the new array (ideally a copy
+to prevent accidental mutation by subscribers).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>In <code>MessagesListComponent</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Subscribe to <code>messagesService.messages$</code> in <code>ngOnInit</code>.</p>
+</li>
+<li>
+<p>In the subscription callback:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Assign the received messages to a local <code>messages: string[]</code>
+property (instead of using a getter).</p>
+</li>
+<li>
+<p>Call <code>cdRef.markForCheck()</code> to tell Angular to re-check this
+component.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>RxJS subscription alone doesn’t fix the UI update; <strong><code>markForCheck()</code>
+is the key</strong> that re-triggers change detection for the component.</p>
+</li>
+<li>
+<p>Best practice: <strong>clean up the subscription</strong> when the component is
+destroyed:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Inject <code>DestroyRef</code>, register an <code>onDestroy</code> handler, and call
+<code>subscription.unsubscribe()</code> there (or use <code>ngOnDestroy</code>). This prevents
+memory leaks if the component is ever removed.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/10-change-detection/06-rxjs-subject-manual-trigger-cd/src/app/messages/messages-list/messages-list.component.ts" target="_blank">
+06-rxjs-subject-manual-trigger-cd/src/app/messages/messages-list/messages-list.component.ts</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_205_introducing_the_async_pipe">205. Introducing The async Pipe</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Angular OnPush components can use an RxJS <code>BehaviorSubject</code> from a
+service to update the UI, but manually subscribing, storing values in a
+component property, calling <code>ChangeDetectorRef</code> to trigger change
+detection, and cleaning up subscriptions creates a lot of boilerplate.</p>
+</div>
+<div class="paragraph">
+<p>A built-in shortcut is to expose the observable/subject directly on the
+component (e.g., <code>messages$</code>) and bind to it in the template with
+Angular’s <code>async</code> pipe:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>async</code> automatically subscribes to the observable/subject</p>
+</li>
+<li>
+<p>it provides the latest emitted value to the template (so <code>*ngFor</code>
+still works)</p>
+</li>
+<li>
+<p>it automatically unsubscribes when the component is destroyed</p>
+</li>
+<li>
+<p>it triggers change detection when new values arrive (works well with
+OnPush)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To use it, import the <code>AsyncPipe</code> from <code>@angular/common</code> (or enable it
+via the component’s <code>imports</code> in standalone components).</p>
+</div>
+<div class="paragraph">
+<p>This approach is more elegant for simple “display observable value”
+scenarios, but if you need more complex logic than just rendering the
+emitted values, you may still need manual subscriptions and change
+detection management.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/10-change-detection/07-async-pipe/src/app/messages/messages-list/messages-list.component.html" target="_blank">
+07-async-pipe/src/app/messages/messages-list/messages-list.component.html</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_207_going_zoneless">207. Going Zoneless!</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Angular’s change detection traditionally relies on <strong>zone.js</strong>, which
+wraps the app and notifies Angular when async events happen (timers,
+promises, etc.), triggering change detection.</p>
+</div>
+<div class="paragraph">
+<p>With <strong>Angular Signals</strong> (and Angular’s own <strong>event bindings</strong>), Angular can
+detect changes <strong>without zone.js</strong> because:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Signals are created via Angular APIs, so updating a signal
+automatically notifies Angular.</p>
+</li>
+<li>
+<p>Event bindings (e.g., <code>(click)</code>) are handled by Angular, so Angular
+can trigger checks on those events even without zone.js.</p>
+</li>
+<li>
+<p>When signals are read in templates, Angular tracks dependencies and
+can update only the affected parts.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>As a result, in Angular (notably v18), you can go <strong>zoneless</strong>, gaining:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>More fine-grained change detection</p>
+</li>
+<li>
+<p>Smaller bundle size (zone.js removed)</p>
+</li>
+<li>
+<p>Fewer behind-the-scenes listeners/checks</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The text then walks through converting an app from RxJS/subjects back to
+signals:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In a messages service: replace <code>Subject</code>/RxJS with a
+<code>signal&lt;string[]&gt;</code>, expose <code>asReadonly()</code>, and update via
+<code>messages.update(&#8230;&#8203;)</code>.</p>
+</li>
+<li>
+<p>In components: use signals for input state (<code>enteredText</code>), remove
+<code>AsyncPipe</code>, and read signals directly in templates.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To remove zone.js (two steps):</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Remove <code>zone.js</code> from <code>angular.json</code> under <code>build -&gt; polyfills</code>
+(restart dev server).</p>
+</li>
+<li>
+<p>In <code>main.ts</code>, add <code>provideExperimentalZonelessChangeDetection()</code> to
+<code>bootstrapApplication</code> providers.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>After disabling zone.js:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Signal updates still trigger change detection; parent components may
+still be checked (“bubbling up”).</p>
+</li>
+<li>
+<p>Click-driven updates still work even without signals because Angular
+knows about DOM events.</p>
+</li>
+<li>
+<p><strong>Timers no longer trigger UI updates</strong> unless they update a <strong>signal</strong>
+(since zone.js is what used to notify Angular about expired timers).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Conclusion: in a zoneless Angular app, to ensure async work like
+<code>setTimeout</code> updates the UI, you should manage changing state with
+<strong>signals</strong>, so Angular is notified whenever values change.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/10-change-detection/08-zoneless/src/main.ts" target="_blank">
+08-zoneless/src/main.ts</a>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-10 13:43:12 +0200
+Last updated 2026-03-10 19:17:38 +0200
 </div>
 </div>
 </body>

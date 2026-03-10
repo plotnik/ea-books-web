@@ -169,3 +169,197 @@ across multiple OnPush components*: without Signals, updates might not
 propagate as expected, leading to surprising behavior. The next section
 will demonstrate that scenario.
 
+== 202. Using Signals for Sharing Data Across Components (with OnPush)
+
+* A new `messages.service.ts` is introduced (placed next to
+`messages.component`) to centralize message state. It uses a *signal* to
+store an array of strings, exposes a *read-only* signal for consumers,
+and provides an `addMessage()` method to update the array.
+* `new-message.component` is refactored to *inject* `MessagesService`
+(using Angular’s `inject()`), remove the `@Output`, and call
+`messagesService.addMessage(enteredText)` on submit instead of emitting
+an event.
+* `messages.component` is simplified: it no longer holds a local
+`messages` signal, no longer has an `onAddMessage()` handler, and
+removes now-unneeded signal-related imports and template bindings.
+* `messages-list` is also refactored: it removes the `@Input` and
+instead injects `MessagesService`. It defines a public `messages`
+property pointing to `MessagesService.allMessages` (keeping it as a
+signal reference, not calling it), so the template can read it like
+before.
+* All involved components (`messages-list`, `new-message`, and
+`messages-component`) use *OnPush* change detection. With the
+*signal-based* service, everything continues to work correctly (messages
+appear and logs behave as before).
+* The setup is used to motivate the next step: migrating the service
+from *signals to non-signal state*, which will reveal an OnPush-related
+update problem.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/10-change-detection/04-onpush-signals/src/app/messages/messages.service.ts" target="_blank">
+04-onpush-signals/src/app/messages/messages.service.ts</a>
+++++
+====
+
+== 203. The Problem With OnPush, Cross-Component Data & Not Using Signals
+
+* Migrated an Angular `MessagesService` from using *Signals* to using a
+*plain array property* (`string++[]++`), initialized empty.
+* Updated:
+** `allMessages()` to return a *copy* of the array.
+** `addMessage()` to create a *new copied array* with the new message
+appended (immutably replacing the property).
+* In `NewMessageComponent`, kept calling `addMessage()` the same way;
+optionally changed entered text from a Signal to a normal `string` and
+reset it by assignment. Template bindings stay the same.
+* In `MessagesListComponent`, replaced Signal-based access with a getter
+that returns `messagesService.allMessages()`, and updated the template
+to use the array directly (no Signal “read” call).
+* Result: adding messages still works in the service, but *the list UI
+doesn’t update*.
+* Cause: `MessagesListComponent` uses *OnPush* change detection, and it
+has:
+** no changing `@Input()`,
+** no local events triggering checks,
+** no Signals changing inside the component, so *change detection never
+runs* for it, and the new message isn’t rendered.
+* Next step indicated: explore ways to handle this scenario (manual
+triggering, different patterns, etc.) in subsequent lectures.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/10-change-detection/05-problem-without-signals/src/app/messages/messages.service.ts" target="_blank">
+05-problem-without-signals/src/app/messages/messages.service.ts</a>
+++++
+====
+
+== 204. Triggering Change Detection Manually & Using RxJS Subjects
+
+* To make `MessagesListComponent` update again (especially with
+`OnPush`), change detection must be triggered manually using
+`ChangeDetectorRef` (e.g., `markForCheck()`), but *it must be called
+inside the component*, not inside the service.
+* Since the service is where the data changes, the component needs a
+*notification mechanism* to learn about those changes. This is done with
+*RxJS*, using a `BehaviorSubject` to wrap the messages array and emit
+updates.
+* In the service:
+** Create `messages$` (naming convention: `$` for RxJS streams) as
+`new BehaviorSubject++<++string++[]>++(initialValue)`.
+** After updating the internal `messages` array in `addMessage`, call
+`messages$.next(updatedMessages)` to emit the new array (ideally a copy
+to prevent accidental mutation by subscribers).
+* In `MessagesListComponent`:
+** Subscribe to `messagesService.messages$` in `ngOnInit`.
+** In the subscription callback:
+*** Assign the received messages to a local `messages: string++[]++`
+property (instead of using a getter).
+*** Call `cdRef.markForCheck()` to tell Angular to re-check this
+component.
+* RxJS subscription alone doesn’t fix the UI update; *`markForCheck()`
+is the key* that re-triggers change detection for the component.
+* Best practice: *clean up the subscription* when the component is
+destroyed:
+** Inject `DestroyRef`, register an `onDestroy` handler, and call
+`subscription.unsubscribe()` there (or use `ngOnDestroy`). This prevents
+memory leaks if the component is ever removed.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/10-change-detection/06-rxjs-subject-manual-trigger-cd/src/app/messages/messages-list/messages-list.component.ts" target="_blank">
+06-rxjs-subject-manual-trigger-cd/src/app/messages/messages-list/messages-list.component.ts</a>
+++++
+====
+
+== 205. Introducing The async Pipe
+
+Angular OnPush components can use an RxJS `BehaviorSubject` from a
+service to update the UI, but manually subscribing, storing values in a
+component property, calling `ChangeDetectorRef` to trigger change
+detection, and cleaning up subscriptions creates a lot of boilerplate.
+
+A built-in shortcut is to expose the observable/subject directly on the
+component (e.g., `messages$`) and bind to it in the template with
+Angular’s `async` pipe:
+
+* `async` automatically subscribes to the observable/subject
+* it provides the latest emitted value to the template (so `++*++ngFor`
+still works)
+* it automatically unsubscribes when the component is destroyed
+* it triggers change detection when new values arrive (works well with
+OnPush)
+
+To use it, import the `AsyncPipe` from `@angular/common` (or enable it
+via the component’s `imports` in standalone components).
+
+This approach is more elegant for simple “display observable value”
+scenarios, but if you need more complex logic than just rendering the
+emitted values, you may still need manual subscriptions and change
+detection management.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/10-change-detection/07-async-pipe/src/app/messages/messages-list/messages-list.component.html" target="_blank">
+07-async-pipe/src/app/messages/messages-list/messages-list.component.html</a>
+++++
+====
+
+== 207. Going Zoneless!
+
+Angular’s change detection traditionally relies on *zone.js*, which
+wraps the app and notifies Angular when async events happen (timers,
+promises, etc.), triggering change detection.
+
+With *Angular Signals* (and Angular’s own *event bindings*), Angular can
+detect changes *without zone.js* because:
+
+* Signals are created via Angular APIs, so updating a signal
+automatically notifies Angular.
+* Event bindings (e.g., `(click)`) are handled by Angular, so Angular
+can trigger checks on those events even without zone.js.
+* When signals are read in templates, Angular tracks dependencies and
+can update only the affected parts.
+
+As a result, in Angular (notably v18), you can go *zoneless*, gaining:
+
+* More fine-grained change detection
+* Smaller bundle size (zone.js removed)
+* Fewer behind-the-scenes listeners/checks
+
+The text then walks through converting an app from RxJS/subjects back to
+signals:
+
+* In a messages service: replace `Subject`/RxJS with a
+`signal++<++string++[]>++`, expose `asReadonly()`, and update via
+`messages.update(...)`.
+* In components: use signals for input state (`enteredText`), remove
+`AsyncPipe`, and read signals directly in templates.
+
+To remove zone.js (two steps):
+
+[arabic]
+. Remove `zone.js` from `angular.json` under `build -++>++ polyfills`
+(restart dev server).
+. In `main.ts`, add `provideExperimentalZonelessChangeDetection()` to
+`bootstrapApplication` providers.
+
+After disabling zone.js:
+
+* Signal updates still trigger change detection; parent components may
+still be checked (“bubbling up”).
+* Click-driven updates still work even without signals because Angular
+knows about DOM events.
+* *Timers no longer trigger UI updates* unless they update a *signal*
+(since zone.js is what used to notify Angular about expired timers).
+
+Conclusion: in a zoneless Angular app, to ensure async work like
+`setTimeout` updates the UI, you should manage changing state with
+*signals*, so Angular is notified whenever values change.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/10-change-detection/08-zoneless/src/main.ts" target="_blank">
+08-zoneless/src/main.ts</a>
+++++
+====
