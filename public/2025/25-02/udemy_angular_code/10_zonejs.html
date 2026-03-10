@@ -447,6 +447,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_196_change_detection_during_development_expressionchangedafterchecked_errors">196. Change Detection During Development -ExpressionChangedAfterChecked Errors</a></li>
 <li><a href="#_197_writing_efficient_template_bindings">197. Writing Efficient Template Bindings</a></li>
 <li><a href="#_198_avoiding_zone_pollution">198. Avoiding Zone Pollution</a></li>
+<li><a href="#_199_using_the_onpush_strategy">199. Using the OnPush Strategy</a></li>
+<li><a href="#_200_understanding_the_onpush_strategy">200. Understanding the OnPush Strategy</a></li>
+<li><a href="#_201_working_with_onpush_signals">201. Working with OnPush &amp; Signals</a></li>
 </ul>
 </div>
 </div>
@@ -616,10 +619,140 @@ cycles and is sometimes described as avoiding “zone pollution.”</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_199_using_the_onpush_strategy">199. Using the OnPush Strategy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Angular’s default change detection checks the whole app on every event,
+which can be costly. A stronger performance technique is opting into the
+<strong>OnPush</strong> change detection strategy on specific components so change
+detection runs less often for them.</p>
+</div>
+<div class="paragraph">
+<p>The example enables OnPush in <code>MessagesComponent</code> by setting:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>changeDetection: ChangeDetectionStrategy.OnPush</code> (imported from
+<code>@angular/core</code>)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When OnPush is enabled on <code>MessagesComponent</code>, change detection no
+longer runs for <code>MessagesComponent</code> and its child components
+(<code>NewMessageComponent</code>, <code>MessagesListComponent</code>) during unrelated events
+like the counter reset or increment/decrement—confirmed by the absence
+of their console logs. Switching back to the default strategy brings
+those logs back, showing that default change detection re-checks them on
+those events. The section ends by asking why OnPush causes this behavior
+and how it works.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_200_understanding_the_onpush_strategy">200. Understanding the OnPush Strategy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Angular’s <strong>OnPush change detection</strong> tells Angular to re-check a
+component (and its children) only when one of these happens:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>An event occurs</strong> in that component or any of its child components
+(e.g., clicks, keypresses).</p>
+</li>
+<li>
+<p><strong>An @Input reference changes</strong> on that component (if it has inputs).</p>
+</li>
+<li>
+<p><strong>Change detection is triggered manually</strong> (e.g., via APIs like
+<code>markForCheck</code> / <code>detectChanges</code>).</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Because it narrows what can trigger checks, <strong>OnPush can significantly
+improve performance</strong>, especially in larger apps where many components
+don’t need to re-render for unrelated changes.</p>
+</div>
+<div class="paragraph">
+<p>Key behaviors illustrated:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Setting <strong>OnPush on <code>MessagesComponent</code></strong> prevents it (and its subtree)
+from being checked when interacting with a sibling like
+<code>CounterComponent</code>, since sibling events shouldn’t affect it.</p>
+</li>
+<li>
+<p>Setting <strong>OnPush on <code>NewMessageComponent</code></strong> doesn’t stop its own events
+from triggering checks: typing with <strong>two-way binding</strong> fires events on
+every keystroke, which can still cause change detection to propagate
+upward and potentially lead to broader checks.</p>
+</li>
+<li>
+<p><strong>OnPush doesn’t prevent events from bubbling up</strong> to parent components;
+it mainly prevents <em>unnecessary re-evaluation of the OnPush component</em>
+unless one of the allowed triggers occurs.</p>
+</li>
+<li>
+<p>To stop unrelated parts (like <code>CounterComponent</code>) from being checked
+due to events elsewhere (like typing in a message box), you should apply
+<strong>OnPush to the components you want to protect</strong> (e.g.,
+<code>CounterComponent</code>, then even <code>InfoMessageComponent</code> inside it).</p>
+</li>
+<li>
+<p>For components with inputs (e.g., <code>MessagesListComponent</code>), enabling
+OnPush means it won’t re-check during unrelated events (like typing),
+but it <strong>will</strong> re-check when its <strong>input changes</strong> (e.g., when a new
+message is saved and the messages array/reference updates).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall: OnPush is a practical optimization when your UI isn’t so
+tightly coupled that “everything changes all the time.”</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_201_working_with_onpush_signals">201. Working with OnPush &amp; Signals</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>OnPush change detection</strong> has an additional trigger beyond the
+commonly taught ones: <strong>Angular Signal changes</strong> can cause an OnPush
+component (and potentially its child components) to be checked again.</p>
+</li>
+<li>
+<p><strong>Signals</strong> are a newer Angular feature introduced in <strong>Angular 17</strong>, so
+this only applies if your project uses Signals; otherwise, OnPush
+behaves as previously described.</p>
+</li>
+<li>
+<p>Often this extra trigger doesn’t noticeably change behavior because
+<strong>Signals are frequently updated in event handlers</strong>, and <strong>events already
+trigger OnPush checks</strong> anyway.</p>
+</li>
+<li>
+<p>Where it can matter is when using a <strong>shared service to distribute data
+across multiple OnPush components</strong>: without Signals, updates might not
+propagate as expected, leading to surprising behavior. The next section
+will demonstrate that scenario.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-10 10:36:21 +0200
+Last updated 2026-03-10 13:43:12 +0200
 </div>
 </div>
 </body>

@@ -91,3 +91,81 @@ This executes that code outside Angular’s zone so the event won’t
 trigger change detection.
 * This technique is occasionally useful to avoid extra change detection
 cycles and is sometimes described as avoiding “zone pollution.”
+
+== 199. Using the OnPush Strategy
+
+Angular’s default change detection checks the whole app on every event,
+which can be costly. A stronger performance technique is opting into the
+*OnPush* change detection strategy on specific components so change
+detection runs less often for them.
+
+The example enables OnPush in `MessagesComponent` by setting:
+
+* `changeDetection: ChangeDetectionStrategy.OnPush` (imported from
+`@angular/core`)
+
+When OnPush is enabled on `MessagesComponent`, change detection no
+longer runs for `MessagesComponent` and its child components
+(`NewMessageComponent`, `MessagesListComponent`) during unrelated events
+like the counter reset or increment/decrement—confirmed by the absence
+of their console logs. Switching back to the default strategy brings
+those logs back, showing that default change detection re-checks them on
+those events. The section ends by asking why OnPush causes this behavior
+and how it works.
+
+== 200. Understanding the OnPush Strategy
+
+Angular’s *OnPush change detection* tells Angular to re-check a
+component (and its children) only when one of these happens:
+
+[arabic]
+. *An event occurs* in that component or any of its child components
+(e.g., clicks, keypresses).
+. *An @Input reference changes* on that component (if it has inputs).
+. *Change detection is triggered manually* (e.g., via APIs like
+`markForCheck` / `detectChanges`).
+
+Because it narrows what can trigger checks, *OnPush can significantly
+improve performance*, especially in larger apps where many components
+don’t need to re-render for unrelated changes.
+
+Key behaviors illustrated:
+
+* Setting *OnPush on `MessagesComponent`* prevents it (and its subtree)
+from being checked when interacting with a sibling like
+`CounterComponent`, since sibling events shouldn’t affect it.
+* Setting *OnPush on `NewMessageComponent`* doesn’t stop its own events
+from triggering checks: typing with *two-way binding* fires events on
+every keystroke, which can still cause change detection to propagate
+upward and potentially lead to broader checks.
+* *OnPush doesn’t prevent events from bubbling up* to parent components;
+it mainly prevents _unnecessary re-evaluation of the OnPush component_
+unless one of the allowed triggers occurs.
+* To stop unrelated parts (like `CounterComponent`) from being checked
+due to events elsewhere (like typing in a message box), you should apply
+*OnPush to the components you want to protect* (e.g.,
+`CounterComponent`, then even `InfoMessageComponent` inside it).
+* For components with inputs (e.g., `MessagesListComponent`), enabling
+OnPush means it won’t re-check during unrelated events (like typing),
+but it *will* re-check when its *input changes* (e.g., when a new
+message is saved and the messages array/reference updates).
+
+Overall: OnPush is a practical optimization when your UI isn’t so
+tightly coupled that “everything changes all the time.”
+
+== 201. Working with OnPush & Signals
+
+* *OnPush change detection* has an additional trigger beyond the
+commonly taught ones: *Angular Signal changes* can cause an OnPush
+component (and potentially its child components) to be checked again.
+* *Signals* are a newer Angular feature introduced in *Angular 17*, so
+this only applies if your project uses Signals; otherwise, OnPush
+behaves as previously described.
+* Often this extra trigger doesn’t noticeably change behavior because
+*Signals are frequently updated in event handlers*, and *events already
+trigger OnPush checks* anyway.
+* Where it can matter is when using a *shared service to distribute data
+across multiple OnPush components*: without Signals, updates might not
+propagate as expected, leading to surprising behavior. The next section
+will demonstrate that scenario.
+
