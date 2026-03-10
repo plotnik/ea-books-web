@@ -28,3 +28,66 @@ understand.
 == 194. Analyzing the Starting Project
 
 A dummy Angular project is introduced to explore how change detection works. After running `npm install` and `npm start`, the app shows multiple interacting components: a counter with buttons, a message input that adds entries to a list, and a dummy log output area. In the browser dev tools, many console logs appear—added via component “getter” properties—to reveal when Angular evaluates components and templates during change detection. The project is used to observe the high amount of change-detection activity and to learn how to control and optimize it.
+
+== 195. Understanding How Angular Performs Change Detection
+
+Angular’s default change detection wraps the whole app in a Zone.js “zone” that notifies Angular when events happen (e.g., a button click). When an event occurs, Angular runs change detection for the entire component tree, revisiting every component’s template and reevaluating all template bindings (property bindings, interpolations, etc.). If any binding value changed compared to what was previously rendered, Angular updates the real DOM.
+
+This is why a single counter increment can produce log messages from many unrelated components: all components get checked, and any getter used in template bindings (like a `debugOutput` getter used via interpolation) is executed every time those bindings are reevaluated. Because of this, expensive work in getters or template expressions should be avoided. Angular is optimized to perform these checks efficiently, and further optimizations/alternative strategies can reduce unnecessary checks.
+
+The passage ends by noting that logs show components being checked twice per event and raises the question of why Angular runs two checks.
+
+== 196. Change Detection During Development -ExpressionChangedAfterChecked Errors
+
+Angular shows duplicate log output in *development mode* because it
+deliberately runs *change detection twice*. This helps Angular detect
+unintended state/value changes that occur _after_ a change detection
+pass.
+
+* *In production builds*, this double-run does not happen.
+* The goal is to catch unstable values or side effects. Example: if a
+component method used in the template (like `debugOutput`) returns a
+*random* value, the first and second change detection passes will
+produce different results.
+* When Angular detects that a value changed between these two immediate
+checks, it throws *`ExpressionChangedAfterItHasBeenCheckedError`*,
+indicating a likely bug where displayed data is being changed
+unexpectedly.
+
+Using a stable value (e.g., a fixed string) removes the error because
+the output stays the same across both checks.
+
+== 197. Writing Efficient Template Bindings
+
+* Angular change detection runs frequently, so template code should stay
+lightweight.
+* Avoid expensive computations in templates; keep binding expressions
+simple and straightforward.
+* Don’t call arbitrary functions in template interpolations/bindings
+(event bindings and signal reads are exceptions).
+* If you use getters (which are effectively methods), ensure they do
+only basic, efficient work.
+* Pipes are executed during template evaluation too, which is why
+Angular caches pipe transform results by default; keep this behavior in
+mind, and note there are additional optimizations beyond this.
+
+== 198. Avoiding Zone Pollution
+
+The text explains an Angular performance optimization: prevent
+unnecessary change detection triggered by browser events (like
+`setTimeout`) that don’t affect the UI.
+
+* By default, Angular runs inside `zone.js`, which listens to async
+events (including expired timers) and triggers change detection whenever
+they occur—whether or not your code actually updates component state.
+* Example: one timer resets a counter (should trigger change detection),
+but a second timer only logs `"Timer expired"` (doesn’t affect UI). Even
+the logging timer still causes change detection because `zone.js` can’t
+know it’s “harmless.”
+* Optimization: inject `NgZone` (via `inject(NgZone)` or constructor
+injection) and wrap non-UI-affecting code in
+`zone.runOutsideAngular(() =++>++ ++{++ ... })`. +
+This executes that code outside Angular’s zone so the event won’t
+trigger change detection.
+* This technique is occasionally useful to avoid extra change detection
+cycles and is sometimes described as avoiding “zone pollution.”

@@ -443,6 +443,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_193_module_introduction">193. Module Introduction</a></li>
 <li><a href="#_194_analyzing_the_starting_project">194. Analyzing the Starting Project</a></li>
+<li><a href="#_195_understanding_how_angular_performs_change_detection">195. Understanding How Angular Performs Change Detection</a></li>
+<li><a href="#_196_change_detection_during_development_expressionchangedafterchecked_errors">196. Change Detection During Development -ExpressionChangedAfterChecked Errors</a></li>
+<li><a href="#_197_writing_efficient_template_bindings">197. Writing Efficient Template Bindings</a></li>
+<li><a href="#_198_avoiding_zone_pollution">198. Avoiding Zone Pollution</a></li>
 </ul>
 </div>
 </div>
@@ -498,10 +502,124 @@ understand.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_195_understanding_how_angular_performs_change_detection">195. Understanding How Angular Performs Change Detection</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Angular’s default change detection wraps the whole app in a Zone.js “zone” that notifies Angular when events happen (e.g., a button click). When an event occurs, Angular runs change detection for the entire component tree, revisiting every component’s template and reevaluating all template bindings (property bindings, interpolations, etc.). If any binding value changed compared to what was previously rendered, Angular updates the real DOM.</p>
+</div>
+<div class="paragraph">
+<p>This is why a single counter increment can produce log messages from many unrelated components: all components get checked, and any getter used in template bindings (like a <code>debugOutput</code> getter used via interpolation) is executed every time those bindings are reevaluated. Because of this, expensive work in getters or template expressions should be avoided. Angular is optimized to perform these checks efficiently, and further optimizations/alternative strategies can reduce unnecessary checks.</p>
+</div>
+<div class="paragraph">
+<p>The passage ends by noting that logs show components being checked twice per event and raises the question of why Angular runs two checks.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_196_change_detection_during_development_expressionchangedafterchecked_errors">196. Change Detection During Development -ExpressionChangedAfterChecked Errors</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Angular shows duplicate log output in <strong>development mode</strong> because it
+deliberately runs <strong>change detection twice</strong>. This helps Angular detect
+unintended state/value changes that occur <em>after</em> a change detection
+pass.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>In production builds</strong>, this double-run does not happen.</p>
+</li>
+<li>
+<p>The goal is to catch unstable values or side effects. Example: if a
+component method used in the template (like <code>debugOutput</code>) returns a
+<strong>random</strong> value, the first and second change detection passes will
+produce different results.</p>
+</li>
+<li>
+<p>When Angular detects that a value changed between these two immediate
+checks, it throws <strong><code>ExpressionChangedAfterItHasBeenCheckedError</code></strong>,
+indicating a likely bug where displayed data is being changed
+unexpectedly.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Using a stable value (e.g., a fixed string) removes the error because
+the output stays the same across both checks.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_197_writing_efficient_template_bindings">197. Writing Efficient Template Bindings</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Angular change detection runs frequently, so template code should stay
+lightweight.</p>
+</li>
+<li>
+<p>Avoid expensive computations in templates; keep binding expressions
+simple and straightforward.</p>
+</li>
+<li>
+<p>Don’t call arbitrary functions in template interpolations/bindings
+(event bindings and signal reads are exceptions).</p>
+</li>
+<li>
+<p>If you use getters (which are effectively methods), ensure they do
+only basic, efficient work.</p>
+</li>
+<li>
+<p>Pipes are executed during template evaluation too, which is why
+Angular caches pipe transform results by default; keep this behavior in
+mind, and note there are additional optimizations beyond this.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_198_avoiding_zone_pollution">198. Avoiding Zone Pollution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The text explains an Angular performance optimization: prevent
+unnecessary change detection triggered by browser events (like
+<code>setTimeout</code>) that don’t affect the UI.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>By default, Angular runs inside <code>zone.js</code>, which listens to async
+events (including expired timers) and triggers change detection whenever
+they occur—whether or not your code actually updates component state.</p>
+</li>
+<li>
+<p>Example: one timer resets a counter (should trigger change detection),
+but a second timer only logs <code>"Timer expired"</code> (doesn’t affect UI). Even
+the logging timer still causes change detection because <code>zone.js</code> can’t
+know it’s “harmless.”</p>
+</li>
+<li>
+<p>Optimization: inject <code>NgZone</code> (via <code>inject(NgZone)</code> or constructor
+injection) and wrap non-UI-affecting code in
+<code>zone.runOutsideAngular(() =&gt; { &#8230;&#8203; })</code>.<br>
+This executes that code outside Angular’s zone so the event won’t
+trigger change detection.</p>
+</li>
+<li>
+<p>This technique is occasionally useful to avoid extra change detection
+cycles and is sometimes described as avoiding “zone pollution.”</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-09 22:15:54 +0200
+Last updated 2026-03-10 10:36:21 +0200
 </div>
 </div>
 </body>
