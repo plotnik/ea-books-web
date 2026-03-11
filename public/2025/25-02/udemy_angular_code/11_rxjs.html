@@ -444,6 +444,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_208_module_introduction">208. Module Introduction</a></li>
 <li><a href="#_209_what_are_observables_what_is_rxjs">209. What Are Observables &amp; What Is RxJS</a></li>
 <li><a href="#_210_creating_using_an_observable">210. Creating &amp; Using an Observable</a></li>
+<li><a href="#_211_working_with_rxjs_operators">211. Working with RxJS Operators</a></li>
+<li><a href="#_212_working_with_signals">212. Working with Signals</a></li>
+<li><a href="#_213_signals_vs_observables">213. Signals vs Observables</a></li>
 </ul>
 </div>
 </div>
@@ -526,10 +529,156 @@ component destroy</strong> to prevent memory leaks. The example uses Angular’s
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_211_working_with_rxjs_operators">211. Working with RxJS Operators</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The lecture explains that <code>interval()</code> can create an observable that
+emits values every second, useful for periodic tasks like polling an
+HTTP endpoint or updating UI/animations.</p>
+</div>
+<div class="paragraph">
+<p>It then introduces <strong>RxJS operators</strong>, which are functions used to
+transform or manipulate values emitted by an observable. Operators are
+added via <strong><code>pipe()</code></strong> (called before <code>subscribe()</code>), and an observable
+won’t emit anything unless there is <strong>at least one subscription</strong>.</p>
+</div>
+<div class="paragraph">
+<p>As an example, the <strong><code>map</code> operator</strong> (imported from RxJS) is added to an
+<code>interval</code> stream. <code>map</code> takes a function that runs on every emitted
+value and returns a transformed value (e.g., doubling the emitted
+number). Multiple operators can be chained in <code>pipe()</code>.</p>
+</div>
+<div class="paragraph">
+<p>Key takeaway: operators are a central RxJS feature that enable
+transforming observable values, and they’re an important concept (and a
+difference compared to signals).</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/11-rxjs/03-map-operator/src/app/app.component.ts" target="_blank">
+03-map-operator/src/app/app.component.ts</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_212_working_with_signals">212. Working with Signals</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Recap of <strong>Observables</strong>: created an observable with <code>interval()</code> and
+added operators; observables typically have an automatic data source
+that emits values over time.</p>
+</li>
+<li>
+<p>Recap of <strong>Subjects</strong>: subjects are a special kind of observable where
+you both <strong>subscribe</strong> and <strong>manually emit</strong> values (you control when new
+values are produced), and they can be subscribed to in multiple
+places/components.</p>
+</li>
+<li>
+<p>Introduction of Angular <strong>Signals</strong> (built into Angular, not from RxJS):
+the lesson shifts to using a signal and comparing it to
+observables/subjects, including converting between signals and
+observables.</p>
+</li>
+<li>
+<p>Implementation shown:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Add a button click handler <code>onClick()</code> via <code>(click)="onClick()"</code>.</p>
+</li>
+<li>
+<p>Create a signal <code>clickCount = signal(0)</code> (imported from
+<code>@angular/core</code>).</p>
+</li>
+<li>
+<p>Increment the signal on each click using
+<code>this.clickCount.update(prev =&gt; prev &#43; 1)</code>.</p>
+</li>
+<li>
+<p>Display the signal in the template by referencing <code>clickCount</code>.</p>
+</li>
+<li>
+<p>Create an <code>effect()</code> (also from <code>@angular/core</code>) that re-runs
+whenever <code>clickCount</code> changes, logging: “Clicked button X times”.</p>
+</li>
+<li>
+<p>Comment out the interval observable logs to reduce console noise.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Result: initial state logs “Clicked button 0 times”; each click
+updates both the UI and the console via the signal/effect.</p>
+</li>
+<li>
+<p>Transition question: signals behave like a data stream you manually
+“push” updates into (similar to a subject), prompting a discussion of
+<strong>differences and similarities</strong> between signals and observables.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/11-rxjs/04-signal-to-observable/src/app/app.component.ts" target="_blank">
+04-signal-to-observable/src/app/app.component.ts</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_213_signals_vs_observables">213. Signals vs Observables</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Signals and RxJS observables/subjects can look similar and sometimes
+solve the same problems (e.g., sharing state between components), but
+Angular signals are newer while RxJS was historically used for state
+sharing and subscription management.</p>
+</div>
+<div class="paragraph">
+<p>Key differences highlighted:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Observables = values over time (streams):</strong> You must <strong>subscribe</strong> to
+receive emitted values, and emissions typically happen asynchronously.
+They’re well-suited for events and data sources like <code>interval()</code>. Many
+observables are <strong>lazy</strong> and only start producing values when there’s at
+least one subscriber.</p>
+</li>
+<li>
+<p><strong>Signals = value containers:</strong> They hold a <strong>current value (with an
+initial value)</strong> that you can <strong>read synchronously at any time</strong> without
+subscribing. Reactivity happens automatically when signals are read in
+templates, <code>computed</code>, or <code>effect</code>. They’re especially good for
+<strong>application state</strong> that starts with an initial value and changes over
+time.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Using signals for something like an interval is possible (manual
+<code>setInterval</code>, updating a signal, then deriving values with a <code>computed</code>
+signal), but it can be <strong>more code</strong>, requires <strong>manual cleanup</strong>, and will
+<strong>run even if nothing consumes it</strong>, unlike a typical observable.</p>
+</div>
+<div class="paragraph">
+<p>Both approaches remain useful depending on the situation and preference,
+and Angular provides tools to <strong>convert between observables and signals</strong>
+(observable→signal and signal→observable), which is the next topic.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-10 20:24:14 +0200
+Last updated 2026-03-11 15:17:05 +0200
 </div>
 </div>
 </body>

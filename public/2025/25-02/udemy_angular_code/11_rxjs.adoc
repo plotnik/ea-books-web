@@ -50,3 +50,95 @@ component destroy* to prevent memory leaks. The example uses Angular’s
 ++++
 ====
 
+== 211. Working with RxJS Operators
+
+The lecture explains that `interval()` can create an observable that
+emits values every second, useful for periodic tasks like polling an
+HTTP endpoint or updating UI/animations.
+
+It then introduces *RxJS operators*, which are functions used to
+transform or manipulate values emitted by an observable. Operators are
+added via *`pipe()`* (called before `subscribe()`), and an observable
+won’t emit anything unless there is *at least one subscription*.
+
+As an example, the *`map` operator* (imported from RxJS) is added to an
+`interval` stream. `map` takes a function that runs on every emitted
+value and returns a transformed value (e.g., doubling the emitted
+number). Multiple operators can be chained in `pipe()`.
+
+Key takeaway: operators are a central RxJS feature that enable
+transforming observable values, and they’re an important concept (and a
+difference compared to signals).
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/11-rxjs/03-map-operator/src/app/app.component.ts" target="_blank">
+03-map-operator/src/app/app.component.ts</a>
+++++
+====
+
+== 212. Working with Signals
+
+* Recap of *Observables*: created an observable with `interval()` and
+added operators; observables typically have an automatic data source
+that emits values over time.
+* Recap of *Subjects*: subjects are a special kind of observable where
+you both *subscribe* and *manually emit* values (you control when new
+values are produced), and they can be subscribed to in multiple
+places/components.
+* Introduction of Angular *Signals* (built into Angular, not from RxJS):
+the lesson shifts to using a signal and comparing it to
+observables/subjects, including converting between signals and
+observables.
+* Implementation shown:
+** Add a button click handler `onClick()` via `(click)="onClick()"`.
+** Create a signal `clickCount = signal(0)` (imported from
+`@angular/core`).
+** Increment the signal on each click using
+`this.clickCount.update(prev =++>++ prev {plus} 1)`.
+** Display the signal in the template by referencing `clickCount`.
+** Create an `effect()` (also from `@angular/core`) that re-runs
+whenever `clickCount` changes, logging: “Clicked button X times”.
+** Comment out the interval observable logs to reduce console noise.
+* Result: initial state logs “Clicked button 0 times”; each click
+updates both the UI and the console via the signal/effect.
+* Transition question: signals behave like a data stream you manually
+“push” updates into (similar to a subject), prompting a discussion of
+*differences and similarities* between signals and observables.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/11-rxjs/04-signal-to-observable/src/app/app.component.ts" target="_blank">
+04-signal-to-observable/src/app/app.component.ts</a>
+++++
+====
+
+== 213. Signals vs Observables
+
+Signals and RxJS observables/subjects can look similar and sometimes
+solve the same problems (e.g., sharing state between components), but
+Angular signals are newer while RxJS was historically used for state
+sharing and subscription management.
+
+Key differences highlighted:
+
+* *Observables = values over time (streams):* You must *subscribe* to
+receive emitted values, and emissions typically happen asynchronously.
+They’re well-suited for events and data sources like `interval()`. Many
+observables are *lazy* and only start producing values when there’s at
+least one subscriber.
+* *Signals = value containers:* They hold a *current value (with an
+initial value)* that you can *read synchronously at any time* without
+subscribing. Reactivity happens automatically when signals are read in
+templates, `computed`, or `effect`. They’re especially good for
+*application state* that starts with an initial value and changes over
+time.
+
+Using signals for something like an interval is possible (manual
+`setInterval`, updating a signal, then deriving values with a `computed`
+signal), but it can be *more code*, requires *manual cleanup*, and will
+*run even if nothing consumes it*, unlike a typical observable.
+
+Both approaches remain useful depending on the situation and preference,
+and Angular provides tools to *convert between observables and signals*
+(observable→signal and signal→observable), which is the next topic.
