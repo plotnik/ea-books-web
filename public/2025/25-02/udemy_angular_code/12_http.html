@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Maximilian Schwarzmüller">
-<title>Angular - The Complete Guide (2025 Edition)</title>
+<title>12. Sending HTTP Requests &amp; Handling Responses</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,83 +437,456 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><strong>Angular - The Complete Guide (2025 Edition)</strong></h1>
-<div class="details">
-<span id="author" class="author">Maximilian Schwarzmüller</span><br>
-</div>
+<h1>12. Sending HTTP Requests &amp; Handling Responses</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_2_angular_essentials_components_templates_services_more">2. Angular Essentials - Components, Templates, Services &amp; More</a></li>
-<li><a href="#_3_angular_essentials_working_with_modules">3. Angular Essentials - Working with Modules</a></li>
-<li><a href="#_10_making_sense_of_change_detection_deep_dive">10. Making Sense of Change Detection - Deep Dive</a></li>
-<li><a href="#_11_working_with_rxjs_observables_deep_dive">11. Working with RxJS (Observables) - Deep Dive</a></li>
-<li><a href="#_12_sending_http_requests_handling_responses">12. Sending HTTP Requests &amp; Handling Responses</a></li>
-<li><a href="#_14_routing_building_multi_page_single_page_applications">14. Routing &amp; Building Multi-page Single Page Applications</a></li>
+<li><a href="#_218_module_introduction">218. Module Introduction</a></li>
+<li><a href="#_219_the_starting_projects_frontend_backend">219. The Starting Projects - Frontend &amp; Backend</a></li>
+<li><a href="#_220_how_to_connect_angular_apps_to_a_backend">220. How To Connect Angular Apps To A Backend</a></li>
+<li><a href="#_222_getting_started_with_angulars_http_client">222. Getting Started with Angular&#8217;s Http Client</a></li>
+<li><a href="#_224_sending_a_get_request_to_fetch_data">224. Sending a GET Request To Fetch Data</a></li>
+<li><a href="#_225_configuring_http_requests">225. Configuring Http Requests</a></li>
+<li><a href="#_226_transforming_using_response_data">226. Transforming &amp; Using Response Data</a></li>
+<li><a href="#_227_showing_a_loading_fallback">227. Showing a Loading Fallback</a></li>
+<li><a href="#_228_handling_http_errors">228. Handling HTTP Errors</a></li>
+<li><a href="#_229_sending_data_to_a_backend">229. Sending Data To A Backend</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
+<div class="paragraph">
+<p><a href="udemy_angular.html">&lt;Contents&gt;</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_218_module_introduction">218. Module Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section shifts from standalone Angular apps with in-memory data to apps connected to a backend (and potentially a database). You’ll learn how to send HTTP requests, handle backend responses, and manage loading and error states. A new demo project will be used where data is fetched from and stored on the backend instead of within the Angular app.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_219_the_starting_projects_frontend_backend">219. The Starting Projects - Frontend &amp; Backend</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>The provided starter project combines two separate apps in one folder:
+an Angular frontend and a <code>backend</code> folder containing a standalone
+Node/Express Web API (no Angular code).</p>
+</li>
+<li>
+<p>The backend exposes routes (e.g., GET, PUT, DELETE) and persists dummy
+data in JSON files instead of a database, to simulate a real
+backend/data store.</p>
+</li>
+<li>
+<p>Setup steps:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Run <code>npm install</code> in the main project folder (Angular dependencies).</p>
+</li>
+<li>
+<p>Run <code>npm install</code> inside the <code>backend</code> folder (backend dependencies).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Run both servers separately:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In the <code>backend</code> folder: <code>npm start</code> to start the API (keep it
+running; stop with Ctrl&#43;C and restart as needed).</p>
+</li>
+<li>
+<p>In a separate terminal, in the main project folder: <code>npm start</code> to
+run the Angular dev server.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>After starting, visit <code>localhost:4200</code> to see the app. The next goal
+is to fetch and display data (e.g., “available places”) from the
+backend, learning how Angular communicates with the API to access the
+stored JSON data.</p>
+</li>
+</ul>
+</div>
 <div class="exampleblock">
 <div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Course on Udemy</dt>
-<dd>
-<p><a href="https://www.udemy.com/course/the-complete-guide-to-angular-2/" class="bare">https://www.udemy.com/course/the-complete-guide-to-angular-2/</a></p>
-</dd>
-<dt class="hdlist1">GitHub</dt>
-<dd>
-<p><a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/" class="bare">https://github.com/mschwarzmueller/angular-complete-guide-course-resources/</a></p>
-</dd>
-</dl>
-</div>
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/01-starting-project/backend/app.js" target="_blank">
+01-starting-project/backend/app.js</a>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_2_angular_essentials_components_templates_services_more"><a href="2_essentials.html">2. Angular Essentials - Components, Templates, Services &amp; More</a></h2>
+<h2 id="_220_how_to_connect_angular_apps_to_a_backend">220. How To Connect Angular Apps To A Backend</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Angular apps run in users’ browsers, so they shouldn’t connect directly to databases or contain database credentials (it’s insecure and can cause other issues). Instead, an Angular frontend communicates with a separate backend (your own or a third-party) through a web API that exposes specific routes/URLs. The Angular app sends HTTP requests (e.g., GET to fetch data, or requests to send/store data), and the backend responds with data the app can use to update the UI. In this case, the backend provides a <code>GET /places</code> route that reads place data (from a JSON file here) and returns it, and the next step is to call that route from the Angular app.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_3_angular_essentials_working_with_modules"><a href="3_modules.html">3. Angular Essentials - Working with Modules</a></h2>
+<h2 id="_222_getting_started_with_angulars_http_client">222. Getting Started with Angular&#8217;s Http Client</h2>
 <div class="sectionbody">
-
+<div class="ulist">
+<ul>
+<li>
+<p>The data for “available places” should be fetched in the
+<code>AvailablePlacesComponent</code> (a service could be used later, but for now
+the component is fine).</p>
+</li>
+<li>
+<p>Angular sends HTTP requests via the <code>HttpClient</code> service (from
+<code>@angular/common/http</code>), which you can inject using <code>inject()</code> or a
+constructor.</p>
+</li>
+<li>
+<p>If you inject <code>HttpClient</code> without configuring it, you’ll get a
+<code>NullInjectorError</code> because Angular doesn’t provide it automatically.</p>
+</li>
+<li>
+<p>In a standalone setup, you typically register <code>HttpClient</code> app-wide in
+<code>main.ts</code> by adding providers to <code>bootstrapApplication(&#8230;&#8203;)</code>, using
+<code>provideHttpClient()</code> (imported from <code>@angular/common/http</code>).</p>
+</li>
+<li>
+<p>Once <code>provideHttpClient()</code> is added, Angular can inject <code>HttpClient</code>
+and the error disappears, making it ready to send requests.</p>
+</li>
+<li>
+<p>In a module-based app, you’d provide it in the root module instead
+(covered later).</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/02-fetching-data-get-request/src/main.ts" target="_blank">
+02-fetching-data-get-request/src/main.ts</a>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_10_making_sense_of_change_detection_deep_dive"><a href="10_zonejs.html">10. Making Sense of Change Detection - Deep Dive</a></h2>
+<h2 id="_224_sending_a_get_request_to_fetch_data">224. Sending a GET Request To Fetch Data</h2>
 <div class="sectionbody">
-
+<div class="ulist">
+<ul>
+<li>
+<p>Use the injected Angular <code>HttpClient</code> to fetch initial component data
+in <code>ngOnInit</code>, since it runs once when the component is ready and is a
+good place to start loading backend data (e.g., available places).</p>
+</li>
+<li>
+<p>Call <code>http.get()</code> (not <code>post()</code>) to send a GET request to an endpoint
+like <code><a href="http://localhost:3000/places" class="bare">http://localhost:3000/places</a></code>.</p>
+</li>
+<li>
+<p><code>HttpClient.get()</code> returns an <strong>Observable</strong>; the request only happens
+when you <strong>subscribe</strong>. In <code>subscribe</code>, handle the emitted response in
+<code>next</code> (typically only one emission: the response data). Initially, log
+the response to the console.</p>
+</li>
+<li>
+<p>Although HttpClient observables usually complete after one value, it’s
+still good practice to clean up: store the subscription and unsubscribe
+in an <code>onDestroy</code> callback using Angular’s <code>DestroyRef</code>.</p>
+</li>
+<li>
+<p>Improve TypeScript support by typing the response via generics, e.g.
+<code>get&lt;{ places: Place[] }&gt;(&#8230;&#8203;)</code>, based on the backend
+response shape (an object with a <code>places</code> key containing an array of
+<code>Place</code>).</p>
+</li>
+<li>
+<p>The backend may respond with a deliberate delay (for demo), motivating
+later UI work like showing a loading state. After confirming the data
+arrives, the next step is to render/output the places in the UI.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_11_working_with_rxjs_observables_deep_dive"><a href="11_rxjs.html">11. Working with RxJS (Observables) - Deep Dive</a></h2>
+<h2 id="_225_configuring_http_requests">225. Configuring Http Requests</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Angular’s <code>HttpClient.get()</code> can take a second argument (a config
+object) to change what the <code>subscribe</code> callback receives via the
+<code>observe</code> option:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>observe: 'response'</code> makes the callback receive the full
+<code>HttpResponse</code> (not just the parsed data). You then access data via
+<code>response.body</code>, which can be <code>null</code>, so you may need optional chaining
+(e.g. <code>response.body?.places</code>). The full response also includes headers,
+status code/status text, success info, etc.</p>
+</li>
+<li>
+<p><code>observe: 'events'</code> makes the callback fire multiple times for
+different request lifecycle events (e.g. an initial “request sent”
+event, then the final response), letting you react at different stages.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>After demonstrating these, the code returns to using just the response
+body data to render the places in the UI.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_12_sending_http_requests_handling_responses"><a href="12_http.html">12. Sending HTTP Requests &amp; Handling Responses</a></h2>
+<h2 id="_226_transforming_using_response_data">226. Transforming &amp; Using Response Data</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>The text explains how to display fetched “places” data in an Angular
+component by updating an existing <code>places</code> Signal once the HTTP
+observable emits. It suggests optionally using <code>pipe()</code> with the RxJS
+<code>map</code> operator to transform the response from an object like
+<code>{ places: [&#8230;&#8203;] }</code> into just the array <code>[&#8230;&#8203;]</code>
+before <code>subscribe()</code>, so the UI can be populated directly with the
+places list.</p>
+</div>
+<div class="paragraph">
+<p>After confirming the UI updates correctly on reload, it outlines the
+next improvements: show fallback/loading text while the data is being
+fetched and add error handling, before moving on to selecting places,
+adding favorites, and persisting them to the backend.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/02-fetching-data-get-request/src/app/places/available-places/available-places.component.ts" target="_blank">
+02-fetching-data-get-request/src/app/places/available-places/available-places.component.ts</a>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_14_routing_building_multi_page_single_page_applications"><a href="14_routing.html">14. Routing &amp; Building Multi-page Single Page Applications</a></h2>
+<h2 id="_227_showing_a_loading_fallback">227. Showing a Loading Fallback</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Add a loading/fallback UI while “places” data is being fetched by
+introducing an <code>isFetching</code> Signal:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Initialize <code>isFetching</code> to <code>false</code>.</p>
+</li>
+<li>
+<p>In <code>ngOnInit</code>, set <code>isFetching</code> to <code>true</code> right before starting the
+HTTP/request subscription.</p>
+</li>
+<li>
+<p>Set <code>isFetching</code> back to <code>false</code> in the observable’s <code>complete</code>
+callback (safer than <code>next</code> if the observable could emit multiple
+values).</p>
+</li>
+<li>
+<p>In the template, conditionally render a fallback message/spinner when
+<code>isFetching</code> is true (e.g., via <code>@if</code>), and render the places list only
+when data exists.</p>
+</li>
+<li>
+<p>Result: “Fetching available places…” shows during the delay, then
+disappears once the places arrive.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/03-loading-state/src/app/places/available-places/available-places.component.ts" target="_blank">
+03-loading-state/src/app/places/available-places/available-places.component.ts</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_228_handling_http_errors">228. Handling HTTP Errors</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The text explains how to handle loading and error states for Angular
+HTTP requests, including how to simulate backend failures and how to
+present user-friendly error messages.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Simulating an error response (backend):</strong> In a Node/Express route,
+return an HTTP <strong>500</strong> response (e.g., <code>res.status(500).json(&#8230;&#8203;)</code>) to
+mimic a server failure. Restart the backend server after code changes so
+they take effect.</p>
+</li>
+<li>
+<p><strong>Observing the failure (frontend):</strong> When the Angular app reloads, the
+request doesn’t return data and an HTTP error appears in dev tools.</p>
+</li>
+<li>
+<p><strong>Managing UI state with signals:</strong> Add:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>a <strong>loading/fetching signal</strong> (already implied) and</p>
+</li>
+<li>
+<p>an <strong>error signal</strong> (e.g., a string, initially empty).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Handling errors in <code>subscribe</code>:</strong> Use the third observer callback
+(<code>error</code>) to set the error signal when the observable errors (e.g.,
+offline, non-2xx response).</p>
+</li>
+<li>
+<p><strong>Template updates:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Show a loading fallback only when <strong>fetching is true AND no error</strong>.</p>
+</li>
+<li>
+<p>Show an error paragraph when the <strong>error signal is truthy</strong>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Error object vs. message:</strong> The error passed to the observer is often
+an <strong>object</strong>, so interpolating it yields <code>"[object Object]"</code>.
+Access <code>error.message</code> instead.</p>
+</li>
+<li>
+<p><strong>User-friendly messaging:</strong> Log the detailed error for developers, but
+display a generic message to users like:<br>
+“Something went wrong fetching the available places. Please try again
+later.”</p>
+</li>
+<li>
+<p><strong>Optional RxJS approach (<code>catchError</code>):</strong> Move error transformation out
+of <code>subscribe</code> by using <code>catchError</code> in <code>pipe()</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>catchError</code> receives the original error and must <strong>return a new
+observable</strong>.</p>
+</li>
+<li>
+<p>Use <code>throwError) =&gt; new Error(customMessage</code> to rethrow a
+<strong>custom Error</strong> so the subscriber’s <code>error</code> callback still runs, but with
+a cleaner message/type.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Restore normal behavior:</strong> Remove/comment out the forced 500 backend
+response, restart the backend, and the places load successfully again.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, it demonstrates a common Angular pattern: track <strong>loading &#43;
+error</strong> state, update the template accordingly, and optionally use RxJS
+operators to keep subscription callbacks cleaner.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/04-handling-errors/src/app/places/available-places/available-places.component.ts" target="_blank">
+04-handling-errors/src/app/places/available-places/available-places.component.ts</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_229_sending_data_to_a_backend">229. Sending Data To A Backend</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>The goal is to not only <strong>fetch</strong> places but also <strong>send selected place
+data to the backend</strong> so the backend can store a user’s favorite places
+in <code>user-places.json</code>.</p>
+</li>
+<li>
+<p>The backend exposes a <strong>PUT</strong> route at <code>PUT /user-places</code> which expects
+a <strong>request body containing a <code>placeId</code></strong>.</p>
+</li>
+<li>
+<p>In Angular, the <code>app-places</code> component emits a <code>selectPlace</code> event
+when a place is clicked; this event <strong>provides the full place object</strong>.</p>
+</li>
+<li>
+<p>In the <code>AvailablePlacesComponent</code>, you should:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Listen to <code>(selectPlace)</code> in the template and call a new method (e.g.
+<code>onSelectPlace($event)</code>).</p>
+</li>
+<li>
+<p>Implement <code>onSelectPlace(selectedPlace: Place)</code> and use
+<code>HttpClient.put(&#8230;&#8203;)</code> to send a request to
+<code><a href="http://localhost:3000/user-places" class="bare">http://localhost:3000/user-places</a></code> with a JSON body like
+<code>{ placeId: selectedPlace.id }</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The PUT request <strong>won’t fire unless you <code>subscribe()</code></strong>, just like GET
+requests—subscribing triggers the HTTP call.</p>
+</li>
+<li>
+<p>After subscribing, clicking a place results in:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A network request showing the payload <code>{ placeId: &#8230;&#8203; }</code></p>
+</li>
+<li>
+<p>A response containing the updated user places</p>
+</li>
+<li>
+<p>The backend <code>user-places.json</code> being updated (no longer empty)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Next steps mentioned: add <strong>loading/error handling</strong> for the PUT
+request, and then <strong>display the stored user places</strong> in the “favorite
+places” UI section.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/05-send-data/src/app/places/available-places/available-places.component.ts" target="_blank">
+05-send-data/src/app/places/available-places/available-places.component.ts</a>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-12 17:55:08 +0200
+Last updated 2026-03-13 13:16:01 +0200
 </div>
 </div>
 </body>

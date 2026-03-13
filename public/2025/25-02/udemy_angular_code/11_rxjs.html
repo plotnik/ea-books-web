@@ -447,6 +447,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_211_working_with_rxjs_operators">211. Working with RxJS Operators</a></li>
 <li><a href="#_212_working_with_signals">212. Working with Signals</a></li>
 <li><a href="#_213_signals_vs_observables">213. Signals vs Observables</a></li>
+<li><a href="#_214_converting_signals_to_observables">214. Converting Signals To Observables</a></li>
+<li><a href="#_215_converting_observables_to_signals">215. Converting Observables To Signals</a></li>
+<li><a href="#_216_deep_dive_creating_using_a_custom_observable_from_scratch">216. Deep Dive - Creating &amp; Using A Custom Observable From Scratch</a></li>
 </ul>
 </div>
 </div>
@@ -623,12 +626,6 @@ updates both the UI and the console via the signal/effect.</p>
 </li>
 </ul>
 </div>
-<div class="exampleblock">
-<div class="content">
-<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/11-rxjs/04-signal-to-observable/src/app/app.component.ts" target="_blank">
-04-signal-to-observable/src/app/app.component.ts</a>
-</div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -675,10 +672,162 @@ and Angular provides tools to <strong>convert between observables and signals</s
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_214_converting_signals_to_observables">214. Converting Signals To Observables</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can convert between Angular <strong>signals</strong> and <strong>RxJS observables</strong> rather
+than choosing only one approach.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To listen to a signal via RxJS, use Angular’s <code>toObservable</code> from
+<code>@angular/core/rxjs-interop</code>.</p>
+</li>
+<li>
+<p>Pass the <strong>signal itself</strong> (don’t call/execute it) into <code>toObservable</code>,
+e.g. convert <code>clickCount</code> into an observable.</p>
+</li>
+<li>
+<p><code>toObservable</code> should be used in places where DI is allowed (e.g.
+<strong>constructor</strong> or as a <strong>property initializer</strong>).</p>
+</li>
+<li>
+<p>A common convention is naming observable properties with a trailing
+<code>$</code>, e.g. <code>clickCount$</code>.</p>
+</li>
+<li>
+<p>After conversion, you can <code>subscribe()</code> (e.g. in <code>ngOnInit</code>) and
+handle new values in <code>next</code>; TypeScript infers the emitted type (here
+<code>number</code>).</p>
+</li>
+<li>
+<p>As with any subscription, store it and unsubscribe (e.g. in
+<code>ngOnDestroy</code>) to avoid leaks.</p>
+</li>
+<li>
+<p>Updating the original signal still works; each update also <strong>emits a
+new value</strong> through the observable created by <code>toObservable</code>, allowing
+logging/reacting via RxJS on each click.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/11-rxjs/04-signal-to-observable/src/app/app.component.ts" target="_blank">
+04-signal-to-observable/src/app/app.component.ts</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_215_converting_observables_to_signals">215. Converting Observables To Signals</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Shows converting an RxJS <code>interval(1000)</code> observable (named with <code>$</code>)
+into an Angular Signal using <code>toSignal()</code> from
+<code>@angular/core/rxjs-interop</code>, typically when defining class properties
+or in the constructor (where injection is possible).</p>
+</li>
+<li>
+<p>The resulting Signal updates whenever the observable emits and can be
+used like any other Signal: in templates, <code>effect()</code>, or <code>computed()</code>.</p>
+</li>
+<li>
+<p>Key difference: observables (like <code>interval</code>) have no initial value,
+while Signals always do. Therefore, a Signal created via <code>toSignal()</code>
+starts as <code>undefined</code> unless configured.</p>
+</li>
+<li>
+<p>You can provide an explicit initial value by passing a second argument
+to <code>toSignal()</code> with a config object, e.g. <code>{ initialValue: 0 }</code>, so
+the template shows <code>0</code> immediately.</p>
+</li>
+<li>
+<p><code>toSignal()</code> automatically manages subscription cleanup when the
+hosting component is destroyed. This can be disabled with
+<code>{ manualCleanup: true }</code>, in which case you must handle disposal
+yourself.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/11-rxjs/05-observable-to-signal/src/app/app.component.ts" target="_blank">
+05-observable-to-signal/src/app/app.component.ts</a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_216_deep_dive_creating_using_a_custom_observable_from_scratch">216. Deep Dive - Creating &amp; Using A Custom Observable From Scratch</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Demonstrates how to create an RxJS <code>Observable</code> <strong>from scratch</strong> by
+instantiating the <code>Observable</code> class (instead of using creation
+operators like <code>interval</code>), explaining that built-in operators use this
+class internally.</p>
+</li>
+<li>
+<p>The <code>Observable</code> constructor takes a <strong>function</strong> that RxJS runs <strong>when
+someone subscribes</strong>. This function receives a <strong>subscriber/observer</strong>
+object.</p>
+</li>
+<li>
+<p>Inside the constructor function, you control emissions by calling:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>subscriber.next(value)</code> to emit values (which triggers the
+subscription’s <code>next</code> handler),</p>
+</li>
+<li>
+<p><code>subscriber.complete()</code> to finish the stream (triggering the
+subscription’s <code>complete</code> handler and ending emissions),</p>
+</li>
+<li>
+<p><code>subscriber.error(err)</code> to emit an error (triggering the
+subscription’s <code>error</code> handler).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Example implementation uses native JavaScript <code>setInterval</code> to emit a
+value every 2 seconds (and optionally logs <code>"Emitting new value&#8230;&#8203;"</code>),
+then subscribes in <code>ngOnInit</code> to print received values.</p>
+</li>
+<li>
+<p>Shows how to <strong>stop an infinite observable</strong>: track a counter, clear the
+interval via <code>clearInterval(intervalId)</code>, call <code>complete()</code>, and
+optionally handle completion in the subscriber with a <code>complete</code>
+callback (e.g., logging <code>"COMPLETED!"</code>).</p>
+</li>
+<li>
+<p>Concludes with the key concept: <strong>subscriptions define what happens
+when events occur</strong>, while the <strong>Observable’s constructor logic defines
+when those events are emitted</strong> (next/complete/error), which is
+essentially how Observables work “under the hood.”</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/11-rxjs/06-deep-dive/src/app/app.component.ts" target="_blank">
+06-deep-dive/src/app/app.component.ts</a>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-11 15:17:05 +0200
+Last updated 2026-03-12 17:46:37 +0200
 </div>
 </div>
 </body>

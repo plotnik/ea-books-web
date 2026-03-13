@@ -1,0 +1,237 @@
+= 12. Sending HTTP Requests & Handling Responses
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+
+link:udemy_angular.html[<Contents>]
+
+== 218. Module Introduction
+
+This section shifts from standalone Angular apps with in-memory data to apps connected to a backend (and potentially a database). You’ll learn how to send HTTP requests, handle backend responses, and manage loading and error states. A new demo project will be used where data is fetched from and stored on the backend instead of within the Angular app.
+
+== 219. The Starting Projects - Frontend & Backend
+
+* The provided starter project combines two separate apps in one folder:
+an Angular frontend and a `backend` folder containing a standalone
+Node/Express Web API (no Angular code).
+* The backend exposes routes (e.g., GET, PUT, DELETE) and persists dummy
+data in JSON files instead of a database, to simulate a real
+backend/data store.
+* Setup steps:
+** Run `npm install` in the main project folder (Angular dependencies).
+** Run `npm install` inside the `backend` folder (backend dependencies).
+* Run both servers separately:
+** In the `backend` folder: `npm start` to start the API (keep it
+running; stop with Ctrl{plus}C and restart as needed).
+** In a separate terminal, in the main project folder: `npm start` to
+run the Angular dev server.
+* After starting, visit `localhost:4200` to see the app. The next goal
+is to fetch and display data (e.g., “available places”) from the
+backend, learning how Angular communicates with the API to access the
+stored JSON data.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/01-starting-project/backend/app.js" target="_blank">
+01-starting-project/backend/app.js</a>
+++++
+====
+
+== 220. How To Connect Angular Apps To A Backend
+
+Angular apps run in users’ browsers, so they shouldn’t connect directly to databases or contain database credentials (it’s insecure and can cause other issues). Instead, an Angular frontend communicates with a separate backend (your own or a third-party) through a web API that exposes specific routes/URLs. The Angular app sends HTTP requests (e.g., GET to fetch data, or requests to send/store data), and the backend responds with data the app can use to update the UI. In this case, the backend provides a `GET /places` route that reads place data (from a JSON file here) and returns it, and the next step is to call that route from the Angular app.
+
+== 222. Getting Started with Angular's Http Client
+
+* The data for “available places” should be fetched in the
+`AvailablePlacesComponent` (a service could be used later, but for now
+the component is fine).
+* Angular sends HTTP requests via the `HttpClient` service (from
+`@angular/common/http`), which you can inject using `inject()` or a
+constructor.
+* If you inject `HttpClient` without configuring it, you’ll get a
+`NullInjectorError` because Angular doesn’t provide it automatically.
+* In a standalone setup, you typically register `HttpClient` app-wide in
+`main.ts` by adding providers to `bootstrapApplication(...)`, using
+`provideHttpClient()` (imported from `@angular/common/http`).
+* Once `provideHttpClient()` is added, Angular can inject `HttpClient`
+and the error disappears, making it ready to send requests.
+* In a module-based app, you’d provide it in the root module instead
+(covered later).
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/02-fetching-data-get-request/src/main.ts" target="_blank">
+02-fetching-data-get-request/src/main.ts</a>
+++++
+====
+
+== 224. Sending a GET Request To Fetch Data
+
+* Use the injected Angular `HttpClient` to fetch initial component data
+in `ngOnInit`, since it runs once when the component is ready and is a
+good place to start loading backend data (e.g., available places).
+* Call `http.get()` (not `post()`) to send a GET request to an endpoint
+like `http://localhost:3000/places`.
+* `HttpClient.get()` returns an *Observable*; the request only happens
+when you *subscribe*. In `subscribe`, handle the emitted response in
+`next` (typically only one emission: the response data). Initially, log
+the response to the console.
+* Although HttpClient observables usually complete after one value, it’s
+still good practice to clean up: store the subscription and unsubscribe
+in an `onDestroy` callback using Angular’s `DestroyRef`.
+* Improve TypeScript support by typing the response via generics, e.g.
+`get++<{++ places: Place++[]++ }++>++(...)`, based on the backend
+response shape (an object with a `places` key containing an array of
+`Place`).
+* The backend may respond with a deliberate delay (for demo), motivating
+later UI work like showing a loading state. After confirming the data
+arrives, the next step is to render/output the places in the UI.
+
+
+== 225. Configuring Http Requests
+
+Angular’s `HttpClient.get()` can take a second argument (a config
+object) to change what the `subscribe` callback receives via the
+`observe` option:
+
+* `observe: 'response'` makes the callback receive the full
+`HttpResponse` (not just the parsed data). You then access data via
+`response.body`, which can be `null`, so you may need optional chaining
+(e.g. `response.body?.places`). The full response also includes headers,
+status code/status text, success info, etc.
+* `observe: 'events'` makes the callback fire multiple times for
+different request lifecycle events (e.g. an initial “request sent”
+event, then the final response), letting you react at different stages.
+
+After demonstrating these, the code returns to using just the response
+body data to render the places in the UI.
+
+== 226. Transforming & Using Response Data
+
+The text explains how to display fetched “places” data in an Angular
+component by updating an existing `places` Signal once the HTTP
+observable emits. It suggests optionally using `pipe()` with the RxJS
+`map` operator to transform the response from an object like
+`++{++ places: ++[++...++]++ }` into just the array `++[++...++]++`
+before `subscribe()`, so the UI can be populated directly with the
+places list.
+
+After confirming the UI updates correctly on reload, it outlines the
+next improvements: show fallback/loading text while the data is being
+fetched and add error handling, before moving on to selecting places,
+adding favorites, and persisting them to the backend.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/02-fetching-data-get-request/src/app/places/available-places/available-places.component.ts" target="_blank">
+02-fetching-data-get-request/src/app/places/available-places/available-places.component.ts</a>
+++++
+====
+
+== 227. Showing a Loading Fallback
+
+Add a loading/fallback UI while “places” data is being fetched by
+introducing an `isFetching` Signal:
+
+* Initialize `isFetching` to `false`.
+* In `ngOnInit`, set `isFetching` to `true` right before starting the
+HTTP/request subscription.
+* Set `isFetching` back to `false` in the observable’s `complete`
+callback (safer than `next` if the observable could emit multiple
+values).
+* In the template, conditionally render a fallback message/spinner when
+`isFetching` is true (e.g., via `@if`), and render the places list only
+when data exists.
+* Result: “Fetching available places…” shows during the delay, then
+disappears once the places arrive.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/03-loading-state/src/app/places/available-places/available-places.component.ts" target="_blank">
+03-loading-state/src/app/places/available-places/available-places.component.ts</a>
+++++
+====
+
+== 228. Handling HTTP Errors
+
+The text explains how to handle loading and error states for Angular
+HTTP requests, including how to simulate backend failures and how to
+present user-friendly error messages.
+
+* *Simulating an error response (backend):* In a Node/Express route,
+return an HTTP *500* response (e.g., `res.status(500).json(...)`) to
+mimic a server failure. Restart the backend server after code changes so
+they take effect.
+* *Observing the failure (frontend):* When the Angular app reloads, the
+request doesn’t return data and an HTTP error appears in dev tools.
+* *Managing UI state with signals:* Add:
+** a *loading/fetching signal* (already implied) and
+** an *error signal* (e.g., a string, initially empty).
+* *Handling errors in `subscribe`:* Use the third observer callback
+(`error`) to set the error signal when the observable errors (e.g.,
+offline, non-2xx response).
+* *Template updates:*
+** Show a loading fallback only when *fetching is true AND no error*.
+** Show an error paragraph when the *error signal is truthy*.
+* *Error object vs. message:* The error passed to the observer is often
+an *object*, so interpolating it yields `"++[++object Object++]++"`.
+Access `error.message` instead.
+* *User-friendly messaging:* Log the detailed error for developers, but
+display a generic message to users like: +
+“Something went wrong fetching the available places. Please try again
+later.”
+* *Optional RxJS approach (`catchError`):* Move error transformation out
+of `subscribe` by using `catchError` in `pipe()`:
+** `catchError` receives the original error and must *return a new
+observable*.
+** Use `throwError(() =++>++ new Error(customMessage))` to rethrow a
+*custom Error* so the subscriber’s `error` callback still runs, but with
+a cleaner message/type.
+* *Restore normal behavior:* Remove/comment out the forced 500 backend
+response, restart the backend, and the places load successfully again.
+
+Overall, it demonstrates a common Angular pattern: track *loading {plus}
+error* state, update the template accordingly, and optionally use RxJS
+operators to keep subscription callbacks cleaner.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/04-handling-errors/src/app/places/available-places/available-places.component.ts" target="_blank">
+04-handling-errors/src/app/places/available-places/available-places.component.ts</a>
+++++
+====
+
+== 229. Sending Data To A Backend
+
+* The goal is to not only *fetch* places but also *send selected place
+data to the backend* so the backend can store a user’s favorite places
+in `user-places.json`.
+* The backend exposes a *PUT* route at `PUT /user-places` which expects
+a *request body containing a `placeId`*.
+* In Angular, the `app-places` component emits a `selectPlace` event
+when a place is clicked; this event *provides the full place object*.
+* In the `AvailablePlacesComponent`, you should:
+** Listen to `(selectPlace)` in the template and call a new method (e.g.
+`onSelectPlace($event)`).
+** Implement `onSelectPlace(selectedPlace: Place)` and use
+`HttpClient.put(...)` to send a request to
+`http://localhost:3000/user-places` with a JSON body like
+`++{++ placeId: selectedPlace.id }`.
+* The PUT request *won’t fire unless you `subscribe()`*, just like GET
+requests—subscribing triggers the HTTP call.
+* After subscribing, clicking a place results in:
+** A network request showing the payload `++{++ placeId: ... }`
+** A response containing the updated user places
+** The backend `user-places.json` being updated (no longer empty)
+* Next steps mentioned: add *loading/error handling* for the PUT
+request, and then *display the stored user places* in the “favorite
+places” UI section.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/05-send-data/src/app/places/available-places/available-places.component.ts" target="_blank">
+05-send-data/src/app/places/available-places/available-places.component.ts</a>
+++++
+====
