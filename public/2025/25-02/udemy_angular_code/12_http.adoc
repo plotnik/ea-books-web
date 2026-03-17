@@ -235,3 +235,112 @@ places” UI section.
 05-send-data/src/app/places/available-places/available-places.component.ts</a>
 ++++
 ====
+
+== 230. More Data Fetching & Some Code Duplication
+
+The goal is to display a user’s favorite places in the “favorite places”
+box by fetching them from the backend (`GET /user-places`, backed by a
+`user-places.json` file).
+
+Steps outlined:
+
+* Reuse much of the data-fetching logic from the `AvailablePlaces`
+component in the `UserPlaces` component:
+** Copy `ngOnInit` logic (then adjust it).
+** Copy supporting state: `places` signal, `isFetching` signal, `error`
+signal.
+** Copy required injections: `HttpClient` and `DestroyRef`.
+** Implement `OnInit` and add all necessary imports (`signal`, `inject`,
+`Place`, `HttpClient`, `DestroyRef`, `map`, `catchError`, `throwError`).
+* Update the request URL to `/user-places` and adjust the error message
+(e.g., “Fetching your favorite places failed.”).
+* Replace the `UserPlaces` template “todo” placeholder by copying the
+`AvailablePlaces` template structure, but:
+** Don’t wire up place selection (favorites are already selected);
+removal may be added later.
+** Use wording like “Fetching favorite places…”.
+* After reloading, favorites should appear immediately; newly favorited
+places won’t show in the favorites list until reload (to be fixed
+later).
+* Notes that this introduces code duplication; suggests later
+refactoring via a shared component or (more likely) a service to share
+logic.
+
+
+== 231. Outsourcing HTTP Request Logic Into A Service
+
+* Refactor HTTP logic out of components into a shared `PlacesService` to
+centralize data-fetching/configuration and keep components lean.
+* Create a *private* `fetchPlaces(url: string, errorMessage: string)`
+method in the service by moving the existing
+`httpClient.get(...).pipe(map, catchError, throwError)` code from a
+component into the service. Inject `HttpClient` into the service and
+move required RxJS imports (`map`, `catchError`, `throwError`) there
+too.
+* Build two public wrapper methods that reuse `fetchPlaces`:
+** `loadAvailablePlaces()` calls `fetchPlaces` with the available-places
+URL and an appropriate error message.
+** `loadUserPlaces()` calls `fetchPlaces` with the user-places URL and
+its own error message.
+* Update `AvailablePlacesComponent` and `UserPlacesComponent` to:
+** Stop injecting `HttpClient`; inject `PlacesService` instead.
+** Call `loadAvailablePlaces()` / `loadUserPlaces()` and subscribe in
+the component to manage UI state and ensure subscriptions can be cleaned
+up on destroy.
+* Also move the PUT request for adding a place to favorites from
+`AvailablePlacesComponent` into the service via
+`addPlaceToUserPlaces(placeId: string)`, keeping a consistent “all HTTP
+config in the service” approach.
+* Emphasize cleaning up component subscriptions (store and unsubscribe
+on component destruction).
+* End result: same functionality (data loads as before), but HTTP
+request setup lives in the service while components focus on
+subscribing, state handling, and UI updates.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/07-using-service-for-requests/src/app/places/places.service.ts" target="_blank">
+07-using-service-for-requests/src/app/places/places.service.ts</a>
+++++
+====
+
+== 232. Managing HTTP-loaded Data via a Service
+
+The issue is that after adding a favorite place, the
+`UserPlacesComponent` doesn’t update until a reload because it isn’t
+being notified of the change.
+
+Proposed approach:
+
+* Move ownership of `userPlaces` state into the Places service using an
+existing writable signal (`userPlaces`) and expose it as a read-only
+signal (`loadedUserPlaces`) for components.
+* In `loadUserPlaces()`, update the service’s `userPlaces` signal
+whenever places are fetched:
+** Call `pipe()` again on the `fetchPlaces()` observable.
+** Use RxJS `tap` (imported from `rxjs`) to react to the emitted “next”
+value without subscribing.
+** In `tap`, set the `userPlaces` signal to the fetched places array.
+
+Component changes:
+
+* In `UserPlacesComponent`, stop setting its own local `places` signal
+based on the observable’s `next`.
+* Instead, bind `places` to the service’s `loadedUserPlaces` read-only
+signal.
+* Keep loading/error/complete handling in the component.
+
+Result so far:
+
+* Places are loaded and stored centrally in the service, and the
+component displays them from the service-managed signal.
+* Immediate UI updates when adding a new favorite still aren’t solved
+yet, but this sets up the structure needed to implement that next.
+
+====
+++++
+<a href="https://github.com/mschwarzmueller/angular-complete-guide-course-resources/blob/main/code-snapshots/12-http/08-managing-data-in-services/src/app/places/places.service.ts" target="_blank">
+08-managing-data-in-services/src/app/places/places.service.ts</a>
+++++
+====
+
