@@ -14,6 +14,7 @@ Literate Programs
    ai_note.py
    md_view.py
    udemy.py
+   udemy_html_toc.py
    qr_code.py
    o_chat.py
    ai_obsidian.py

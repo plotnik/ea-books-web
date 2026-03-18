@@ -1,0 +1,108 @@
+= 2. LangChain Foundations - A Deep Dive
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+
+link:udemy_langchain.html[<Contents>]
+
+== 6. API Setup and Verification (OpenAI and Anthropic)
+
+* Create *two API keys*: one from *OpenAI* (Account → Settings → API
+Keys → Create new secret key; copy/save it) and one from *Anthropic*
+(Console/Platform → Manage → API Keys → Create secret key).
+* Set up a new project directory (e.g., _Lang course_) and initialize it
+with the *uv* package manager (`uv init`). Create and activate a virtual
+environment (`uv venv`, then `source .venv/bin/activate` on Mac; Windows
+differs).
+* Install dependencies via `uv add`: `langchain`, `langchain-core`,
+`langgraph`, `langchain-openai`, `langchain-anthropic`, and
+`python-dotenv`.
+* Create a `.env` file and store `OPENAI++_++API++_++KEY` and
+`ANTHROPIC++_++API++_++KEY` there.
+* In `main.py`, load environment variables with `load++_++dotenv()`,
+import the needed LangChain/LangGraph classes, and print package
+versions (using `importlib.metadata` to fetch versions).
+* Verify everything works by instantiating `ChatOpenAI` (e.g.,
+`gpt-4o-mini`) and `ChatAnthropic` (e.g., Claude), invoking each with a
+simple prompt (like “setup complete in one word”), and confirming both
+return responses—indicating keys, dependencies, and the development
+environment are correctly set up.
+
+```
+pip install -U langchain langchain-core langgraph langchain-openai langchain-anthropic
+```
+
+== 8. LangChain Core Concepts - LCEL and Runnable Chains - Hands-on
+
+* The file demonstrates LangChain core concepts: *LCEL (LangChain
+Expression Language)* and *runnables*, using a simple “basic chain”
+example.
+* Imports added:
+** `ChatPromptTemplate` from `langchain++_++core.prompts` to create a
+prompt template with runtime variable interpolation (e.g.,
+`++{++question}`).
+** `StrOutputParser` from `langchain++_++core.output++_++parsers` to
+parse the model output into a plain string.
+** Uses *ChatOpenAI* (no OpenAI/Anthropic base client imports needed for
+the demo).
+* A function `demo++_++basic++_++chain()` is created to build and run
+the chain:
+[arabic]
+. *Prompt component:* a template like “You are a helpful assistant,
+answer in one sentence: ++{++question}”.
+. *Model component:* `ChatOpenAI(model="gpt-4o-mini", temperature=0.7)`.
+. *Parser component:* `StrOutputParser()`.
+* The components are composed using the *pipe operator (`++|++`)* (LCEL
+syntax): +
+`chain = prompt ++|++ model ++|++ parser` +
+This means: prompt → model → parser.
+* The chain is executed via the runnable interface using
+*`.invoke()`*: +
+`chain.invoke(++{++"question": "What is LangChain?"})` +
+The input key must match the template variable name (`question`). For
+multiple variables, they’d all be provided in the same input dict.
+* The result is printed (a one-sentence answer) and the chain can be
+returned from the function.
+* The next planned step is a *batch execution demo* to run the chain
+over multiple inputs.
+
+== 9. LCEL - Batch Execution Demo
+
+* Demonstrates how to do *batch execution* with an LCEL/LangChain
+*runnable chain* for *multiple inputs*.
+* Builds a chain using:
+** a *ChatPromptTemplate* like: “Translate to French the text
+++{++text}”
+** a model (*GPT-4o mini*)
+** an output parser (instantiated, then piped)
+** composed with the pipe operator: `prompt ++|++ model ++|++ parser`
+* Prepares `inputs` as a *list of dictionaries*, each using the same key
+as the prompt variable (`text`), e.g.:
+** `++{++"text": "hello, how are you?"}`
+** `++{++"text": "what is your name?"}`
+** `++{++"text": "where is the nearest restaurant?"}`
+* Runs all items at once via the runnable’s *`.batch(inputs)`* method
+(not “invoke batch”).
+* Iterates through `zip(inputs, results)` to print each English input
+alongside its French translation output.
+* Concludes that runnable chains expose methods like *`batch`* to
+efficiently process *many inputs in one call*, returning a corresponding
+list of results.
+
+== 10. Demo Stream Realtime Output with LCEL
+
+The text explains how to add real-time text streaming to a LangChain
+workflow. It defines a new “demo streaming” function that:
+
+* Builds a `ChatPrompt` (e.g., “write a haiku about ++{++topic}”).
+* Creates a chat model (using `ChatOpenAI`, but any compatible model
+works).
+* Adds an output parser and composes them into a chain.
+* Streams results by iterating over
+`chain.stream(++{++ "topic": "nature" })`, printing each returned chunk
+immediately (with flush) to mimic live output like ChatGPT.
+
+It then runs the function to show the haiku appearing quickly in
+streamed chunks, noting how easy streaming is with LangChain and
+encouraging experimentation.
