@@ -516,6 +516,9 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_8_langchain_core_concepts_lcel_and_runnable_chains_hands_on">8. LangChain Core Concepts - LCEL and Runnable Chains - Hands-on</a></li>
 <li><a href="#_9_lcel_batch_execution_demo">9. LCEL - Batch Execution Demo</a></li>
 <li><a href="#_10_demo_stream_realtime_output_with_lcel">10. Demo Stream Realtime Output with LCEL</a></li>
+<li><a href="#_11_demo_schema_inspection">11. Demo Schema Inspection</a></li>
+<li><a href="#_16_new_model_initiation_and_available_models_in_2026">16. New Model Initiation and Available Models in 2026</a></li>
+<li><a href="#_19_working_with_llms_in_langchain_multi_providers_configuration">19. Working with LLMs in LangChain - Multi Providers Configuration</a></li>
 </ul>
 </div>
 </div>
@@ -742,10 +745,359 @@ encouraging experimentation.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_11_demo_schema_inspection">11. Demo Schema Inspection</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The text explains a LangChain demo function for <strong>inspecting a chain’s
+input and output schemas</strong>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It builds a standard chain: <strong>Prompt template → Chat model (e.g.,
+GPT-4o-mini, temperature set) → Output parser</strong>, composed inline.</p>
+</li>
+<li>
+<p>It then shows how to <strong>query the chain’s schemas</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>chain.input_schema</code> and <code>chain.output_schema</code>, and
+retrieve their JSON structure via <strong><code>model_json_schema()</code></strong>
+(noting that an older schema access method is deprecated).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Running the function prints the schemas:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Input schema</strong>: an object with required field(s) like <code>text</code> (type
+<code>string</code>), reflecting the prompt template’s expected inputs.</p>
+</li>
+<li>
+<p><strong>Output schema</strong>: simplified to a <code>string</code>, reflecting the string
+output parser’s result.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The main point: LangChain lets you <strong>see the “bones” of what a runnable
+accepts and returns</strong>, helping understand how components compose
+internally without manual inspection.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_16_new_model_initiation_and_available_models_in_2026">16. New Model Initiation and Available Models in 2026</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>The video explains a newer, “universal” way to initialize chat models
+in LangChain: using <code>init_chat_model</code> (imported from LangChain
+chat models) instead of directly instantiating provider-specific classes
+like <code>ChatOpenAI</code>.</p>
+</li>
+<li>
+<p>The older approach (e.g., importing a provider wrapper and creating
+<code>ChatOpenAI(&#8230;&#8203;)</code> after loading env vars with <code>load_dotenv</code>) still
+works, but <code>init_chat_model</code> is recommended going forward for a
+unified setup across providers.</p>
+</li>
+<li>
+<p>With <code>init_chat_model</code>, you pass parameters such as the model
+name/provider (e.g., GPT variants or Claude), <code>temperature</code>, and
+<code>max_tokens</code>, and it exposes additional configurable fields.</p>
+</li>
+<li>
+<p>The video also lists example “available models” circa 2026 and their
+typical use cases:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>OpenAI</strong>: GPT‑4.0 (balanced/flagship), GPT‑4.0 mini (fast/cheap),
+GPT‑5.2 (latest, very large ~400K context).</p>
+</li>
+<li>
+<p><strong>Anthropic</strong>: Claude Opus 4.5 (deep reasoning), Claude Sonnet 4.5
+(balanced), Claude Haiku 3.5 (fast/cheap).</p>
+</li>
+<li>
+<p><strong>Ollama / local open-source</strong>: Llama 3.2, Mistral (free/local
+testing).</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_19_working_with_llms_in_langchain_multi_providers_configuration">19. Working with LLMs in LangChain - Multi Providers Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The content walks through building a <code>working_with_llms.py</code>
+example in LangChain v1 that demonstrates:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>using multiple LLM providers</p>
+</li>
+<li>
+<p>configuring chat models</p>
+</li>
+<li>
+<p>comparing model outputs</p>
+</li>
+<li>
+<p>working with message objects</p>
+</li>
+<li>
+<p>supporting multi-turn conversations</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Key points:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Message objects</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Imports <code>HumanMessage</code> and <code>SystemMessage</code> from
+<code>langchain_core.messages</code>.</p>
+</li>
+<li>
+<p>Explains that messages are LangChain’s structured way to represent
+conversation context.</p>
+</li>
+<li>
+<p>Each message can include:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>role/content</p>
+</li>
+<li>
+<p>metadata</p>
+</li>
+<li>
+<p>response info</p>
+</li>
+<li>
+<p>IDs and other contextual fields</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Universal model initialization</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Uses <code>init_chat_model(&#8230;&#8203;)</code> as a provider-agnostic way to
+create chat models.</p>
+</li>
+<li>
+<p>This allows easy switching between providers like OpenAI and Anthropic
+by passing:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>model name</p>
+</li>
+<li>
+<p>provider</p>
+</li>
+<li>
+<p>other config options</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Example prompt: “What’s the capital of France? Answer in one word.” →
+returns <code>Paris</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Swapping providers dynamically</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Checks environment variables like the Anthropic API key with
+<code>os.getenv(&#8230;&#8203;)</code>.</p>
+</li>
+<li>
+<p>If available, initializes a Claude/Anthropic model and invokes the
+same prompt.</p>
+</li>
+<li>
+<p>Demonstrates that the same code pattern works across providers.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Model comparison demo</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Creates a function to compare multiple models on the same prompt.</p>
+</li>
+<li>
+<p>Example prompt: “Explain recursion in one sentence.”</p>
+</li>
+<li>
+<p>Stores models in a dictionary and loops through them to print each
+response.</p>
+</li>
+<li>
+<p>Optionally includes Anthropic if the API key exists.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Using structured messages</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Builds a chat using:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>SystemMessage(content="You are a helpful assistant")</code></p>
+</li>
+<li>
+<p><code>HumanMessage(content="What is the capital of France? Answer in one word.")</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Then changes the system prompt to something fun like:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>“You are a pirate and always answer like a pirate.”</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Invokes the model with a list of message objects instead of a plain
+string.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Why message objects matter</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Printing the message objects shows they contain more than raw text:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>content</p>
+</li>
+<li>
+<p>additional kwargs</p>
+</li>
+<li>
+<p>metadata</p>
+</li>
+<li>
+<p>token usage / response metadata for AI replies</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>This makes them useful for more advanced and contextual AI workflows.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Multi-turn conversation</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>After getting a model response, appends that AI response back into the
+<code>messages</code> list.</p>
+</li>
+<li>
+<p>Then appends another <code>HumanMessage</code>, such as:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>“What about tomorrow?”</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Invoking the model again continues the conversation with prior context
+preserved.</p>
+</li>
+<li>
+<p>This demonstrates how LangChain message objects support ongoing
+conversational state.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Overall, the file serves as a practical LangChain v1 overview showing
+how to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>initialize and configure chat models</p>
+</li>
+<li>
+<p>switch between providers</p>
+</li>
+<li>
+<p>compare model outputs</p>
+</li>
+<li>
+<p>use structured message classes</p>
+</li>
+<li>
+<p>maintain context across multi-turn conversations</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-18 20:25:29 +0200
+Last updated 2026-03-19 10:39:57 +0200
 </div>
 </div>
 </body>

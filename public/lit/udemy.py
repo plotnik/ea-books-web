@@ -70,24 +70,9 @@ st.logo("https://ea-books.netlify.app/lit/udemy.svg")
 # ::
 
 llm_prices = {
-    "gpt-5.2": 1.75,
-    "gpt-5.1": 1.25,
-
-    "gpt-5.1-chat-latest": 1.25,
-    "gpt-5.1-codex": 1.25,
-    
-    "gpt-5": 1.25,
-    "gpt-5-mini": 0.25,
-    "gpt-5-nano": 0.05,
-        
-    "o4-mini": 1.10,
-    "o3-mini": 1.10,
-    "o3": 2.0,
-    "o3-pro": 20.0,
-    
-    "gemini-2.5-flash-preview-05-20": 0.0,
-    "gemma-3-27b-it": 0.0,
-    "gemini-2.0-flash": 0.0,
+    "gpt-5.4": (2.50, 15.00),
+    "gpt-5.4-mini": (0.75, 4.50),
+    "gpt-5.4-nano": (0.20, 1.25),
 }
 
 llm_temperature = 0.1
@@ -108,7 +93,9 @@ def get_llm_properties(llm_model):
 def reset_execution_time():
     if "execution_time" in st.session_state:
         del st.session_state["execution_time"]
-
+    if "output_price" in st.session_state:
+        del st.session_state["output_price"]
+        
 # Remember which LLM was used last time.
 #
 # ::
@@ -243,7 +230,7 @@ tokens = encoding.encode(text)
 #
 # ::
 
-cents = round(len(tokens) * llm_prices[llm_model]/10000, 5)
+cents = round(len(tokens) * llm_prices[llm_model][0]/10000, 5)
 
 st.sidebar.write(f'''
     | Chars | Tokens | Cents |
@@ -350,6 +337,9 @@ def call_llm(text, prompt):
         file.write(out_text)
     st.sidebar.write(f'Response saved: `{out_file}`')  
 
+    tokens = encoding.encode(out_text)
+    st.session_state.output_price = len(tokens) * llm_prices[llm_model][1]/10000
+    
     if platform.system() == 'Darwin':
         os.system("afplay /System/Library/Sounds/Glass.aiff")
 
@@ -433,6 +423,9 @@ if len(st.session_state.openai_result) > 0:
 
 if "execution_time" in st.session_state:
     st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
+ 
+if "output_price" in st.session_state:
+    st.sidebar.write(f"Output price: `{round(st.session_state.output_price, 5)}` cents")
  
 
 

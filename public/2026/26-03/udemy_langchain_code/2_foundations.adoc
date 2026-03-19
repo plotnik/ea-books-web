@@ -106,3 +106,125 @@ immediately (with flush) to mimic live output like ChatGPT.
 It then runs the function to show the haiku appearing quickly in
 streamed chunks, noting how easy streaming is with LangChain and
 encouraging experimentation.
+
+== 11. Demo Schema Inspection
+
+The text explains a LangChain demo function for *inspecting a chain’s
+input and output schemas*.
+
+* It builds a standard chain: *Prompt template → Chat model (e.g.,
+GPT-4o-mini, temperature set) → Output parser*, composed inline.
+* It then shows how to *query the chain’s schemas*:
+** Use `chain.input++_++schema` and `chain.output++_++schema`, and
+retrieve their JSON structure via *`model++_++json++_++schema()`*
+(noting that an older schema access method is deprecated).
+* Running the function prints the schemas:
+** *Input schema*: an object with required field(s) like `text` (type
+`string`), reflecting the prompt template’s expected inputs.
+** *Output schema*: simplified to a `string`, reflecting the string
+output parser’s result.
+* The main point: LangChain lets you *see the “bones” of what a runnable
+accepts and returns*, helping understand how components compose
+internally without manual inspection.
+
+== 16. New Model Initiation and Available Models in 2026
+
+* The video explains a newer, “universal” way to initialize chat models
+in LangChain: using `init++_++chat++_++model` (imported from LangChain
+chat models) instead of directly instantiating provider-specific classes
+like `ChatOpenAI`.
+* The older approach (e.g., importing a provider wrapper and creating
+`ChatOpenAI(...)` after loading env vars with `load++_++dotenv`) still
+works, but `init++_++chat++_++model` is recommended going forward for a
+unified setup across providers.
+* With `init++_++chat++_++model`, you pass parameters such as the model
+name/provider (e.g., GPT variants or Claude), `temperature`, and
+`max++_++tokens`, and it exposes additional configurable fields.
+* The video also lists example “available models” circa 2026 and their
+typical use cases:
+** *OpenAI*: GPT‑4.0 (balanced/flagship), GPT‑4.0 mini (fast/cheap),
+GPT‑5.2 (latest, very large ~400K context).
+** *Anthropic*: Claude Opus 4.5 (deep reasoning), Claude Sonnet 4.5
+(balanced), Claude Haiku 3.5 (fast/cheap).
+** *Ollama / local open-source*: Llama 3.2, Mistral (free/local
+testing).
+
+== 19. Working with LLMs in LangChain - Multi Providers Configuration
+
+The content walks through building a `working++_++with++_++llms.py`
+example in LangChain v1 that demonstrates:
+
+* using multiple LLM providers
+* configuring chat models
+* comparing model outputs
+* working with message objects
+* supporting multi-turn conversations
+
+Key points:
+
+[arabic]
+. *Message objects*
+* Imports `HumanMessage` and `SystemMessage` from
+`langchain++_++core.messages`.
+* Explains that messages are LangChain’s structured way to represent
+conversation context.
+* Each message can include:
+** role/content
+** metadata
+** response info
+** IDs and other contextual fields
+. *Universal model initialization*
+* Uses `init++_++chat++_++model(...)` as a provider-agnostic way to
+create chat models.
+* This allows easy switching between providers like OpenAI and Anthropic
+by passing:
+** model name
+** provider
+** other config options
+* Example prompt: “What’s the capital of France? Answer in one word.” →
+returns `Paris`.
+. *Swapping providers dynamically*
+* Checks environment variables like the Anthropic API key with
+`os.getenv(...)`.
+* If available, initializes a Claude/Anthropic model and invokes the
+same prompt.
+* Demonstrates that the same code pattern works across providers.
+. *Model comparison demo*
+* Creates a function to compare multiple models on the same prompt.
+* Example prompt: “Explain recursion in one sentence.”
+* Stores models in a dictionary and loops through them to print each
+response.
+* Optionally includes Anthropic if the API key exists.
+. *Using structured messages*
+* Builds a chat using:
+** `SystemMessage(content="You are a helpful assistant")`
+** `HumanMessage(content="What is the capital of France? Answer in one word.")`
+* Then changes the system prompt to something fun like:
+** “You are a pirate and always answer like a pirate.”
+* Invokes the model with a list of message objects instead of a plain
+string.
+. *Why message objects matter*
+* Printing the message objects shows they contain more than raw text:
+** content
+** additional kwargs
+** metadata
+** token usage / response metadata for AI replies
+* This makes them useful for more advanced and contextual AI workflows.
+. *Multi-turn conversation*
+* After getting a model response, appends that AI response back into the
+`messages` list.
+* Then appends another `HumanMessage`, such as:
+** “What about tomorrow?”
+* Invoking the model again continues the conversation with prior context
+preserved.
+* This demonstrates how LangChain message objects support ongoing
+conversational state.
+
+Overall, the file serves as a practical LangChain v1 overview showing
+how to:
+
+* initialize and configure chat models
+* switch between providers
+* compare model outputs
+* use structured message classes
+* maintain context across multi-turn conversations
