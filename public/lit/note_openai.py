@@ -138,6 +138,7 @@ input_text = st.text_area(f"Note", height=300)
 from PersistedList import PersistedList
 tags_persisted = PersistedList(".tags")  
 prompts_persisted = PersistedList(".prompts")  
+llms_persisted = PersistedList(".llms")  
 
 # Read a list of strings from a file
 #
@@ -168,7 +169,7 @@ def has_tag(name, tag_name):
     return False
 
 all_prompt_names_set = {item['name'] for item in prompts}
-all_prompt_names = prompts_persisted.sort_by_pattern(list(all_prompt_names_set))
+all_prompt_names = prompts_persisted.sort_by_pattern(list(all_prompt_names_set), group=tag_name)
 prompt_names = [name for name in all_prompt_names if has_tag(name, tag_name)]
 
 prompt_name = st.sidebar.selectbox(
@@ -182,18 +183,14 @@ st.write(prompt)
 #
 # ::
 
-openai_prices = {
-    "gpt-5.2": 1.75,
-    "gpt-5.1": 1.25,
-    "gpt-5": 1.25,
-    "gpt-5-mini": 0.25,
-    "gpt-5-nano": 0.05,
-
-    "gpt-5.1-chat-latest": 1.25,
-    "gpt-5.1-codex": 1.25,
+llm_prices = {
+    "gpt-5.4": (2.50, 15.00),
+    "gpt-5.4-mini": (0.75, 4.50),
+    "gpt-5.4-nano": (0.20, 1.25),
 }    
 
-llm_models = list(openai_prices.keys())
+llm_persisted_group = f"{tag_name}/{prompt_name}"
+llm_models = llms_persisted.sort_by_pattern(list(llm_prices.keys()), group=llm_persisted_group)
 
 # Select LLM model
 #
@@ -212,7 +209,7 @@ llm_model = st.sidebar.selectbox(
 encoding = tiktoken.get_encoding("o200k_base")
 tokens = encoding.encode(input_text)
 
-cents = round(len(tokens) * openai_prices[llm_model]/10000, 5)
+cents = round(len(tokens) * llm_prices[llm_model][0]/10000, 5)
 
 st.sidebar.write(f'''
     | Chars | Tokens | Cents |
@@ -249,9 +246,15 @@ if st.button('Query', type="primary", icon=":material/cyclone:", width="stretch"
     execution_time = end_time - start_time
     st.session_state.execution_time = end_time - start_time
 
-    # Move selected tag to the beginning of the list
-    all_tags = tags_persisted.select(tag_name)
+    # Calculate output price
+    tokens = encoding.encode(st.session_state.llm_output)
+    st.session_state.output_price = len(tokens) * llm_prices[llm_model][1]/10000
 
+    # Move selected (tag, prompt, llm) to the beginning of the list
+    tags_persisted.select(tag_name)
+    prompts_persisted.select(prompt_name, group=tag_name)
+    llms_persisted.select(llm_model, group=llm_persisted_group)
+    
     if platform.system() == 'Darwin':
         os.system("afplay /System/Library/Sounds/Glass.aiff")
     st.rerun()
@@ -265,14 +268,18 @@ if "llm_output" not in st.session_state:
 
 st.write('---')
 st.write(st.session_state.llm_output)
-  
+
+if st.button("Clipboard", icon=":material/content_copy:"):
+    pyperclip.copy(st.session_state.llm_output)
+    st.write(f'Copied to clipboard') 
+    
 # Show last execution time
 #
 # ::
 
 if "execution_time" in st.session_state:
     st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
-  
-if st.button("Clipboard", icon=":material/content_copy:"):
-    pyperclip.copy(st.session_state.llm_output)
-    st.write(f'Copied to clipboard')        
+    
+if "output_price" in st.session_state:
+    st.sidebar.write(f"Output price: `{round(st.session_state.output_price, 5)}` cents")  
+       

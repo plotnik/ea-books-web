@@ -105,11 +105,11 @@ the following structure:
    - task: TASK-5678
      color: green
 
-.. function:: load_task_colors(path: str = "task_colors.yml") -> dict
+.. function:: load_task_colors(path: str = "tempo_tasks.yml") -> dict
 
 ::
 
-  def load_task_colors(path: str = "task_colors.yml") -> dict:
+  def load_task_colors(path: str = "tempo_tasks.yml") -> dict:
       if not os.path.exists(path):
           return {}
 

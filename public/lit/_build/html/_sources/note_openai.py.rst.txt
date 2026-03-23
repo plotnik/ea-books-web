@@ -29,7 +29,7 @@ It integrates with OpenAI's **Responses API** to provide intelligent text operat
 
 📚 **OpenAI Cookbook**
    https://cookbook.openai.com/
-   
+  
 ----
 
 🔢 **Tiktoken CodeWiki**
@@ -116,7 +116,7 @@ Each item in the list represents a single prompt and must define:
 - ``name``: A short, unique identifier for the prompt.
 - ``note``: Prompt body.
 - ``tags``: A list of categories (for example, ``text`` or ``python``) that describe the prompt’s domain or usage.
-   
+  
 ::
 
   prompts_file = "openai_helper.yml"
@@ -166,7 +166,7 @@ Select prompt body by its name
           if entry['name'] == name:
               return tag_name in entry.get('tags', [])
       return False
-  
+
   all_prompt_names_set = {item['name'] for item in prompts}
   all_prompt_names = prompts_persisted.sort_by_pattern(list(all_prompt_names_set))
   prompt_names = [name for name in all_prompt_names if has_tag(name, tag_name)]
@@ -182,18 +182,13 @@ Select OpenAI LLM
 
 ::
 
-  openai_prices = {
-      "gpt-5.2": 1.75,
-      "gpt-5.1": 1.25,
-      "gpt-5": 1.25,
-      "gpt-5-mini": 0.25,
-      "gpt-5-nano": 0.05,
-
-      "gpt-5.1-chat-latest": 1.25,
-      "gpt-5.1-codex": 1.25,
+  llm_prices = {
+      "gpt-5.4": (2.50, 15.00),
+      "gpt-5.4-mini": (0.75, 4.50),
+      "gpt-5.4-nano": (0.20, 1.25),
   }    
 
-  llm_models = list(openai_prices.keys())
+  llm_models = list(llm_prices.keys())
 
 Select LLM model
 
@@ -206,20 +201,20 @@ Select LLM model
 
 Count the number of tokens in the user’s input using the ``tiktoken`` library, 
 and display both the token count and the corresponding price.
- 
+
 ::
 
   encoding = tiktoken.get_encoding("o200k_base")
   tokens = encoding.encode(input_text)
 
-  cents = round(len(tokens) * openai_prices[llm_model]/10000, 5)
+  cents = round(len(tokens) * llm_prices[llm_model][0]/10000, 5)
 
   st.sidebar.write(f'''
       | Chars | Tokens | Cents |
       |---|---|---|
       | {len(input_text)} | {len(tokens)} | {cents} |
       ''') 
-    
+  
 .. function:: call_llm(text, prompt)
 
 ::
@@ -230,7 +225,7 @@ and display both the token count and the corresponding price.
           instructions=prompt,
           input=input_text
       )
-  
+
       return response.output_text
 
 Run Query
@@ -239,15 +234,19 @@ Run Query
 
   if st.button('Query', type="primary", icon=":material/cyclone:", width="stretch"):
       start_time = time.time()
-  
+
       # Call LLM
       st.session_state.llm_output = call_llm(input_text, prompt)
       # st.write(st.session_state.llm_output)
-  
+
       # Calculate and print execution time
       end_time = time.time()
       execution_time = end_time - start_time
       st.session_state.execution_time = end_time - start_time
+
+      # Calculate output price
+      tokens = encoding.encode(st.session_state.llm_output)
+      st.session_state.output_price = len(tokens) * llm_prices[llm_model][1]/10000
 
       # Move selected tag to the beginning of the list
       all_tags = tags_persisted.select(tag_name)
@@ -255,7 +254,7 @@ Run Query
       if platform.system() == 'Darwin':
           os.system("afplay /System/Library/Sounds/Glass.aiff")
       st.rerun()
-    
+  
 LLM output is cached in ``session_state``.
 
 ::
@@ -265,6 +264,10 @@ LLM output is cached in ``session_state``.
 
   st.write('---')
   st.write(st.session_state.llm_output)
+
+  if st.button("Clipboard", icon=":material/content_copy:"):
+      pyperclip.copy(st.session_state.llm_output)
+      st.write(f'Copied to clipboard') 
     
 Show last execution time
 
@@ -273,6 +276,6 @@ Show last execution time
   if "execution_time" in st.session_state:
       st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
     
-  if st.button("Clipboard", icon=":material/content_copy:"):
-      pyperclip.copy(st.session_state.llm_output)
-      st.write(f'Copied to clipboard')        
+  if "output_price" in st.session_state:
+      st.sidebar.write(f"Output price: `{round(st.session_state.output_price, 5)}` cents")  
+       

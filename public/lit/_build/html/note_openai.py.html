@@ -186,18 +186,13 @@ Each prompt entry includes a unique name, a descriptive note explaining its purp
 </pre></div>
 </div>
 <p>Select OpenAI LLM</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai_prices</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;gpt-5.2&quot;</span><span class="p">:</span> <span class="mf">1.75</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-5.1&quot;</span><span class="p">:</span> <span class="mf">1.25</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-5&quot;</span><span class="p">:</span> <span class="mf">1.25</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-5-mini&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-5-nano&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
-
-    <span class="s2">&quot;gpt-5.1-chat-latest&quot;</span><span class="p">:</span> <span class="mf">1.25</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-5.1-codex&quot;</span><span class="p">:</span> <span class="mf">1.25</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;gpt-5.4&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.50</span><span class="p">,</span> <span class="mf">15.00</span><span class="p">),</span>
+    <span class="s2">&quot;gpt-5.4-mini&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">4.50</span><span class="p">),</span>
+    <span class="s2">&quot;gpt-5.4-nano&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.20</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">),</span>
 <span class="p">}</span>
 
-<span class="n">llm_models</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">openai_prices</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="n">llm_models</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">llm_prices</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>Select LLM model</p>
@@ -212,7 +207,7 @@ and display both the token count and the corresponding price.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="s2">&quot;o200k_base&quot;</span><span class="p">)</span>
 <span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span>
 
-<span class="n">cents</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">*</span> <span class="n">openai_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">]</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">cents</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">*</span> <span class="n">llm_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
 <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">    | Chars | Tokens | Cents |</span>
@@ -249,6 +244,10 @@ and display both the token count and the corresponding price.</p>
     <span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
 
+    <span class="c1"># Calculate output price</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_output</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">output_price</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">*</span> <span class="n">llm_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">10000</span>
+
     <span class="c1"># Move selected tag to the beginning of the list</span>
     <span class="n">all_tags</span> <span class="o">=</span> <span class="n">tags_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)</span>
 
@@ -263,15 +262,18 @@ and display both the token count and the corresponding price.</p>
 
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_output</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Clipboard&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;:material/content_copy:&quot;</span><span class="p">):</span>
+    <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_output</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Show last execution time</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;execution_time&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
     <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution time: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">` sec&quot;</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Clipboard&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;:material/content_copy:&quot;</span><span class="p">):</span>
-    <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_output</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">&quot;output_price&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output price: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">output_price</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="si">}</span><span class="s2">` cents&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

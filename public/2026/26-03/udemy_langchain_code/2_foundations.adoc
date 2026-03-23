@@ -151,80 +151,178 @@ testing).
 
 == 19. Working with LLMs in LangChain - Multi Providers Configuration
 
-The content walks through building a `working++_++with++_++llms.py`
-example in LangChain v1 that demonstrates:
+The passage explains how to build a `working with LLMs.py` demo in
+LinkedChain v1 that showcases several core ideas:
 
-* using multiple LLM providers
-* configuring chat models
-* comparing model outputs
-* working with message objects
-* supporting multi-turn conversations
+* *Configuring chat models* with `init++_++chat++_++model`, so you can
+easily swap providers like OpenAI and Anthropic.
+* *Calling models* with `invoke` to get responses, such as answering
+“What’s the capital of France?” with “Paris.”
+* *Comparing multiple models* by storing them in a dictionary and
+looping through them with the same prompt.
+* *Using message objects* like `SystemMessage` and `HumanMessage` from
+`linkedchain++_++core.messages` to better structure conversation
+context.
+* *Understanding message metadata*, since messages contain more than
+just text: role, content, and extra fields like response metadata and
+token usage.
+* *Creating multi-turn conversations* by appending the model’s AI
+response and follow-up human messages to the same message list.
+* *Using system prompts for behavior control*, like instructing the
+model to act like a pirate.
 
-Key points:
+Overall, the goal is to demonstrate a full overview of working with LLMs
+in LinkedChain, including provider setup, model swapping, message-based
+conversation flow, and maintaining conversational context for multi-turn
+interactions.
+
+== 22. Prompt Templates and Messages - Deep Dive
+
+Here’s a concise summary of the content:
+
+* *Chat prompt templates* are reusable “cookie-cutter” structures for
+prompts. They contain *placeholders/variables* that get filled in at
+runtime, such as:
+** `adjective = funny`
+** `topic = cats`
+** Result: “Tell me a funny joke about cats.”
+* *Templates improve reusability and organization* because you define
+the structure once and reuse it with different values.
+* *Multi-message templates* separate prompts into different message
+roles, such as:
+** *System message*: sets the AI’s behavior/persona (e.g., “You are a
+helpful tutor. Always be encouraging.”)
+** *Human message*: contains the user’s input/question (e.g., “Explain
+recursion.”)
+* This structure helps *ground the model* by defining role, tone, and
+behavior in the system message while still allowing flexible user input.
+* The different *message types* are:
+** *System*: behavior/persona
+** *Human*: user query/task
+** *AI*: previous model responses
+** *Tool*: outputs/results from tools, APIs, or databases
+* The conversation flow is typically *system → human → AI → human → AI*,
+and so on.
+* *Few-shot prompting* is introduced as a way to teach the model by
+example. By giving a few examples, the AI learns the pattern and can
+apply it to new inputs.
+* *Prompt composition* means building complex prompts from reusable
+parts:
+** Example: combine a system prompt (“You are a role...”) with a user
+prompt (the actual question)
+** This makes prompts *modular, reusable, and easier to maintain*
+* Overall, the key benefits of these approaches are:
+** *Reusability*
+** *Modularity*
+** *Consistency*
+** *Easier maintenance*
+
+The section ends by preparing to demonstrate these ideas in code.
+
+== 23. Hands-on - Prompt Messages
+
+The passage explains several LangChain chat prompt and message concepts:
+
+* *ChatPromptTemplate from template strings*
+** You create a chat prompt template using a string with variables in
+curly braces.
+** Example: `"Tell me a ++{++adjective} joke about ++{++topic}"`
+** Calling `format++_++messages()` replaces the variables and returns a
+*HumanMessage* object, e.g. `"Tell me a funny joke about chickens"`.
+* *Multi-message chat prompt templates*
+** You can build prompts from a list of messages using
+`from++_++messages()`.
+** These can include *system* and *human* messages.
+** Example:
+*** System: “You are a helpful system that translates input language to
+output language.”
+*** Human: “Translate the following text: ++{++text}”
+** After formatting, the messages are passed to the model with
+`invoke()` to get a response, such as translating text into French.
+* *Message types*
+** LangChain supports several message classes:
+*** `HumanMessage`
+*** `AIMessage`
+*** `SystemMessage`
+*** `ToolMessage`
+*** `ChatMessage`
+** These can all be combined in a list and sent as context to the model.
+* *Few-shot chat message prompt templates*
+** You can provide example input-output pairs, such as:
+*** input: happy → output: sad
+*** input: tall → output: short
+** A few-shot prompt template uses these examples to guide the model.
+** Example prompt: “Give the opposite of each word.”
+** When invoked with `happy`, the model returns `sad`.
+* *Reusable prompt components*
+** Prompts can be built by combining reusable parts like a system prompt
+and a user/human prompt.
+** Formatting the combined prompt yields separate system and human
+messages.
+
+Overall, the passage is a practical walkthrough showing how LangChain
+constructs, formats, and sends chat prompts and messages to LLMs.
+
+== 24. Hands-on - Prompt Templates Code Run Through and Testing
+
+==== Summary: Prompt Templates and Messages in LangChain v1
+
+This file is a concise, all-in-one walkthrough of core LangChain prompt
+fundamentals. It combines several concepts into one place so you can see
+how they work together in practice.
+
+===== Main topics covered
+
+* *Basic chat prompt templates*
+** Shows how to create a simple `ChatPromptTemplate` with variables like
+`text` and `language`.
+** Uses `format++_++messages()` to fill in the template and send the
+prompt to the model.
+* *Multi-message templates*
+** Demonstrates building prompts with multiple message roles:
+*** `SystemMessage`
+*** `HumanMessage`
+** Used to create conversational-style prompts with explicit roles.
+* *Message types demo*
+** A small example showing how to work with different message message
+objects manually.
+* *Message placeholders*
+** Introduces `MessagesPlaceholder`, a new concept for dynamic
+conversation history.
+** Lets you inject prior chat history into a prompt using a `history`
+variable.
+** Example shows a simulated conversation where the model can infer the
+user’s name from prior messages.
+* *Few-shot prompting*
+** Demonstrates using examples in prompts to guide model behavior.
+** Includes example templates and a wrapper that assembles the full
+few-shot prompt.
+* *Prompt composition*
+** Shows how to reuse prompt parts, such as a reusable system prompt and
+a task prompt.
+** Combines them into different prompt combinations for different
+personas or tasks.
+
+===== Execution examples shown
+
+The file runs several demos to prove the concepts work:
 
 [arabic]
-. *Message objects*
-* Imports `HumanMessage` and `SystemMessage` from
-`langchain++_++core.messages`.
-* Explains that messages are LangChain’s structured way to represent
-conversation context.
-* Each message can include:
-** role/content
-** metadata
-** response info
-** IDs and other contextual fields
-. *Universal model initialization*
-* Uses `init++_++chat++_++model(...)` as a provider-agnostic way to
-create chat models.
-* This allows easy switching between providers like OpenAI and Anthropic
-by passing:
-** model name
-** provider
-** other config options
-* Example prompt: “What’s the capital of France? Answer in one word.” →
-returns `Paris`.
-. *Swapping providers dynamically*
-* Checks environment variables like the Anthropic API key with
-`os.getenv(...)`.
-* If available, initializes a Claude/Anthropic model and invokes the
-same prompt.
-* Demonstrates that the same code pattern works across providers.
-. *Model comparison demo*
-* Creates a function to compare multiple models on the same prompt.
-* Example prompt: “Explain recursion in one sentence.”
-* Stores models in a dictionary and loops through them to print each
-response.
-* Optionally includes Anthropic if the API key exists.
-. *Using structured messages*
-* Builds a chat using:
-** `SystemMessage(content="You are a helpful assistant")`
-** `HumanMessage(content="What is the capital of France? Answer in one word.")`
-* Then changes the system prompt to something fun like:
-** “You are a pirate and always answer like a pirate.”
-* Invokes the model with a list of message objects instead of a plain
-string.
-. *Why message objects matter*
-* Printing the message objects shows they contain more than raw text:
-** content
-** additional kwargs
-** metadata
-** token usage / response metadata for AI replies
-* This makes them useful for more advanced and contextual AI workflows.
-. *Multi-turn conversation*
-* After getting a model response, appends that AI response back into the
-`messages` list.
-* Then appends another `HumanMessage`, such as:
-** “What about tomorrow?”
-* Invoking the model again continues the conversation with prior context
-preserved.
-* This demonstrates how LangChain message objects support ongoing
-conversational state.
+. *Simple template demo*
+. *Multi-message / role-based prompt demo*
+. *Message placeholder demo with chat history*
+. *Few-shot example demo*
+. *Prompt composition demo*
 
-Overall, the file serves as a practical LangChain v1 overview showing
-how to:
+===== Core takeaway
 
-* initialize and configure chat models
-* switch between providers
-* compare model outputs
-* use structured message classes
-* maintain context across multi-turn conversations
+This file is meant to reinforce the *building blocks of LangChain*:
+
+* templates
+* message roles
+* chat history placeholders
+* few-shot examples
+* prompt reuse/composition
+
+It’s a fundamentals-focused reference showing how to construct and
+combine prompts in LangChain v1.

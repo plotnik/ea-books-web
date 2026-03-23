@@ -519,6 +519,13 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_11_demo_schema_inspection">11. Demo Schema Inspection</a></li>
 <li><a href="#_16_new_model_initiation_and_available_models_in_2026">16. New Model Initiation and Available Models in 2026</a></li>
 <li><a href="#_19_working_with_llms_in_langchain_multi_providers_configuration">19. Working with LLMs in LangChain - Multi Providers Configuration</a></li>
+<li><a href="#_22_prompt_templates_and_messages_deep_dive">22. Prompt Templates and Messages - Deep Dive</a></li>
+<li><a href="#_23_hands_on_prompt_messages">23. Hands-on - Prompt Messages</a></li>
+<li><a href="#_24_hands_on_prompt_templates_code_run_through_and_testing">24. Hands-on - Prompt Templates Code Run Through and Testing</a>
+<ul class="sectlevel3">
+<li><a href="#_summary_prompt_templates_and_messages_in_langchain_v1">Summary: Prompt Templates and Messages in LangChain v1</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -844,260 +851,487 @@ testing).</p>
 <h2 id="_19_working_with_llms_in_langchain_multi_providers_configuration">19. Working with LLMs in LangChain - Multi Providers Configuration</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The content walks through building a <code>working_with_llms.py</code>
-example in LangChain v1 that demonstrates:</p>
+<p>The passage explains how to build a <code>working with LLMs.py</code> demo in
+LinkedChain v1 that showcases several core ideas:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>using multiple LLM providers</p>
+<p><strong>Configuring chat models</strong> with <code>init_chat_model</code>, so you can
+easily swap providers like OpenAI and Anthropic.</p>
 </li>
 <li>
-<p>configuring chat models</p>
+<p><strong>Calling models</strong> with <code>invoke</code> to get responses, such as answering
+“What’s the capital of France?” with “Paris.”</p>
 </li>
 <li>
-<p>comparing model outputs</p>
+<p><strong>Comparing multiple models</strong> by storing them in a dictionary and
+looping through them with the same prompt.</p>
 </li>
 <li>
-<p>working with message objects</p>
+<p><strong>Using message objects</strong> like <code>SystemMessage</code> and <code>HumanMessage</code> from
+<code>linkedchain_core.messages</code> to better structure conversation
+context.</p>
 </li>
 <li>
-<p>supporting multi-turn conversations</p>
+<p><strong>Understanding message metadata</strong>, since messages contain more than
+just text: role, content, and extra fields like response metadata and
+token usage.</p>
+</li>
+<li>
+<p><strong>Creating multi-turn conversations</strong> by appending the model’s AI
+response and follow-up human messages to the same message list.</p>
+</li>
+<li>
+<p><strong>Using system prompts for behavior control</strong>, like instructing the
+model to act like a pirate.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Key points:</p>
+<p>Overall, the goal is to demonstrate a full overview of working with LLMs
+in LinkedChain, including provider setup, model swapping, message-based
+conversation flow, and maintaining conversational context for multi-turn
+interactions.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_22_prompt_templates_and_messages_deep_dive">22. Prompt Templates and Messages - Deep Dive</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here’s a concise summary of the content:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Chat prompt templates</strong> are reusable “cookie-cutter” structures for
+prompts. They contain <strong>placeholders/variables</strong> that get filled in at
+runtime, such as:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>adjective = funny</code></p>
+</li>
+<li>
+<p><code>topic = cats</code></p>
+</li>
+<li>
+<p>Result: “Tell me a funny joke about cats.”</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Templates improve reusability and organization</strong> because you define
+the structure once and reuse it with different values.</p>
+</li>
+<li>
+<p><strong>Multi-message templates</strong> separate prompts into different message
+roles, such as:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>System message</strong>: sets the AI’s behavior/persona (e.g., “You are a
+helpful tutor. Always be encouraging.”)</p>
+</li>
+<li>
+<p><strong>Human message</strong>: contains the user’s input/question (e.g., “Explain
+recursion.”)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>This structure helps <strong>ground the model</strong> by defining role, tone, and
+behavior in the system message while still allowing flexible user input.</p>
+</li>
+<li>
+<p>The different <strong>message types</strong> are:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>System</strong>: behavior/persona</p>
+</li>
+<li>
+<p><strong>Human</strong>: user query/task</p>
+</li>
+<li>
+<p><strong>AI</strong>: previous model responses</p>
+</li>
+<li>
+<p><strong>Tool</strong>: outputs/results from tools, APIs, or databases</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The conversation flow is typically <strong>system → human → AI → human → AI</strong>,
+and so on.</p>
+</li>
+<li>
+<p><strong>Few-shot prompting</strong> is introduced as a way to teach the model by
+example. By giving a few examples, the AI learns the pattern and can
+apply it to new inputs.</p>
+</li>
+<li>
+<p><strong>Prompt composition</strong> means building complex prompts from reusable
+parts:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Example: combine a system prompt (“You are a role&#8230;&#8203;”) with a user
+prompt (the actual question)</p>
+</li>
+<li>
+<p>This makes prompts <strong>modular, reusable, and easier to maintain</strong></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Overall, the key benefits of these approaches are:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Reusability</strong></p>
+</li>
+<li>
+<p><strong>Modularity</strong></p>
+</li>
+<li>
+<p><strong>Consistency</strong></p>
+</li>
+<li>
+<p><strong>Easier maintenance</strong></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The section ends by preparing to demonstrate these ideas in code.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_23_hands_on_prompt_messages">23. Hands-on - Prompt Messages</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains several LangChain chat prompt and message concepts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>ChatPromptTemplate from template strings</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You create a chat prompt template using a string with variables in
+curly braces.</p>
+</li>
+<li>
+<p>Example: <code>"Tell me a {adjective} joke about {topic}"</code></p>
+</li>
+<li>
+<p>Calling <code>format_messages()</code> replaces the variables and returns a
+<strong>HumanMessage</strong> object, e.g. <code>"Tell me a funny joke about chickens"</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Multi-message chat prompt templates</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You can build prompts from a list of messages using
+<code>from_messages()</code>.</p>
+</li>
+<li>
+<p>These can include <strong>system</strong> and <strong>human</strong> messages.</p>
+</li>
+<li>
+<p>Example:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>System: “You are a helpful system that translates input language to
+output language.”</p>
+</li>
+<li>
+<p>Human: “Translate the following text: {text}”</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>After formatting, the messages are passed to the model with
+<code>invoke()</code> to get a response, such as translating text into French.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Message types</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>LangChain supports several message classes:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>HumanMessage</code></p>
+</li>
+<li>
+<p><code>AIMessage</code></p>
+</li>
+<li>
+<p><code>SystemMessage</code></p>
+</li>
+<li>
+<p><code>ToolMessage</code></p>
+</li>
+<li>
+<p><code>ChatMessage</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>These can all be combined in a list and sent as context to the model.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Few-shot chat message prompt templates</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You can provide example input-output pairs, such as:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>input: happy → output: sad</p>
+</li>
+<li>
+<p>input: tall → output: short</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>A few-shot prompt template uses these examples to guide the model.</p>
+</li>
+<li>
+<p>Example prompt: “Give the opposite of each word.”</p>
+</li>
+<li>
+<p>When invoked with <code>happy</code>, the model returns <code>sad</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Reusable prompt components</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Prompts can be built by combining reusable parts like a system prompt
+and a user/human prompt.</p>
+</li>
+<li>
+<p>Formatting the combined prompt yields separate system and human
+messages.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, the passage is a practical walkthrough showing how LangChain
+constructs, formats, and sends chat prompts and messages to LLMs.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_24_hands_on_prompt_templates_code_run_through_and_testing">24. Hands-on - Prompt Templates Code Run Through and Testing</h2>
+<div class="sectionbody">
+<div class="sect3">
+<h4 id="_summary_prompt_templates_and_messages_in_langchain_v1">Summary: Prompt Templates and Messages in LangChain v1</h4>
+<div class="paragraph">
+<p>This file is a concise, all-in-one walkthrough of core LangChain prompt
+fundamentals. It combines several concepts into one place so you can see
+how they work together in practice.</p>
+</div>
+<div class="sect4">
+<h5 id="_main_topics_covered">Main topics covered</h5>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Basic chat prompt templates</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Shows how to create a simple <code>ChatPromptTemplate</code> with variables like
+<code>text</code> and <code>language</code>.</p>
+</li>
+<li>
+<p>Uses <code>format_messages()</code> to fill in the template and send the
+prompt to the model.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Multi-message templates</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Demonstrates building prompts with multiple message roles:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>SystemMessage</code></p>
+</li>
+<li>
+<p><code>HumanMessage</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Used to create conversational-style prompts with explicit roles.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Message types demo</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A small example showing how to work with different message message
+objects manually.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Message placeholders</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Introduces <code>MessagesPlaceholder</code>, a new concept for dynamic
+conversation history.</p>
+</li>
+<li>
+<p>Lets you inject prior chat history into a prompt using a <code>history</code>
+variable.</p>
+</li>
+<li>
+<p>Example shows a simulated conversation where the model can infer the
+user’s name from prior messages.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Few-shot prompting</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Demonstrates using examples in prompts to guide model behavior.</p>
+</li>
+<li>
+<p>Includes example templates and a wrapper that assembles the full
+few-shot prompt.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Prompt composition</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Shows how to reuse prompt parts, such as a reusable system prompt and
+a task prompt.</p>
+</li>
+<li>
+<p>Combines them into different prompt combinations for different
+personas or tasks.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_execution_examples_shown">Execution examples shown</h5>
+<div class="paragraph">
+<p>The file runs several demos to prove the concepts work:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong>Message objects</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Imports <code>HumanMessage</code> and <code>SystemMessage</code> from
-<code>langchain_core.messages</code>.</p>
+<p><strong>Simple template demo</strong></p>
 </li>
 <li>
-<p>Explains that messages are LangChain’s structured way to represent
-conversation context.</p>
+<p><strong>Multi-message / role-based prompt demo</strong></p>
 </li>
 <li>
-<p>Each message can include:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>role/content</p>
+<p><strong>Message placeholder demo with chat history</strong></p>
 </li>
 <li>
-<p>metadata</p>
+<p><strong>Few-shot example demo</strong></p>
 </li>
 <li>
-<p>response info</p>
-</li>
-<li>
-<p>IDs and other contextual fields</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Universal model initialization</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Uses <code>init_chat_model(&#8230;&#8203;)</code> as a provider-agnostic way to
-create chat models.</p>
-</li>
-<li>
-<p>This allows easy switching between providers like OpenAI and Anthropic
-by passing:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>model name</p>
-</li>
-<li>
-<p>provider</p>
-</li>
-<li>
-<p>other config options</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Example prompt: “What’s the capital of France? Answer in one word.” →
-returns <code>Paris</code>.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Swapping providers dynamically</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Checks environment variables like the Anthropic API key with
-<code>os.getenv(&#8230;&#8203;)</code>.</p>
-</li>
-<li>
-<p>If available, initializes a Claude/Anthropic model and invokes the
-same prompt.</p>
-</li>
-<li>
-<p>Demonstrates that the same code pattern works across providers.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Model comparison demo</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Creates a function to compare multiple models on the same prompt.</p>
-</li>
-<li>
-<p>Example prompt: “Explain recursion in one sentence.”</p>
-</li>
-<li>
-<p>Stores models in a dictionary and loops through them to print each
-response.</p>
-</li>
-<li>
-<p>Optionally includes Anthropic if the API key exists.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Using structured messages</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Builds a chat using:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><code>SystemMessage(content="You are a helpful assistant")</code></p>
-</li>
-<li>
-<p><code>HumanMessage(content="What is the capital of France? Answer in one word.")</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Then changes the system prompt to something fun like:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>“You are a pirate and always answer like a pirate.”</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Invokes the model with a list of message objects instead of a plain
-string.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Why message objects matter</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Printing the message objects shows they contain more than raw text:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>content</p>
-</li>
-<li>
-<p>additional kwargs</p>
-</li>
-<li>
-<p>metadata</p>
-</li>
-<li>
-<p>token usage / response metadata for AI replies</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>This makes them useful for more advanced and contextual AI workflows.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Multi-turn conversation</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>After getting a model response, appends that AI response back into the
-<code>messages</code> list.</p>
-</li>
-<li>
-<p>Then appends another <code>HumanMessage</code>, such as:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>“What about tomorrow?”</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Invoking the model again continues the conversation with prior context
-preserved.</p>
-</li>
-<li>
-<p>This demonstrates how LangChain message objects support ongoing
-conversational state.</p>
-</li>
-</ul>
-</div>
+<p><strong>Prompt composition demo</strong></p>
 </li>
 </ol>
 </div>
+</div>
+<div class="sect4">
+<h5 id="_core_takeaway">Core takeaway</h5>
 <div class="paragraph">
-<p>Overall, the file serves as a practical LangChain v1 overview showing
-how to:</p>
+<p>This file is meant to reinforce the <strong>building blocks of LangChain</strong>:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>initialize and configure chat models</p>
+<p>templates</p>
 </li>
 <li>
-<p>switch between providers</p>
+<p>message roles</p>
 </li>
 <li>
-<p>compare model outputs</p>
+<p>chat history placeholders</p>
 </li>
 <li>
-<p>use structured message classes</p>
+<p>few-shot examples</p>
 </li>
 <li>
-<p>maintain context across multi-turn conversations</p>
+<p>prompt reuse/composition</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>It’s a fundamentals-focused reference showing how to construct and
+combine prompts in LangChain v1.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-19 10:39:57 +0200
+Last updated 2026-03-23 10:23:15 +0200
 </div>
 </div>
 </body>
