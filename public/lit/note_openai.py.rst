@@ -40,6 +40,20 @@ It integrates with OpenAI's **Responses API** to provide intelligent text operat
 
 ----
 
+- Get `Python Source`_.
+
+Script is written in `literate programming`_.
+
+- See `PyLit Tutorial`_
+- See `reStructuredText Primer`_
+
+.. _Python Source: ../../note_openai.py
+.. _literate programming: https://en.wikipedia.org/wiki/Literate_programming
+.. _reStructuredText Primer: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
+.. _PyLit Tutorial: https://slott56.github.io/PyLit-3/_build/html/tutorial/index.html
+
+----
+
 ::
 
   import streamlit as st

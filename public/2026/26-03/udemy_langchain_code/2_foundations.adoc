@@ -219,7 +219,7 @@ prompt (the actual question)
 
 The section ends by preparing to demonstrate these ideas in code.
 
-== 23. Hands-on - Prompt Messages
+== 23. Hands-on ~ Prompt Messages
 
 The passage explains several LangChain chat prompt and message concepts:
 
@@ -263,11 +263,9 @@ messages.
 Overall, the passage is a practical walkthrough showing how LangChain
 constructs, formats, and sends chat prompts and messages to LLMs.
 
-== 24. Hands-on - Prompt Templates Code Run Through and Testing
+== 24. Hands-on ~ Prompt Templates Code Run Through and Testing
 
-==== Summary: Prompt Templates and Messages in LangChain v1
-
-This file is a concise, all-in-one walkthrough of core LangChain prompt
+Here is a concise, all-in-one walkthrough of core LangChain prompt
 fundamentals. It combines several concepts into one place so you can see
 how they work together in practice.
 
@@ -326,3 +324,96 @@ This file is meant to reinforce the *building blocks of LangChain*:
 
 It’s a fundamentals-focused reference showing how to construct and
 combine prompts in LangChain v1.
+
+== 25. Hands-on ~ Why Output Parsers and Structured Outputs
+
+Output parsers convert raw LLM string responses into structured, usable
+data.
+
+Key points:
+
+* LLMs often return plain strings, which are hard to work with directly.
+* Parsers help extract structured data like JSON, lists, and objects.
+* This makes downstream processing easier, supports error handling, and
+improves type safety.
+
+Types mentioned:
+
+* String output parser: extracts clean text from an AI message, useful
+when you only need plain text.
+* JSON output parser: converts JSON-like model output into a Python
+`dict`, so fields can be accessed directly.
+* Pydantic output parser: uses a schema to validate and structure
+outputs, ensuring types and fields are correct.
+
+Why Pydantic parsers are useful:
+
+* They enforce schema validation.
+* They provide type hints and autocomplete support.
+* They handle errors more gracefully.
+* They are better suited for production apps with complex or nested
+data.
+
+Modern approach:
+
+* In newer LangChain versions, structured output is simpler and more
+recommended.
+* Instead of manually setting up parsers, instructions, and prompt
+templates, you can often use a one-line structured output method with a
+schema.
+
+Example:
+
+* A movie review schema can extract:
+** title: Inception
+** rating: 9
+** summary: Inception is a masterpiece
+
+Overall, output parsers act as the bridge between LLM output and
+application logic.
+
+== 26. Hands-on ~ Output Parsers and Structured Outputs
+
+The demo compares four output parsing approaches in LangChain:
+
+* *StringOutputParser*
+** Simplest parser.
+** Takes LLM text output and returns a plain string.
+** Example: prompt the model to write a short poem about nature, chain
+it through the parser, and the result is a string.
+* *JSONOutputParser*
+** Returns structured JSON.
+** Example: prompt for a person description like “25-year-old developer
+named Alex,” and the parser outputs fields such as `name` and `age` in
+JSON format.
+* *PydanticOutputParser*
+** Recommended structured parsing approach before newer built-in
+structured output.
+** You define a `Pydantic` `BaseModel` with fields like `name`, `age`,
+and `occupation`.
+** The parser generates formatting instructions from the model schema
+and uses them in the prompt.
+** The LLM output is then parsed into a Pydantic object.
+* *Structured Output (`with++_++structured++_++output`)*
+** The simplest and most convenient approach.
+** You define a schema class, such as a `MovieReview` model with fields
+like `title`, `review`, and `rating`.
+** Then you bind that schema directly to the LLM using
+`with++_++structured++_++output`.
+** When invoked with a review text, the model returns a structured
+object automatically.
+
+==== Main takeaway
+
+The progression is:
+
+[arabic]
+. *String output* → plain text
+. *JSON output* → structured JSON
+. *Pydantic output* → schema-based structured parsing
+. *Structured output* → easiest and most practical, since the schema is
+bound directly to the model
+
+Overall, the point is that structured output makes LLM responses more
+predictable and easier to work with because the returned data matches a
+defined schema.

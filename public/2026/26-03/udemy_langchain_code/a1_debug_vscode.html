@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<title>2. LangChain Foundations - A Deep Dive</title>
+<title>A1. Debugging Python in VS Code</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -506,1061 +506,107 @@ pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
 pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </style>
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<h1>2. LangChain Foundations - A Deep Dive</h1>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_6_api_setup_and_verification_openai_and_anthropic">6. API Setup and Verification (OpenAI and Anthropic)</a></li>
-<li><a href="#_8_langchain_core_concepts_lcel_and_runnable_chains_hands_on">8. LangChain Core Concepts - LCEL and Runnable Chains - Hands-on</a></li>
-<li><a href="#_9_lcel_batch_execution_demo">9. LCEL - Batch Execution Demo</a></li>
-<li><a href="#_10_demo_stream_realtime_output_with_lcel">10. Demo Stream Realtime Output with LCEL</a></li>
-<li><a href="#_11_demo_schema_inspection">11. Demo Schema Inspection</a></li>
-<li><a href="#_16_new_model_initiation_and_available_models_in_2026">16. New Model Initiation and Available Models in 2026</a></li>
-<li><a href="#_19_working_with_llms_in_langchain_multi_providers_configuration">19. Working with LLMs in LangChain - Multi Providers Configuration</a></li>
-<li><a href="#_22_prompt_templates_and_messages_deep_dive">22. Prompt Templates and Messages - Deep Dive</a></li>
-<li><a href="#_23_hands_on_prompt_messages">23. Hands-on ~ Prompt Messages</a></li>
-<li><a href="#_24_hands_on_prompt_templates_code_run_through_and_testing">24. Hands-on ~ Prompt Templates Code Run Through and Testing</a>
-<ul class="sectlevel4">
-<li><a href="#_main_topics_covered">Main topics covered</a></li>
-<li><a href="#_execution_examples_shown">Execution examples shown</a></li>
-<li><a href="#_core_takeaway">Core takeaway</a></li>
-</ul>
-</li>
-<li><a href="#_25_hands_on_why_output_parsers_and_structured_outputs">25. Hands-on ~ Why Output Parsers and Structured Outputs</a></li>
-<li><a href="#_26_hands_on_output_parsers_and_structured_outputs">26. Hands-on ~ Output Parsers and Structured Outputs</a>
-<ul class="sectlevel3">
-<li><a href="#_main_takeaway">Main takeaway</a></li>
-</ul>
-</li>
-</ul>
-</div>
+<h1>A1. Debugging Python in VS Code</h1>
 </div>
 <div id="content">
-<div id="preamble">
-<div class="sectionbody">
 <div class="paragraph">
 <p><a href="udemy_langchain.html">&lt;Contents&gt;</a></p>
 </div>
+<hr>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>i have conda environment "llama-0.4" configured in my terminal,
+and i can run "output_parsers_demo.py" there without any problem,
+since all necessary modules like "langchain" are installed there.
+i would like to debug this script in vs code.
+what approach would you recommend for that?</p>
 </div>
+</blockquote>
 </div>
-<div class="sect1">
-<h2 id="_6_api_setup_and_verification_openai_and_anthropic">6. API Setup and Verification (OpenAI and Anthropic)</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
+<hr>
+<div class="paragraph">
+<p>Use VS Code’s debugger with the same Python interpreter as your working
+conda env.</p>
+</div>
+<div class="paragraph">
+<p><strong>Recommended steps:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
 <li>
-<p>Create <strong>two API keys</strong>: one from <strong>OpenAI</strong> (Account → Settings → API
-Keys → Create new secret key; copy/save it) and one from <strong>Anthropic</strong>
-(Console/Platform → Manage → API Keys → Create secret key).</p>
+<p>In VS Code, run <strong>Python: Select Interpreter</strong></p>
 </li>
 <li>
-<p>Set up a new project directory (e.g., <em>Lang course</em>) and initialize it
-with the <strong>uv</strong> package manager (<code>uv init</code>). Create and activate a virtual
-environment (<code>uv venv</code>, then <code>source .venv/bin/activate</code> on Mac; Windows
-differs).</p>
+<p>Choose the interpreter from your conda env <strong><code>llama-0.4</code></strong></p>
 </li>
 <li>
-<p>Install dependencies via <code>uv add</code>: <code>langchain</code>, <code>langchain-core</code>,
-<code>langgraph</code>, <code>langchain-openai</code>, <code>langchain-anthropic</code>, and
-<code>python-dotenv</code>.</p>
+<p>Open <code>output_parsers_demo.py</code></p>
 </li>
 <li>
-<p>Create a <code>.env</code> file and store <code>OPENAI_API_KEY</code> and
-<code>ANTHROPIC_API_KEY</code> there.</p>
+<p>Set breakpoints</p>
 </li>
 <li>
-<p>In <code>main.py</code>, load environment variables with <code>load_dotenv()</code>,
-import the needed LangChain/LangGraph classes, and print package
-versions (using <code>importlib.metadata</code> to fetch versions).</p>
+<p>Press <strong>F5</strong> to debug</p>
 </li>
-<li>
-<p>Verify everything works by instantiating <code>ChatOpenAI</code> (e.g.,
-<code>gpt-4o-mini</code>) and <code>ChatAnthropic</code> (e.g., Claude), invoking each with a
-simple prompt (like “setup complete in one word”), and confirming both
-return responses—indicating keys, dependencies, and the development
-environment are correctly set up.</p>
-</li>
-</ul>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Best practice:</strong> add a <code>launch.json</code> like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code><span></span>pip install -U langchain langchain-core langgraph langchain-openai langchain-anthropic</code></pre>
+<pre class="pygments highlight"><code data-lang="json"><span></span><span class="tok-p">{</span>
+  <span class="tok-nt">&quot;version&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;0.2.0&quot;</span><span class="tok-p">,</span>
+  <span class="tok-nt">&quot;configurations&quot;</span><span class="tok-p">:</span> <span class="tok-p">[</span>
+    <span class="tok-p">{</span>
+      <span class="tok-nt">&quot;name&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;Debug output_parsers_demo.py&quot;</span><span class="tok-p">,</span>
+      <span class="tok-nt">&quot;type&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;debugpy&quot;</span><span class="tok-p">,</span>
+      <span class="tok-nt">&quot;request&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;launch&quot;</span><span class="tok-p">,</span>
+      <span class="tok-nt">&quot;program&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;${workspaceFolder}/output_parsers_demo.py&quot;</span><span class="tok-p">,</span>
+      <span class="tok-nt">&quot;console&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;integratedTerminal&quot;</span><span class="tok-p">,</span>
+      <span class="tok-nt">&quot;cwd&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;${workspaceFolder}&quot;</span><span class="tok-p">,</span>
+      <span class="tok-nt">&quot;justMyCode&quot;</span><span class="tok-p">:</span> <span class="tok-kc">false</span><span class="tok-p">,</span>
+      <span class="tok-nt">&quot;envFile&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;${workspaceFolder}/.env&quot;</span>
+    <span class="tok-p">}</span>
+  <span class="tok-p">]</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_8_langchain_core_concepts_lcel_and_runnable_chains_hands_on">8. LangChain Core Concepts - LCEL and Runnable Chains - Hands-on</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p>The file demonstrates LangChain core concepts: <strong>LCEL (LangChain
-Expression Language)</strong> and <strong>runnables</strong>, using a simple “basic chain”
-example.</p>
-</li>
-<li>
-<p>Imports added:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><code>ChatPromptTemplate</code> from <code>langchain_core.prompts</code> to create a
-prompt template with runtime variable interpolation (e.g.,
-<code>{question}</code>).</p>
-</li>
-<li>
-<p><code>StrOutputParser</code> from <code>langchain_core.output_parsers</code> to
-parse the model output into a plain string.</p>
-</li>
-<li>
-<p>Uses <strong>ChatOpenAI</strong> (no OpenAI/Anthropic base client imports needed for
-the demo).</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>A function <code>demo_basic_chain()</code> is created to build and run
-the chain:</p>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Prompt component:</strong> a template like “You are a helpful assistant,
-answer in one sentence: {question}”.</p>
-</li>
-<li>
-<p><strong>Model component:</strong> <code>ChatOpenAI(model="gpt-4o-mini", temperature=0.7)</code>.</p>
-</li>
-<li>
-<p><strong>Parser component:</strong> <code>StrOutputParser()</code>.</p>
-</li>
-</ol>
-</div>
-</li>
-<li>
-<p>The components are composed using the <strong>pipe operator (<code>|</code>)</strong> (LCEL
-syntax):<br>
-<code>chain = prompt | model | parser</code><br>
-This means: prompt → model → parser.</p>
-</li>
-<li>
-<p>The chain is executed via the runnable interface using
-<strong><code>.invoke()</code></strong>:<br>
-<code>chain.invoke({"question": "What is LangChain?"})</code><br>
-The input key must match the template variable name (<code>question</code>). For
-multiple variables, they’d all be provided in the same input dict.</p>
-</li>
-<li>
-<p>The result is printed (a one-sentence answer) and the chain can be
-returned from the function.</p>
-</li>
-<li>
-<p>The next planned step is a <strong>batch execution demo</strong> to run the chain
-over multiple inputs.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_9_lcel_batch_execution_demo">9. LCEL - Batch Execution Demo</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p>Demonstrates how to do <strong>batch execution</strong> with an LCEL/LangChain
-<strong>runnable chain</strong> for <strong>multiple inputs</strong>.</p>
-</li>
-<li>
-<p>Builds a chain using:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>a <strong>ChatPromptTemplate</strong> like: “Translate to French the text
-{text}”</p>
-</li>
-<li>
-<p>a model (<strong>GPT-4o mini</strong>)</p>
-</li>
-<li>
-<p>an output parser (instantiated, then piped)</p>
-</li>
-<li>
-<p>composed with the pipe operator: <code>prompt | model | parser</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Prepares <code>inputs</code> as a <strong>list of dictionaries</strong>, each using the same key
-as the prompt variable (<code>text</code>), e.g.:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><code>{"text": "hello, how are you?"}</code></p>
-</li>
-<li>
-<p><code>{"text": "what is your name?"}</code></p>
-</li>
-<li>
-<p><code>{"text": "where is the nearest restaurant?"}</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Runs all items at once via the runnable’s <strong><code>.batch(inputs)</code></strong> method
-(not “invoke batch”).</p>
-</li>
-<li>
-<p>Iterates through <code>zip(inputs, results)</code> to print each English input
-alongside its French translation output.</p>
-</li>
-<li>
-<p>Concludes that runnable chains expose methods like <strong><code>batch</code></strong> to
-efficiently process <strong>many inputs in one call</strong>, returning a corresponding
-list of results.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_10_demo_stream_realtime_output_with_lcel">10. Demo Stream Realtime Output with LCEL</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>The text explains how to add real-time text streaming to a LangChain
-workflow. It defines a new “demo streaming” function that:</p>
+<p><strong>Why this works:</strong></p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Builds a <code>ChatPrompt</code> (e.g., “write a haiku about {topic}”).</p>
+<p>VS Code debug sessions may not inherit your terminal’s activated conda
+env.</p>
 </li>
 <li>
-<p>Creates a chat model (using <code>ChatOpenAI</code>, but any compatible model
-works).</p>
+<p>What matters is the interpreter VS Code uses.</p>
 </li>
 <li>
-<p>Adds an output parser and composes them into a chain.</p>
-</li>
-<li>
-<p>Streams results by iterating over
-<code>chain.stream({ "topic": "nature" })</code>, printing each returned chunk
-immediately (with flush) to mimic live output like ChatGPT.</p>
+<p><code>envFile</code> helps ensure your API keys and other variables are
+available.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>It then runs the function to show the haiku appearing quickly in
-streamed chunks, noting how easy streaming is with LangChain and
-encouraging experimentation.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_11_demo_schema_inspection">11. Demo Schema Inspection</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The text explains a LangChain demo function for <strong>inspecting a chain’s
-input and output schemas</strong>.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>It builds a standard chain: <strong>Prompt template → Chat model (e.g.,
-GPT-4o-mini, temperature set) → Output parser</strong>, composed inline.</p>
-</li>
-<li>
-<p>It then shows how to <strong>query the chain’s schemas</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Use <code>chain.input_schema</code> and <code>chain.output_schema</code>, and
-retrieve their JSON structure via <strong><code>model_json_schema()</code></strong>
-(noting that an older schema access method is deprecated).</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Running the function prints the schemas:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Input schema</strong>: an object with required field(s) like <code>text</code> (type
-<code>string</code>), reflecting the prompt template’s expected inputs.</p>
-</li>
-<li>
-<p><strong>Output schema</strong>: simplified to a <code>string</code>, reflecting the string
-output parser’s result.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>The main point: LangChain lets you <strong>see the “bones” of what a runnable
-accepts and returns</strong>, helping understand how components compose
-internally without manual inspection.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_16_new_model_initiation_and_available_models_in_2026">16. New Model Initiation and Available Models in 2026</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p>The video explains a newer, “universal” way to initialize chat models
-in LangChain: using <code>init_chat_model</code> (imported from LangChain
-chat models) instead of directly instantiating provider-specific classes
-like <code>ChatOpenAI</code>.</p>
-</li>
-<li>
-<p>The older approach (e.g., importing a provider wrapper and creating
-<code>ChatOpenAI(&#8230;&#8203;)</code> after loading env vars with <code>load_dotenv</code>) still
-works, but <code>init_chat_model</code> is recommended going forward for a
-unified setup across providers.</p>
-</li>
-<li>
-<p>With <code>init_chat_model</code>, you pass parameters such as the model
-name/provider (e.g., GPT variants or Claude), <code>temperature</code>, and
-<code>max_tokens</code>, and it exposes additional configurable fields.</p>
-</li>
-<li>
-<p>The video also lists example “available models” circa 2026 and their
-typical use cases:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>OpenAI</strong>: GPT‑4.0 (balanced/flagship), GPT‑4.0 mini (fast/cheap),
-GPT‑5.2 (latest, very large ~400K context).</p>
-</li>
-<li>
-<p><strong>Anthropic</strong>: Claude Opus 4.5 (deep reasoning), Claude Sonnet 4.5
-(balanced), Claude Haiku 3.5 (fast/cheap).</p>
-</li>
-<li>
-<p><strong>Ollama / local open-source</strong>: Llama 3.2, Mistral (free/local
-testing).</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_19_working_with_llms_in_langchain_multi_providers_configuration">19. Working with LLMs in LangChain - Multi Providers Configuration</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The passage explains how to build a <code>working with LLMs.py</code> demo in
-LinkedChain v1 that showcases several core ideas:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Configuring chat models</strong> with <code>init_chat_model</code>, so you can
-easily swap providers like OpenAI and Anthropic.</p>
-</li>
-<li>
-<p><strong>Calling models</strong> with <code>invoke</code> to get responses, such as answering
-“What’s the capital of France?” with “Paris.”</p>
-</li>
-<li>
-<p><strong>Comparing multiple models</strong> by storing them in a dictionary and
-looping through them with the same prompt.</p>
-</li>
-<li>
-<p><strong>Using message objects</strong> like <code>SystemMessage</code> and <code>HumanMessage</code> from
-<code>linkedchain_core.messages</code> to better structure conversation
-context.</p>
-</li>
-<li>
-<p><strong>Understanding message metadata</strong>, since messages contain more than
-just text: role, content, and extra fields like response metadata and
-token usage.</p>
-</li>
-<li>
-<p><strong>Creating multi-turn conversations</strong> by appending the model’s AI
-response and follow-up human messages to the same message list.</p>
-</li>
-<li>
-<p><strong>Using system prompts for behavior control</strong>, like instructing the
-model to act like a pirate.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Overall, the goal is to demonstrate a full overview of working with LLMs
-in LinkedChain, including provider setup, model swapping, message-based
-conversation flow, and maintaining conversational context for multi-turn
-interactions.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_22_prompt_templates_and_messages_deep_dive">22. Prompt Templates and Messages - Deep Dive</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Here’s a concise summary of the content:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Chat prompt templates</strong> are reusable “cookie-cutter” structures for
-prompts. They contain <strong>placeholders/variables</strong> that get filled in at
-runtime, such as:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><code>adjective = funny</code></p>
-</li>
-<li>
-<p><code>topic = cats</code></p>
-</li>
-<li>
-<p>Result: “Tell me a funny joke about cats.”</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Templates improve reusability and organization</strong> because you define
-the structure once and reuse it with different values.</p>
-</li>
-<li>
-<p><strong>Multi-message templates</strong> separate prompts into different message
-roles, such as:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>System message</strong>: sets the AI’s behavior/persona (e.g., “You are a
-helpful tutor. Always be encouraging.”)</p>
-</li>
-<li>
-<p><strong>Human message</strong>: contains the user’s input/question (e.g., “Explain
-recursion.”)</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>This structure helps <strong>ground the model</strong> by defining role, tone, and
-behavior in the system message while still allowing flexible user input.</p>
-</li>
-<li>
-<p>The different <strong>message types</strong> are:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>System</strong>: behavior/persona</p>
-</li>
-<li>
-<p><strong>Human</strong>: user query/task</p>
-</li>
-<li>
-<p><strong>AI</strong>: previous model responses</p>
-</li>
-<li>
-<p><strong>Tool</strong>: outputs/results from tools, APIs, or databases</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>The conversation flow is typically <strong>system → human → AI → human → AI</strong>,
-and so on.</p>
-</li>
-<li>
-<p><strong>Few-shot prompting</strong> is introduced as a way to teach the model by
-example. By giving a few examples, the AI learns the pattern and can
-apply it to new inputs.</p>
-</li>
-<li>
-<p><strong>Prompt composition</strong> means building complex prompts from reusable
-parts:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Example: combine a system prompt (“You are a role&#8230;&#8203;”) with a user
-prompt (the actual question)</p>
-</li>
-<li>
-<p>This makes prompts <strong>modular, reusable, and easier to maintain</strong></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Overall, the key benefits of these approaches are:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Reusability</strong></p>
-</li>
-<li>
-<p><strong>Modularity</strong></p>
-</li>
-<li>
-<p><strong>Consistency</strong></p>
-</li>
-<li>
-<p><strong>Easier maintenance</strong></p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>The section ends by preparing to demonstrate these ideas in code.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_23_hands_on_prompt_messages">23. Hands-on ~ Prompt Messages</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The passage explains several LangChain chat prompt and message concepts:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>ChatPromptTemplate from template strings</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>You create a chat prompt template using a string with variables in
-curly braces.</p>
-</li>
-<li>
-<p>Example: <code>"Tell me a {adjective} joke about {topic}"</code></p>
-</li>
-<li>
-<p>Calling <code>format_messages()</code> replaces the variables and returns a
-<strong>HumanMessage</strong> object, e.g. <code>"Tell me a funny joke about chickens"</code>.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Multi-message chat prompt templates</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>You can build prompts from a list of messages using
-<code>from_messages()</code>.</p>
-</li>
-<li>
-<p>These can include <strong>system</strong> and <strong>human</strong> messages.</p>
-</li>
-<li>
-<p>Example:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>System: “You are a helpful system that translates input language to
-output language.”</p>
-</li>
-<li>
-<p>Human: “Translate the following text: {text}”</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>After formatting, the messages are passed to the model with
-<code>invoke()</code> to get a response, such as translating text into French.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Message types</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>LangChain supports several message classes:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><code>HumanMessage</code></p>
-</li>
-<li>
-<p><code>AIMessage</code></p>
-</li>
-<li>
-<p><code>SystemMessage</code></p>
-</li>
-<li>
-<p><code>ToolMessage</code></p>
-</li>
-<li>
-<p><code>ChatMessage</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>These can all be combined in a list and sent as context to the model.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Few-shot chat message prompt templates</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>You can provide example input-output pairs, such as:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>input: happy → output: sad</p>
-</li>
-<li>
-<p>input: tall → output: short</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>A few-shot prompt template uses these examples to guide the model.</p>
-</li>
-<li>
-<p>Example prompt: “Give the opposite of each word.”</p>
-</li>
-<li>
-<p>When invoked with <code>happy</code>, the model returns <code>sad</code>.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Reusable prompt components</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Prompts can be built by combining reusable parts like a system prompt
-and a user/human prompt.</p>
-</li>
-<li>
-<p>Formatting the combined prompt yields separate system and human
-messages.</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Overall, the passage is a practical walkthrough showing how LangChain
-constructs, formats, and sends chat prompts and messages to LLMs.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_24_hands_on_prompt_templates_code_run_through_and_testing">24. Hands-on ~ Prompt Templates Code Run Through and Testing</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Here is a concise, all-in-one walkthrough of core LangChain prompt
-fundamentals. It combines several concepts into one place so you can see
-how they work together in practice.</p>
-</div>
-<div class="sect4">
-<h5 id="_main_topics_covered">Main topics covered</h5>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Basic chat prompt templates</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Shows how to create a simple <code>ChatPromptTemplate</code> with variables like
-<code>text</code> and <code>language</code>.</p>
-</li>
-<li>
-<p>Uses <code>format_messages()</code> to fill in the template and send the
-prompt to the model.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Multi-message templates</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Demonstrates building prompts with multiple message roles:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><code>SystemMessage</code></p>
-</li>
-<li>
-<p><code>HumanMessage</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Used to create conversational-style prompts with explicit roles.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Message types demo</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>A small example showing how to work with different message message
-objects manually.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Message placeholders</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Introduces <code>MessagesPlaceholder</code>, a new concept for dynamic
-conversation history.</p>
-</li>
-<li>
-<p>Lets you inject prior chat history into a prompt using a <code>history</code>
-variable.</p>
-</li>
-<li>
-<p>Example shows a simulated conversation where the model can infer the
-user’s name from prior messages.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Few-shot prompting</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Demonstrates using examples in prompts to guide model behavior.</p>
-</li>
-<li>
-<p>Includes example templates and a wrapper that assembles the full
-few-shot prompt.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Prompt composition</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Shows how to reuse prompt parts, such as a reusable system prompt and
-a task prompt.</p>
-</li>
-<li>
-<p>Combines them into different prompt combinations for different
-personas or tasks.</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_execution_examples_shown">Execution examples shown</h5>
-<div class="paragraph">
-<p>The file runs several demos to prove the concepts work:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Simple template demo</strong></p>
-</li>
-<li>
-<p><strong>Multi-message / role-based prompt demo</strong></p>
-</li>
-<li>
-<p><strong>Message placeholder demo with chat history</strong></p>
-</li>
-<li>
-<p><strong>Few-shot example demo</strong></p>
-</li>
-<li>
-<p><strong>Prompt composition demo</strong></p>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_core_takeaway">Core takeaway</h5>
-<div class="paragraph">
-<p>This file is meant to reinforce the <strong>building blocks of LangChain</strong>:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>templates</p>
-</li>
-<li>
-<p>message roles</p>
-</li>
-<li>
-<p>chat history placeholders</p>
-</li>
-<li>
-<p>few-shot examples</p>
-</li>
-<li>
-<p>prompt reuse/composition</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>It’s a fundamentals-focused reference showing how to construct and
-combine prompts in LangChain v1.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_25_hands_on_why_output_parsers_and_structured_outputs">25. Hands-on ~ Why Output Parsers and Structured Outputs</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Output parsers convert raw LLM string responses into structured, usable
-data.</p>
-</div>
-<div class="paragraph">
-<p>Key points:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>LLMs often return plain strings, which are hard to work with directly.</p>
-</li>
-<li>
-<p>Parsers help extract structured data like JSON, lists, and objects.</p>
-</li>
-<li>
-<p>This makes downstream processing easier, supports error handling, and
-improves type safety.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Types mentioned:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>String output parser: extracts clean text from an AI message, useful
-when you only need plain text.</p>
-</li>
-<li>
-<p>JSON output parser: converts JSON-like model output into a Python
-<code>dict</code>, so fields can be accessed directly.</p>
-</li>
-<li>
-<p>Pydantic output parser: uses a schema to validate and structure
-outputs, ensuring types and fields are correct.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Why Pydantic parsers are useful:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>They enforce schema validation.</p>
-</li>
-<li>
-<p>They provide type hints and autocomplete support.</p>
-</li>
-<li>
-<p>They handle errors more gracefully.</p>
-</li>
-<li>
-<p>They are better suited for production apps with complex or nested
-data.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Modern approach:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>In newer LangChain versions, structured output is simpler and more
-recommended.</p>
-</li>
-<li>
-<p>Instead of manually setting up parsers, instructions, and prompt
-templates, you can often use a one-line structured output method with a
-schema.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Example:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>A movie review schema can extract:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>title: Inception</p>
-</li>
-<li>
-<p>rating: 9</p>
-</li>
-<li>
-<p>summary: Inception is a masterpiece</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Overall, output parsers act as the bridge between LLM output and
-application logic.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_26_hands_on_output_parsers_and_structured_outputs">26. Hands-on ~ Output Parsers and Structured Outputs</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The demo compares four output parsing approaches in LangChain:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>StringOutputParser</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Simplest parser.</p>
-</li>
-<li>
-<p>Takes LLM text output and returns a plain string.</p>
-</li>
-<li>
-<p>Example: prompt the model to write a short poem about nature, chain
-it through the parser, and the result is a string.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>JSONOutputParser</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Returns structured JSON.</p>
-</li>
-<li>
-<p>Example: prompt for a person description like “25-year-old developer
-named Alex,” and the parser outputs fields such as <code>name</code> and <code>age</code> in
-JSON format.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>PydanticOutputParser</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Recommended structured parsing approach before newer built-in
-structured output.</p>
-</li>
-<li>
-<p>You define a <code>Pydantic</code> <code>BaseModel</code> with fields like <code>name</code>, <code>age</code>,
-and <code>occupation</code>.</p>
-</li>
-<li>
-<p>The parser generates formatting instructions from the model schema
-and uses them in the prompt.</p>
-</li>
-<li>
-<p>The LLM output is then parsed into a Pydantic object.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Structured Output (<code>with_structured_output</code>)</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>The simplest and most convenient approach.</p>
-</li>
-<li>
-<p>You define a schema class, such as a <code>MovieReview</code> model with fields
-like <code>title</code>, <code>review</code>, and <code>rating</code>.</p>
-</li>
-<li>
-<p>Then you bind that schema directly to the LLM using
-<code>with_structured_output</code>.</p>
-</li>
-<li>
-<p>When invoked with a review text, the model returns a structured
-object automatically.</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="sect3">
-<h4 id="_main_takeaway">Main takeaway</h4>
-<div class="paragraph">
-<p>The progression is:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>String output</strong> → plain text</p>
-</li>
-<li>
-<p><strong>JSON output</strong> → structured JSON</p>
-</li>
-<li>
-<p><strong>Pydantic output</strong> → schema-based structured parsing</p>
-</li>
-<li>
-<p><strong>Structured output</strong> → easiest and most practical, since the schema is
-bound directly to the model</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>Overall, the point is that structured output makes LLM responses more
-predictable and easier to work with because the returned data matches a
-defined schema.</p>
-</div>
-</div>
+<p><strong>Quick check:</strong> in VS Code’s integrated terminal, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>which python
+python -V
+python -c <span class="tok-s2">&quot;import langchain; print(&#39;ok&#39;)&quot;</span></code></pre>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-24 09:45:45 +0200
+Last updated 2026-03-24 10:11:14 +0200
 </div>
 </div>
 </body>

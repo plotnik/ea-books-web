@@ -29,7 +29,7 @@
 #
 # 📚 **OpenAI Cookbook**
 #    https://cookbook.openai.com/
-#   
+#  
 # ----
 #
 # 🔢 **Tiktoken CodeWiki**
@@ -37,6 +37,20 @@
 #
 # 📏 **Tiktoken How-to Cookbook**
 #    https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
+#
+# ----
+#
+# - Get `Python Source`_.
+#
+# Script is written in `literate programming`_.
+#
+# - See `PyLit Tutorial`_
+# - See `reStructuredText Primer`_
+#
+# .. _Python Source: ../../note_openai.py
+# .. _literate programming: https://en.wikipedia.org/wiki/Literate_programming
+# .. _reStructuredText Primer: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
+# .. _PyLit Tutorial: https://slott56.github.io/PyLit-3/_build/html/tutorial/index.html
 #
 # ----
 #
@@ -116,7 +130,7 @@ client = OpenAI()
 # - ``name``: A short, unique identifier for the prompt.
 # - ``note``: Prompt body.
 # - ``tags``: A list of categories (for example, ``text`` or ``python``) that describe the prompt’s domain or usage.
-#   
+#  
 # ::
 
 prompts_file = "openai_helper.yml"
@@ -138,7 +152,6 @@ input_text = st.text_area(f"Note", height=300)
 from PersistedList import PersistedList
 tags_persisted = PersistedList(".tags")  
 prompts_persisted = PersistedList(".prompts")  
-llms_persisted = PersistedList(".llms")  
 
 # Read a list of strings from a file
 #
@@ -169,7 +182,7 @@ def has_tag(name, tag_name):
     return False
 
 all_prompt_names_set = {item['name'] for item in prompts}
-all_prompt_names = prompts_persisted.sort_by_pattern(list(all_prompt_names_set), group=tag_name)
+all_prompt_names = prompts_persisted.sort_by_pattern(list(all_prompt_names_set))
 prompt_names = [name for name in all_prompt_names if has_tag(name, tag_name)]
 
 prompt_name = st.sidebar.selectbox(
@@ -189,8 +202,7 @@ llm_prices = {
     "gpt-5.4-nano": (0.20, 1.25),
 }    
 
-llm_persisted_group = f"{tag_name}/{prompt_name}"
-llm_models = llms_persisted.sort_by_pattern(list(llm_prices.keys()), group=llm_persisted_group)
+llm_models = list(llm_prices.keys())
 
 # Select LLM model
 #
@@ -203,7 +215,7 @@ llm_model = st.sidebar.selectbox(
 
 # Count the number of tokens in the user’s input using the ``tiktoken`` library, 
 # and display both the token count and the corresponding price.
-# 
+#
 # ::
 
 encoding = tiktoken.get_encoding("o200k_base")
@@ -216,7 +228,7 @@ st.sidebar.write(f'''
     |---|---|---|
     | {len(input_text)} | {len(tokens)} | {cents} |
     ''') 
-  
+
 # .. function:: call_llm(text, prompt)
 #
 # ::
@@ -250,15 +262,13 @@ if st.button('Query', type="primary", icon=":material/cyclone:", width="stretch"
     tokens = encoding.encode(st.session_state.llm_output)
     st.session_state.output_price = len(tokens) * llm_prices[llm_model][1]/10000
 
-    # Move selected (tag, prompt, llm) to the beginning of the list
-    tags_persisted.select(tag_name)
-    prompts_persisted.select(prompt_name, group=tag_name)
-    llms_persisted.select(llm_model, group=llm_persisted_group)
-    
+    # Move selected tag to the beginning of the list
+    all_tags = tags_persisted.select(tag_name)
+
     if platform.system() == 'Darwin':
         os.system("afplay /System/Library/Sounds/Glass.aiff")
     st.rerun()
-  
+
 # LLM output is cached in ``session_state``.
 #
 # ::
@@ -272,14 +282,14 @@ st.write(st.session_state.llm_output)
 if st.button("Clipboard", icon=":material/content_copy:"):
     pyperclip.copy(st.session_state.llm_output)
     st.write(f'Copied to clipboard') 
-    
+  
 # Show last execution time
 #
 # ::
 
 if "execution_time" in st.session_state:
     st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
-    
+  
 if "output_price" in st.session_state:
     st.sidebar.write(f"Output price: `{round(st.session_state.output_price, 5)}` cents")  
-       
+     

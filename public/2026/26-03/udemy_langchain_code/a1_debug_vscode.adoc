@@ -1,0 +1,68 @@
+= A1. Debugging Python in VS Code
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+
+link:udemy_langchain.html[<Contents>]
+
+
+---
+
+> i have conda environment "llama-0.4" configured in my terminal,
+> and i can run "output_parsers_demo.py" there without any problem,
+> since all necessary modules like "langchain" are installed there.
+> i would like to debug this script in vs code.
+> what approach would you recommend for that?
+
+---
+
+Use VS Code’s debugger with the same Python interpreter as your working
+conda env.
+
+*Recommended steps:*
+
+[arabic]
+. In VS Code, run *Python: Select Interpreter*
+. Choose the interpreter from your conda env *`llama-0.4`*
+. Open `output++_++parsers++_++demo.py`
+. Set breakpoints
+. Press *F5* to debug
+
+*Best practice:* add a `launch.json` like this:
+
+[source,json]
+----
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug output_parsers_demo.py",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/output_parsers_demo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
+----
+
+*Why this works:*
+
+* VS Code debug sessions may not inherit your terminal’s activated conda
+env.
+* What matters is the interpreter VS Code uses.
+* `envFile` helps ensure your API keys and other variables are
+available.
+
+*Quick check:* in VS Code’s integrated terminal, run:
+
+[source,bash]
+----
+which python
+python -V
+python -c "import langchain; print('ok')"
+----
