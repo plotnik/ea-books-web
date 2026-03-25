@@ -25,10 +25,9 @@
 #    :header: "Name", "URL"
 #    :widths: 10 30
 #
+#    "Trace with LangSmith", https://docs.langchain.com/langsmith/trace-with-langchain
 #    "Build a semantic search engine with LangChain", https://docs.langchain.com/oss/python/langchain/knowledge-base
 #    "LangGraph Studio", https://studio.langchain.com/
-#    "Trace with LangSmith", https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langchain
-#    "tracers - LangChain documentation", https://python.langchain.com/api_reference/core/tracers.html
 #    "Using Chroma in LangChain", https://python.langchain.com/docs/integrations/vectorstores/chroma/
 #
 # ::
@@ -44,6 +43,10 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.document_loaders import UnstructuredHTMLLoader
 from langchain_chroma import Chroma 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+# The ``LANGSMITH_API_KEY`` environment variable must be set to enable LangSmith tracing.
+#
+# ::
 
 try:
     from langchain_core.tracers.context import tracing_v2_enabled
@@ -112,8 +115,9 @@ g_key = os.getenv("GEMINI_API_KEY")
 # ::
 
 embedding_models = [
-    "google/gemini-embedding-001",
     "openai/text-embedding-3-small",
+    
+    "google/gemini-embedding-001",
     "google/text-embedding-004",           # April 2024
     "google/gemini-embedding-exp-03-07",   # March 2025 # Exceeds rate limit when selected
     "google/embedding-001",                # December 2023
@@ -121,6 +125,7 @@ embedding_models = [
 
 embedding_prices = {
     "openai/text-embedding-3-small": 0.02,
+    
     "google/text-embedding-004": 0.0,          
     "google/gemini-embedding-exp-03-07": 0.0,  
     "google/embedding-001": 0.0,      

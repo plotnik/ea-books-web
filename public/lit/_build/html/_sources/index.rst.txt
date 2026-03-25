@@ -11,6 +11,7 @@ Literate Programs
    :caption: Contents:
 
    note_openai.py
+   book_lc.py
    ai_note.py
    md_view.py
    udemy.py
@@ -25,7 +26,6 @@ Literate Programs
    grafana_panels.py
    grafana_stats.py     
    neo_rag.py
-   book_lc.py
    book_chat.py
    li_extract.py
    L1_Router_Engine.py   

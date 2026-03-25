@@ -15,8 +15,8 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Book Chat (LI)" href="book_chat.py.html" />
-    <link rel="prev" title="Neo RAG" href="neo_rag.py.html" />
+    <link rel="next" title="Note-AI" href="ai_note.py.html" />
+    <link rel="prev" title="Note-OpenAI" href="note_openai.py.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -61,19 +61,16 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Build a semantic search engine with LangChain</p></td>
+<tr class="row-even"><td><p>Trace with LangSmith</p></td>
+<td><p><a class="reference external" href="https://docs.langchain.com/langsmith/trace-with-langchain">https://docs.langchain.com/langsmith/trace-with-langchain</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Build a semantic search engine with LangChain</p></td>
 <td><p><a class="reference external" href="https://docs.langchain.com/oss/python/langchain/knowledge-base">https://docs.langchain.com/oss/python/langchain/knowledge-base</a></p></td>
 </tr>
-<tr class="row-odd"><td><p>LangGraph Studio</p></td>
+<tr class="row-even"><td><p>LangGraph Studio</p></td>
 <td><p><a class="reference external" href="https://studio.langchain.com/">https://studio.langchain.com/</a></p></td>
 </tr>
-<tr class="row-even"><td><p>Trace with LangSmith</p></td>
-<td><p><a class="reference external" href="https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langchain">https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langchain</a></p></td>
-</tr>
-<tr class="row-odd"><td><p>tracers - LangChain documentation</p></td>
-<td><p><a class="reference external" href="https://python.langchain.com/api_reference/core/tracers.html">https://python.langchain.com/api_reference/core/tracers.html</a></p></td>
-</tr>
-<tr class="row-even"><td><p>Using Chroma in LangChain</p></td>
+<tr class="row-odd"><td><p>Using Chroma in LangChain</p></td>
 <td><p><a class="reference external" href="https://python.langchain.com/docs/integrations/vectorstores/chroma/">https://python.langchain.com/docs/integrations/vectorstores/chroma/</a></p></td>
 </tr>
 </tbody>
@@ -89,8 +86,10 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_community.document_loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnstructuredHTMLLoader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_chroma</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chroma</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_text_splitters</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecursiveCharacterTextSplitter</span>
-
-<span class="k">try</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">LANGSMITH_API_KEY</span></code> environment variable must be set to enable LangSmith tracing.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.tracers.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">tracing_v2_enabled</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">tracing_v2_enabled</span><span class="p">():</span>
@@ -160,8 +159,9 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 </tbody>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">embedding_models</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;google/gemini-embedding-001&quot;</span><span class="p">,</span>
     <span class="s2">&quot;openai/text-embedding-3-small&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;google/gemini-embedding-001&quot;</span><span class="p">,</span>
     <span class="s2">&quot;google/text-embedding-004&quot;</span><span class="p">,</span>           <span class="c1"># April 2024</span>
     <span class="s2">&quot;google/gemini-embedding-exp-03-07&quot;</span><span class="p">,</span>   <span class="c1"># March 2025 # Exceeds rate limit when selected</span>
     <span class="s2">&quot;google/embedding-001&quot;</span><span class="p">,</span>                <span class="c1"># December 2023</span>
@@ -169,6 +169,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 
 <span class="n">embedding_prices</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;openai/text-embedding-3-small&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+
     <span class="s2">&quot;google/text-embedding-004&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="s2">&quot;google/gemini-embedding-exp-03-07&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="s2">&quot;google/embedding-001&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
@@ -456,6 +457,11 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Book Chat (LC)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Chroma</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ask-a-question">Ask a question</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
@@ -470,11 +476,6 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 <li class="toctree-l1"><a class="reference internal" href="grafana_panels.py.html">Grafana Panels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neo_rag.py.html">Neo RAG</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Book Chat (LC)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">Chroma</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ask-a-question">Ask a question</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="book_chat.py.html">Book Chat (LI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="li_extract.py.html">LlamaIndex Extractors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
@@ -515,8 +516,8 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="neo_rag.py.html" title="previous chapter">Neo RAG</a></li>
-      <li>Next: <a href="book_chat.py.html" title="next chapter">Book Chat (LI)</a></li>
+      <li>Previous: <a href="note_openai.py.html" title="previous chapter">Note-OpenAI</a></li>
+      <li>Next: <a href="ai_note.py.html" title="next chapter">Note-AI</a></li>
   </ul></li>
 </ul>
 </div>

@@ -25,10 +25,9 @@ Installation for LangChain v1:
    :header: "Name", "URL"
    :widths: 10 30
 
+   "Trace with LangSmith", https://docs.langchain.com/langsmith/trace-with-langchain
    "Build a semantic search engine with LangChain", https://docs.langchain.com/oss/python/langchain/knowledge-base
    "LangGraph Studio", https://studio.langchain.com/
-   "Trace with LangSmith", https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langchain
-   "tracers - LangChain documentation", https://python.langchain.com/api_reference/core/tracers.html
    "Using Chroma in LangChain", https://python.langchain.com/docs/integrations/vectorstores/chroma/
 
 ::
@@ -44,6 +43,10 @@ Installation for LangChain v1:
   from langchain_community.document_loaders import UnstructuredHTMLLoader
   from langchain_chroma import Chroma 
   from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+The ``LANGSMITH_API_KEY`` environment variable must be set to enable LangSmith tracing.
+
+::
 
   try:
       from langchain_core.tracers.context import tracing_v2_enabled
@@ -61,7 +64,7 @@ Installation for LangChain v1:
 See: PersistedList_
 
 .. _PersistedList: PersistedList.py.html
- 
+
 ::
 
   from PersistedList import PersistedList
@@ -112,8 +115,9 @@ Select Embeddings
 ::
 
   embedding_models = [
-      "google/gemini-embedding-001",
       "openai/text-embedding-3-small",
+    
+      "google/gemini-embedding-001",
       "google/text-embedding-004",           # April 2024
       "google/gemini-embedding-exp-03-07",   # March 2025 # Exceeds rate limit when selected
       "google/embedding-001",                # December 2023
@@ -121,6 +125,7 @@ Select Embeddings
 
   embedding_prices = {
       "openai/text-embedding-3-small": 0.02,
+    
       "google/text-embedding-004": 0.0,          
       "google/gemini-embedding-exp-03-07": 0.0,  
       "google/embedding-001": 0.0,      
@@ -144,14 +149,14 @@ Select Embeddings
           # No event loop exists, create a new one
           loop = asyncio.new_event_loop()
           asyncio.set_event_loop(loop)
-    
+  
       embedding = GoogleGenerativeAIEmbeddings(model=f"models/{embed_model_name}", google_api_key=g_key)
   elif embedding_model_vendor == "openai":
       embedding = OpenAIEmbeddings(model=embed_model_name)
   else:
       st.error(f"Unsupported embedding model vendor: {embedding_model_vendor}")
       st.stop()
-  
+
 Folder to save index
 
 ::
@@ -318,14 +323,14 @@ Handle indexing logic
           total_tokens = total_chars // 4  # Rough approximation
           cost = (total_tokens / 1_000_000) * embedding_prices[embedding_model]
           cents = cost/100
-  
+
       st.sidebar.write("**Embeddings price**")
       st.sidebar.write(f'''
           | Chunks | Tokens | Cents |
           |---|---|---|
           | {len(chunks)} | {total_tokens} | {cents} |
           ''')  
-  
+
       if st.sidebar.button(':construction: &nbsp; Create Index', type='primary', use_container_width=True):
           with tracing_context:
               create_index(index_folder, chunks)
@@ -374,7 +379,7 @@ Ask a question
           prompt = create_rag_prompt(context, question)
           # Get answer from LLM
           answer = llm.invoke(prompt)
-        
+      
           # Format response to match original structure
           st.session_state.response = {
               "answer": answer.content if hasattr(answer, 'content') else str(answer),

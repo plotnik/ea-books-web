@@ -417,3 +417,84 @@ bound directly to the model
 Overall, the point is that structured output makes LLM responses more
 predictable and easier to work with because the returned data matches a
 defined schema.
+
+== 30. Project 1 - Final Touches
+
+====
+LangSmith::
+https://smith.langchain.com
+====
+
+The content walks through adding *LangSmith* to a LangChain project and
+building a *production-style structured Q&A bot*.
+
+==== Main points:
+
+* *LangSmith overview*
+** Used for *observability, tracing, evaluation, prompt engineering, and
+deployment*.
+** In this project, it’s mainly added for *logging and tracing* so you
+can inspect how the AI app behaves in production.
+* *LangSmith setup*
+** Create a LangSmith account and generate an *API key* in Settings.
+** Configure environment variables for:
+*** tracing (`true`)
+*** project name for grouping traces
+* *Q&A bot implementation*
+** Build a `SmartBot` using:
+*** `ChatPromptTemplate`
+*** `ChatOpenAI`
+*** `Pydantic` for *structured outputs*
+** Define a `QAResponse` schema with fields like:
+*** `answer`
+*** `confidence`
+*** `reasoning`
+*** `follow++_++up++_++questions`
+*** `sources++_++needed`
+* *Structured output*
+** The bot is initialized with
+`with++_++structured++_++output(QAResponse)` so responses always follow
+the schema.
+** This makes the bot more reliable and easier to use downstream.
+* *Prompt and chain*
+** A system prompt instructs the model to act as a knowledgeable QA
+assistant.
+** The bot uses a LangChain chain combining:
+*** prompt
+*** model
+** The `ask` function invokes the chain with a question and returns a
+structured response.
+* *Graceful error handling*
+** If something fails, the bot returns a fallback `QAResponse` instead
+of crashing.
+** This preserves structured output even during failures.
+* *LangSmith tracing integration*
+** Import `traceable` and `Client` from LangSmith.
+** Decorate methods like `ask` and batch methods with `@traceable(...)`.
+** Call `client.flush()` to ensure traces are sent properly.
+* *Demo functionality*
+** Demonstrates:
+*** single-question Q&A
+*** error handling with edge cases
+*** batch processing of multiple questions
+** Shows how all these runs appear in the LangSmith dashboard.
+* *What LangSmith reveals*
+** For each run, you can inspect:
+*** inputs and outputs
+*** confidence/reasoning fields
+*** token usage
+*** cost
+*** latency
+*** metadata
+*** run status
+* *Section recap*
+** Covered:
+*** LangChain ecosystem overview
+*** environment setup with UV
+*** runnables and LCEL
+*** prompt templates and message types
+*** structured outputs with Pydantic
+*** production-ready Q&A bot creation
+*** LangSmith tracing
+* *Next topic*
+** The next section will cover *chains, RAG, and memory*.
