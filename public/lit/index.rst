@@ -12,10 +12,10 @@ Literate Programs
 
    note_openai.py
    book_lc.py
-   ai_note.py
-   md_view.py
    udemy.py
    udemy_html_toc.py
+   ai_note.py
+   md_view.py   
    qr_code.py
    o_chat.py
    ai_obsidian.py

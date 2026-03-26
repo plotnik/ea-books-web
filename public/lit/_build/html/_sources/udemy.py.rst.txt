@@ -18,7 +18,7 @@ Also can remove newlines from Udemy transcripts.
    "Model Pricing", https://platform.openai.com/docs/pricing#latest-models
 
 .. contents::
- 
+
 ::
 
   import streamlit as st
@@ -35,7 +35,7 @@ Also can remove newlines from Udemy transcripts.
 See: PersistedList_
 
 .. _PersistedList: PersistedList.py.html
-  
+ 
 ::
 
   from PersistedList import PersistedList
@@ -89,13 +89,13 @@ Select OpenAI LLM.
 
       else: # o3 | gpt-5
           return {"google": False, "temperature": False, "xml": False}
-        
+      
   def reset_execution_time():
       if "execution_time" in st.session_state:
           del st.session_state["execution_time"]
       if "output_price" in st.session_state:
           del st.session_state["output_price"]
-        
+      
 Remember which LLM was used last time.
 
 ::
@@ -124,7 +124,7 @@ Find the Obsidian folder, which is the first subfolder within the current folder
   if (len(book_folders)==0):
       st.error('The folder should contain a subfolder with a name that ends with " Book".')
       st.stop()
-  
+
   note_home =  book_folders[0]
   # print("OBSIDIAN_HOME: " + note_home)
 
@@ -136,7 +136,7 @@ Output file to save response.
   output_folder = os.path.join(home_directory, ".a-services")
   if not os.path.exists(output_folder):
       os.makedirs(output_folder)
-    
+  
   out_file = os.path.join(output_folder, 'udemy.txt')
   adoc_file = os.path.join(output_folder, 'udemy.adoc')
 
@@ -202,6 +202,9 @@ Load Obsidian note
 Write truncated input text
 
 ::
+
+  # Container input text
+  c_input = st.container(border=True)
     
   # Truncate text to max len
   def max_len(text, k):
@@ -209,7 +212,7 @@ Write truncated input text
           return text
       return text[:k] + '...'  
 
-  st.write(f"""
+  c_input.write(f"""
  
   {max_len(text, 250)}
  
@@ -225,7 +228,7 @@ Tokens & price
   #encoding = tiktoken.get_encoding(tiktoken_model) 
   encoding = tiktoken.encoding_for_model("gpt-4o-mini")
   tokens = encoding.encode(text)
-  
+
 Calculate price in cents.
 
 ::
@@ -237,7 +240,7 @@ Calculate price in cents.
       |---|---|---|
       | {len(text)} | {len(tokens)} | {cents} |
       ''')  
-       
+     
 st.sidebar.divider()
 
 
@@ -252,13 +255,13 @@ Buttons to update text
   def remove_empty_lines_and_leading_hyphens(text):
       lines = text.splitlines()
       non_empty_lines = [line for line in lines if line.strip()]
-    
+  
       # Remove leading hyphens
       stripped = [
           line[1:].lstrip() if line.startswith('-') else line
           for line in non_empty_lines
       ]
-    
+  
       cleaned_text = '\n'.join(stripped)
       return cleaned_text
 
@@ -266,17 +269,23 @@ Buttons to update text
       # An inexpensive method to remove empty lines without using extra logic such as leading hyphens.
       return input_string.replace('\n', ' ')
  
-  if st.button(':small_red_triangle_down: &nbsp; **Replace newlines with spaces**', use_container_width=True):
+  if st.sidebar.button(':small_red_triangle_down: &nbsp; Replace newlines with spaces', use_container_width=True):
       text = remove_empty_lines_and_leading_hyphens(text)
-    
+  
       with open(file_path, 'w', encoding='utf-8') as file:
           file.write(text)
-        
+      
       st.rerun()    
 
+Container for buttons
 
-Call OpenAI API
----------------
+::
+
+  c_buttons = st.container()
+  col1, col2 = c_buttons.columns(2)
+
+Prompts
+-------
 
 ::
     
@@ -284,9 +293,6 @@ Call OpenAI API
   and your task is to summarize the content you are provided.
   """
 
-  prompt_improve = """You will be provided with statements in markdown, 
-  and your task is to improve the content you are provided.
-  """
   prompt_questions = """
   You will be provided with context in markdown,
   and your task is to generate 3 questions this context can provide
@@ -297,6 +303,21 @@ Call OpenAI API
   that this context can answer.
   """
 
+  prompt_keywords = """You will be provided with statements in markdown. 
+  Extract 5 keywords from the following text. 
+  Return only the keywords delimited by spaces with # added at the beginning. 
+  Spaces in keywords should be replaced by -.
+  """
+
+  prompt_improve = """You will be provided with statements in markdown, 
+  and your task is to improve the content you are provided.
+  """
+  
+Call LLM
+--------
+
+::
+    
   if 'openai_result' not in st.session_state:
       st.session_state.openai_result = ""
  
@@ -331,7 +352,7 @@ Call OpenAI API
       out_text = choice.message.content
       st.session_state.openai_result = out_text
 
-      st.write(st.session_state.openai_result)
+      # st.write(st.session_state.openai_result)
 
       with open(out_file, 'w') as file:
           file.write(out_text)
@@ -339,7 +360,7 @@ Call OpenAI API
 
       tokens = encoding.encode(out_text)
       st.session_state.output_price = len(tokens) * llm_prices[llm_model][1]/10000
-    
+  
       if platform.system() == 'Darwin':
           os.system("afplay /System/Library/Sounds/Glass.aiff")
 
@@ -347,30 +368,42 @@ Show OpenAI result.
 
 ::
 
+  # Container input text
+  c_output = st.container(border=True)
+ 
   # st.write('---')
-  st.write(st.session_state.openai_result)
+  c_output.write(st.session_state.openai_result)
   # st.write('---')
 
-  if st.sidebar.button(':sparkles: &nbsp; Summarize', use_container_width=True):
-      start_time = time.time()
-      call_llm(text, prompt_summarize)
-      end_time = time.time()
-      st.session_state.execution_time = end_time - start_time
-      st.rerun()
-    
-  if st.sidebar.button(':question: &nbsp; Ask questions', use_container_width=True):
-      start_time = time.time()
-      call_llm(text, prompt_questions)
-      end_time = time.time()
-      st.session_state.execution_time = end_time - start_time
-      st.rerun()
- 
-  if st.sidebar.button(':pencil2: &nbsp; Improve', use_container_width=True):
-      start_time = time.time()
-      call_llm(text, prompt_improve)
-      end_time = time.time()
-      st.session_state.execution_time = end_time - start_time
-      st.rerun()
+  with col1:
+      if st.button(':sparkles: &nbsp; **Summarize**', type="primary", use_container_width=True):
+          start_time = time.time()
+          call_llm(text, prompt_summarize)
+          end_time = time.time()
+          st.session_state.execution_time = end_time - start_time
+          st.rerun()
+      
+      if st.button(':question: &nbsp; **Ask questions**', use_container_width=True):
+          start_time = time.time()
+          call_llm(text, prompt_questions)
+          end_time = time.time()
+          st.session_state.execution_time = end_time - start_time
+          st.rerun()
+
+  with col2:
+      if st.button(':key: &nbsp; **Keywords**', use_container_width=True):
+          start_time = time.time()
+          call_llm(text, prompt_keywords)
+          end_time = time.time()
+          st.session_state.execution_time = end_time - start_time
+          st.rerun()
+        
+      if st.button(':pencil2: &nbsp; **Improve**', use_container_width=True):
+          start_time = time.time()
+          call_llm(text, prompt_improve)
+          end_time = time.time()
+          st.session_state.execution_time = end_time - start_time
+          st.rerun()
  
 Convert to Asciidoc
 
@@ -390,7 +423,7 @@ Copy to clipboard
       if st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', type='primary', use_container_width=True):
           pyperclip.copy(st.session_state.openai_result)
           st.toast(f'Copied to clipboard')
-        
+      
 Copy Asciidoc to clipboard
 
 ::
@@ -399,24 +432,24 @@ Copy Asciidoc to clipboard
       """Add n '=' characters to the start of each AsciiDoc header line."""
       if n == 0:
           return text
-        
+      
       prefix = '=' * n
       # Match lines starting with one or more '=' but not lines with only '=' (adornments)
       pattern = re.compile(r'^(=+)(?=\s)', re.MULTILINE)
       return pattern.sub(lambda m: prefix + m.group(1), text)
-    
+  
   def asciidoc_headers(content):
       # This will remove the entire line if it matches, including the newline.
       cleaned_content = re.sub(r'^\[\[.*?\]\]\s*\n', '', content, flags=re.MULTILINE)
       return cleaned_content
-    
+  
   bump_headers_n = st.sidebar.number_input("Bump headers", value=0, min_value=0)
 
   if len(st.session_state.openai_result) > 0:
       if st.sidebar.button(':clipboard: &nbsp; Copy Asciidoc to clipboard', type='primary', use_container_width=True):
           pyperclip.copy(asciidoc_headers(bump_headers(convert_to_asciidoc(st.session_state.openai_result), bump_headers_n)))
           st.toast(f'Copied to clipboard')
-        
+      
 Show last execution time
 
 ::

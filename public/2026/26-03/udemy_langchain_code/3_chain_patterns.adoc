@@ -1,0 +1,172 @@
+= 3. Chain Patterns
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+
+link:udemy_langchain.html[<Contents>]
+
+== 32. Hands-on ~ Basic and Parallel Chains
+
+This document explains two core chain patterns:
+
+==== 1) Basic chain
+
+A simple pipeline is built by composing:
+
+* `ChatPromptTemplate`
+* model initialized with `initChat`
+* `StringParser`
+
+Flow: *prompt → model → parser*
+
+It uses `pipe()` to connect the parts, and `invoke()` to run the chain
+with input text. The example summarizes text in one sentence.
+
+==== 2) Parallel chains
+
+`RunnableParallel` lets you run multiple independent chains on the same
+input at the same time.
+
+Example tasks:
+
+* summarize text
+* extract keywords
+* analyze sentiment
+
+Each task gets its own prompt and chain, and then they are combined into
+one parallel runnable. When invoked, it returns an object like:
+
+[source,js]
+----
+{
+  summary: "...",
+  keywords: "...",
+  sentiment: "..."
+}
+----
+
+==== Main takeaway
+
+* *Basic chain* = single sequential pipeline
+* *Parallel chain* = multiple chains executed together
+* `invoke()` executes the runnable and returns the result
+
+
+
+
+== 33. Hands-on ~ Demo Passthrough Runnable
+
+This passage explains how to build a simple LangChain RAG-style workflow
+using:
+
+* `RunnablePassthrough` to keep the original question unchanged
+* `RunnableLambda` to wrap a fake retriever function
+* `RunnableParallel` to run retrieval and question passing at the same
+time
+
+==== Main idea
+
+A chain is created that:
+
+[arabic]
+. takes a user question,
+. retrieves a fixed context string,
+. passes the question through unchanged,
+. sends both to a prompt,
+. calls the model,
+. parses the output into a string.
+
+==== Example structure
+
+* `context` comes from `fake++_++retriever`
+* `question` comes from `RunnablePassthrough()`
+
+==== Why it matters
+
+`RunnablePassthrough` is useful when you want to preserve the original
+input while adding other data to the pipeline. The example demonstrates
+how LangChain components can be composed into flexible workflows.
+
+==== Expected result
+
+If asked, “Who created LangChain?”, the chain should answer that
+LangChain was created by Harrison Chase in 2022.
+
+== 34. Hands-on ~ Chain Branching
+
+The passage explains *chain branching* in LangChain, where inputs are
+routed through different chains based on their content.
+
+==== Main idea
+
+* Use *`RunnableBranch`* to choose between chains dynamically.
+* Set up three prompts with *`ChatPromptTemplate`*:
+** *code prompt*
+** *general prompt*
+** *classifier prompt*
+
+==== How it works
+
+[arabic]
+. *Classifier chain*
+* Built from the classifier prompt, the model, and a string output
+parser.
+* Determines whether a user question is about code.
+. *Helper function: `is++_++code++_++question`*
+* Sends input through the classifier chain with `.invoke()`.
+* Returns a boolean-like result for routing.
+. *Branching with `RunnableBranch`*
+* If the input is code-related, route to the *code chain*.
+* Otherwise, route to the *general/default chain*.
+
+==== Example behavior
+
+* “How do I write a for loop in Python?” → classified as code → uses
+code prompt
+* “What is the weather like today?” → classified as general → uses
+general prompt
+
+==== Key takeaway
+
+This approach requires *two LLM calls per request*:
+
+[arabic]
+. Classification
+. Response generation
+
+The benefit is that it enables *dynamic routing* to different prompts or
+workflows depending on the input.
+
+== 35. Hands-on ~ Debugging
+
+Debugging in chains is important because it helps inspect how data moves
+through prompts, models, and parsers.
+
+==== Main debugging methods:
+
+[arabic]
+. *Inspect configuration*
+* Use `get++_++config()` to view chain setup.
+* Check input/output schemas to understand expected types and internal
+structure.
+. *Use `with++_++config()` for tracing*
+* Attach metadata like `run++_++name` and tracing info.
+* Helps track inputs and outputs during execution.
+. *Inspect intermediate steps*
+* Use `RunnableLambda` as a logging tap.
+* Print or inspect data at each stage without changing it by returning
+the same value.
+
+==== Why it matters
+
+These methods let you verify and trace what happens inside a chain,
+making it easier to build and debug LangChain and LLM applications.
+
+==== Covered chain concepts
+
+* basic chains
+* parallel chains
+* passthrough chains
+* branching chains
+* debugging chains

@@ -210,7 +210,7 @@ Display results
   if "grouped_df" in st.session_state:
       st.write("### Duration by Task")
       st.dataframe(
-          st.session_state.grouped_df.style.applymap(highlight_task, subset=["Task"]),
+          st.session_state.grouped_df.style.map(highlight_task, subset=["Task"]),
           key="data",
           on_select="rerun",
           selection_mode=["multi-row"],

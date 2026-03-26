@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Paulo Dichone">
-<title>Production AI Agents with LangChain + LangGraph [2026]</title>
+<title>3. Chain Patterns</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -435,54 +434,487 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+pre.pygments .hll { background-color: #ffffcc }
+pre.pygments { background: #f8f8f8; }
+pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+pre.pygments .tok-o { color: #666666 } /* Operator */
+pre.pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+pre.pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+pre.pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+pre.pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+pre.pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+pre.pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+pre.pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+pre.pygments .tok-ge { font-style: italic } /* Generic.Emph */
+pre.pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+pre.pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+pre.pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+pre.pygments .tok-go { color: #888888 } /* Generic.Output */
+pre.pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+pre.pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+pre.pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+pre.pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+pre.pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+pre.pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+pre.pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+pre.pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+pre.pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+pre.pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+pre.pygments .tok-m { color: #666666 } /* Literal.Number */
+pre.pygments .tok-s { color: #BA2121 } /* Literal.String */
+pre.pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+pre.pygments .tok-nb { color: #008000 } /* Name.Builtin */
+pre.pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+pre.pygments .tok-no { color: #880000 } /* Name.Constant */
+pre.pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+pre.pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+pre.pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+pre.pygments .tok-nf { color: #0000FF } /* Name.Function */
+pre.pygments .tok-nl { color: #A0A000 } /* Name.Label */
+pre.pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+pre.pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+pre.pygments .tok-nv { color: #19177C } /* Name.Variable */
+pre.pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+pre.pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+pre.pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+pre.pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+pre.pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+pre.pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+pre.pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+pre.pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+pre.pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+pre.pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+pre.pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+pre.pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+pre.pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+pre.pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+pre.pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+pre.pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+pre.pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+pre.pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+pre.pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+pre.pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+pre.pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+pre.pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+pre.pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+pre.pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+pre.pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><strong>Production AI Agents with LangChain + LangGraph [2026]</strong></h1>
-<div class="details">
-<span id="author" class="author">Paulo Dichone</span><br>
-</div>
+<h1>3. Chain Patterns</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_2_langchain_foundations_a_deep_dive">2. LangChain Foundations - A Deep Dive</a></li>
-<li><a href="#_3_chain_patterns">3. Chain Patterns</a></li>
+<li><a href="#_32_hands_on_basic_and_parallel_chains">32. Hands-on ~ Basic and Parallel Chains</a>
+<ul class="sectlevel3">
+<li><a href="#_1_basic_chain">1) Basic chain</a></li>
+<li><a href="#_2_parallel_chains">2) Parallel chains</a></li>
+<li><a href="#_main_takeaway">Main takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_33_hands_on_demo_passthrough_runnable">33. Hands-on ~ Demo Passthrough Runnable</a>
+<ul class="sectlevel3">
+<li><a href="#_main_idea">Main idea</a></li>
+<li><a href="#_example_structure">Example structure</a></li>
+<li><a href="#_why_it_matters">Why it matters</a></li>
+<li><a href="#_expected_result">Expected result</a></li>
+</ul>
+</li>
+<li><a href="#_34_hands_on_chain_branching">34. Hands-on ~ Chain Branching</a>
+<ul class="sectlevel3">
+<li><a href="#_main_idea_2">Main idea</a></li>
+<li><a href="#_how_it_works">How it works</a></li>
+<li><a href="#_example_behavior">Example behavior</a></li>
+<li><a href="#_key_takeaway">Key takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_35_hands_on_debugging">35. Hands-on ~ Debugging</a>
+<ul class="sectlevel3">
+<li><a href="#_main_debugging_methods">Main debugging methods:</a></li>
+<li><a href="#_why_it_matters_2">Why it matters</a></li>
+<li><a href="#_covered_chain_concepts">Covered chain concepts</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Course on Udemy</dt>
-<dd>
-<p><a href="https://www.udemy.com/course/production-ai-agents/" class="bare">https://www.udemy.com/course/production-ai-agents/</a></p>
-</dd>
-</dl>
-</div>
-</div>
+<div class="paragraph">
+<p><a href="udemy_langchain.html">&lt;Contents&gt;</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_2_langchain_foundations_a_deep_dive"><a href="2_foundations.html">2. LangChain Foundations - A Deep Dive</a></h2>
+<h2 id="_32_hands_on_basic_and_parallel_chains">32. Hands-on ~ Basic and Parallel Chains</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>This document explains two core chain patterns:</p>
 </div>
+<div class="sect3">
+<h4 id="_1_basic_chain">1) Basic chain</h4>
+<div class="paragraph">
+<p>A simple pipeline is built by composing:</p>
 </div>
-<div class="sect1">
-<h2 id="_3_chain_patterns"><a href="3_chain_patterns.html">3. Chain Patterns</a></h2>
-<div class="sectionbody">
-<hr>
-<div class="exampleblock">
-<div class="content">
 <div class="ulist">
 <ul>
 <li>
-<p><a href="a1_debug_vscode.html">A1. Debugging Python in VS Code</a></p>
+<p><code>ChatPromptTemplate</code></p>
+</li>
+<li>
+<p>model initialized with <code>initChat</code></p>
+</li>
+<li>
+<p><code>StringParser</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Flow: <strong>prompt → model → parser</strong></p>
+</div>
+<div class="paragraph">
+<p>It uses <code>pipe()</code> to connect the parts, and <code>invoke()</code> to run the chain
+with input text. The example summarizes text in one sentence.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_2_parallel_chains">2) Parallel chains</h4>
+<div class="paragraph">
+<p><code>RunnableParallel</code> lets you run multiple independent chains on the same
+input at the same time.</p>
+</div>
+<div class="paragraph">
+<p>Example tasks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>summarize text</p>
+</li>
+<li>
+<p>extract keywords</p>
+</li>
+<li>
+<p>analyze sentiment</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each task gets its own prompt and chain, and then they are combined into
+one parallel runnable. When invoked, it returns an object like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span></span><span class="tok-p">{</span>
+  <span class="tok-nx">summary</span><span class="tok-o">:</span> <span class="tok-s2">&quot;...&quot;</span><span class="tok-p">,</span>
+  <span class="tok-nx">keywords</span><span class="tok-o">:</span> <span class="tok-s2">&quot;...&quot;</span><span class="tok-p">,</span>
+  <span class="tok-nx">sentiment</span><span class="tok-o">:</span> <span class="tok-s2">&quot;...&quot;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_main_takeaway">Main takeaway</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Basic chain</strong> = single sequential pipeline</p>
+</li>
+<li>
+<p><strong>Parallel chain</strong> = multiple chains executed together</p>
+</li>
+<li>
+<p><code>invoke()</code> executes the runnable and returns the result</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_33_hands_on_demo_passthrough_runnable">33. Hands-on ~ Demo Passthrough Runnable</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This passage explains how to build a simple LangChain RAG-style workflow
+using:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>RunnablePassthrough</code> to keep the original question unchanged</p>
+</li>
+<li>
+<p><code>RunnableLambda</code> to wrap a fake retriever function</p>
+</li>
+<li>
+<p><code>RunnableParallel</code> to run retrieval and question passing at the same
+time</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_main_idea">Main idea</h4>
+<div class="paragraph">
+<p>A chain is created that:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>takes a user question,</p>
+</li>
+<li>
+<p>retrieves a fixed context string,</p>
+</li>
+<li>
+<p>passes the question through unchanged,</p>
+</li>
+<li>
+<p>sends both to a prompt,</p>
+</li>
+<li>
+<p>calls the model,</p>
+</li>
+<li>
+<p>parses the output into a string.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_structure">Example structure</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><code>context</code> comes from <code>fake_retriever</code></p>
+</li>
+<li>
+<p><code>question</code> comes from <code>RunnablePassthrough()</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters">Why it matters</h4>
+<div class="paragraph">
+<p><code>RunnablePassthrough</code> is useful when you want to preserve the original
+input while adding other data to the pipeline. The example demonstrates
+how LangChain components can be composed into flexible workflows.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_expected_result">Expected result</h4>
+<div class="paragraph">
+<p>If asked, “Who created LangChain?”, the chain should answer that
+LangChain was created by Harrison Chase in 2022.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_34_hands_on_chain_branching">34. Hands-on ~ Chain Branching</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains <strong>chain branching</strong> in LangChain, where inputs are
+routed through different chains based on their content.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_idea_2">Main idea</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <strong><code>RunnableBranch</code></strong> to choose between chains dynamically.</p>
+</li>
+<li>
+<p>Set up three prompts with <strong><code>ChatPromptTemplate</code></strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>code prompt</strong></p>
+</li>
+<li>
+<p><strong>general prompt</strong></p>
+</li>
+<li>
+<p><strong>classifier prompt</strong></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_how_it_works">How it works</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Classifier chain</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Built from the classifier prompt, the model, and a string output
+parser.</p>
+</li>
+<li>
+<p>Determines whether a user question is about code.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Helper function: <code>is_code_question</code></strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Sends input through the classifier chain with <code>.invoke()</code>.</p>
+</li>
+<li>
+<p>Returns a boolean-like result for routing.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Branching with <code>RunnableBranch</code></strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>If the input is code-related, route to the <strong>code chain</strong>.</p>
+</li>
+<li>
+<p>Otherwise, route to the <strong>general/default chain</strong>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_behavior">Example behavior</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>“How do I write a for loop in Python?” → classified as code → uses
+code prompt</p>
+</li>
+<li>
+<p>“What is the weather like today?” → classified as general → uses
+general prompt</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_takeaway">Key takeaway</h4>
+<div class="paragraph">
+<p>This approach requires <strong>two LLM calls per request</strong>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Classification</p>
+</li>
+<li>
+<p>Response generation</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The benefit is that it enables <strong>dynamic routing</strong> to different prompts or
+workflows depending on the input.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_35_hands_on_debugging">35. Hands-on ~ Debugging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Debugging in chains is important because it helps inspect how data moves
+through prompts, models, and parsers.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_debugging_methods">Main debugging methods:</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Inspect configuration</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>get_config()</code> to view chain setup.</p>
+</li>
+<li>
+<p>Check input/output schemas to understand expected types and internal
+structure.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Use <code>with_config()</code> for tracing</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Attach metadata like <code>run_name</code> and tracing info.</p>
+</li>
+<li>
+<p>Helps track inputs and outputs during execution.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Inspect intermediate steps</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>RunnableLambda</code> as a logging tap.</p>
+</li>
+<li>
+<p>Print or inspect data at each stage without changing it by returning
+the same value.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters_2">Why it matters</h4>
+<div class="paragraph">
+<p>These methods let you verify and trace what happens inside a chain,
+making it easier to build and debug LangChain and LLM applications.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_covered_chain_concepts">Covered chain concepts</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>basic chains</p>
+</li>
+<li>
+<p>parallel chains</p>
+</li>
+<li>
+<p>passthrough chains</p>
+</li>
+<li>
+<p>branching chains</p>
+</li>
+<li>
+<p>debugging chains</p>
 </li>
 </ul>
 </div>
@@ -490,10 +922,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
-</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-26 09:41:16 +0200
+Last updated 2026-03-26 12:14:39 +0200
 </div>
 </div>
 </body>

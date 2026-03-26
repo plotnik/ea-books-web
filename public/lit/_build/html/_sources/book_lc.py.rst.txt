@@ -188,21 +188,25 @@ Select LLM
 ::
 
   llm_models = [
+      "openai/gpt-5.4",
+      "openai/gpt-5.4-mini",
+      "openai/gpt-5.4-nano",
+    
       "google/gemini-2.5-flash-preview-04-17",
       "google/gemini-2.0-flash",
       "google/gemma-3-27b-it",
   ]
 
   llm_prices = {
+      "gpt-5.4": 2.50,
+      "gpt-5.4-mini": 0.75,
+      "gpt-5.4-nano": 0.20,
+    
       "gpt-4.1-mini": 0.4,
       "gpt-4.1-nano": 0.1,
       "gpt-4.1": 2.0,
       "gpt-4o-mini": 0.15,
       "gpt-4o": 2.5,
-
-      "o3-mini": 1.10,
-      "o3": 2.0,
-      "o3-pro": 20.0,
   }
 
   llm_models_persisted = PersistedList(".book-chat-models")
