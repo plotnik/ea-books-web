@@ -1,0 +1,124 @@
+= 4. Document Loading, Chunking & Embeddings - Loaders, Splitters, Vector Stores
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+
+link:udemy_langchain.html[<Contents>]
+
+== 37. Hands-on ~ TextLoaders
+
+The passage explains how to use LangChain’s `TextLoader` from
+`langchain++_++community.document++_++loaders` to load a text file as a
+document.
+
+==== Main points
+
+* Import standard modules like `os`, `tempfile`, and `Path`.
+* Install `langchain-community` to access document loaders.
+* Use `TextLoader(file++_++path)` and call `.load()` to read a text
+file.
+* The result is a *list of documents*.
+
+==== Document contents
+
+Each loaded document has:
+
+* `page++_++content`: the text from the file
+* `metadata`: extra info such as the file source path
+
+==== Example workflow
+
+* Create a temporary `.txt` file.
+* Write sample text into it.
+* Load it with a helper function:
++
+[source,python]
+----
+def load_text_file(file_path: str):
+    loader = TextLoader(file_path)
+    documents = loader.load()
+    return documents
+----
+
+==== Expected output
+
+* `len(documents)` is `1`
+* `documents++[++0++]++.page++_++content` contains the file text
+* `documents++[++0++]++.metadata` includes the source path
+
+==== Why this matters
+
+Loaders are useful because they:
+
+* read document content
+* attach metadata automatically
+* help in retrieval and document-processing pipelines by tracking where
+data came from
+
+
+== 38. Hands-on ~ WebLoader
+
+Next, let’s look at the **WebLoader**.
+
+First, I’m going to define a new function called `demo`. Then I’ll import `WebLoader` and instantiate it by passing in a URL. In this example, I’m using a simple Wikipedia page for web scraping.
+
+After that, I call the `load()` method, just like before. This returns the documents from the web page.
+
+There are several optional parameters you can pass to `WebLoader`, including:
+
+- `proxies`
+- `verify_ssl`
+- `header_template`
+- `encoding`
+- `requests_per_second`
+
+and more, depending on what you need.
+
+One useful option I want to highlight is `bs_kwargs`. This lets you pass arguments to Beautiful Soup. For example, you can specify the parser with:
+
+```python
+bs_kwargs={"features": "html.parser"}
+```
+
+Since HTML pages are being parsed, this is a common setup.
+
+You can also control what part of the page gets parsed. For example, you might target a specific element like a `div`, or leave it as `None` if you want to parse the whole page.
+
+Now let’s print a content preview. I’ll display the source, content length, and a preview of the loaded document.
+
+When I run it, I hit an issue: `WebLoader` depends on **Beautiful Soup**, which needs to be installed first.
+
+So I add `bs4` to the environment and run it again. This time it works.
+
+Now you can see that one document was loaded from the web. It shows:
+
+- the source URL
+- the content length
+- a preview of the page content
+
+So it successfully went to the Wikipedia page, scraped the content, and created a document from it.
+
+We can also change the URL and load from other web pages as well. When I do that, it again returns one document with the new URL, its length, and a preview of the extracted content.
+
+== 39. Hands-on ~ Lazy Loader
+
+The passage explains a simple example of using *lazy loading* to
+efficiently load many files, especially large datasets.
+
+* A temporary directory is created with some sample `.txt` files.
+* A `DirectoryLoader` is configured to load files from that directory.
+* `TextLoader` is set as the `loader++_++cls` because the files are text
+files.
+* A `glob` pattern is used so only `.txt` files, including those in
+subdirectories, are selected.
+* Instead of loading everything at once, *lazy loading* loads documents
+incrementally, which saves memory.
+* The example prints both document contents and metadata, including the
+`source` field, to show where each file came from.
+* Running the lazy loader confirms that the files are loaded correctly
+one by one.
+
+Overall, it shows how lazy loading can be a practical, memory-efficient
+approach for working with large collections of files.
+

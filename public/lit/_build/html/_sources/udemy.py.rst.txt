@@ -240,15 +240,8 @@ Calculate price in cents.
       |---|---|---|
       | {len(text)} | {len(tokens)} | {cents} |
       ''')  
-     
-st.sidebar.divider()
 
-
-Buttons to update text
-----------------------
-
-- Replace newlines with spaces, and
-- Remove empty lines from text
+Remove empty lines from text
 
 ::
     
@@ -269,7 +262,7 @@ Buttons to update text
       # An inexpensive method to remove empty lines without using extra logic such as leading hyphens.
       return input_string.replace('\n', ' ')
  
-  if st.sidebar.button(':small_red_triangle_down: &nbsp; Replace newlines with spaces', use_container_width=True):
+  if st.sidebar.button(':small_red_triangle_down: &nbsp; Remove empty lines', use_container_width=True):
       text = remove_empty_lines_and_leading_hyphens(text)
   
       with open(file_path, 'w', encoding='utf-8') as file:
@@ -370,20 +363,17 @@ Show OpenAI result.
 
   # Container input text
   c_output = st.container(border=True)
- 
-  # st.write('---')
   c_output.write(st.session_state.openai_result)
-  # st.write('---')
 
   with col1:
-      if st.button(':sparkles: &nbsp; **Summarize**', type="primary", use_container_width=True):
+      if st.button(':sparkles: &nbsp; **Summarize**', type="primary", width="stretch"):
           start_time = time.time()
           call_llm(text, prompt_summarize)
           end_time = time.time()
           st.session_state.execution_time = end_time - start_time
           st.rerun()
       
-      if st.button(':question: &nbsp; **Ask questions**', use_container_width=True):
+      if st.button(':question: &nbsp; **Ask questions**', width="stretch"):
           start_time = time.time()
           call_llm(text, prompt_questions)
           end_time = time.time()
@@ -391,14 +381,14 @@ Show OpenAI result.
           st.rerun()
 
   with col2:
-      if st.button(':key: &nbsp; **Keywords**', use_container_width=True):
+      if st.button(':key: &nbsp; **Keywords**', width="stretch"):
           start_time = time.time()
           call_llm(text, prompt_keywords)
           end_time = time.time()
           st.session_state.execution_time = end_time - start_time
           st.rerun()
         
-      if st.button(':pencil2: &nbsp; **Improve**', use_container_width=True):
+      if st.button(':pencil2: &nbsp; **Improve**', type="primary", width="stretch"):
           start_time = time.time()
           call_llm(text, prompt_improve)
           end_time = time.time()

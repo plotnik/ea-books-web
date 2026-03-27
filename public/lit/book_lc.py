@@ -64,7 +64,7 @@ except ImportError:
 # See: PersistedList_
 #
 # .. _PersistedList: PersistedList.py.html
-# 
+#
 # ::
 
 from PersistedList import PersistedList
@@ -102,7 +102,8 @@ tracing_context = tracing_v2_enabled() if langsmith_tracing else nullcontext()
 
 g_key = os.getenv("GEMINI_API_KEY")
 
-# Select Embeddings
+# Embeddings
+# ----------
 #
 # .. csv-table:: Useful Links
 #    :header: "Name", "URL"
@@ -116,7 +117,7 @@ g_key = os.getenv("GEMINI_API_KEY")
 
 embedding_models = [
     "openai/text-embedding-3-small",
-    
+  
     "google/gemini-embedding-001",
     "google/text-embedding-004",           # April 2024
     "google/gemini-embedding-exp-03-07",   # March 2025 # Exceeds rate limit when selected
@@ -125,7 +126,7 @@ embedding_models = [
 
 embedding_prices = {
     "openai/text-embedding-3-small": 0.02,
-    
+  
     "google/text-embedding-004": 0.0,          
     "google/gemini-embedding-exp-03-07": 0.0,  
     "google/embedding-001": 0.0,      
@@ -149,7 +150,7 @@ if embedding_model_vendor == "google":
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-  
+
     embedding = GoogleGenerativeAIEmbeddings(model=f"models/{embed_model_name}", google_api_key=g_key)
 elif embedding_model_vendor == "openai":
     embedding = OpenAIEmbeddings(model=embed_model_name)
@@ -191,7 +192,7 @@ llm_models = [
     "openai/gpt-5.4",
     "openai/gpt-5.4-mini",
     "openai/gpt-5.4-nano",
-    
+  
     "google/gemini-2.5-flash-preview-04-17",
     "google/gemini-2.0-flash",
     "google/gemma-3-27b-it",
@@ -201,7 +202,7 @@ llm_prices = {
     "gpt-5.4": 2.50,
     "gpt-5.4-mini": 0.75,
     "gpt-5.4-nano": 0.20,
-    
+  
     "gpt-4.1-mini": 0.4,
     "gpt-4.1-nano": 0.1,
     "gpt-4.1": 2.0,
@@ -250,8 +251,8 @@ history = st.sidebar.text_area(f"History", value=history.strip(), height=400)
 #    update_history("")
 #    st.toast(f'History updated')   
 
-# Chroma    
-# ------
+# Document Loader
+# ---------------
 #
 # Create or load index
 #
@@ -270,6 +271,9 @@ def create_doc_chunks(input_file):
     chunks = text_splitter.split_documents(docs) 
     return chunks
 
+# Chroma    
+# ------
+#
 # Create a persistent Chroma collection in one step
 #
 # ::
@@ -297,7 +301,8 @@ def load_index(persist_dir):
     except Exception as e:
         st.error(f"Error loading index: {e}")
 
-# Handle indexing logic
+# Indexing logic
+# --------------
 #
 # ::
 
@@ -383,7 +388,7 @@ if st.button(":question: &nbsp; Ask", use_container_width=True):
         prompt = create_rag_prompt(context, question)
         # Get answer from LLM
         answer = llm.invoke(prompt)
-      
+    
         # Format response to match original structure
         st.session_state.response = {
             "answer": answer.content if hasattr(answer, 'content') else str(answer),

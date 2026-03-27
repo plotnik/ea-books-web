@@ -134,7 +134,8 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Select Embeddings</p>
+<section id="embeddings">
+<h2>Embeddings<a class="headerlink" href="#embeddings" title="Link to this heading">¶</a></h2>
 <table class="docutils align-default" id="id3">
 <caption><span class="caption-text">Useful Links</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
 <colgroup>
@@ -285,8 +286,9 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 <span class="c1">#    st.toast(f&#39;History updated&#39;)</span>
 </pre></div>
 </div>
-<section id="id1">
-<h2>Chroma<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+</section>
+<section id="document-loader">
+<h2>Document Loader<a class="headerlink" href="#document-loader" title="Link to this heading">¶</a></h2>
 <p>Create or load index</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_doc_chunks</span><span class="p">(</span><span class="n">input_file</span><span class="p">):</span>
     <span class="n">loader</span> <span class="o">=</span> <span class="n">UnstructuredHTMLLoader</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
@@ -302,6 +304,9 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
     <span class="k">return</span> <span class="n">chunks</span>
 </pre></div>
 </div>
+</section>
+<section id="id1">
+<h2>Chroma<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <p>Create a persistent Chroma collection in one step</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_index</span><span class="p">(</span><span class="n">persist_dir</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">embedding</span>
@@ -327,7 +332,9 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
         <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading index: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Handle indexing logic</p>
+</section>
+<section id="indexing-logic">
+<h2>Indexing logic<a class="headerlink" href="#indexing-logic" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">index_folder</span><span class="p">):</span>
     <span class="c1"># if &quot;vstore&quot; not in st.session_state:</span>
     <span class="n">load_index</span><span class="p">(</span><span class="n">index_folder</span><span class="p">)</span>
@@ -462,7 +469,10 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Book Chat (LC)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#embeddings">Embeddings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#document-loader">Document Loader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#id1">Chroma</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#indexing-logic">Indexing logic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ask-a-question">Ask a question</a></li>
 </ul>
 </li>

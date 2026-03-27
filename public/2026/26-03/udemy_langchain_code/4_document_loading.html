@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Paulo Dichone">
-<title>Production AI Agents with LangChain + LangGraph [2026]</title>
+<title>4. Document Loading, Chunking &amp; Embeddings - Loaders, Splitters, Vector Stores</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -435,72 +434,343 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+pre.pygments .hll { background-color: #ffffcc }
+pre.pygments { background: #f8f8f8; }
+pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+pre.pygments .tok-o { color: #666666 } /* Operator */
+pre.pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+pre.pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+pre.pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+pre.pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+pre.pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+pre.pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+pre.pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+pre.pygments .tok-ge { font-style: italic } /* Generic.Emph */
+pre.pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+pre.pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+pre.pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+pre.pygments .tok-go { color: #888888 } /* Generic.Output */
+pre.pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+pre.pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+pre.pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+pre.pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+pre.pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+pre.pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+pre.pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+pre.pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+pre.pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+pre.pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+pre.pygments .tok-m { color: #666666 } /* Literal.Number */
+pre.pygments .tok-s { color: #BA2121 } /* Literal.String */
+pre.pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+pre.pygments .tok-nb { color: #008000 } /* Name.Builtin */
+pre.pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+pre.pygments .tok-no { color: #880000 } /* Name.Constant */
+pre.pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+pre.pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+pre.pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+pre.pygments .tok-nf { color: #0000FF } /* Name.Function */
+pre.pygments .tok-nl { color: #A0A000 } /* Name.Label */
+pre.pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+pre.pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+pre.pygments .tok-nv { color: #19177C } /* Name.Variable */
+pre.pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+pre.pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+pre.pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+pre.pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+pre.pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+pre.pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+pre.pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+pre.pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+pre.pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+pre.pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+pre.pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+pre.pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+pre.pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+pre.pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+pre.pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+pre.pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+pre.pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+pre.pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+pre.pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+pre.pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+pre.pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+pre.pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+pre.pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+pre.pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+pre.pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><strong>Production AI Agents with LangChain + LangGraph [2026]</strong></h1>
-<div class="details">
-<span id="author" class="author">Paulo Dichone</span><br>
-</div>
+<h1>4. Document Loading, Chunking &amp; Embeddings - Loaders, Splitters, Vector Stores</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_2_langchain_foundations_a_deep_dive">2. LangChain Foundations - A Deep Dive</a></li>
-<li><a href="#_3_chain_patterns">3. Chain Patterns</a></li>
-<li><a href="#_4_document_loading_chunking_embeddings_loaders_splitters_vector_stores">4. Document Loading, Chunking &amp; Embeddings - Loaders, Splitters, Vector Stores</a></li>
+<li><a href="#_37_hands_on_textloaders">37. Hands-on ~ TextLoaders</a>
+<ul class="sectlevel3">
+<li><a href="#_main_points">Main points</a></li>
+<li><a href="#_document_contents">Document contents</a></li>
+<li><a href="#_example_workflow">Example workflow</a></li>
+<li><a href="#_expected_output">Expected output</a></li>
+<li><a href="#_why_this_matters">Why this matters</a></li>
+</ul>
+</li>
+<li><a href="#_38_hands_on_webloader">38. Hands-on ~ WebLoader</a></li>
+<li><a href="#_39_hands_on_lazy_loader">39. Hands-on ~ Lazy Loader</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Course on Udemy</dt>
-<dd>
-<p><a href="https://www.udemy.com/course/production-ai-agents/" class="bare">https://www.udemy.com/course/production-ai-agents/</a></p>
-</dd>
-</dl>
-</div>
-</div>
+<div class="paragraph">
+<p><a href="udemy_langchain.html">&lt;Contents&gt;</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_2_langchain_foundations_a_deep_dive"><a href="2_foundations.html">2. LangChain Foundations - A Deep Dive</a></h2>
+<h2 id="_37_hands_on_textloaders">37. Hands-on ~ TextLoaders</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>The passage explains how to use LangChain’s <code>TextLoader</code> from
+<code>langchain_community.document_loaders</code> to load a text file as a
+document.</p>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_3_chain_patterns"><a href="3_chain_patterns.html">3. Chain Patterns</a></h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_4_document_loading_chunking_embeddings_loaders_splitters_vector_stores"><a href="4_document_loading.html">4. Document Loading, Chunking &amp; Embeddings - Loaders, Splitters, Vector Stores</a></h2>
-<div class="sectionbody">
-<hr>
-<div class="exampleblock">
-<div class="content">
+<div class="sect3">
+<h4 id="_main_points">Main points</h4>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="a1_debug_vscode.html">A1. Debugging Python in VS Code</a></p>
+<p>Import standard modules like <code>os</code>, <code>tempfile</code>, and <code>Path</code>.</p>
+</li>
+<li>
+<p>Install <code>langchain-community</code> to access document loaders.</p>
+</li>
+<li>
+<p>Use <code>TextLoader(file_path)</code> and call <code>.load()</code> to read a text
+file.</p>
+</li>
+<li>
+<p>The result is a <strong>list of documents</strong>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_document_contents">Document contents</h4>
+<div class="paragraph">
+<p>Each loaded document has:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>page_content</code>: the text from the file</p>
+</li>
+<li>
+<p><code>metadata</code>: extra info such as the file source path</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_workflow">Example workflow</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a temporary <code>.txt</code> file.</p>
+</li>
+<li>
+<p>Write sample text into it.</p>
+</li>
+<li>
+<p>Load it with a helper function:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="python"><span></span><span class="tok-k">def</span> <span class="tok-nf">load_text_file</span><span class="tok-p">(</span><span class="tok-n">file_path</span><span class="tok-p">:</span> <span class="tok-nb">str</span><span class="tok-p">):</span>
+    <span class="tok-n">loader</span> <span class="tok-o">=</span> <span class="tok-n">TextLoader</span><span class="tok-p">(</span><span class="tok-n">file_path</span><span class="tok-p">)</span>
+    <span class="tok-n">documents</span> <span class="tok-o">=</span> <span class="tok-n">loader</span><span class="tok-o">.</span><span class="tok-n">load</span><span class="tok-p">()</span>
+    <span class="tok-k">return</span> <span class="tok-n">documents</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_expected_output">Expected output</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><code>len(documents)</code> is <code>1</code></p>
+</li>
+<li>
+<p><code>documents[0].page_content</code> contains the file text</p>
+</li>
+<li>
+<p><code>documents[0].metadata</code> includes the source path</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_this_matters">Why this matters</h4>
+<div class="paragraph">
+<p>Loaders are useful because they:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>read document content</p>
+</li>
+<li>
+<p>attach metadata automatically</p>
+</li>
+<li>
+<p>help in retrieval and document-processing pipelines by tracking where
+data came from</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_38_hands_on_webloader">38. Hands-on ~ WebLoader</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Next, let’s look at the <strong>WebLoader</strong>.</p>
+</div>
+<div class="paragraph">
+<p>First, I’m going to define a new function called <code>demo</code>. Then I’ll import <code>WebLoader</code> and instantiate it by passing in a URL. In this example, I’m using a simple Wikipedia page for web scraping.</p>
+</div>
+<div class="paragraph">
+<p>After that, I call the <code>load()</code> method, just like before. This returns the documents from the web page.</p>
+</div>
+<div class="paragraph">
+<p>There are several optional parameters you can pass to <code>WebLoader</code>, including:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>proxies</code></p>
+</li>
+<li>
+<p><code>verify_ssl</code></p>
+</li>
+<li>
+<p><code>header_template</code></p>
+</li>
+<li>
+<p><code>encoding</code></p>
+</li>
+<li>
+<p><code>requests_per_second</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and more, depending on what you need.</p>
+</div>
+<div class="paragraph">
+<p>One useful option I want to highlight is <code>bs_kwargs</code>. This lets you pass arguments to Beautiful Soup. For example, you can specify the parser with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="python"><span></span><span class="tok-n">bs_kwargs</span><span class="tok-o">=</span><span class="tok-p">{</span><span class="tok-s2">&quot;features&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;html.parser&quot;</span><span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since HTML pages are being parsed, this is a common setup.</p>
+</div>
+<div class="paragraph">
+<p>You can also control what part of the page gets parsed. For example, you might target a specific element like a <code>div</code>, or leave it as <code>None</code> if you want to parse the whole page.</p>
+</div>
+<div class="paragraph">
+<p>Now let’s print a content preview. I’ll display the source, content length, and a preview of the loaded document.</p>
+</div>
+<div class="paragraph">
+<p>When I run it, I hit an issue: <code>WebLoader</code> depends on <strong>Beautiful Soup</strong>, which needs to be installed first.</p>
+</div>
+<div class="paragraph">
+<p>So I add <code>bs4</code> to the environment and run it again. This time it works.</p>
+</div>
+<div class="paragraph">
+<p>Now you can see that one document was loaded from the web. It shows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the source URL</p>
+</li>
+<li>
+<p>the content length</p>
+</li>
+<li>
+<p>a preview of the page content</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>So it successfully went to the Wikipedia page, scraped the content, and created a document from it.</p>
+</div>
+<div class="paragraph">
+<p>We can also change the URL and load from other web pages as well. When I do that, it again returns one document with the new URL, its length, and a preview of the extracted content.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_39_hands_on_lazy_loader">39. Hands-on ~ Lazy Loader</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains a simple example of using <strong>lazy loading</strong> to
+efficiently load many files, especially large datasets.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A temporary directory is created with some sample <code>.txt</code> files.</p>
+</li>
+<li>
+<p>A <code>DirectoryLoader</code> is configured to load files from that directory.</p>
+</li>
+<li>
+<p><code>TextLoader</code> is set as the <code>loader_cls</code> because the files are text
+files.</p>
+</li>
+<li>
+<p>A <code>glob</code> pattern is used so only <code>.txt</code> files, including those in
+subdirectories, are selected.</p>
+</li>
+<li>
+<p>Instead of loading everything at once, <strong>lazy loading</strong> loads documents
+incrementally, which saves memory.</p>
+</li>
+<li>
+<p>The example prints both document contents and metadata, including the
+<code>source</code> field, to show where each file came from.</p>
+</li>
+<li>
+<p>Running the lazy loader confirms that the files are loaded correctly
+one by one.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, it shows how lazy loading can be a practical, memory-efficient
+approach for working with large collections of files.</p>
+</div>
+</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-27 09:59:38 +0200
+Last updated 2026-03-27 11:20:08 +0200
 </div>
 </div>
 </body>

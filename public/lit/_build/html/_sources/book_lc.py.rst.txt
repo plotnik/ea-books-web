@@ -102,7 +102,8 @@ Get ``GEMINI_API_KEY``
 
   g_key = os.getenv("GEMINI_API_KEY")
 
-Select Embeddings
+Embeddings
+----------
 
 .. csv-table:: Useful Links
    :header: "Name", "URL"
@@ -250,8 +251,8 @@ Load history
   #    update_history("")
   #    st.toast(f'History updated')   
 
-Chroma    
-------
+Document Loader
+---------------
 
 Create or load index
 
@@ -269,6 +270,9 @@ Create or load index
 
       chunks = text_splitter.split_documents(docs) 
       return chunks
+
+Chroma    
+------
 
 Create a persistent Chroma collection in one step
 
@@ -297,7 +301,8 @@ Create a persistent Chroma collection in one step
       except Exception as e:
           st.error(f"Error loading index: {e}")
 
-Handle indexing logic
+Indexing logic
+--------------
 
 ::
 
