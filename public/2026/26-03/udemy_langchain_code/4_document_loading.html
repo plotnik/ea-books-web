@@ -523,6 +523,51 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </li>
 <li><a href="#_38_hands_on_webloader">38. Hands-on ~ WebLoader</a></li>
 <li><a href="#_39_hands_on_lazy_loader">39. Hands-on ~ Lazy Loader</a></li>
+<li><a href="#_40_hands_on_document_structure">40. Hands-on ~ Document Structure</a>
+<ul class="sectlevel3">
+<li><a href="#_main_parts_of_a_document">Main parts of a <code>Document</code></a></li>
+<li><a href="#_example">Example</a></li>
+<li><a href="#_inspecting_and_updating">Inspecting and updating</a></li>
+<li><a href="#_why_it_matters">Why it matters</a></li>
+</ul>
+</li>
+<li><a href="#_43_hands_on_text_splitter_recursivecharactertextsplitter">43. Hands-on ~ Text Splitter - RecursiveCharacterTextSplitter</a>
+<ul class="sectlevel3">
+<li><a href="#_main_points_2">Main points</a></li>
+<li><a href="#_recursivecharactertextsplitter">RecursiveCharacterTextSplitter</a></li>
+<li><a href="#_usage_note">Usage note</a></li>
+<li><a href="#_result_inspection">Result inspection</a></li>
+<li><a href="#_why_its_useful">Why it’s useful</a></li>
+<li><a href="#_key_takeaway">Key takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_44_hands_on_chunk_comparison">44. Hands-on ~ Chunk Comparison</a>
+<ul class="sectlevel3">
+<li><a href="#_main_idea">Main idea</a></li>
+<li><a href="#_what_the_code_does">What the code does</a></li>
+<li><a href="#_observed_results">Observed results</a></li>
+<li><a href="#_why_this_happens">Why this happens</a></li>
+<li><a href="#_why_it_matters_2">Why it matters</a></li>
+<li><a href="#_key_takeaway_2">Key takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_45_hands_on_overlap_importance_in_code">45. Hands-on ~ Overlap Importance In Code</a>
+<ul class="sectlevel3">
+<li><a href="#_main_idea_2">Main idea</a></li>
+<li><a href="#_why_it_matters_3">Why it matters</a></li>
+<li><a href="#_example_2">Example</a></li>
+<li><a href="#_takeaway">Takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_46_hands_on_markdown_header_splitter">46. Hands-on ~ Markdown Header Splitter</a></li>
+<li><a href="#_47_hands_on_code_splitter">47. Hands-on ~ Code Splitter</a></li>
+<li><a href="#_48_pdf_document_splitting">48. PDF Document Splitting</a>
+<ul class="sectlevel3">
+<li><a href="#_main_steps">Main steps</a></li>
+<li><a href="#_why_it_matters_4">Why it matters</a></li>
+<li><a href="#_key_takeaway_3">Key takeaway</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -767,10 +812,583 @@ approach for working with large collections of files.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_40_hands_on_document_structure">40. Hands-on ~ Document Structure</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>LangChain’s <code>Document</code> class is a structured container for text and
+metadata. It is typically created by loaders, but you can also construct
+it manually.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_parts_of_a_document">Main parts of a <code>Document</code></h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>page_content</code></strong>: required string field containing the actual text</p>
+</li>
+<li>
+<p><strong><code>metadata</code></strong>: optional dictionary for extra details like source,
+author, tags, creation date, or custom labels</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example">Example</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="python"><span></span><span class="tok-kn">from</span> <span class="tok-nn">langchain_core.documents</span> <span class="tok-kn">import</span> <span class="tok-n">Document</span>
+
+<span class="tok-n">doc</span> <span class="tok-o">=</span> <span class="tok-n">Document</span><span class="tok-p">(</span>
+    <span class="tok-n">page_content</span><span class="tok-o">=</span><span class="tok-s2">&quot;This is a sample document&quot;</span><span class="tok-p">,</span>
+    <span class="tok-n">metadata</span><span class="tok-o">=</span><span class="tok-p">{</span>
+        <span class="tok-s2">&quot;source&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;sample.txt&quot;</span><span class="tok-p">,</span>
+        <span class="tok-s2">&quot;creation&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;manual&quot;</span><span class="tok-p">,</span>
+        <span class="tok-s2">&quot;author&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;Paolo&quot;</span><span class="tok-p">,</span>
+        <span class="tok-s2">&quot;length&quot;</span><span class="tok-p">:</span> <span class="tok-mi">25</span><span class="tok-p">,</span>
+        <span class="tok-s2">&quot;tags&quot;</span><span class="tok-p">:</span> <span class="tok-p">[</span><span class="tok-s2">&quot;sample&quot;</span><span class="tok-p">,</span> <span class="tok-s2">&quot;demo&quot;</span><span class="tok-p">],</span>
+        <span class="tok-s2">&quot;created_at&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;2024-01-01&quot;</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">)</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_inspecting_and_updating">Inspecting and updating</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Printing a <code>Document</code> shows its text and metadata clearly.</p>
+</li>
+<li>
+<p>Since documents are usually treated as immutable, updates are made by
+creating a new <code>Document</code> with modified content or metadata.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters">Why it matters</h4>
+<div class="paragraph">
+<p>Understanding <code>Document</code> helps you:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>work with LangChain loader outputs</p>
+</li>
+<li>
+<p>add custom metadata</p>
+</li>
+<li>
+<p>prepare data for splitting, embedding, and vector databases</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In short, a <code>Document</code> is simply text plus flexible metadata.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_43_hands_on_text_splitter_recursivecharactertextsplitter">43. Hands-on ~ Text Splitter - RecursiveCharacterTextSplitter</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">API reference</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langchain-text-splitters/character/RecursiveCharacterTextSplitter" class="bare">https://reference.langchain.com/python/langchain-text-splitters/character/RecursiveCharacterTextSplitter</a></p>
+</dd>
+<dt class="hdlist1">Usage guide (text splitter integrations)</dt>
+<dd>
+<p><a href="https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter" class="bare">https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter</a></p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>This example explains how to split text into chunks using LangChain,
+focusing on <strong>RecursiveCharacterTextSplitter</strong>.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_points_2">Main points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>A file called <code>TextSplitters.py</code> is used with imported text-splitting
+tools, <code>Language</code>, <code>Document</code>, and <code>.env</code> loading.</p>
+</li>
+<li>
+<p>Two sample inputs are mentioned:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>A <strong>text document</strong> about machine learning</p>
+</li>
+<li>
+<p>A <strong>code sample</strong> for testing how splitting works on code</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_recursivecharactertextsplitter">RecursiveCharacterTextSplitter</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Configured with:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>chunk_size=500</code></p>
+</li>
+<li>
+<p><code>chunk_overlap=50</code></p>
+</li>
+<li>
+<p>separators: <code>["\n\n", "\n", " ", ""]</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>It splits text hierarchically, trying to preserve meaning and
+structure:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Paragraphs</p>
+</li>
+<li>
+<p>Sentences</p>
+</li>
+<li>
+<p>Words</p>
+</li>
+<li>
+<p>Characters</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_usage_note">Usage note</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>split_text()</code> for plain strings</p>
+</li>
+<li>
+<p>Use <code>split_documents()</code> for <code>Document</code> objects</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_result_inspection">Result inspection</h4>
+<div class="paragraph">
+<p>The example shows checking:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>original text length</p>
+</li>
+<li>
+<p>number of chunks</p>
+</li>
+<li>
+<p>chunk sizes</p>
+</li>
+<li>
+<p>a preview of the first chunk</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_its_useful">Why it’s useful</h4>
+<div class="paragraph">
+<p>Recursive splitting keeps related ideas together, producing more
+coherent chunks that work better for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>embeddings</p>
+</li>
+<li>
+<p>retrieval</p>
+</li>
+<li>
+<p>summarization</p>
+</li>
+<li>
+<p>question answering</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_takeaway">Key takeaway</h4>
+<div class="paragraph">
+<p><code>RecursiveCharacterTextSplitter</code> is presented as a strong default choice
+for chunking text while preserving natural boundaries.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_44_hands_on_chunk_comparison">44. Hands-on ~ Chunk Comparison</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains a <strong>chunk size comparison</strong> for text splitting in a
+RAG workflow.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_idea">Main idea</h4>
+<div class="paragraph">
+<p>Chunk size controls how much context is stored in each vector chunk,
+which affects retrieval quality later.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_what_the_code_does">What the code does</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Defines chunk sizes: <code>200</code>, <code>500</code>, <code>1000</code></p>
+</li>
+<li>
+<p>Prints <code>"Chunk size comparison"</code></p>
+</li>
+<li>
+<p>For each size:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Creates a <code>RecursiveCharacterTextSplitter</code></p>
+</li>
+<li>
+<p>Sets <code>chunk_overlap</code> to about 20% of the chunk size</p>
+</li>
+<li>
+<p>Splits the text</p>
+</li>
+<li>
+<p>Prints how many chunks are produced</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_observed_results">Observed results</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>200</strong> → <strong>6 chunks</strong></p>
+</li>
+<li>
+<p><strong>500</strong> → <strong>3 chunks</strong></p>
+</li>
+<li>
+<p><strong>1000</strong> → <strong>1 chunk</strong></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_this_happens">Why this happens</h4>
+<div class="paragraph">
+<p>Because smaller chunk sizes, even with overlap, create more pieces of
+text.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters_2">Why it matters</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Smaller chunks</strong>: better retrieval precision, but less context per
+chunk</p>
+</li>
+<li>
+<p><strong>Larger chunks</strong>: more context, but less precise retrieval</p>
+</li>
+<li>
+<p><strong>500</strong> is suggested as a reasonable middle ground in this example</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_takeaway_2">Key takeaway</h4>
+<div class="paragraph">
+<p>There is <strong>no single best chunk size</strong>. It should be chosen based on:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>document type</p>
+</li>
+<li>
+<p>query patterns</p>
+</li>
+<li>
+<p>LLM context window</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The point of the demo is that <strong>chunk size strongly affects retrieval
+performance</strong>, so it must be tested for each use case.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_45_hands_on_overlap_importance_in_code">45. Hands-on ~ Overlap Importance In Code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Overlap in text splitting helps preserve context at chunk boundaries.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_idea_2">Main idea</h4>
+<div class="paragraph">
+<p>When text is split into chunks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Without overlap</strong>, important phrases can be cut in half between
+chunks.</p>
+</li>
+<li>
+<p><strong>With overlap</strong>, chunks repeat some text, so context is shared across
+boundaries.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters_3">Why it matters</h4>
+<div class="paragraph">
+<p>This makes retrieval more reliable because:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>key information is less likely to be lost,</p>
+</li>
+<li>
+<p>related details stay together in at least one chunk,</p>
+</li>
+<li>
+<p>the retriever is more likely to return a <strong>complete answer</strong> instead of
+partial context.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_2">Example</h4>
+<div class="paragraph">
+<p>If a sentence about an API expiring is split across two chunks, one
+chunk may mention the expiration and another may mention the fix.
+Without overlap, the retriever may only find one piece. With overlap, a
+chunk can contain both the problem and the solution.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_takeaway">Takeaway</h4>
+<div class="paragraph">
+<p>Overlap is like “cheap insurance” for retrieval: a little redundancy
+improves the chance that important context is available when needed.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_46_hands_on_markdown_header_splitter">46. Hands-on ~ Markdown Header Splitter</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Markdown Header Text Splitter in LangChain is used to split Markdown
+documents into chunks based on header structure like <code><mark></code>, <code><mark></code>, and
+<code></mark></mark></code>. You specify which headers to split on, pass them to the splitter,
+and then call <code>split_text()</code> on your Markdown content.</p>
+</div>
+<div class="paragraph">
+<p>Each resulting chunk includes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the text content</p>
+</li>
+<li>
+<p>metadata showing the header hierarchy</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This preserves context, so chunks remain tied to where they appear in
+the document. It’s especially useful for structured Markdown content
+such as documentation, README files, wikis, and notes, because it keeps
+both the meaning and location of the text intact for better retrieval
+and downstream use.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_47_hands_on_code_splitter">47. Hands-on ~ Code Splitter</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains that splitting code is more complex than splitting
+plain text because code has syntax and logical structure. It describes
+using a language-aware recursive character text splitter with
+<code>from_language</code>, set to <code>Python</code>, along with a chunk size of <code>500</code>
+and overlap of <code>50</code>.</p>
+</div>
+<div class="paragraph">
+<p>The main point is that specifying the language helps preserve meaningful
+code units like functions and classes, instead of cutting them into
+incoherent pieces. In the example, the code is split into two chunks,
+and the function definition remains intact. This improves retrieval
+quality, making it more likely to return the right code block when
+answering programming questions.</p>
+</div>
+<div class="paragraph">
+<p>Overall takeaway: always use <code>from_language</code> with the correct
+language when splitting code so the chunks stay coherent and
+syntax-aware.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_48_pdf_document_splitting">48. PDF Document Splitting</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to load and split a real PDF document in
+LangChain using <code>PyPDFLoader</code> and <code>RecursiveCharacterTextSplitter</code>.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_steps">Main steps</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Import the loader and splitter</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>PyPDFLoader</code> loads the PDF.</p>
+</li>
+<li>
+<p><code>RecursiveCharacterTextSplitter</code> splits the content.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Load the PDF</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>The PDF is loaded into a list of <code>Document</code> objects, usually one per
+page.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Create a splitter</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Configure chunk size and overlap.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Split documents</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>split_documents()</code> instead of <code>split_text()</code> because the
+input is a list of <code>Document</code> objects.</p>
+</li>
+<li>
+<p>The output chunks remain <code>Document</code> objects with preserved metadata.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Inspect output</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>You can print the chunk text and metadata to see source information
+like page number, creator, and creation date.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters_4">Why it matters</h4>
+<div class="paragraph">
+<p>This workflow is useful because it:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>handles real file types like PDFs</p>
+</li>
+<li>
+<p>preserves metadata</p>
+</li>
+<li>
+<p>creates chunks suitable for search, embeddings, and RAG</p>
+</li>
+<li>
+<p>supports many loaders and splitters for different document types</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_takeaway_3">Key takeaway</h4>
+<div class="paragraph">
+<p>For real documents, LangChain’s standard pattern is:</p>
+</div>
+<div class="paragraph">
+<p><strong>load documents → split documents → keep metadata → use chunks for
+retrieval or downstream NLP tasks</strong></p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-27 11:20:08 +0200
+Last updated 2026-03-30 11:44:00 +0300
 </div>
 </div>
 </body>

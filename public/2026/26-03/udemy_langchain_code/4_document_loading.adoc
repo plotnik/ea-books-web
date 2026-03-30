@@ -122,3 +122,276 @@ one by one.
 Overall, it shows how lazy loading can be a practical, memory-efficient
 approach for working with large collections of files.
 
+== 40. Hands-on ~ Document Structure
+
+LangChain’s `Document` class is a structured container for text and
+metadata. It is typically created by loaders, but you can also construct
+it manually.
+
+==== Main parts of a `Document`
+
+* *`page++_++content`*: required string field containing the actual text
+* *`metadata`*: optional dictionary for extra details like source,
+author, tags, creation date, or custom labels
+
+==== Example
+
+[source,python]
+----
+from langchain_core.documents import Document
+
+doc = Document(
+    page_content="This is a sample document",
+    metadata={
+        "source": "sample.txt",
+        "creation": "manual",
+        "author": "Paolo",
+        "length": 25,
+        "tags": ["sample", "demo"],
+        "created_at": "2024-01-01"
+    }
+)
+----
+
+==== Inspecting and updating
+
+* Printing a `Document` shows its text and metadata clearly.
+* Since documents are usually treated as immutable, updates are made by
+creating a new `Document` with modified content or metadata.
+
+==== Why it matters
+
+Understanding `Document` helps you:
+
+* work with LangChain loader outputs
+* add custom metadata
+* prepare data for splitting, embedding, and vector databases
+
+In short, a `Document` is simply text plus flexible metadata.
+
+== 43. Hands-on ~ Text Splitter - RecursiveCharacterTextSplitter
+
+====
+API reference:: 
+https://reference.langchain.com/python/langchain-text-splitters/character/RecursiveCharacterTextSplitter
+
+Usage guide (text splitter integrations)::
+https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter
+
+====
+
+This example explains how to split text into chunks using LangChain,
+focusing on *RecursiveCharacterTextSplitter*.
+
+==== Main points
+
+* A file called `TextSplitters.py` is used with imported text-splitting
+tools, `Language`, `Document`, and `.env` loading.
+* Two sample inputs are mentioned:
+[arabic]
+. A *text document* about machine learning
+. A *code sample* for testing how splitting works on code
+
+==== RecursiveCharacterTextSplitter
+
+* Configured with:
+** `chunk++_++size=500`
+** `chunk++_++overlap=50`
+** separators: `++[++"++\++n++\++n", "++\++n", " ", ""++]++`
+* It splits text hierarchically, trying to preserve meaning and
+structure:
+[arabic]
+. Paragraphs
+. Sentences
+. Words
+. Characters
+
+==== Usage note
+
+* Use `split++_++text()` for plain strings
+* Use `split++_++documents()` for `Document` objects
+
+==== Result inspection
+
+The example shows checking:
+
+* original text length
+* number of chunks
+* chunk sizes
+* a preview of the first chunk
+
+==== Why it’s useful
+
+Recursive splitting keeps related ideas together, producing more
+coherent chunks that work better for:
+
+* embeddings
+* retrieval
+* summarization
+* question answering
+
+==== Key takeaway
+
+`RecursiveCharacterTextSplitter` is presented as a strong default choice
+for chunking text while preserving natural boundaries.
+
+
+== 44. Hands-on ~ Chunk Comparison
+
+The passage explains a *chunk size comparison* for text splitting in a
+RAG workflow.
+
+==== Main idea
+
+Chunk size controls how much context is stored in each vector chunk,
+which affects retrieval quality later.
+
+==== What the code does
+
+* Defines chunk sizes: `200`, `500`, `1000`
+* Prints `"Chunk size comparison"`
+* For each size:
+** Creates a `RecursiveCharacterTextSplitter`
+** Sets `chunk++_++overlap` to about 20% of the chunk size
+** Splits the text
+** Prints how many chunks are produced
+
+==== Observed results
+
+* *200* → *6 chunks*
+* *500* → *3 chunks*
+* *1000* → *1 chunk*
+
+==== Why this happens
+
+Because smaller chunk sizes, even with overlap, create more pieces of
+text.
+
+==== Why it matters
+
+* *Smaller chunks*: better retrieval precision, but less context per
+chunk
+* *Larger chunks*: more context, but less precise retrieval
+* *500* is suggested as a reasonable middle ground in this example
+
+==== Key takeaway
+
+There is *no single best chunk size*. It should be chosen based on:
+
+* document type
+* query patterns
+* LLM context window
+
+The point of the demo is that *chunk size strongly affects retrieval
+performance*, so it must be tested for each use case.
+
+== 45. Hands-on ~ Overlap Importance In Code
+
+Overlap in text splitting helps preserve context at chunk boundaries.
+
+==== Main idea
+
+When text is split into chunks:
+
+* *Without overlap*, important phrases can be cut in half between
+chunks.
+* *With overlap*, chunks repeat some text, so context is shared across
+boundaries.
+
+==== Why it matters
+
+This makes retrieval more reliable because:
+
+* key information is less likely to be lost,
+* related details stay together in at least one chunk,
+* the retriever is more likely to return a *complete answer* instead of
+partial context.
+
+==== Example
+
+If a sentence about an API expiring is split across two chunks, one
+chunk may mention the expiration and another may mention the fix.
+Without overlap, the retriever may only find one piece. With overlap, a
+chunk can contain both the problem and the solution.
+
+==== Takeaway
+
+Overlap is like “cheap insurance” for retrieval: a little redundancy
+improves the chance that important context is available when needed.
+
+== 46. Hands-on ~ Markdown Header Splitter
+
+The Markdown Header Text Splitter in LangChain is used to split Markdown
+documents into chunks based on header structure like `#`, `##`, and
+`###`. You specify which headers to split on, pass them to the splitter,
+and then call `split++_++text()` on your Markdown content.
+
+Each resulting chunk includes:
+
+* the text content
+* metadata showing the header hierarchy
+
+This preserves context, so chunks remain tied to where they appear in
+the document. It’s especially useful for structured Markdown content
+such as documentation, README files, wikis, and notes, because it keeps
+both the meaning and location of the text intact for better retrieval
+and downstream use.
+
+== 47. Hands-on ~ Code Splitter
+
+The passage explains that splitting code is more complex than splitting
+plain text because code has syntax and logical structure. It describes
+using a language-aware recursive character text splitter with
+`from++_++language`, set to `Python`, along with a chunk size of `500`
+and overlap of `50`.
+
+The main point is that specifying the language helps preserve meaningful
+code units like functions and classes, instead of cutting them into
+incoherent pieces. In the example, the code is split into two chunks,
+and the function definition remains intact. This improves retrieval
+quality, making it more likely to return the right code block when
+answering programming questions.
+
+Overall takeaway: always use `from++_++language` with the correct
+language when splitting code so the chunks stay coherent and
+syntax-aware.
+
+== 48. PDF Document Splitting
+
+The passage explains how to load and split a real PDF document in
+LangChain using `PyPDFLoader` and `RecursiveCharacterTextSplitter`.
+
+==== Main steps
+
+[arabic]
+. *Import the loader and splitter*
+* `PyPDFLoader` loads the PDF.
+* `RecursiveCharacterTextSplitter` splits the content.
+. *Load the PDF*
+* The PDF is loaded into a list of `Document` objects, usually one per
+page.
+. *Create a splitter*
+* Configure chunk size and overlap.
+. *Split documents*
+* Use `split++_++documents()` instead of `split++_++text()` because the
+input is a list of `Document` objects.
+* The output chunks remain `Document` objects with preserved metadata.
+. *Inspect output*
+* You can print the chunk text and metadata to see source information
+like page number, creator, and creation date.
+
+==== Why it matters
+
+This workflow is useful because it:
+
+* handles real file types like PDFs
+* preserves metadata
+* creates chunks suitable for search, embeddings, and RAG
+* supports many loaders and splitters for different document types
+
+==== Key takeaway
+
+For real documents, LangChain’s standard pattern is:
+
+*load documents → split documents → keep metadata → use chunks for
+retrieval or downstream NLP tasks*
