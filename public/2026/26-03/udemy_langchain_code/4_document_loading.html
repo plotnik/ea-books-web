@@ -568,6 +568,16 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_key_takeaway_3">Key takeaway</a></li>
 </ul>
 </li>
+<li><a href="#_51_hands_on_openai_embedding">51. Hands-on ~ OpenAI Embedding</a>
+<ul class="sectlevel3">
+<li><a href="#_key_points">Key points</a></li>
+<li><a href="#_how_to_use_it_in_langchain">How to use it in LangChain</a></li>
+<li><a href="#_embedding_text">Embedding text</a></li>
+<li><a href="#_embedding_multiple_documents">Embedding multiple documents</a></li>
+<li><a href="#_main_takeaway">Main takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_52_free_embedding_models">52. Free Embedding Models</a></li>
 </ul>
 </div>
 </div>
@@ -1385,10 +1395,189 @@ retrieval or downstream NLP tasks</strong></p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_51_hands_on_openai_embedding">51. Hands-on ~ OpenAI Embedding</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to create embeddings in practice using OpenAI
+embeddings through LangChain.</p>
+</div>
+<div class="sect3">
+<h4 id="_key_points">Key points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>OpenAI provides several embedding models:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>text-embedding-3-small</code> → 1,536 dimensions</p>
+</li>
+<li>
+<p><code>text-embedding-3-large</code> → 3,072 dimensions</p>
+</li>
+<li>
+<p><code>text-embedding-ada-002</code> → deprecated</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>More dimensions can capture richer meaning, but usually cost more.</p>
+</li>
+<li>
+<p>For the example, <code>text-embedding-3-small</code> is used because it is
+cheaper and suitable for general-purpose use.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_how_to_use_it_in_langchain">How to use it in LangChain</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Import the wrapper:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="python"><span></span><span class="tok-kn">from</span> <span class="tok-nn">langchain_openai</span> <span class="tok-kn">import</span> <span class="tok-n">OpenAIEmbeddings</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create the embeddings model:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="python"><span></span><span class="tok-n">embeddings</span> <span class="tok-o">=</span> <span class="tok-n">OpenAIEmbeddings</span><span class="tok-p">(</span><span class="tok-n">model</span><span class="tok-o">=</span><span class="tok-s2">&quot;text-embedding-3-small&quot;</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_embedding_text">Embedding text</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>embed_query()</code> for a single text:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="python"><span></span><span class="tok-n">embedding</span> <span class="tok-o">=</span> <span class="tok-n">embeddings</span><span class="tok-o">.</span><span class="tok-n">embed_query</span><span class="tok-p">(</span><span class="tok-n">text</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>This returns a vector: a list of numbers representing the text’s
+semantic meaning.</p>
+</li>
+<li>
+<p>You can check the vector size with <code>len(embedding)</code>, which should be
+<code>1536</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_embedding_multiple_documents">Embedding multiple documents</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>embed_documents()</code> to embed a list of texts at once:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="python"><span></span><span class="tok-n">embeddings_list</span> <span class="tok-o">=</span> <span class="tok-n">embeddings</span><span class="tok-o">.</span><span class="tok-n">embed_documents</span><span class="tok-p">(</span><span class="tok-n">texts</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>This returns one vector per document, each with 1,536 values.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_main_takeaway">Main takeaway</h4>
+<div class="paragraph">
+<p>Embeddings turn text into numerical vectors that capture meaning. These
+vectors are essential for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>similarity search</p>
+</li>
+<li>
+<p>vector databases</p>
+</li>
+<li>
+<p>retrieval-augmented generation (RAG) systems</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_52_free_embedding_models">52. Free Embedding Models</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains that while OpenAI embeddings like
+<code>text-embedding-3-small</code> are inexpensive, they still incur API cost. If
+you want a fully local, free alternative, you can use LangChain wrapper
+classes for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Hugging Face / Sentence Transformers embeddings</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Example model: <code>all-MiniLM-L6-v2</code></p>
+</li>
+<li>
+<p>Uses <strong>384 dimensions</strong>, which is smaller than many OpenAI models</p>
+</li>
+<li>
+<p>Good for testing and smaller projects</p>
+</li>
+<li>
+<p>Same general usage pattern as OpenAI embeddings</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Ollama embeddings</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Also supported through LangChain</p>
+</li>
+<li>
+<p>Requires installing <code>langchain-ollama</code> first</p>
+</li>
+<li>
+<p>You pass a model name and use it similarly to other embedding
+providers</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, the key point is that <strong>LangChain makes switching embedding
+backends easy</strong>, so you can use OpenAI, Hugging Face, or Ollama with
+nearly the same code.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-30 11:44:00 +0300
+Last updated 2026-03-31 10:01:05 +0300
 </div>
 </div>
 </body>

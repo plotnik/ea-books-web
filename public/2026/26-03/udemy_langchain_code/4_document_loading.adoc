@@ -395,3 +395,89 @@ For real documents, LangChain’s standard pattern is:
 
 *load documents → split documents → keep metadata → use chunks for
 retrieval or downstream NLP tasks*
+
+
+== 51. Hands-on ~ OpenAI Embedding
+
+The passage explains how to create embeddings in practice using OpenAI
+embeddings through LangChain.
+
+==== Key points
+
+* OpenAI provides several embedding models:
+** `text-embedding-3-small` → 1,536 dimensions
+** `text-embedding-3-large` → 3,072 dimensions
+** `text-embedding-ada-002` → deprecated
+* More dimensions can capture richer meaning, but usually cost more.
+* For the example, `text-embedding-3-small` is used because it is
+cheaper and suitable for general-purpose use.
+
+==== How to use it in LangChain
+
+[arabic]
+. Import the wrapper:
++
+[source,python]
+----
+from langchain_openai import OpenAIEmbeddings
+----
+. Create the embeddings model:
++
+[source,python]
+----
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+----
+
+==== Embedding text
+
+* Use `embed++_++query()` for a single text:
++
+[source,python]
+----
+embedding = embeddings.embed_query(text)
+----
+* This returns a vector: a list of numbers representing the text’s
+semantic meaning.
+* You can check the vector size with `len(embedding)`, which should be
+`1536`.
+
+==== Embedding multiple documents
+
+* Use `embed++_++documents()` to embed a list of texts at once:
++
+[source,python]
+----
+embeddings_list = embeddings.embed_documents(texts)
+----
+* This returns one vector per document, each with 1,536 values.
+
+==== Main takeaway
+
+Embeddings turn text into numerical vectors that capture meaning. These
+vectors are essential for:
+
+* similarity search
+* vector databases
+* retrieval-augmented generation (RAG) systems
+
+== 52. Free Embedding Models
+
+The passage explains that while OpenAI embeddings like
+`text-embedding-3-small` are inexpensive, they still incur API cost. If
+you want a fully local, free alternative, you can use LangChain wrapper
+classes for:
+
+* *Hugging Face / Sentence Transformers embeddings*
+** Example model: `all-MiniLM-L6-v2`
+** Uses *384 dimensions*, which is smaller than many OpenAI models
+** Good for testing and smaller projects
+** Same general usage pattern as OpenAI embeddings
+* *Ollama embeddings*
+** Also supported through LangChain
+** Requires installing `langchain-ollama` first
+** You pass a model name and use it similarly to other embedding
+providers
+
+Overall, the key point is that *LangChain makes switching embedding
+backends easy*, so you can use OpenAI, Hugging Face, or Ollama with
+nearly the same code.
