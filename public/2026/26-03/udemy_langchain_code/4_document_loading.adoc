@@ -481,3 +481,61 @@ providers
 Overall, the key point is that *LangChain makes switching embedding
 backends easy*, so you can use OpenAI, Hugging Face, or Ollama with
 nearly the same code.
+
+== 53. Hands-on ~ Embeddings Deep Dive - Basics - Similarity Search
+
+This section explains how to use embeddings with LangChain and why they
+matter for retrieval and RAG.
+
+==== Main points
+
+* Create one reusable `OpenAIEmbeddings` model.
+* Generate:
+** a *single embedding* with `embed++_++query()`
+** *batch embeddings* with `embed++_++documents()`
+* Inspect embedding properties like:
+** vector length
+** first few values
+** vector norm
+* Use *cosine similarity* to compare a query embedding with document
+embeddings.
+* Rank documents by similarity to find the most relevant ones.
+
+==== Key idea
+
+Embeddings convert text into vectors so similar meanings are placed near
+each other in vector space. In the example:
+
+* a query about programming languages ranks Python and JavaScript higher
+than unrelated documents like cats or machine learning.
+
+==== Why normalization matters
+
+OpenAI embeddings are typically normalized, so vector comparisons depend
+more on direction than length. This helps make similarity scores more
+meaningful.
+                                                                                                    
+==== Relevance to RAG
+
+This is the basic retrieval process used in RAG:
+
+[arabic]
+. embed documents
+. embed the query
+. compare them
+. return the most relevant results
+
+Overall, the section introduces the core workflow behind embedding-based
+search and retrieval.
+                                   
+ 
+== 54. Hands-on ~ Embedding Caching 
+                                
+The passage explains that caching embeddings is useful because it
+prevents repeated API calls, reducing both latency and cost. It shows
+how to wrap an `OpenAIEmbeddings` model with `CacheBackedEmbeddings`
+using a `LocalFileStore` cache. In the example, the first call to
+`embed++_++query()` computes and stores the embedding, while the second
+call retrieves the same result from cache. The two outputs should match,
+confirming the cache works.   
+

@@ -578,6 +578,15 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </ul>
 </li>
 <li><a href="#_52_free_embedding_models">52. Free Embedding Models</a></li>
+<li><a href="#_53_hands_on_embeddings_deep_dive_basics_similarity_search">53. Hands-on ~ Embeddings Deep Dive - Basics - Similarity Search</a>
+<ul class="sectlevel3">
+<li><a href="#_main_points_3">Main points</a></li>
+<li><a href="#_key_idea">Key idea</a></li>
+<li><a href="#_why_normalization_matters">Why normalization matters</a></li>
+<li><a href="#_relevance_to_rag">Relevance to RAG</a></li>
+</ul>
+</li>
+<li><a href="#_54_hands_on_embedding_caching">54. Hands-on ~ Embedding Caching</a></li>
 </ul>
 </div>
 </div>
@@ -1574,10 +1583,128 @@ nearly the same code.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_53_hands_on_embeddings_deep_dive_basics_similarity_search">53. Hands-on ~ Embeddings Deep Dive - Basics - Similarity Search</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section explains how to use embeddings with LangChain and why they
+matter for retrieval and RAG.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_points_3">Main points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Create one reusable <code>OpenAIEmbeddings</code> model.</p>
+</li>
+<li>
+<p>Generate:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>a <strong>single embedding</strong> with <code>embed_query()</code></p>
+</li>
+<li>
+<p><strong>batch embeddings</strong> with <code>embed_documents()</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Inspect embedding properties like:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>vector length</p>
+</li>
+<li>
+<p>first few values</p>
+</li>
+<li>
+<p>vector norm</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Use <strong>cosine similarity</strong> to compare a query embedding with document
+embeddings.</p>
+</li>
+<li>
+<p>Rank documents by similarity to find the most relevant ones.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_idea">Key idea</h4>
+<div class="paragraph">
+<p>Embeddings convert text into vectors so similar meanings are placed near
+each other in vector space. In the example:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a query about programming languages ranks Python and JavaScript higher
+than unrelated documents like cats or machine learning.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_normalization_matters">Why normalization matters</h4>
+<div class="paragraph">
+<p>OpenAI embeddings are typically normalized, so vector comparisons depend
+more on direction than length. This helps make similarity scores more
+meaningful.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_relevance_to_rag">Relevance to RAG</h4>
+<div class="paragraph">
+<p>This is the basic retrieval process used in RAG:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>embed documents</p>
+</li>
+<li>
+<p>embed the query</p>
+</li>
+<li>
+<p>compare them</p>
+</li>
+<li>
+<p>return the most relevant results</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Overall, the section introduces the core workflow behind embedding-based
+search and retrieval.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_54_hands_on_embedding_caching">54. Hands-on ~ Embedding Caching</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains that caching embeddings is useful because it
+prevents repeated API calls, reducing both latency and cost. It shows
+how to wrap an <code>OpenAIEmbeddings</code> model with <code>CacheBackedEmbeddings</code>
+using a <code>LocalFileStore</code> cache. In the example, the first call to
+<code>embed_query()</code> computes and stores the embedding, while the second
+call retrieves the same result from cache. The two outputs should match,
+confirming the cache works.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-31 10:01:05 +0300
+Last updated 2026-03-31 14:00:57 +0300
 </div>
 </div>
 </body>

@@ -346,8 +346,8 @@ def call_llm(text, prompt):
     # st.write(st.session_state.openai_result)
 
     with open(out_file, 'w') as file:
-        file.write(out_text)
-    st.sidebar.write(f'Response saved: `{out_file}`')  
+       file.write(out_text)
+    # st.sidebar.write(f'Response saved: `{out_file}`')  
 
     tokens = encoding.encode(out_text)
     st.session_state.output_price = len(tokens) * llm_prices[llm_model][1]/10000
@@ -369,6 +369,7 @@ with col1:
         call_llm(text, prompt_summarize)
         end_time = time.time()
         st.session_state.execution_time = end_time - start_time
+        st.session_state.operation = "Summarize"
         st.rerun()
       
     if st.button(':question: &nbsp; **Ask questions**', width="stretch"):
@@ -376,6 +377,7 @@ with col1:
         call_llm(text, prompt_questions)
         end_time = time.time()
         st.session_state.execution_time = end_time - start_time
+        st.session_state.operation = "Ask questions"
         st.rerun()
 
 with col2:
@@ -384,6 +386,7 @@ with col2:
         call_llm(text, prompt_keywords)
         end_time = time.time()
         st.session_state.execution_time = end_time - start_time
+        st.session_state.operation = "Keywords"
         st.rerun()
         
     if st.button(':pencil2: &nbsp; **Improve**', type="primary", width="stretch"):
@@ -391,6 +394,7 @@ with col2:
         call_llm(text, prompt_improve)
         end_time = time.time()
         st.session_state.execution_time = end_time - start_time
+        st.session_state.operation = "Improve"
         st.rerun()
  
 # Convert to Asciidoc
@@ -442,6 +446,9 @@ if len(st.session_state.openai_result) > 0:
 #
 # ::
 
+if "operation" in st.session_state:
+    st.sidebar.write(f"Operation: `{st.session_state.operation}`")
+ 
 if "execution_time" in st.session_state:
     st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
  
