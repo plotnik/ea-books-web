@@ -539,3 +539,186 @@ using a `LocalFileStore` cache. In the example, the first call to
 call retrieves the same result from cache. The two outputs should match,
 confirming the cache works.   
 
+== 56. Hands-on ~ Setting Up Chroma and Running Chroma Basics
+
+The passage explains how to use *Chroma as a vector store in LangChain*.
+
+==== Main points
+
+* Import `Chroma` from `langchain++_++chroma`.
+* Also import:
+** `Document` from LangChain Core
+** `RecursiveCharacterTextSplitter` from LangChain text splitters
+** `TemporaryDirectory` from Python’s `tempfile`
+* Use an embedding model, specifically `OpenAIEmbeddings` with
+`text-embedding-3-small`.
+
+==== What the code does
+
+* Creates a few sample `Document` objects with page content and
+metadata.
+* Builds a Chroma vector store using:
++
+[source,python]
+----
+Chroma.from_documents(
+    documents=simple_documents,
+    embedding=embedding_model,
+    persist_directory=tmp_dir
+)
+----
+* This:
+[arabic]
+. embeds the documents
+. stores them in Chroma
+. saves them to disk
+
+==== Search example
+
+* Runs a similarity search like:
++
+[source,python]
+----
+query = "What is LangChain?"
+results = vector_store.similarity_search(query, k=2)
+----
+* `k=2` means return the two most relevant documents.
+* The top result is the LangChain description from the docs, and the
+next result may be related content like LangGraph.
+
+==== Key takeaway
+
+LangChain makes it very easy to work with Chroma:
+
+* no need to implement your own vector search
+* `from++_++documents` simplifies setup
+* documents, embeddings, and persistence are handled in one place
+
+Overall, it shows a straightforward way to *create, persist, and query a
+vector store*.
+
+== 58. Hands-on ~ Similarity Search with Scores
+
+The passage explains how to use LangChain’s Chroma wrapper to perform a
+similarity search with scores.
+
+Key points:
+
+* Set up a vector store using a temporary directory, sample documents,
+an embedding model, and a persistence directory.
+* Instead of `similarity++_++search`, use
+`vector.similarity++_++search++_++with++_++score()` to retrieve
+documents along with their scores.
+* In the example, the query is *"explain vector store"* and the top 3
+results are returned.
+
+Important note about scores:
+
+* The scores returned by Chroma here are *distance scores*, not
+similarity scores.
+* For distance scores, *smaller values mean better matches*.
+* Example interpretation:
+** `0.066` = most relevant
+** `1.34` = least relevant
+
+It also notes that if you want a similarity value from a distance score,
+you can convert it with:
+
+[source,python]
+----
+similarity = 1 / (1 + distance)
+----
+
+Overall, the main takeaway is that similarity search with scores is
+straightforward, but you must know whether your vector store returns
+*distance* or *similarity* scores.
+
+== 59. Hands-on ~ Metadata Filtering
+
+The passage explains *metadata filtering in similarity search*.
+
+* A normal `similarity++_++search()` returns documents based only on
+semantic similarity.
+* You can add a `filter` argument, such as `++{++"topic": "database"}`,
+to restrict results to documents whose metadata matches that condition.
+* This means the search still uses meaning to rank documents, but only
+among documents that satisfy the metadata filter.
+* It’s useful for narrowing results by attributes like *topic, source,
+date, or type*.
+* Because of filtering, you may get fewer results than the requested `k`
+if not enough documents match the metadata.
+
+*Main takeaway:* metadata filtering makes vector search more precise by
+combining semantic relevance with metadata constraints.
+
+== 60. Hands-on ~ Chroma DB Persistence
+
+This section explains how to *persist a Chroma vector store to disk*,
+reload it after a restart, and verify that it still works.
+
+==== Key points
+
+* Set a `persist++_++directory` such as `"chroma++_++db"`.
+* Create the vector store with `Chroma.from++_++documents(...)` using
+your loaded documents and embedding function.
+* Save it locally, then confirm how many documents were stored.
+* Simulate a restart by deleting the in-memory vector store and
+reloading it from the same directory.
+* Check the document count again to confirm it reloaded successfully.
+* Run a similarity search to verify the database still functions after
+reloading.
+
+==== Behind the scenes
+
+* Chroma stores data locally in the specified persistence folder.
+* This means you can:
+[arabic]
+. create the vector store,
+. persist it,
+. delete it from memory,
+. reload it later,
+. and continue searching normally.
+
+==== Inspecting the database
+
+* Since Chroma uses *SQLite* internally, you can inspect the database
+files directly with a SQLite extension in VS Code.
+* Useful tables include:
+** `collections`
+** `embeddings`
+** `embedding++_++metadata`
+
+==== Why it matters
+
+Persisting Chroma lets you:
+
+* keep vector data locally,
+* avoid rebuilding embeddings every time,
+* inspect stored data manually,
+* and confirm your vector database is working as expected.
+
+== 61. Hands-on ~ Vector Store as a Retriever for Chains
+
+The passage explains how to use a vector store as a retriever.
+
+* You can convert a vector store into a retriever with
+`as++_++retriever()`.
+* A *similarity retriever* (`search++_++type="similarity"`) returns the
+top `k` most relevant documents for a query.
+* The retriever can be queried with `.invoke()`, which returns matching
+documents without generating an LLM answer yet.
+* An *MMR retriever* (`search++_++type="mmr"`) uses *Maximum Marginal
+Relevance* to return results that are both relevant and diverse.
+* `fetch++_++k` controls how many candidate documents are first
+considered before selecting the final `k` results.
+
+Key difference:
+
+* *Similarity retrieval* = best for precision and the most relevant
+matches.
+* *MMR retrieval* = best for variety, diversity, and avoiding
+redundancy.
+
+In short: use similarity when you want the closest matches, and MMR when
+you want a broader, more balanced set of documents.
+

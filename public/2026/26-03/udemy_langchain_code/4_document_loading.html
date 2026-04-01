@@ -587,6 +587,25 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </ul>
 </li>
 <li><a href="#_54_hands_on_embedding_caching">54. Hands-on ~ Embedding Caching</a></li>
+<li><a href="#_56_hands_on_setting_up_chroma_and_running_chroma_basics">56. Hands-on ~ Setting Up Chroma and Running Chroma Basics</a>
+<ul class="sectlevel3">
+<li><a href="#_main_points_4">Main points</a></li>
+<li><a href="#_what_the_code_does_2">What the code does</a></li>
+<li><a href="#_search_example">Search example</a></li>
+<li><a href="#_key_takeaway_4">Key takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_58_hands_on_similarity_search_with_scores">58. Hands-on ~ Similarity Search with Scores</a></li>
+<li><a href="#_59_hands_on_metadata_filtering">59. Hands-on ~ Metadata Filtering</a></li>
+<li><a href="#_60_hands_on_chroma_db_persistence">60. Hands-on ~ Chroma DB Persistence</a>
+<ul class="sectlevel3">
+<li><a href="#_key_points_2">Key points</a></li>
+<li><a href="#_behind_the_scenes">Behind the scenes</a></li>
+<li><a href="#_inspecting_the_database">Inspecting the database</a></li>
+<li><a href="#_why_it_matters_5">Why it matters</a></li>
+</ul>
+</li>
+<li><a href="#_61_hands_on_vector_store_as_a_retriever_for_chains">61. Hands-on ~ Vector Store as a Retriever for Chains</a></li>
 </ul>
 </div>
 </div>
@@ -1701,10 +1720,408 @@ confirming the cache works.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_56_hands_on_setting_up_chroma_and_running_chroma_basics">56. Hands-on ~ Setting Up Chroma and Running Chroma Basics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to use <strong>Chroma as a vector store in LangChain</strong>.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_points_4">Main points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Import <code>Chroma</code> from <code>langchain_chroma</code>.</p>
+</li>
+<li>
+<p>Also import:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Document</code> from LangChain Core</p>
+</li>
+<li>
+<p><code>RecursiveCharacterTextSplitter</code> from LangChain text splitters</p>
+</li>
+<li>
+<p><code>TemporaryDirectory</code> from Python’s <code>tempfile</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Use an embedding model, specifically <code>OpenAIEmbeddings</code> with
+<code>text-embedding-3-small</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_what_the_code_does_2">What the code does</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Creates a few sample <code>Document</code> objects with page content and
+metadata.</p>
+</li>
+<li>
+<p>Builds a Chroma vector store using:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="python"><span></span><span class="tok-n">Chroma</span><span class="tok-o">.</span><span class="tok-n">from_documents</span><span class="tok-p">(</span>
+    <span class="tok-n">documents</span><span class="tok-o">=</span><span class="tok-n">simple_documents</span><span class="tok-p">,</span>
+    <span class="tok-n">embedding</span><span class="tok-o">=</span><span class="tok-n">embedding_model</span><span class="tok-p">,</span>
+    <span class="tok-n">persist_directory</span><span class="tok-o">=</span><span class="tok-n">tmp_dir</span>
+<span class="tok-p">)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>This:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>embeds the documents</p>
+</li>
+<li>
+<p>stores them in Chroma</p>
+</li>
+<li>
+<p>saves them to disk</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_search_example">Search example</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Runs a similarity search like:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="python"><span></span><span class="tok-n">query</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;What is LangChain?&quot;</span>
+<span class="tok-n">results</span> <span class="tok-o">=</span> <span class="tok-n">vector_store</span><span class="tok-o">.</span><span class="tok-n">similarity_search</span><span class="tok-p">(</span><span class="tok-n">query</span><span class="tok-p">,</span> <span class="tok-n">k</span><span class="tok-o">=</span><span class="tok-mi">2</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>k=2</code> means return the two most relevant documents.</p>
+</li>
+<li>
+<p>The top result is the LangChain description from the docs, and the
+next result may be related content like LangGraph.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_takeaway_4">Key takeaway</h4>
+<div class="paragraph">
+<p>LangChain makes it very easy to work with Chroma:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>no need to implement your own vector search</p>
+</li>
+<li>
+<p><code>from_documents</code> simplifies setup</p>
+</li>
+<li>
+<p>documents, embeddings, and persistence are handled in one place</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, it shows a straightforward way to <strong>create, persist, and query a
+vector store</strong>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_58_hands_on_similarity_search_with_scores">58. Hands-on ~ Similarity Search with Scores</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to use LangChain’s Chroma wrapper to perform a
+similarity search with scores.</p>
+</div>
+<div class="paragraph">
+<p>Key points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Set up a vector store using a temporary directory, sample documents,
+an embedding model, and a persistence directory.</p>
+</li>
+<li>
+<p>Instead of <code>similarity_search</code>, use
+<code>vector.similarity_search_with_score()</code> to retrieve
+documents along with their scores.</p>
+</li>
+<li>
+<p>In the example, the query is <strong>"explain vector store"</strong> and the top 3
+results are returned.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Important note about scores:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The scores returned by Chroma here are <strong>distance scores</strong>, not
+similarity scores.</p>
+</li>
+<li>
+<p>For distance scores, <strong>smaller values mean better matches</strong>.</p>
+</li>
+<li>
+<p>Example interpretation:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>0.066</code> = most relevant</p>
+</li>
+<li>
+<p><code>1.34</code> = least relevant</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It also notes that if you want a similarity value from a distance score,
+you can convert it with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="python"><span></span><span class="tok-n">similarity</span> <span class="tok-o">=</span> <span class="tok-mi">1</span> <span class="tok-o">/</span> <span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-o">+</span> <span class="tok-n">distance</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Overall, the main takeaway is that similarity search with scores is
+straightforward, but you must know whether your vector store returns
+<strong>distance</strong> or <strong>similarity</strong> scores.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_59_hands_on_metadata_filtering">59. Hands-on ~ Metadata Filtering</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains <strong>metadata filtering in similarity search</strong>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A normal <code>similarity_search()</code> returns documents based only on
+semantic similarity.</p>
+</li>
+<li>
+<p>You can add a <code>filter</code> argument, such as <code>{"topic": "database"}</code>,
+to restrict results to documents whose metadata matches that condition.</p>
+</li>
+<li>
+<p>This means the search still uses meaning to rank documents, but only
+among documents that satisfy the metadata filter.</p>
+</li>
+<li>
+<p>It’s useful for narrowing results by attributes like <strong>topic, source,
+date, or type</strong>.</p>
+</li>
+<li>
+<p>Because of filtering, you may get fewer results than the requested <code>k</code>
+if not enough documents match the metadata.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Main takeaway:</strong> metadata filtering makes vector search more precise by
+combining semantic relevance with metadata constraints.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_60_hands_on_chroma_db_persistence">60. Hands-on ~ Chroma DB Persistence</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section explains how to <strong>persist a Chroma vector store to disk</strong>,
+reload it after a restart, and verify that it still works.</p>
+</div>
+<div class="sect3">
+<h4 id="_key_points_2">Key points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Set a <code>persist_directory</code> such as <code>"chroma_db"</code>.</p>
+</li>
+<li>
+<p>Create the vector store with <code>Chroma.from_documents(&#8230;&#8203;)</code> using
+your loaded documents and embedding function.</p>
+</li>
+<li>
+<p>Save it locally, then confirm how many documents were stored.</p>
+</li>
+<li>
+<p>Simulate a restart by deleting the in-memory vector store and
+reloading it from the same directory.</p>
+</li>
+<li>
+<p>Check the document count again to confirm it reloaded successfully.</p>
+</li>
+<li>
+<p>Run a similarity search to verify the database still functions after
+reloading.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_behind_the_scenes">Behind the scenes</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Chroma stores data locally in the specified persistence folder.</p>
+</li>
+<li>
+<p>This means you can:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>create the vector store,</p>
+</li>
+<li>
+<p>persist it,</p>
+</li>
+<li>
+<p>delete it from memory,</p>
+</li>
+<li>
+<p>reload it later,</p>
+</li>
+<li>
+<p>and continue searching normally.</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_inspecting_the_database">Inspecting the database</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Since Chroma uses <strong>SQLite</strong> internally, you can inspect the database
+files directly with a SQLite extension in VS Code.</p>
+</li>
+<li>
+<p>Useful tables include:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>collections</code></p>
+</li>
+<li>
+<p><code>embeddings</code></p>
+</li>
+<li>
+<p><code>embedding_metadata</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters_5">Why it matters</h4>
+<div class="paragraph">
+<p>Persisting Chroma lets you:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>keep vector data locally,</p>
+</li>
+<li>
+<p>avoid rebuilding embeddings every time,</p>
+</li>
+<li>
+<p>inspect stored data manually,</p>
+</li>
+<li>
+<p>and confirm your vector database is working as expected.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_61_hands_on_vector_store_as_a_retriever_for_chains">61. Hands-on ~ Vector Store as a Retriever for Chains</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to use a vector store as a retriever.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can convert a vector store into a retriever with
+<code>as_retriever()</code>.</p>
+</li>
+<li>
+<p>A <strong>similarity retriever</strong> (<code>search_type="similarity"</code>) returns the
+top <code>k</code> most relevant documents for a query.</p>
+</li>
+<li>
+<p>The retriever can be queried with <code>.invoke()</code>, which returns matching
+documents without generating an LLM answer yet.</p>
+</li>
+<li>
+<p>An <strong>MMR retriever</strong> (<code>search_type="mmr"</code>) uses <strong>Maximum Marginal
+Relevance</strong> to return results that are both relevant and diverse.</p>
+</li>
+<li>
+<p><code>fetch_k</code> controls how many candidate documents are first
+considered before selecting the final <code>k</code> results.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Key difference:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Similarity retrieval</strong> = best for precision and the most relevant
+matches.</p>
+</li>
+<li>
+<p><strong>MMR retrieval</strong> = best for variety, diversity, and avoiding
+redundancy.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In short: use similarity when you want the closest matches, and MMR when
+you want a broader, more balanced set of documents.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-31 14:00:57 +0300
+Last updated 2026-04-01 10:52:04 +0300
 </div>
 </div>
 </body>
