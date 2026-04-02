@@ -1,7 +1,7 @@
 # Obsidian Chat (LC)
 # ==================
 #
-# *Obsidian Chat using LancChain*
+# *Obsidian Chat using LangChain*
 #
 # ::
 
@@ -9,16 +9,42 @@ import streamlit as st
 import os
 import json
 import hashlib
-from pathlib import Path
-from langchain_community.document_loaders import TextLoader
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_chroma import Chroma
-from langchain_core.documents import Document
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
 import tiktoken
+from pathlib import Path
+
+# Import LangChain
+#
+# ::
+
+placeholder = st.sidebar.empty()
+with placeholder.status("Importing langchain...", expanded=True) as status:
+    st.write("Importing langchain_openai...")
+    from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+    
+    st.write("Importing langchain_chroma...")
+    from langchain_chroma import Chroma
+    
+    st.write("Importing langchain_core.documents...")     
+    from langchain_core.documents import Document
+    
+    st.write("Importing langchain_text_splitters...")    
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+    
+    st.write("Importing langchain_core.prompts...")     
+    from langchain_core.prompts import ChatPromptTemplate
+    
+    st.write("Importing langchain_core.runnables...")      
+    from langchain_core.runnables import RunnablePassthrough
+    
+    st.write("Importing langchain_core.output_parsers...")     
+    from langchain_core.output_parsers import StrOutputParser
+    
+    st.write("Importing langchain_community.document_loaders...")    
+    from langchain_community.document_loaders import TextLoader
+    
+    # status.update(label="Obsidian Chat", state="complete", expanded=False)
+
+placeholder.empty()
 
 # Print banner.
 #

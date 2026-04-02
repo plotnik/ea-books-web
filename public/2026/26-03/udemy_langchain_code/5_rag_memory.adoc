@@ -1,0 +1,82 @@
+= 5. RAG and Memory - A Comprehensive Dive
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+
+link:udemy_langchain.html[<Contents>]
+
+== 64. Hands-on ~ Basic RAG Pipeline
+
+The passage explains how to build a simple RAG pipeline with LangChain.
+
+==== Main points
+
+* *Imports and setup*
+** Uses common LangChain components like `OpenAIEmbeddings`,
+`PromptTemplate`, `RunnablePassthrough`, `RunnableParallel`, and related
+utilities.
+** An embeddings model is already initialized for retrieval.
+
+==== 1) Create the knowledge base
+
+* Defines a `create++_++kb` function.
+* Splits a manually created `Document` using
+`RecursiveCharacterTextSplitter` with:
+** `chunk++_++size = 5500`
+** `chunk++_++overlap = 50`
+* The document includes metadata such as `source="blank++_++chain.md"`.
+* Uses `split++_++documents()` because the input is a `Document` object.
+* Creates a vector store from the chunks using
+`vectorstore++_++from++_++documents(...)`, the embeddings model, and a
+persistence directory like `./temp`.
+* Returns the vector store.
+
+==== 2) Create a basic RAG system
+
+* Calls `create++_++kb()` to get the vector store.
+* Builds a retriever with:
+** `search++_++type="similarity"`
+** `k=2`
+* Initializes a chat model with `temperature=0.2`.
+* Creates a prompt that instructs the model to answer only from the
+given context and say “I don’t know” if unsure.
+
+==== 3) Format retrieved documents
+
+* Defines a helper like `format++_++docs(docs)` to join retrieved chunks
+into a single string for the prompt.
+
+==== 4) Build the RAG chain
+
+* Creates a chain with two inputs:
+** `context`: retrieved docs passed through `format++_++docs`
+** `question`: passed through unchanged with `RunnablePassthrough()`
+* Pipes the inputs through:
+[arabic]
+. prompt template
+. LLM
+. `StringOutputParser`
+* Produces a final string answer.
+
+==== 5) Test the chain
+
+* Invokes the chain with sample questions like:
+** “What is LangChain?”
+** “Who created LangChain?”
+** “What is LangGraph used for?”
+* Prints the responses.
+
+==== Why it works
+
+It follows the standard RAG flow:
+
+[arabic]
+. Retrieve relevant documents
+. Format them as context
+. Add them to the prompt
+. Generate an answer with the LLM
+. Parse the output cleanly
+
+The key benefit is that LangChain’s runnable and pipe syntax makes the
+entire pipeline modular, readable, and easy to compose.
