@@ -1,0 +1,435 @@
+= Summary: Document Loading, Chunking, Embeddings, and Vector Stores
+:source-highlighter: pygments
+:icons: font
+:toc: right
+
+
+link:udemy_langchain.html[<Contents>]
+
+---
+
+This section covers the core building blocks of a RAG-style pipeline in LangChain: loading documents, structuring them as `Document` objects, splitting them into chunks, embedding them as vectors, and storing/searching them in a vector database.
+
+== Document Loading
+
+=== TextLoader
+
+`TextLoader` from `langchain_community.document_loaders` loads a text file into a list of `Document` objects.
+
+Key ideas:
+
+* Call `TextLoader(file_path).load()`
+* Output is a list, typically with one `Document` for one text file
+* Each document contains:
+** `page_content`: file text
+** `metadata`: source path and related info
+
+Why it matters:
+
+* automatically reads content
+* preserves provenance through metadata
+* fits naturally into retrieval pipelines
+
+=== WebLoader
+
+`WebLoader` loads content directly from a web page.
+
+Key ideas:
+
+* Instantiate with a URL and call `.load()`
+* Optional settings include:
+** `proxies`
+** `verify_ssl`
+** `header_template`
+** `encoding`
+** `requests_per_second`
+** `bs_kwargs`
+
+Useful detail:
+
+* `bs_kwargs={"features": "html.parser"}` lets Beautiful Soup use a specific parser
+* You can parse the full page or target specific HTML sections
+
+Requirements:
+
+* `bs4` must be installed
+
+Result:
+
+* returns `Document` objects containing scraped page content and source URL metadata
+
+=== Lazy Loading with DirectoryLoader
+
+For many files, especially large collections, lazy loading is more memory-efficient.
+
+Key ideas:
+
+* `DirectoryLoader` can scan a directory
+* `TextLoader` can be used as `loader_cls`
+* `glob` patterns select matching files, including subdirectories
+* lazy loading yields documents incrementally instead of all at once
+
+Benefit:
+
+* reduces memory usage when processing large datasets
+
+== Document Structure
+
+LangChain’s `Document` is the standard container for text plus metadata.
+
+Main fields:
+
+* `page_content`: required text
+* `metadata`: optional dictionary with fields like source, author, tags, date, or custom labels
+
+Notes:
+
+* documents are often created by loaders
+* they can also be created manually
+* updates are usually done by creating a new `Document`
+
+Why it matters:
+
+* all downstream tasks such as splitting, embedding, and retrieval operate on this structure
+
+== Text Splitting and Chunking
+
+=== RecursiveCharacterTextSplitter
+
+This is presented as a strong default text splitter.
+
+Typical configuration:
+
+* `chunk_size=500`
+* `chunk_overlap=50`
+* separators like:
+** paragraph breaks
+** line breaks
+** spaces
+** character-level fallback
+
+How it works:
+
+* recursively tries to split on larger, more meaningful boundaries first
+* preserves coherence better than naive fixed-length splitting
+
+Usage:
+
+* `split_text()` for strings
+* `split_documents()` for `Document` lists
+
+Why it matters:
+
+* improves chunk quality for embeddings, retrieval, summarization, and QA
+
+=== Chunk Size Comparison
+
+Chunk size has a major impact on retrieval behavior.
+
+Example comparison:
+
+* `200` -> 6 chunks
+* `500` -> 3 chunks
+* `1000` -> 1 chunk
+
+Tradeoff:
+
+* smaller chunks:
+** more precise retrieval
+** less context per chunk
+* larger chunks:
+** more context
+** less precise retrieval
+
+Takeaway:
+
+* there is no universal best chunk size
+* choose based on document type, queries, and model context window
+
+=== Overlap Importance
+
+Chunk overlap helps preserve context across boundaries.
+
+Without overlap:
+
+* important phrases may be split apart
+* retrieval may miss complete meaning
+
+With overlap:
+
+* some text is repeated between chunks
+* related details are more likely to stay together
+
+Takeaway:
+
+* overlap adds small redundancy but often improves retrieval reliability
+
+=== Markdown Header Splitter
+
+Useful for Markdown documents such as docs, READMEs, wikis, and notes.
+
+Key ideas:
+
+* split based on headers like `#`, `##`, `###`
+* each chunk retains metadata about header hierarchy
+
+Benefit:
+
+* preserves document structure and section context for better retrieval
+
+=== Code Splitter
+
+Code should be split with language awareness.
+
+Approach:
+
+* use `RecursiveCharacterTextSplitter.from_language(...)`
+* specify the programming language, such as Python
+* use chunking settings like size `500` and overlap `50`
+
+Benefit:
+
+* preserves meaningful units such as classes and functions
+* improves code retrieval quality
+
+Takeaway:
+
+* always use a language-aware splitter for code when possible
+
+=== PDF Splitting
+
+A common real-world workflow uses `PyPDFLoader` plus `RecursiveCharacterTextSplitter`.
+
+Pattern:
+
+[arabic]
+. load PDF pages as `Document` objects
+. split with `split_documents()`
+. preserve metadata such as page number and creation details
+
+Why it matters:
+
+* works for real document formats
+* keeps metadata intact
+* prepares chunks for embeddings and RAG
+
+== Embeddings
+
+=== OpenAI Embeddings
+
+Embeddings convert text into vectors representing semantic meaning.
+
+Models mentioned:
+
+* `text-embedding-3-small` -> 1536 dimensions
+* `text-embedding-3-large` -> 3072 dimensions
+* `text-embedding-ada-002` -> deprecated
+
+Typical usage:
+
+* create `OpenAIEmbeddings(model="text-embedding-3-small")`
+* `embed_query(text)` for one string
+* `embed_documents(texts)` for multiple strings
+
+Why it matters:
+
+* embeddings are the basis for similarity search and vector retrieval
+
+=== Free / Local Embedding Options
+
+LangChain supports alternative embedding providers with similar APIs.
+
+Options mentioned:
+
+* Hugging Face / Sentence Transformers
+** example: `all-MiniLM-L6-v2`
+** 384 dimensions
+* Ollama embeddings
+** requires `langchain-ollama`
+
+Benefit:
+
+* easy to switch providers
+* useful for local or no-cost setups
+
+=== Embeddings and Similarity Search Basics
+
+Core retrieval process:
+
+[arabic]
+. embed documents
+. embed the query
+. compare vectors
+. rank by similarity
+
+Key ideas:
+
+* semantically similar texts lie near each other in vector space
+* cosine similarity is commonly used
+* OpenAI embeddings are typically normalized, so direction matters more than vector length
+
+Use case:
+
+* programming-related queries rank programming documents above unrelated ones
+
+=== Embedding Caching
+
+Caching avoids recomputing the same embeddings.
+
+Approach:
+
+* wrap embeddings with `CacheBackedEmbeddings`
+* use `LocalFileStore` as the cache
+
+Benefit:
+
+* reduces API cost
+* reduces latency
+* repeated requests return cached vectors
+
+== Vector Stores with Chroma
+
+=== Basic Chroma Setup
+
+Chroma is used as the vector store.
+
+Typical workflow:
+
+* create sample `Document` objects
+* choose an embedding model
+* create the store with `Chroma.from_documents(...)`
+* optionally persist to disk
+
+This handles:
+
+[arabic]
+. embedding the documents
+. storing the vectors
+. saving the database
+
+=== Similarity Search
+
+Basic search:
+
+* `similarity_search(query, k=2)`
+
+Result:
+
+* returns the top `k` most relevant documents
+
+Benefit:
+
+* simple semantic retrieval without manually implementing vector search
+
+=== Similarity Search with Scores
+
+Use:
+
+* `similarity_search_with_score()`
+
+Important detail:
+
+* Chroma returns distance scores here, not similarity scores
+* smaller scores mean better matches
+
+Example interpretation:
+
+* `0.066` is more relevant than `1.34`
+
+If needed, a similarity-like value can be approximated from distance.
+
+=== Metadata Filtering
+
+Search can combine semantic similarity with metadata constraints.
+
+Example:
+
+* `filter={"topic": "database"}`
+
+Effect:
+
+* only documents matching the metadata filter are considered
+* results are then ranked semantically within that subset
+
+Why it matters:
+
+* narrows retrieval by source, topic, type, date, and other fields
+
+=== Persistence
+
+Chroma can be persisted locally and reloaded later.
+
+Pattern:
+
+* set a `persist_directory`
+* build the vector store
+* reload from the same directory after restart
+* verify searches still work
+
+Why it matters:
+
+* avoids rebuilding embeddings every session
+* enables local inspection of stored data
+* supports practical long-running applications
+
+=== Vector Store as Retriever
+
+A vector store can be converted into a retriever with `as_retriever()`.
+
+Modes:
+
+* `search_type="similarity"`
+** returns the top most relevant documents
+* `search_type="mmr"`
+** uses Maximum Marginal Relevance for relevance plus diversity
+
+Important parameter:
+
+* `fetch_k` controls how many candidates are considered before selecting final results
+
+Use cases:
+
+* similarity for precision
+* MMR for broader, less redundant retrieval
+
+== End-to-End Exercise
+
+The final exercise combines the full workflow:
+
+[arabic]
+. convert raw texts into `Document` objects
+. split them with `RecursiveCharacterTextSplitter`
+. embed the chunks
+. store them in Chroma
+. return a retriever
+
+This demonstrates the standard RAG pipeline:
+
+* documents
+* chunking
+* embeddings
+* vector storage
+* retrieval
+
+== Overall Takeaway
+
+The chapter presents a practical LangChain workflow for retrieval systems:
+
+* load documents from files, web pages, directories, and PDFs
+* represent them as `Document` objects with metadata
+* split them into meaningful chunks
+* convert chunks into embeddings
+* store and search them in Chroma
+* expose the vector store as a retriever for downstream chains
+
+The main theme is that good retrieval depends on the full pipeline, especially:
+
+* preserving metadata
+* choosing appropriate chunk size and overlap
+* using suitable embeddings
+* selecting the right retrieval strategy
+
+---
+
+link:udemy_langchain.html[<Contents>]
+

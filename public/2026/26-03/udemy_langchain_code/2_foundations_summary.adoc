@@ -1,0 +1,189 @@
+= Summary: LangChain Foundations - A Deep Dive
+:source-highlighter: pygments
+:icons: font
+:toc: right
+
+
+link:udemy_langchain.html[<Contents>]
+
+---
+
+== API Setup and Verification
+
+* Create API keys for both OpenAI and Anthropic.
+* Initialize a new project with `uv`, create a virtual environment, and install core dependencies:
+** `langchain`
+** `langchain-core`
+** `langgraph`
+** `langchain-openai`
+** `langchain-anthropic`
+** `python-dotenv`
+* Store `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` in a `.env` file.
+* In `main.py`, load environment variables, import required packages, and print package versions.
+* Verify setup by invoking both `ChatOpenAI` and `ChatAnthropic` with a simple prompt and confirming valid responses.
+
+== LCEL and Runnable Chains
+
+* Introduces LangChain Expression Language (LCEL) and runnable composition.
+* A basic chain is built from:
+** `ChatPromptTemplate`
+** `ChatOpenAI`
+** `StrOutputParser`
+* Components are combined with the pipe operator: `prompt | model | parser`
+* Execution uses `.invoke()` with input variables matching the prompt template.
+
+== Batch Execution
+
+* Demonstrates running a runnable chain on multiple inputs with `.batch(inputs)`.
+* Inputs are provided as a list of dictionaries matching prompt variables.
+* Outputs are returned as a list and can be paired with inputs for display.
+
+== Streaming Output
+
+* Shows real-time output streaming with `chain.stream(...)`.
+* Streamed chunks are printed as they arrive to simulate live generation.
+
+== Schema Inspection
+
+* LangChain chains expose input and output schemas.
+* `chain.input_schema` and `chain.output_schema` can be inspected via `model_json_schema()`.
+* Useful for understanding expected inputs and parsed outputs.
+
+== New Model Initialization
+
+* Recommends the newer universal initialization method: `init_chat_model`.
+* Older provider-specific classes like `ChatOpenAI` still work.
+* `init_chat_model` simplifies switching across providers and supports configurable parameters like temperature and max tokens.
+* Example providers/models mentioned:
+** OpenAI: GPT-4.0, GPT-4.0 mini, GPT-5.2
+** Anthropic: Claude Opus 4.5, Sonnet 4.5, Haiku 3.5
+** Local: Llama 3.2, Mistral via Ollama
+
+== Working with LLMs Across Providers
+
+* Demonstrates configuring multiple providers through `init_chat_model`.
+* Shows:
+** direct model calls with `invoke`
+** comparing multiple models in a loop
+** use of `SystemMessage` and `HumanMessage`
+** reading metadata like token usage and response info
+** building multi-turn conversations
+** controlling behavior through system prompts
+
+== Prompt Templates and Messages
+
+* Prompt templates are reusable prompt structures with runtime variables.
+* Multi-message prompts separate roles such as:
+** System
+** Human
+** AI
+** Tool
+* Benefits include:
+** reusability
+** modularity
+** consistency
+** easier maintenance
+* Introduces few-shot prompting and prompt composition from reusable parts.
+
+== Hands-on Prompt Messages
+
+* Demonstrates:
+** string-based `ChatPromptTemplate`
+** multi-message prompts with `from_messages()`
+** LangChain message classes:
+*** `HumanMessage`
+*** `AIMessage`
+*** `SystemMessage`
+*** `ToolMessage`
+*** `ChatMessage`
+** few-shot prompting with example pairs
+** reusable prompt building blocks
+
+== Prompt Templates Code Walkthrough
+
+* Consolidates key prompt concepts in one file:
+** simple templates
+** multi-message prompts
+** manual message objects
+** `MessagesPlaceholder` for chat history
+** few-shot prompting
+** prompt composition
+* Serves as a practical fundamentals reference for LangChain prompt construction.
+
+== Output Parsers and Structured Outputs
+
+* Output parsers convert raw model text into structured data.
+* Main parser types:
+** String parser for plain text
+** JSON parser for dictionaries
+** Pydantic parser for validated schema-based outputs
+* Structured outputs improve:
+** usability
+** type safety
+** downstream integration
+** error handling
+* Modern LangChain increasingly favors built-in structured output methods.
+
+== Output Parser Demo
+
+* Compares four approaches:
+** `StrOutputParser` for plain text
+** JSON output parser for structured JSON
+** `PydanticOutputParser` for validated schema objects
+** `with_structured_output(...)` as the simplest modern approach
+* Main progression:
+** plain text
+** JSON
+** schema-validated objects
+** directly bound structured output
+
+== Project 1 Final Touches: LangSmith and Structured Q&A Bot
+
+* Introduces LangSmith for:
+** tracing
+** observability
+** evaluation
+** prompt engineering
+** deployment support
+* Adds LangSmith configuration through API keys and tracing environment variables.
+* Builds a production-style `SmartBot` using:
+** `ChatPromptTemplate`
+** `ChatOpenAI`
+** Pydantic schema `QAResponse`
+* `QAResponse` includes fields such as:
+** `answer`
+** `confidence`
+** `reasoning`
+** `follow_up_questions`
+** `sources_needed`
+* Uses `with_structured_output(QAResponse)` to guarantee schema-based responses.
+* Adds graceful fallback handling so failures still return a structured object.
+* Integrates LangSmith tracing with `@traceable(...)` and `Client`.
+* Demonstrates:
+** single-question answering
+** batch processing
+** error handling
+* LangSmith helps inspect:
+** inputs and outputs
+** token usage
+** cost
+** latency
+** metadata
+** run status
+
+== Overall Section Takeaways
+
+* Set up LangChain projects with OpenAI and Anthropic.
+* Learn LCEL, runnables, invocation, batching, and streaming.
+* Understand prompt templates, message roles, history placeholders, and few-shot prompting.
+* Inspect runnable schemas.
+* Work with multiple model providers through a unified interface.
+* Use output parsers and structured outputs for reliable application integration.
+* Add LangSmith tracing and build a more production-ready structured Q&A bot.
+* The next section moves into chains, RAG, and memory.
+
+
+---
+
+link:udemy_langchain.html[<Contents>]
+

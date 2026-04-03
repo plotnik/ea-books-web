@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Paulo Dichone">
-<title>Production AI Agents with LangChain + LangGraph [2026]</title>
+<title>Summary: Chain Patterns</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,108 +435,370 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article toc2 toc-right">
 <div id="header">
-<h1><strong>Production AI Agents with LangChain + LangGraph [2026]</strong></h1>
-<div class="details">
-<span id="author" class="author">Paulo Dichone</span><br>
-</div>
+<h1>Summary: Chain Patterns</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_2_langchain_foundations_a_deep_dive">2. LangChain Foundations - A Deep Dive</a></li>
-<li><a href="#_3_chain_patterns">3. Chain Patterns</a></li>
-<li><a href="#_4_document_loading_chunking_embeddings_loaders_splitters_vector_stores">4. Document Loading, Chunking &amp; Embeddings - Loaders, Splitters, Vector Stores</a></li>
-<li><a href="#_5_rag_and_memory_a_comprehensive_dive">5. RAG and Memory - A Comprehensive Dive</a></li>
-<li><a href="#_appendix">Appendix</a></li>
+<li><a href="#_basic_and_parallel_chains">Basic and Parallel Chains</a>
+<ul class="sectlevel2">
+<li><a href="#_basic_chain">Basic chain</a></li>
+<li><a href="#_parallel_chains">Parallel chains</a></li>
+<li><a href="#_takeaway">Takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_passthrough_runnable">Passthrough Runnable</a></li>
+<li><a href="#_chain_branching">Chain Branching</a>
+<ul class="sectlevel2">
+<li><a href="#_key_point">Key point</a></li>
+</ul>
+</li>
+<li><a href="#_debugging_chains">Debugging Chains</a>
+<ul class="sectlevel2">
+<li><a href="#_covered_concepts">Covered concepts</a></li>
+</ul>
+</li>
+<li><a href="#_overall_summary">Overall Summary</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Course on Udemy</dt>
-<dd>
-<p><a href="https://www.udemy.com/course/production-ai-agents/" class="bare">https://www.udemy.com/course/production-ai-agents/</a></p>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_2_langchain_foundations_a_deep_dive"><a href="2_foundations.html">2. LangChain Foundations - A Deep Dive</a></h2>
-<div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
 <div class="paragraph">
-<p><a href="2_foundations_summary.html">Summary</a></p>
+<p><a href="udemy_langchain.html">&lt;Contents&gt;</a></p>
 </div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_3_chain_patterns"><a href="3_chain_patterns.html">3. Chain Patterns</a></h2>
-<div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
+<hr>
 <div class="paragraph">
-<p><a href="3_chain_patterns_summary.html">Summary</a></p>
-</div>
-</div>
+<p>This section introduces key LangChain chain patterns and debugging techniques.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_4_document_loading_chunking_embeddings_loaders_splitters_vector_stores"><a href="4_document_loading.html">4. Document Loading, Chunking &amp; Embeddings - Loaders, Splitters, Vector Stores</a></h2>
+<h2 id="_basic_and_parallel_chains">Basic and Parallel Chains</h2>
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
+<div class="sect2">
+<h3 id="_basic_chain">Basic chain</h3>
 <div class="paragraph">
-<p><a href="4_document_loading_summary.html">Summary</a></p>
+<p>A basic chain is a linear pipeline composed of:</p>
 </div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_5_rag_and_memory_a_comprehensive_dive"><a href="5_rag_memory.html">5. RAG and Memory - A Comprehensive Dive</a></h2>
-<div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_appendix">Appendix</h2>
-<div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
 <div class="ulist">
 <ul>
 <li>
-<p><a href="a1_debug_vscode.html">A1. Debugging Python in VS Code</a></p>
+<p><code>ChatPromptTemplate</code></p>
+</li>
+<li>
+<p>a model created with <code>initChat</code></p>
+</li>
+<li>
+<p><code>StringParser</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Flow:</p>
+</div>
+<div class="paragraph">
+<p><strong>prompt &#8594; model &#8594; parser</strong></p>
+</div>
+<div class="paragraph">
+<p>Use <code>pipe()</code> to connect components and <code>invoke()</code> to execute the chain.
+A typical example is summarizing text in one sentence.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_parallel_chains">Parallel chains</h3>
+<div class="paragraph">
+<p><code>RunnableParallel</code> runs multiple independent chains on the same input simultaneously.</p>
+</div>
+<div class="paragraph">
+<p>Common parallel tasks include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>summarization</p>
+</li>
+<li>
+<p>keyword extraction</p>
+</li>
+<li>
+<p>sentiment analysis</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each task has its own prompt and chain, and the combined runnable returns
+an object containing all results.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_takeaway">Takeaway</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Basic chain</strong> = one sequential pipeline</p>
+</li>
+<li>
+<p><strong>Parallel chain</strong> = multiple pipelines executed together</p>
+</li>
+<li>
+<p><code>invoke()</code> runs the chain and returns the output</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_passthrough_runnable">Passthrough Runnable</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section demonstrates a simple RAG-like workflow using:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>RunnablePassthrough</code></p>
+</li>
+<li>
+<p><code>RunnableLambda</code></p>
+</li>
+<li>
+<p><code>RunnableParallel</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The chain:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>accepts a user question</p>
+</li>
+<li>
+<p>retrieves a fixed context</p>
+</li>
+<li>
+<p>preserves the original question unchanged</p>
+</li>
+<li>
+<p>sends both context and question into a prompt</p>
+</li>
+<li>
+<p>calls the model</p>
+</li>
+<li>
+<p>parses the response as a string</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><code>RunnablePassthrough</code> is useful when the original input must be retained
+while additional data is added to the chain.</p>
+</div>
+<div class="paragraph">
+<p>Expected example result:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For “Who created LangChain?” the chain answers: Harrison Chase, in 2022.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chain_branching">Chain Branching</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Chain branching uses <code>RunnableBranch</code> to route inputs through different
+chains based on content.</p>
+</div>
+<div class="paragraph">
+<p>It uses three prompts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>code prompt</p>
+</li>
+<li>
+<p>general prompt</p>
+</li>
+<li>
+<p>classifier prompt</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Process:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>A classifier chain determines whether the input is code-related.</p>
+</li>
+<li>
+<p>A helper function invokes the classifier and decides the route.</p>
+</li>
+<li>
+<p><code>RunnableBranch</code> sends the input to either:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>a code chain</p>
+</li>
+<li>
+<p>a general/default chain</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Examples:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>“How do I write a for loop in Python?” &#8594; code chain</p>
+</li>
+<li>
+<p>“What is the weather like today?” &#8594; general chain</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_key_point">Key point</h3>
+<div class="paragraph">
+<p>Branching typically requires two LLM calls per request:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>classification</p>
+</li>
+<li>
+<p>final response generation</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This enables dynamic routing to specialized prompts or workflows.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_debugging_chains">Debugging Chains</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Debugging helps trace how data flows through prompts, models, and parsers.</p>
+</div>
+<div class="paragraph">
+<p>Main methods:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Inspect configuration</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>get_config()</code> to examine chain structure and input/output schemas.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Use <code>with_config()</code> for tracing</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Add metadata such as <code>run_name</code> and tracing information.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Inspect intermediate steps</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>RunnableLambda</code> as a logging tap to observe values between stages.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="_covered_concepts">Covered concepts</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>basic chains</p>
+</li>
+<li>
+<p>parallel chains</p>
+</li>
+<li>
+<p>passthrough chains</p>
+</li>
+<li>
+<p>branching chains</p>
+</li>
+<li>
+<p>debugging chains</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_overall_summary">Overall Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This chapter shows how LangChain chains can be:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>sequenced in a basic pipeline</p>
+</li>
+<li>
+<p>run concurrently in parallel</p>
+</li>
+<li>
+<p>extended while preserving input with passthrough</p>
+</li>
+<li>
+<p>dynamically routed with branching</p>
+</li>
+<li>
+<p>inspected and traced for debugging</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These patterns form the foundation for building flexible LLM workflows.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p><a href="udemy_langchain.html">&lt;Contents&gt;</a></p>
+</div>
+</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-03 10:37:17 +0300
+Last updated 2026-04-03 10:30:09 +0300
 </div>
 </div>
 </body>

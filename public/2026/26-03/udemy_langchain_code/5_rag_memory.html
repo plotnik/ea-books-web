@@ -452,6 +452,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_why_it_works">Why it works</a></li>
 </ul>
 </li>
+<li><a href="#_65_hands_on_rag_with_resources">65. Hands-on ~ RAG with Resources</a>
+<ul class="sectlevel3">
+<li><a href="#_key_ideas">Key ideas</a></li>
+<li><a href="#_main_steps">Main steps</a></li>
+<li><a href="#_why_it_matters">Why it matters</a></li>
+<li><a href="#_bottom_line">Bottom line</a></li>
+</ul>
+</li>
+<li><a href="#_66_hands_on_rag_with_fallback">66. Hands-on ~ RAG with Fallback</a>
+<ul class="sectlevel3">
+<li><a href="#_key_points">Key points</a></li>
+<li><a href="#_testing">Testing</a></li>
+<li><a href="#_why_it_matters_2">Why it matters</a></li>
+<li><a href="#_overall_result">Overall result</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -666,10 +682,223 @@ entire pipeline modular, readable, and easy to compose.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_65_hands_on_rag_with_resources">65. Hands-on ~ RAG with Resources</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to extend basic RAG into <strong>RAG with sources</strong>.</p>
+</div>
+<div class="sect3">
+<h4 id="_key_ideas">Key ideas</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>The core setup stays the same: <strong>knowledge base/vector store</strong>,
+<strong>retriever</strong>, and <strong>LLM</strong> are reused.</p>
+</li>
+<li>
+<p>The main change is that the system now returns <strong>sources or citations</strong>
+along with the answer.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_main_steps">Main steps</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Create a prompt</strong> that tells the model to:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>answer using the provided context</p>
+</li>
+<li>
+<p>include the sources used</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Format retrieved documents with source info</strong> using a helper like
+<code>format_docs_with_sources</code>.</p>
+</li>
+<li>
+<p><strong>Build the chain</strong> in the same RAG flow:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>retriever → prompt → LLM → output parser</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Ask a question</strong>, and the response includes:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>the answer</p>
+</li>
+<li>
+<p>the documents or sources it came from</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters">Why it matters</h4>
+<div class="paragraph">
+<p>This is useful for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Q&amp;A bots</p>
+</li>
+<li>
+<p>enterprise search</p>
+</li>
+<li>
+<p>trustworthy AI systems</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Because users can:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>verify answers</p>
+</li>
+<li>
+<p>trace them back to original documents</p>
+</li>
+<li>
+<p>trust the results more easily</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_bottom_line">Bottom line</h4>
+<div class="paragraph">
+<p>RAG with sources works like basic RAG, but adds <strong>source formatting,
+citations, and a prompt that asks for references</strong>, making the output
+more transparent and practical.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_66_hands_on_rag_with_fallback">66. Hands-on ~ RAG with Fallback</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to add a fallback mechanism to a RAG pipeline
+so it can handle out-of-scope questions safely.</p>
+</div>
+<div class="sect3">
+<h4 id="_key_points">Key points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>The pipeline uses:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>a vector store</p>
+</li>
+<li>
+<p>a retriever</p>
+</li>
+<li>
+<p>a prompt</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The prompt instructs the model to:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>answer only using the provided context</p>
+</li>
+<li>
+<p>reply with: <strong>“I don&#8217;t have information about that in my knowledge
+base.”</strong> if the answer is not present</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The chain works by:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>retrieving relevant documents</p>
+</li>
+<li>
+<p>formatting and inserting them into the prompt</p>
+</li>
+<li>
+<p>sending the prompt to the LLM</p>
+</li>
+<li>
+<p>parsing the output as text</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_testing">Testing</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Questions covered by the knowledge base produce normal answers.</p>
+</li>
+<li>
+<p>Questions outside the knowledge base trigger the fallback response.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters_2">Why it matters</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>It reduces hallucinations by preventing the model from guessing.</p>
+</li>
+<li>
+<p>It makes the system more honest, reliable, and useful in real-world
+situations where users may ask unsupported questions.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_overall_result">Overall result</h4>
+<div class="paragraph">
+<p>This approach makes the RAG pipeline more robust by keeping answers
+grounded in the available context and gracefully handling unknown
+queries.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-02 12:57:44 +0300
+Last updated 2026-04-03 11:23:39 +0300
 </div>
 </div>
 </body>

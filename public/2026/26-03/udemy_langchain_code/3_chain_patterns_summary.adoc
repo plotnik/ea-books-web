@@ -1,0 +1,140 @@
+= Summary: Chain Patterns
+:source-highlighter: pygments
+:icons: font
+:toc: right
+
+
+link:udemy_langchain.html[<Contents>]
+
+---
+
+This section introduces key LangChain chain patterns and debugging techniques.
+
+== Basic and Parallel Chains
+
+=== Basic chain
+A basic chain is a linear pipeline composed of:
+
+* `ChatPromptTemplate`
+* a model created with `initChat`
+* `StringParser`
+
+Flow:
+
+*prompt -> model -> parser*
+
+Use `pipe()` to connect components and `invoke()` to execute the chain.
+A typical example is summarizing text in one sentence.
+
+=== Parallel chains
+`RunnableParallel` runs multiple independent chains on the same input simultaneously.
+
+Common parallel tasks include:
+
+* summarization
+* keyword extraction
+* sentiment analysis
+
+Each task has its own prompt and chain, and the combined runnable returns
+an object containing all results.
+
+=== Takeaway
+
+* *Basic chain* = one sequential pipeline
+* *Parallel chain* = multiple pipelines executed together
+* `invoke()` runs the chain and returns the output
+
+== Passthrough Runnable
+
+This section demonstrates a simple RAG-like workflow using:
+
+* `RunnablePassthrough`
+* `RunnableLambda`
+* `RunnableParallel`
+
+The chain:
+
+. accepts a user question
+. retrieves a fixed context
+. preserves the original question unchanged
+. sends both context and question into a prompt
+. calls the model
+. parses the response as a string
+
+`RunnablePassthrough` is useful when the original input must be retained
+while additional data is added to the chain.
+
+Expected example result:
+
+* For “Who created LangChain?” the chain answers: Harrison Chase, in 2022.
+
+== Chain Branching
+
+Chain branching uses `RunnableBranch` to route inputs through different
+chains based on content.
+
+It uses three prompts:
+
+* code prompt
+* general prompt
+* classifier prompt
+
+Process:
+
+. A classifier chain determines whether the input is code-related.
+. A helper function invokes the classifier and decides the route.
+. `RunnableBranch` sends the input to either:
+* a code chain
+* a general/default chain
+
+Examples:
+
+* “How do I write a for loop in Python?” -> code chain
+* “What is the weather like today?” -> general chain
+
+=== Key point
+
+Branching typically requires two LLM calls per request:
+
+. classification
+. final response generation
+
+This enables dynamic routing to specialized prompts or workflows.
+
+== Debugging Chains
+
+Debugging helps trace how data flows through prompts, models, and parsers.
+
+Main methods:
+
+. *Inspect configuration*
+* Use `get_config()` to examine chain structure and input/output schemas.
+. *Use `with_config()` for tracing*
+* Add metadata such as `run_name` and tracing information.
+. *Inspect intermediate steps*
+* Use `RunnableLambda` as a logging tap to observe values between stages.
+
+=== Covered concepts
+
+* basic chains
+* parallel chains
+* passthrough chains
+* branching chains
+* debugging chains
+
+== Overall Summary
+
+This chapter shows how LangChain chains can be:
+
+* sequenced in a basic pipeline
+* run concurrently in parallel
+* extended while preserving input with passthrough
+* dynamically routed with branching
+* inspected and traced for debugging
+
+These patterns form the foundation for building flexible LLM workflows.
+
+---
+
+link:udemy_langchain.html[<Contents>]
+

@@ -80,3 +80,88 @@ It follows the standard RAG flow:
 
 The key benefit is that LangChain’s runnable and pipe syntax makes the
 entire pipeline modular, readable, and easy to compose.
+
+== 65. Hands-on ~ RAG with Resources
+
+The passage explains how to extend basic RAG into *RAG with sources*.
+
+==== Key ideas
+
+* The core setup stays the same: *knowledge base/vector store*,
+*retriever*, and *LLM* are reused.
+* The main change is that the system now returns *sources or citations*
+along with the answer.
+
+==== Main steps
+
+[arabic]
+. *Create a prompt* that tells the model to:
+* answer using the provided context
+* include the sources used
+. *Format retrieved documents with source info* using a helper like
+`format++_++docs++_++with++_++sources`.
+. *Build the chain* in the same RAG flow:
+* retriever → prompt → LLM → output parser
+. *Ask a question*, and the response includes:
+* the answer
+* the documents or sources it came from
+
+==== Why it matters
+
+This is useful for:
+
+* Q&A bots
+* enterprise search
+* trustworthy AI systems
+
+Because users can:
+
+* verify answers
+* trace them back to original documents
+* trust the results more easily
+
+==== Bottom line
+
+RAG with sources works like basic RAG, but adds *source formatting,
+citations, and a prompt that asks for references*, making the output
+more transparent and practical.
+
+== 66. Hands-on ~ RAG with Fallback
+
+The passage explains how to add a fallback mechanism to a RAG pipeline
+so it can handle out-of-scope questions safely.
+
+==== Key points
+
+* The pipeline uses:
+** a vector store
+** a retriever
+** a prompt
+* The prompt instructs the model to:
+** answer only using the provided context
+** reply with: *“I don't have information about that in my knowledge
+base.”* if the answer is not present
+* The chain works by:
+[arabic]
+. retrieving relevant documents
+. formatting and inserting them into the prompt
+. sending the prompt to the LLM
+. parsing the output as text
+
+==== Testing
+
+* Questions covered by the knowledge base produce normal answers.
+* Questions outside the knowledge base trigger the fallback response.
+
+==== Why it matters
+
+* It reduces hallucinations by preventing the model from guessing.
+* It makes the system more honest, reliable, and useful in real-world
+situations where users may ask unsupported questions.
+
+==== Overall result
+
+This approach makes the RAG pipeline more robust by keeping answers
+grounded in the available context and gracefully handling unknown
+queries.
+
