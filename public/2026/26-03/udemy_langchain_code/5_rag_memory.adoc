@@ -165,3 +165,189 @@ This approach makes the RAG pipeline more robust by keeping answers
 grounded in the available context and gracefully handling unknown
 queries.
 
+== 67. Hands-on ~ RAG with Structured Outputs
+
+`demo++_++structured++_++rag()` demonstrates a small structured RAG
+pipeline.
+
+* It creates a knowledge base and turns it into a retriever that fetches
+the top 3 relevant documents.
+* It defines a `RAGResponse` Pydantic schema with fields for:
+** `answer`
+** `confidence`
+** `sources++_++used`
+** `follow++_++up`
+* It wraps the LLM with `with++_++structured++_++output(RAGResponse)` so
+the model returns a validated structured object instead of free-form
+text.
+* It builds a prompt that includes retrieved `context` and the user
+`question`.
+* A helper formats retrieved docs by combining each document’s source
+metadata and content into one context string.
+* The pipeline uses runnable composition:
+** question → retriever → formatted context
+** question → passthrough
+** both go into the prompt
+** prompt goes to the structured LLM
+* It invokes the chain with `"What is LangGraph?"` and prints the
+structured fields from the result.
+
+Key ideas:
+
+* RAG grounds answers in retrieved documents.
+* Structured output makes responses predictable and easier to use
+programmatically.
+* The `++|++` operator composes retrieval, formatting, prompting, and
+generation into one chain.
+
+It also notes that `confidence` is only described as
+`"high, medium, or low"` but not strictly enforced; using an `Enum`
+would add validation.
+
+== 70. Hands-on ~ Advanced RAG - Multi-Query Retriever
+
+The section introduces several advanced RAG retrieval patterns:
+
+* multi-query retrieval
+* self-query retrieval
+* contextual compression
+* hybrid search
+
+It explains that the examples use some `langchain++_++community` imports
+because LangChain has been reorganizing its packages, and this
+compatibility layer is still useful for learning, even though some parts
+may be deprecated later. Some of these retrievers are also moving into
+LangGraph.
+
+New components introduced include:
+
+* `MultiQueryRetriever`
+* `ContextualCompressionRetriever`
+* `LLMChainExtractor`
+* `EnsembleRetriever`
+* `BM25Retriever`
+* `ParentDocumentRetriever`
+
+Logging is enabled so the generated sub-queries from multi-query
+retrieval can be inspected during execution.
+
+The demo builds a small technical knowledge base, creates a Chroma
+vector store with embeddings like `text-embedding-3-small`, and uses
+that as the foundation for retrieval experiments.
+
+The main example covered is *Multi-Query Retriever*:
+
+* It uses an LLM to rewrite a single user query into multiple
+alternative phrasings.
+* These different versions help surface documents that might not match
+the original wording exactly.
+* For example, “What tools can I use to build AI applications?” might be
+expanded into several related queries about AI app development tools,
+platforms, or software.
+
+When run, the retriever generates these alternate queries, searches the
+vector store for each one, and returns a broader set of relevant
+documents. This improves recall but requires more computation and may
+increase cost.
+
+In the example, the retrieved results included documents related to AI
+tools, AI platforms, and databases/infrastructure, showing how
+multi-query retrieval can expand coverage beyond a single query.
+
+
+== 71. Hands-on ~ Advanced RAG - Contextual Compression
+
+Contextual compression is a retrieval technique that uses an LLM to
+extract only the most relevant parts of retrieved documents before
+passing them to the final model.
+
+===== How it works
+
+* Set up the vector store, retriever, and LLM.
+* Create an *LLM chain extractor* to act as the compressor.
+* Wrap the base retriever with a *Contextual Compression Retriever*
+using:
+** the compressor
+** the base retriever
+* Run the query and compare:
+** *Without compression*: full document chunks are returned.
+** *With compression*: only relevant excerpts are returned.
+
+===== What it shows
+
+* In simple cases, compression may not seem dramatic because the
+documents are already focused.
+* In more complex documents, the reduction is much clearer:
+** full chunks may be around 1500–1700 characters
+** compressed results may shrink to around 214 characters
+* The output keeps only the information needed to answer the question,
+such as framework names like *LangChain* and *LangGraph*.
+
+===== Benefits
+
+[arabic]
+. *Lower token usage*
+. *Better answer quality* due to less noise
+. *Faster processing* for large contexts
+
+===== Trade-off
+
+* It adds extra LLM calls during retrieval, which increases *latency and
+cost*.
+
+===== Overall
+
+Contextual compression is useful when documents are long, noisy, or
+expensive to send to the model. It improves precision and efficiency,
+but at the cost of extra retrieval-time computation.
+
+
+== 72. Hands-on ~ Advanced RAG - Hybrid Search
+
+This walkthrough explains how to build a *hybrid search system* that
+combines *BM25 keyword search* and *semantic search* using a *tech docs*
+dataset.
+
+==== Main steps
+
+[arabic]
+. *BM25 retriever*
+* Built from the documents with `from++_++documents`
+* Configured with `k=3` to return the top 3 keyword matches
+. *Semantic retriever*
+* Uses the existing semantic retriever setup
+* Also set to `k=3`
+. *Ensemble retriever*
+* Combines BM25 and semantic retrievers using *rank fusion*
+* Example weighting: *40% BM25*, *60% semantic*
+* Weights should be tuned based on the kinds of queries users ask
+. *Testing queries*
+* Keyword-heavy queries like *Postgres*, *SQL*, and *pgvector* work well
+with BM25
+* More meaning-based queries benefit from semantic search
+. *BM25 installation issue*
+* The `rank-bm25` package was missing
+* After installing it, the hybrid retriever worked correctly
+
+==== Results and takeaways
+
+* For *“What is Postgres?”*, the ensemble gives the best combined
+result.
+* For *“What database stores vectors?”*, both retrievers identify
+relevant vector database content.
+* For *“asset transactions”*, BM25 succeeds where semantic search drifts
+off-topic.
+* For *“How do I store AI model outputs for later retrieval?”* and
+*“fast similarity lookup embeddings”*, both retrievers contribute useful
+signals.
+
+==== Why it matters
+
+* *BM25* is strong for exact keyword matching
+* *Semantic search* is strong for intent and meaning
+* *Ensemble retrieval* combines both to improve accuracy and robustness
+
+The key lesson is that hybrid search handles both *exact terms* and
+*conceptual similarity*, making it more reliable than using either
+approach alone.
+

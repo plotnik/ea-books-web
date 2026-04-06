@@ -536,7 +536,14 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 </li>
 <li><a href="#_30_project_1_final_touches">30. Project 1 - Final Touches</a>
 <ul class="sectlevel3">
-<li><a href="#_main_points">Main points:</a></li>
+<li><a href="#_main_points">Main points</a></li>
+<li><a href="#_setup_steps">Setup steps</a></li>
+<li><a href="#_qa_bot_implementation">Q&amp;A bot implementation</a></li>
+<li><a href="#_bot_design">Bot design</a></li>
+<li><a href="#_error_handling_and_tracing">Error handling and tracing</a></li>
+<li><a href="#_demo_and_debugging">Demo and debugging</a></li>
+<li><a href="#_what_langsmith_shows">What LangSmith shows</a></li>
+<li><a href="#_overall_takeaway">Overall takeaway</a></li>
 </ul>
 </li>
 </ul>
@@ -1578,57 +1585,81 @@ defined schema.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The content walks through adding <strong>LangSmith</strong> to a LangChain project and
-building a <strong>production-style structured Q&amp;A bot</strong>.</p>
+<p>This section introduces <strong>LangSmith</strong> and shows how to use it to add
+<strong>logging, observability, and tracing</strong> to a LangChain-based <strong>Q&amp;A bot</strong>.</p>
 </div>
 <div class="sect3">
-<h4 id="_main_points">Main points:</h4>
+<h4 id="_main_points">Main points</h4>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>LangSmith overview</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Used for <strong>observability, tracing, evaluation, prompt engineering, and
-deployment</strong>.</p>
+<p><strong>LangSmith</strong> is a platform for monitoring AI apps using production
+data.</p>
 </li>
 <li>
-<p>In this project, it’s mainly added for <strong>logging and tracing</strong> so you
-can inspect how the AI app behaves in production.</p>
+<p>It provides:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>detailed tracing</p>
+</li>
+<li>
+<p>trend metrics</p>
+</li>
+<li>
+<p>evaluations</p>
+</li>
+<li>
+<p>prompt engineering support</p>
+</li>
+<li>
+<p>deployment support</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p><strong>LangSmith setup</strong></p>
+<p>The focus here is on <strong>tracing and observability</strong>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_setup_steps">Setup steps</h4>
 <div class="ulist">
 <ul>
 <li>
-<p>Create a LangSmith account and generate an <strong>API key</strong> in Settings.</p>
+<p>Create a <strong>LangSmith account</strong></p>
 </li>
 <li>
-<p>Configure environment variables for:</p>
+<p>Go to <strong>Settings</strong> and generate an <strong>API key</strong></p>
+</li>
+<li>
+<p>Configure the project in code using environment variables like:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>tracing (<code>true</code>)</p>
+<p><code>LANGSMITH_TRACING=true</code></p>
 </li>
 <li>
-<p>project name for grouping traces</p>
+<p>optional project name</p>
 </li>
 </ul>
 </div>
 </li>
 </ul>
 </div>
-</li>
-<li>
-<p><strong>Q&amp;A bot implementation</strong></p>
+</div>
+<div class="sect3">
+<h4 id="_qa_bot_implementation">Q&amp;A bot implementation</h4>
 <div class="ulist">
 <ul>
 <li>
-<p>Build a <code>SmartBot</code> using:</p>
+<p>Builds a <strong>production-ready question-answering bot with structured
+output</strong></p>
+</li>
+<li>
+<p>Uses:</p>
 <div class="ulist">
 <ul>
 <li>
@@ -1638,13 +1669,16 @@ can inspect how the AI app behaves in production.</p>
 <p><code>ChatOpenAI</code></p>
 </li>
 <li>
-<p><code>Pydantic</code> for <strong>structured outputs</strong></p>
+<p><code>Pydantic/BaseModel</code></p>
+</li>
+<li>
+<p>typing tools like <code>List</code> and <code>Optional</code></p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>Define a <code>QAResponse</code> schema with fields like:</p>
+<p>Defines a structured response schema with:</p>
 <div class="ulist">
 <ul>
 <li>
@@ -1667,119 +1701,123 @@ can inspect how the AI app behaves in production.</p>
 </li>
 </ul>
 </div>
-</li>
-<li>
-<p><strong>Structured output</strong></p>
+</div>
+<div class="sect3">
+<h4 id="_bot_design">Bot design</h4>
 <div class="ulist">
 <ul>
 <li>
-<p>The bot is initialized with
-<code>with_structured_output(QAResponse)</code> so responses always follow
-the schema.</p>
+<p>A <code>SmartBot</code> class is created with:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>a configurable model name</p>
 </li>
 <li>
-<p>This makes the bot more reliable and easier to use downstream.</p>
+<p>low temperature for more consistent responses</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p><strong>Prompt and chain</strong></p>
+<p>A prompt template gives the model system and human messages</p>
+</li>
+<li>
+<p>The prompt and model are chained together into a runnable pipeline</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_error_handling_and_tracing">Error handling and tracing</h4>
 <div class="ulist">
 <ul>
 <li>
-<p>A system prompt instructs the model to act as a knowledgeable QA
-assistant.</p>
-</li>
-<li>
-<p>The bot uses a LangChain chain combining:</p>
+<p>The <code>ask</code> function:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>prompt</p>
+<p>processes questions</p>
 </li>
 <li>
-<p>model</p>
+<p>returns structured responses</p>
+</li>
+<li>
+<p>falls back to a safe error response if something fails</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>The <code>ask</code> function invokes the chain with a question and returns a
-structured response.</p>
+<p>LangSmith tracing is added using:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@traceable</code></p>
+</li>
+<li>
+<p>LangSmith client</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p><strong>Graceful error handling</strong></p>
+<p>Batch processing is also traced</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_demo_and_debugging">Demo and debugging</h4>
 <div class="ulist">
 <ul>
 <li>
-<p>If something fails, the bot returns a fallback <code>QAResponse</code> instead
-of crashing.</p>
+<p>The bot is tested with:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>regular Q&amp;A</p>
 </li>
 <li>
-<p>This preserves structured output even during failures.</p>
+<p>error cases</p>
+</li>
+<li>
+<p>batch requests</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p><strong>LangSmith tracing integration</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Import <code>traceable</code> and <code>Client</code> from LangSmith.</p>
-</li>
-<li>
-<p>Decorate methods like <code>ask</code> and batch methods with <code>@traceable(&#8230;&#8203;)</code>.</p>
-</li>
-<li>
-<p>Call <code>client.flush()</code> to ensure traces are sent properly.</p>
+<p>A <code>client.flush()</code> call is used to ensure traces are properly sent to
+LangSmith and avoid ingestion errors</p>
 </li>
 </ul>
 </div>
-</li>
-<li>
-<p><strong>Demo functionality</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Demonstrates:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>single-question Q&amp;A</p>
-</li>
-<li>
-<p>error handling with edge cases</p>
-</li>
-<li>
-<p>batch processing of multiple questions</p>
-</li>
-</ul>
 </div>
-</li>
-<li>
-<p>Shows how all these runs appear in the LangSmith dashboard.</p>
-</li>
-</ul>
+<div class="sect3">
+<h4 id="_what_langsmith_shows">What LangSmith shows</h4>
+<div class="paragraph">
+<p>For each run, LangSmith lets you inspect:</p>
 </div>
-</li>
-<li>
-<p><strong>What LangSmith reveals</strong></p>
 <div class="ulist">
 <ul>
 <li>
-<p>For each run, you can inspect:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>inputs and outputs</p>
+<p>question input</p>
 </li>
 <li>
-<p>confidence/reasoning fields</p>
+<p>structured answer</p>
+</li>
+<li>
+<p>confidence and reasoning</p>
+</li>
+<li>
+<p>follow-up questions</p>
+</li>
+<li>
+<p>source requirement</p>
+</li>
+<li>
+<p>latency</p>
 </li>
 <li>
 <p>token usage</p>
@@ -1788,66 +1826,21 @@ of crashing.</p>
 <p>cost</p>
 </li>
 <li>
-<p>latency</p>
-</li>
-<li>
 <p>metadata</p>
 </li>
 <li>
-<p>run status</p>
+<p>success/failure status</p>
 </li>
 </ul>
 </div>
-</li>
-</ul>
 </div>
-</li>
-<li>
-<p><strong>Section recap</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Covered:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>LangChain ecosystem overview</p>
-</li>
-<li>
-<p>environment setup with UV</p>
-</li>
-<li>
-<p>runnables and LCEL</p>
-</li>
-<li>
-<p>prompt templates and message types</p>
-</li>
-<li>
-<p>structured outputs with Pydantic</p>
-</li>
-<li>
-<p>production-ready Q&amp;A bot creation</p>
-</li>
-<li>
-<p>LangSmith tracing</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Next topic</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>The next section will cover <strong>chains, RAG, and memory</strong>.</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
+<div class="sect3">
+<h4 id="_overall_takeaway">Overall takeaway</h4>
+<div class="paragraph">
+<p>This section demonstrates how to build a <strong>structured, production-ready
+Q&amp;A bot</strong> and use <strong>LangSmith</strong> to monitor it effectively in real time. It
+also sets up the foundation for later topics like <strong>chains, RAG, and
+memory</strong>.</p>
 </div>
 </div>
 </div>
@@ -1855,7 +1848,7 @@ of crashing.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-25 11:38:39 +0200
+Last updated 2026-04-06 21:25:54 +0300
 </div>
 </div>
 </body>

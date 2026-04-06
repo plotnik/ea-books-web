@@ -468,6 +468,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_overall_result">Overall result</a></li>
 </ul>
 </li>
+<li><a href="#_67_hands_on_rag_with_structured_outputs">67. Hands-on ~ RAG with Structured Outputs</a></li>
+<li><a href="#_70_hands_on_advanced_rag_multi_query_retriever">70. Hands-on ~ Advanced RAG - Multi-Query Retriever</a></li>
+<li><a href="#_71_hands_on_advanced_rag_contextual_compression">71. Hands-on ~ Advanced RAG - Contextual Compression</a>
+<ul class="sectlevel4">
+<li><a href="#_how_it_works">How it works</a></li>
+<li><a href="#_what_it_shows">What it shows</a></li>
+<li><a href="#_benefits">Benefits</a></li>
+<li><a href="#_trade_off">Trade-off</a></li>
+<li><a href="#_overall">Overall</a></li>
+</ul>
+</li>
+<li><a href="#_72_hands_on_advanced_rag_hybrid_search">72. Hands-on ~ Advanced RAG - Hybrid Search</a>
+<ul class="sectlevel3">
+<li><a href="#_main_steps_2">Main steps</a></li>
+<li><a href="#_results_and_takeaways">Results and takeaways</a></li>
+<li><a href="#_why_it_matters_3">Why it matters</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -895,10 +913,445 @@ queries.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_67_hands_on_rag_with_structured_outputs">67. Hands-on ~ RAG with Structured Outputs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>demo_structured_rag()</code> demonstrates a small structured RAG
+pipeline.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It creates a knowledge base and turns it into a retriever that fetches
+the top 3 relevant documents.</p>
+</li>
+<li>
+<p>It defines a <code>RAGResponse</code> Pydantic schema with fields for:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>answer</code></p>
+</li>
+<li>
+<p><code>confidence</code></p>
+</li>
+<li>
+<p><code>sources_used</code></p>
+</li>
+<li>
+<p><code>follow_up</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>It wraps the LLM with <code>with_structured_output(RAGResponse)</code> so
+the model returns a validated structured object instead of free-form
+text.</p>
+</li>
+<li>
+<p>It builds a prompt that includes retrieved <code>context</code> and the user
+<code>question</code>.</p>
+</li>
+<li>
+<p>A helper formats retrieved docs by combining each document’s source
+metadata and content into one context string.</p>
+</li>
+<li>
+<p>The pipeline uses runnable composition:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>question → retriever → formatted context</p>
+</li>
+<li>
+<p>question → passthrough</p>
+</li>
+<li>
+<p>both go into the prompt</p>
+</li>
+<li>
+<p>prompt goes to the structured LLM</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>It invokes the chain with <code>"What is LangGraph?"</code> and prints the
+structured fields from the result.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Key ideas:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>RAG grounds answers in retrieved documents.</p>
+</li>
+<li>
+<p>Structured output makes responses predictable and easier to use
+programmatically.</p>
+</li>
+<li>
+<p>The <code>|</code> operator composes retrieval, formatting, prompting, and
+generation into one chain.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It also notes that <code>confidence</code> is only described as
+<code>"high, medium, or low"</code> but not strictly enforced; using an <code>Enum</code>
+would add validation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_70_hands_on_advanced_rag_multi_query_retriever">70. Hands-on ~ Advanced RAG - Multi-Query Retriever</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The section introduces several advanced RAG retrieval patterns:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>multi-query retrieval</p>
+</li>
+<li>
+<p>self-query retrieval</p>
+</li>
+<li>
+<p>contextual compression</p>
+</li>
+<li>
+<p>hybrid search</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It explains that the examples use some <code>langchain_community</code> imports
+because LangChain has been reorganizing its packages, and this
+compatibility layer is still useful for learning, even though some parts
+may be deprecated later. Some of these retrievers are also moving into
+LangGraph.</p>
+</div>
+<div class="paragraph">
+<p>New components introduced include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>MultiQueryRetriever</code></p>
+</li>
+<li>
+<p><code>ContextualCompressionRetriever</code></p>
+</li>
+<li>
+<p><code>LLMChainExtractor</code></p>
+</li>
+<li>
+<p><code>EnsembleRetriever</code></p>
+</li>
+<li>
+<p><code>BM25Retriever</code></p>
+</li>
+<li>
+<p><code>ParentDocumentRetriever</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Logging is enabled so the generated sub-queries from multi-query
+retrieval can be inspected during execution.</p>
+</div>
+<div class="paragraph">
+<p>The demo builds a small technical knowledge base, creates a Chroma
+vector store with embeddings like <code>text-embedding-3-small</code>, and uses
+that as the foundation for retrieval experiments.</p>
+</div>
+<div class="paragraph">
+<p>The main example covered is <strong>Multi-Query Retriever</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It uses an LLM to rewrite a single user query into multiple
+alternative phrasings.</p>
+</li>
+<li>
+<p>These different versions help surface documents that might not match
+the original wording exactly.</p>
+</li>
+<li>
+<p>For example, “What tools can I use to build AI applications?” might be
+expanded into several related queries about AI app development tools,
+platforms, or software.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When run, the retriever generates these alternate queries, searches the
+vector store for each one, and returns a broader set of relevant
+documents. This improves recall but requires more computation and may
+increase cost.</p>
+</div>
+<div class="paragraph">
+<p>In the example, the retrieved results included documents related to AI
+tools, AI platforms, and databases/infrastructure, showing how
+multi-query retrieval can expand coverage beyond a single query.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_71_hands_on_advanced_rag_contextual_compression">71. Hands-on ~ Advanced RAG - Contextual Compression</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Contextual compression is a retrieval technique that uses an LLM to
+extract only the most relevant parts of retrieved documents before
+passing them to the final model.</p>
+</div>
+<div class="sect4">
+<h5 id="_how_it_works">How it works</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Set up the vector store, retriever, and LLM.</p>
+</li>
+<li>
+<p>Create an <strong>LLM chain extractor</strong> to act as the compressor.</p>
+</li>
+<li>
+<p>Wrap the base retriever with a <strong>Contextual Compression Retriever</strong>
+using:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>the compressor</p>
+</li>
+<li>
+<p>the base retriever</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Run the query and compare:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Without compression</strong>: full document chunks are returned.</p>
+</li>
+<li>
+<p><strong>With compression</strong>: only relevant excerpts are returned.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_what_it_shows">What it shows</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>In simple cases, compression may not seem dramatic because the
+documents are already focused.</p>
+</li>
+<li>
+<p>In more complex documents, the reduction is much clearer:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>full chunks may be around 1500–1700 characters</p>
+</li>
+<li>
+<p>compressed results may shrink to around 214 characters</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The output keeps only the information needed to answer the question,
+such as framework names like <strong>LangChain</strong> and <strong>LangGraph</strong>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_benefits">Benefits</h5>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Lower token usage</strong></p>
+</li>
+<li>
+<p><strong>Better answer quality</strong> due to less noise</p>
+</li>
+<li>
+<p><strong>Faster processing</strong> for large contexts</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_trade_off">Trade-off</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>It adds extra LLM calls during retrieval, which increases <strong>latency and
+cost</strong>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_overall">Overall</h5>
+<div class="paragraph">
+<p>Contextual compression is useful when documents are long, noisy, or
+expensive to send to the model. It improves precision and efficiency,
+but at the cost of extra retrieval-time computation.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_72_hands_on_advanced_rag_hybrid_search">72. Hands-on ~ Advanced RAG - Hybrid Search</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This walkthrough explains how to build a <strong>hybrid search system</strong> that
+combines <strong>BM25 keyword search</strong> and <strong>semantic search</strong> using a <strong>tech docs</strong>
+dataset.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_steps_2">Main steps</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>BM25 retriever</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Built from the documents with <code>from_documents</code></p>
+</li>
+<li>
+<p>Configured with <code>k=3</code> to return the top 3 keyword matches</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Semantic retriever</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Uses the existing semantic retriever setup</p>
+</li>
+<li>
+<p>Also set to <code>k=3</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Ensemble retriever</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Combines BM25 and semantic retrievers using <strong>rank fusion</strong></p>
+</li>
+<li>
+<p>Example weighting: <strong>40% BM25</strong>, <strong>60% semantic</strong></p>
+</li>
+<li>
+<p>Weights should be tuned based on the kinds of queries users ask</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Testing queries</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Keyword-heavy queries like <strong>Postgres</strong>, <strong>SQL</strong>, and <strong>pgvector</strong> work well
+with BM25</p>
+</li>
+<li>
+<p>More meaning-based queries benefit from semantic search</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>BM25 installation issue</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>rank-bm25</code> package was missing</p>
+</li>
+<li>
+<p>After installing it, the hybrid retriever worked correctly</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_results_and_takeaways">Results and takeaways</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>For <strong>“What is Postgres?”</strong>, the ensemble gives the best combined
+result.</p>
+</li>
+<li>
+<p>For <strong>“What database stores vectors?”</strong>, both retrievers identify
+relevant vector database content.</p>
+</li>
+<li>
+<p>For <strong>“asset transactions”</strong>, BM25 succeeds where semantic search drifts
+off-topic.</p>
+</li>
+<li>
+<p>For <strong>“How do I store AI model outputs for later retrieval?”</strong> and
+<strong>“fast similarity lookup embeddings”</strong>, both retrievers contribute useful
+signals.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters_3">Why it matters</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>BM25</strong> is strong for exact keyword matching</p>
+</li>
+<li>
+<p><strong>Semantic search</strong> is strong for intent and meaning</p>
+</li>
+<li>
+<p><strong>Ensemble retrieval</strong> combines both to improve accuracy and robustness</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The key lesson is that hybrid search handles both <strong>exact terms</strong> and
+<strong>conceptual similarity</strong>, making it more reliable than using either
+approach alone.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-03 11:23:39 +0300
+Last updated 2026-04-06 21:27:34 +0300
 </div>
 </div>
 </body>
