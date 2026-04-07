@@ -351,3 +351,96 @@ The key lesson is that hybrid search handles both *exact terms* and
 *conceptual similarity*, making it more reliable than using either
 approach alone.
 
+
+== 73. Hands-on ~ Advanced RAG - Parent Document Retriever
+
+The document explains how to build a *parent document retriever*, which
+combines *small chunks for retrieval accuracy* with *large chunks for
+better context*.
+
+==== Main idea
+
+* Split documents into:
+** *Parent chunks*: larger pieces of about *800 characters*
+** *Child chunks*: smaller pieces of about *200 characters* with overlap
+* Search is done over the *small child chunks*
+* The system returns the *full parent chunk* to the LLM
+
+==== Setup
+
+* Use an *in-memory vector store* for embeddings
+* Use an *in-memory document store* for parent documents
+* Name the collection something like *`parent-child-demo`*
+* Build the retriever with:
+** vector store
+** document store
+** child splitter
+** parent splitter
+
+==== How it works
+
+[arabic]
+. Add documents
+. Query something like *“What is LangGraph used for?”*
+. Compare:
+* *regular retrieval*: returns a small, focused chunk
+* *parent document retrieval*: returns a larger chunk with more context
+
+==== Why it helps
+
+* *Small chunks*
+** better retrieval precision
+** more focused embeddings
+* *Large chunks*
+** better context for generation
+** less fragmentation
+
+==== Key benefit
+
+This approach gives the best of both worlds:
+
+* accurate search from small chunks
+* complete context from large chunks
+
+==== Summary
+
+A parent document retriever is a *two-stage retrieval system*:
+
+* first, find the most relevant *small child chunk*
+* then, return its corresponding *larger parent document*
+
+It is especially useful for *larger documents* where both precision and
+context matter.
+
+== 74. Hands-on ~ Advanced RAG - Combining Multi-Query and Compression Strategies
+
+The passage describes how to combine advanced RAG techniques into one
+retrieval chain:
+
+* Start with a *vector store* and an *LLM*.
+* Add *multi-query retrieval* to improve *recall* by generating query
+variations.
+* Add *contextual compression* to improve *precision* by filtering
+retrieved results for relevance.
+* Define a *RAG prompt*, format retrieved documents, and build the final
+chain.
+* Test the chain with example questions.
+
+Key takeaways:
+
+* *Multi-query retrieval* helps find more relevant documents.
+* *Contextual compression* helps keep only the most useful context.
+* You do *not* need to use every RAG strategy at once; choose what fits
+your use case.
+
+The example setup uses:
+
+* *ChromaDB* for vector storage
+* *OpenAI* for embeddings and completions
+* *Multi-query retrieval*
+* *Contextual compression*
+* An *LLM* to generate the final answer
+
+Overall, it presents a clean blueprint for a more advanced, effective
+RAG pipeline.
+
