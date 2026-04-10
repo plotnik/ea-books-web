@@ -497,6 +497,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_74_hands_on_advanced_rag_combining_multi_query_and_compression_strategies">74. Hands-on ~ Advanced RAG - Combining Multi-Query and Compression Strategies</a></li>
+<li><a href="#_76_hands_on_conversation_memory_basics">76. Hands-on ~ Conversation Memory - Basics</a>
+<ul class="sectlevel3">
+<li><a href="#_main_idea_2">Main idea</a></li>
+<li><a href="#_key_components">Key components</a></li>
+<li><a href="#_basic_memory_workflow"><code>basic_memory()</code> workflow</a></li>
+<li><a href="#_result">Result</a></li>
+<li><a href="#_conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li><a href="#_77_hands_on_multiple_sessions_memory">77. Hands-on ~ Multiple Sessions Memory</a>
+<ul class="sectlevel3">
+<li><a href="#_main_idea_3">Main idea</a></li>
+<li><a href="#_how_it_works_3">How it works</a></li>
+<li><a href="#_example">Example</a></li>
+<li><a href="#_why_it_matters_4">Why it matters</a></li>
+</ul>
+</li>
+<li><a href="#_78_hands_on_message_trimming">78. Hands-on ~ Message Trimming</a></li>
 </ul>
 </div>
 </div>
@@ -1599,10 +1617,337 @@ RAG pipeline.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_76_hands_on_conversation_memory_basics">76. Hands-on ~ Conversation Memory - Basics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This document explains how to build <code>conversation_memory.py</code> to
+demonstrate conversational memory in LangChain.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_idea_2">Main idea</h4>
+<div class="paragraph">
+<p>The chat model remembers earlier parts of a conversation by storing
+messages in session-based history and reusing them in later turns.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_components">Key components</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Chat model setup</strong> using <code>init_chat_model</code> or <code>ChatOpenAI</code></p>
+</li>
+<li>
+<p><strong>Prompt template</strong> with:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>a system message</p>
+</li>
+<li>
+<p>a human input</p>
+</li>
+<li>
+<p>a <code>MessagesPlaceholder</code> for chat history</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Message history storage</strong> with:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>InMemoryChatMessageHistory</code></p>
+</li>
+<li>
+<p>a dictionary keyed by <code>session_id</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>RunnableWithMessageHistory</strong> to automatically load and save messages
+for each session</p>
+</li>
+<li>
+<p><strong>StrOutputParser</strong> to format model output</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_basic_memory_workflow"><code>basic_memory()</code> workflow</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Initialize the chat model.</p>
+</li>
+<li>
+<p>Build a prompt that includes history.</p>
+</li>
+<li>
+<p>Chain the prompt, model, and parser.</p>
+</li>
+<li>
+<p>Create an in-memory store for session histories.</p>
+</li>
+<li>
+<p>Define <code>get_session_history()</code> to retrieve or create history
+for a session.</p>
+</li>
+<li>
+<p>Wrap the chain with <code>RunnableWithMessageHistory</code>.</p>
+</li>
+<li>
+<p>Use a fixed <code>session_id</code> to simulate one conversation.</p>
+</li>
+<li>
+<p>Send several user messages through the chain.</p>
+</li>
+<li>
+<p>Print the stored history to inspect saved human and AI messages.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_result">Result</h4>
+<div class="paragraph">
+<p>The model can answer follow-up questions using earlier context, such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>remembering the user’s name</p>
+</li>
+<li>
+<p>remembering what the user is learning</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_conclusion">Conclusion</h4>
+<div class="paragraph">
+<p>This is a simple example of session-based conversational memory in
+LangChain using modern runnable utilities and message history
+placeholders.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_77_hands_on_multiple_sessions_memory">77. Hands-on ~ Multiple Sessions Memory</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This describes how to support <strong>multiple independent chat sessions</strong> with
+one shared LLM by giving each user their own memory.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_idea_3">Main idea</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Use one <strong>shared LLM</strong></p>
+</li>
+<li>
+<p>Build a <strong>prompt</strong> that accepts:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>history</code> for prior messages</p>
+</li>
+<li>
+<p>current <code>input</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Create a <strong>chain</strong> from the prompt and LLM</p>
+</li>
+<li>
+<p>Store conversation histories in a <strong>dictionary</strong></p>
+</li>
+<li>
+<p>Add a helper function that <strong>gets or creates</strong> a session’s history</p>
+</li>
+<li>
+<p>Wrap the chain so:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>message</code> maps to the current user input</p>
+</li>
+<li>
+<p><code>history</code> maps to that user’s stored conversation history</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_how_it_works_3">How it works</h4>
+<div class="paragraph">
+<p>If a session ID is new, a history object is created and saved.<br>
+That means each user gets separate memory instead of sharing one global
+chat history.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example">Example</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>User A</strong> says: “My favorite language is Python.”</p>
+</li>
+<li>
+<p><strong>User B</strong> says: “I love JavaScript.”</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When they later ask:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>“What is my favorite language?”</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>the system uses the correct session ID to load the right history:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>User A → <strong>Python</strong></p>
+</li>
+<li>
+<p>User B → <strong>JavaScript</strong></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters_4">Why it matters</h4>
+<div class="paragraph">
+<p>This setup lets the model:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>remember past messages</p>
+</li>
+<li>
+<p>keep conversations separate by user</p>
+</li>
+<li>
+<p>answer based on each user’s own history</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Summary:</strong> each session has its own memory, so multiple users can talk
+to the same model without mixing their conversations.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_78_hands_on_message_trimming">78. Hands-on ~ Message Trimming</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Trim messages</dt>
+<dd>
+<p><a href="https://docs.langchain.com/oss/python/langgraph/add-memory#trim-messages" class="bare">https://docs.langchain.com/oss/python/langgraph/add-memory#trim-messages</a></p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The passage explains <strong>message trimming</strong>, which is the process of
+shortening a conversation history so it fits within a model’s <strong>context
+window</strong> and <strong>token limits</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Key points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It uses a simulated long chat made of <code>SystemMessage</code>, <code>HumanMessage</code>,
+and <code>AIMessage</code>.</p>
+</li>
+<li>
+<p>Trimming is done with a <strong>token limit</strong> and a strategy such as <code>"last"</code>
+or <code>"first"</code>.</p>
+</li>
+<li>
+<p>In the example, the <strong><code>last</code></strong> strategy is used, so the most recent
+messages are kept.</p>
+</li>
+<li>
+<p><code>include_system=True</code> means system messages are preserved.</p>
+</li>
+<li>
+<p><code>allow_partial=False</code> means messages are only kept if they fit
+completely.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Why it matters:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Reduces token usage</p>
+</li>
+<li>
+<p>Keeps conversations within context limits</p>
+</li>
+<li>
+<p>Avoids sending unnecessary history</p>
+</li>
+<li>
+<p>Helps manage long-term memory efficiently</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Example outcome:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The original chat had <strong>8 messages</strong></p>
+</li>
+<li>
+<p>After trimming with a small token limit, it may shrink to only <strong>2
+messages</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, message trimming is a practical way to control how much
+conversation history is retained in AI applications.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-07 10:36:14 +0300
+Last updated 2026-04-10 10:56:07 +0300
 </div>
 </div>
 </body>

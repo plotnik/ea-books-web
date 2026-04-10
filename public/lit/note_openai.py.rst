@@ -29,7 +29,7 @@ It integrates with OpenAI's **Responses API** to provide intelligent text operat
 
 📚 **OpenAI Cookbook**
    https://cookbook.openai.com/
-  
+ 
 ----
 
 🔢 **Tiktoken CodeWiki**
@@ -130,7 +130,7 @@ Each item in the list represents a single prompt and must define:
 - ``name``: A short, unique identifier for the prompt.
 - ``note``: Prompt body.
 - ``tags``: A list of categories (for example, ``text`` or ``python``) that describe the prompt’s domain or usage.
-  
+ 
 ::
 
   prompts_file = "openai_helper.yml"
@@ -200,6 +200,8 @@ Select OpenAI LLM
       "gpt-5.4": (2.50, 15.00),
       "gpt-5.4-mini": (0.75, 4.50),
       "gpt-5.4-nano": (0.20, 1.25),
+      "gpt-4o-mini": (0.15, 0.60),
+      "gpt-4.1-nano": (0.10, 0.40),
   }    
 
   llm_models = list(llm_prices.keys())
@@ -228,7 +230,7 @@ and display both the token count and the corresponding price.
       |---|---|---|
       | {len(input_text)} | {len(tokens)} | {cents} |
       ''') 
-  
+
 .. function:: call_llm(text, prompt)
 
 ::
@@ -268,7 +270,7 @@ Run Query
       if platform.system() == 'Darwin':
           os.system("afplay /System/Library/Sounds/Glass.aiff")
       st.rerun()
-  
+
 LLM output is cached in ``session_state``.
 
 ::
@@ -282,14 +284,14 @@ LLM output is cached in ``session_state``.
   if st.button("Clipboard", icon=":material/content_copy:"):
       pyperclip.copy(st.session_state.llm_output)
       st.write(f'Copied to clipboard') 
-    
+  
 Show last execution time
 
 ::
 
   if "execution_time" in st.session_state:
       st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
-    
+  
   if "output_price" in st.session_state:
       st.sidebar.write(f"Output price: `{round(st.session_state.output_price, 5)}` cents")  
-       
+     

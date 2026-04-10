@@ -444,3 +444,147 @@ The example setup uses:
 Overall, it presents a clean blueprint for a more advanced, effective
 RAG pipeline.
 
+== 76. Hands-on ~ Conversation Memory - Basics
+
+This document explains how to build `conversation++_++memory.py` to
+demonstrate conversational memory in LangChain.
+
+==== Main idea
+
+The chat model remembers earlier parts of a conversation by storing
+messages in session-based history and reusing them in later turns.
+
+==== Key components
+
+* *Chat model setup* using `init++_++chat++_++model` or `ChatOpenAI`
+* *Prompt template* with:
+** a system message
+** a human input
+** a `MessagesPlaceholder` for chat history
+* *Message history storage* with:
+** `InMemoryChatMessageHistory`
+** a dictionary keyed by `session++_++id`
+* *RunnableWithMessageHistory* to automatically load and save messages
+for each session
+* *StrOutputParser* to format model output
+
+==== `basic++_++memory()` workflow
+
+[arabic]
+. Initialize the chat model.
+. Build a prompt that includes history.
+. Chain the prompt, model, and parser.
+. Create an in-memory store for session histories.
+. Define `get++_++session++_++history()` to retrieve or create history
+for a session.
+. Wrap the chain with `RunnableWithMessageHistory`.
+. Use a fixed `session++_++id` to simulate one conversation.
+. Send several user messages through the chain.
+. Print the stored history to inspect saved human and AI messages.
+
+==== Result
+
+The model can answer follow-up questions using earlier context, such as:
+
+* remembering the user’s name
+* remembering what the user is learning
+
+==== Conclusion
+
+This is a simple example of session-based conversational memory in
+LangChain using modern runnable utilities and message history
+placeholders.
+
+
+
+== 77. Hands-on ~ Multiple Sessions Memory
+
+This describes how to support *multiple independent chat sessions* with
+one shared LLM by giving each user their own memory.
+
+==== Main idea
+
+* Use one *shared LLM*
+* Build a *prompt* that accepts:
+** `history` for prior messages
+** current `input`
+* Create a *chain* from the prompt and LLM
+* Store conversation histories in a *dictionary*
+* Add a helper function that *gets or creates* a session’s history
+* Wrap the chain so:
+** `message` maps to the current user input
+** `history` maps to that user’s stored conversation history
+
+==== How it works
+
+If a session ID is new, a history object is created and saved. +
+That means each user gets separate memory instead of sharing one global
+chat history.
+
+==== Example
+
+* *User A* says: “My favorite language is Python.”
+* *User B* says: “I love JavaScript.”
+
+When they later ask:
+
+* “What is my favorite language?”
+
+the system uses the correct session ID to load the right history:
+
+* User A → *Python*
+* User B → *JavaScript*
+
+==== Why it matters
+
+This setup lets the model:
+
+* remember past messages
+* keep conversations separate by user
+* answer based on each user’s own history
+
+*Summary:* each session has its own memory, so multiple users can talk
+to the same model without mixing their conversations.
+
+
+
+
+== 78. Hands-on ~ Message Trimming
+
+====
+Trim messages::
+https://docs.langchain.com/oss/python/langgraph/add-memory#trim-messages
+====
+
+The passage explains *message trimming*, which is the process of
+shortening a conversation history so it fits within a model’s *context
+window* and *token limits*.
+
+Key points:
+
+* It uses a simulated long chat made of `SystemMessage`, `HumanMessage`,
+and `AIMessage`.
+* Trimming is done with a *token limit* and a strategy such as `"last"`
+or `"first"`.
+* In the example, the *`last`* strategy is used, so the most recent
+messages are kept.
+* `include++_++system=True` means system messages are preserved.
+* `allow++_++partial=False` means messages are only kept if they fit
+completely.
+
+Why it matters:
+
+* Reduces token usage
+* Keeps conversations within context limits
+* Avoids sending unnecessary history
+* Helps manage long-term memory efficiently
+
+Example outcome:
+
+* The original chat had *8 messages*
+* After trimming with a small token limit, it may shrink to only *2
+messages*
+
+Overall, message trimming is a practical way to control how much
+conversation history is retained in AI applications.
+

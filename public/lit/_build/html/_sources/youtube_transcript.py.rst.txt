@@ -6,7 +6,7 @@ YouTube Transcript
 .. csv-table:: API Links
     :header: "Name", "URL"
     :widths: 10 30
-  
+ 
     "YouTube Transcript API", https://pypi.org/project/youtube-transcript-api/
 
 
@@ -18,6 +18,7 @@ YouTube Transcript
 
   from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
   from openai import OpenAI
+  import pyperclip
 
 Prints a stylized banner to the console when the application starts.
 
@@ -58,7 +59,11 @@ Extract video_id
   if len(youtube_url) > 0:
       video_id = youtube_url.split("v=")[-1].split("&")[0]
 
-  show_timecodes = True
+Show timecodes toggle
+
+::
+
+  show_timecodes = st.toggle("Show timecodes", True)
 
 Initialize YouTubeTranscriptApi
 
@@ -70,7 +75,7 @@ If `transcript_file` exists, output the contents
 
 ::
 
-  def write_transcript():
+  def print_transcript():
       if os.path.exists(transcript_file):
           with open(transcript_file, 'r', encoding='utf-8') as file:
               existing_transcript = file.read()
@@ -88,34 +93,42 @@ Fetch languages
 
   if "transcript_list" in st.session_state:
       language_codes = [lang.language_code for lang in st.session_state.transcript_list]
-      lang = st.sidebar.radio("Language", language_codes)
-  
+      lang = st.radio("Fetched languages", language_codes)
+
 Output file
 
 ::
 
-  transcript_file = st.sidebar.text_input("Output file:", value="transcript.md")
-  
-  def disabled_save_transcript():
-      return lang is None
-      #return len(youtube_url)==0
-          
+  transcript_file = st.text_input("Output file:", value="transcript.md")
+
+       
 Save Transcript
+---------------
 
 ::
-    
-  if st.button("Save Transcript", type="primary", use_container_width=True, disabled=disabled_save_transcript()):
 
+  def disabled_fetch_transcript():
+      # Cannot fetch transcript if "lang" is not selected
+      return lang is None
+    
+  def disabled_save_transcript():
+      return "fetched_transcript" not in st.session_state
+    
+  def disabled_copy_transcript():
+      return "transcript" not in st.session_state
+
+  if st.button("Fetch Transcript", type="primary", width="stretch", disabled=disabled_fetch_transcript()):
+      # Fetching transcript
       with st.spinner("Fetching transcript...", show_time=True):
           st.session_state.transcript_list = ytt_api.list(video_id)
           st.sidebar.write(st.session_state.transcript_list)
-      
-          fetched_transcript = ytt_api.fetch(video_id, languages=[lang])  
-    
+          st.session_state.fetched_transcript = ytt_api.fetch(video_id, languages=[lang]) 
+        
+  if st.button("Save Transcript", width="stretch", disabled=disabled_save_transcript()):
       # collect all `snippet.text` into `transcript` variable
       transcript = ""
       if show_timecodes:
-          for snippet in fetched_transcript:
+          for snippet in st.session_state.fetched_transcript:
               # translate seconds into "HH:MM:SS" format
               m, s = divmod(int(snippet.start), 60)
               #h, m = divmod(m, 60)
@@ -123,17 +136,24 @@ Save Transcript
               timestamp = f"{m:02d}:{s:02d}"
               transcript += f"`{timestamp}` {snippet.text}  \n"        
       else:
-          for snippet in fetched_transcript:
+          for snippet in st.session_state.fetched_transcript:
               transcript += snippet.text + " "
           transcript = transcript.strip()
-    
+  
+      st.session_state.transcript = transcript
       with open(transcript_file, 'w', encoding='utf-8') as file:
-          file.write(transcript)
+          file.write(st.session_state.transcript)
 
       st.write(f"Transcript saved: `{transcript_file}`")  
       st.rerun() 
-  
-  write_transcript()
+    
+  if st.button("Copy Transcript", width="stretch", disabled=disabled_copy_transcript()):
+      pyperclip.copy(st.session_state.transcript)
+      st.write(f'Copied to clipboard')
+    
+  # print_transcript()
+  if "transcript" in st.session_state:
+      st.write(st.session_state.transcript)
 
 Get trunscript summary
 ----------------------
@@ -160,7 +180,7 @@ Get trunscript summary
   }
   llm_models = list(llm_prices.keys())
 
-        
+      
 Class MultiModel
 ****************
 
@@ -252,7 +272,7 @@ Calls the appropriate LLM based on the model name.
               return self._call_o_model(prompt, text)
           else:
               raise ValueError(f"Unknown model prefix for: {self.llm_model}")
-        
+      
 Select LLM
 **********
 
@@ -273,13 +293,13 @@ Summary button
 
 ::
 
-  if st.sidebar.button("Summary", use_container_width=True):
+  if st.sidebar.button("Summary", width="stretch"):
       st.session_state.summary = create_summary()
 
   if "summary" in st.session_state:
       st.write("### Summary")
       st.write(st.session_state.get("summary"))
-  
+
 Truncate text to max len
 
 ::
