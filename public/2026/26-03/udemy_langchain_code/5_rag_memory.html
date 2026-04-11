@@ -515,6 +515,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_78_hands_on_message_trimming">78. Hands-on ~ Message Trimming</a></li>
+<li><a href="#_79_hands_on_windowed_memory">79. Hands-on ~ Windowed Memory</a>
+<ul class="sectlevel3">
+<li><a href="#_main_takeaway">Main takeaway</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1862,17 +1867,28 @@ to the same model without mixing their conversations.</p>
 <div class="sect1">
 <h2 id="_78_hands_on_message_trimming">78. Hands-on ~ Message Trimming</h2>
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Trim messages</dt>
 <dd>
 <p><a href="https://docs.langchain.com/oss/python/langgraph/add-memory#trim-messages" class="bare">https://docs.langchain.com/oss/python/langgraph/add-memory#trim-messages</a></p>
 </dd>
+<dt class="hdlist1">trim_messages</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langchain-core/messages/utils/trim_messages" class="bare">https://reference.langchain.com/python/langchain-core/messages/utils/trim_messages</a></p>
+</dd>
 </dl>
 </div>
-</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>The passage explains <strong>message trimming</strong>, which is the process of
@@ -1944,10 +1960,114 @@ conversation history is retained in AI applications.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_79_hands_on_windowed_memory">79. Hands-on ~ Windowed Memory</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">InMemoryChatMessageHistory</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langchain-core/chat_history/InMemoryChatMessageHistory" class="bare">https://reference.langchain.com/python/langchain-core/chat_history/InMemoryChatMessageHistory</a></p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The passage explains <strong>sliding window memory</strong> for LLM conversations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>LLM costs grow because each new request may include the full chat
+history.</p>
+</li>
+<li>
+<p>To control this, sliding window memory keeps only the <strong>last K
+exchanges</strong> and discards older messages.</p>
+</li>
+<li>
+<p>In the demo, a custom <code>WindowChatHistory</code> class extends LangChain’s
+<code>InMemoryChatMessageHistory</code>.</p>
+</li>
+<li>
+<p>It overrides <code>add_messages</code> to check whether the number of
+messages exceeds <code>K * 2</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>1 exchange = 1 human &#43; 1 AI message</p>
+</li>
+<li>
+<p>So <code>K</code> exchanges = <code>K * 2</code> messages</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>If the limit is exceeded, it slices the list to keep only the newest
+messages:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>self.messages = self.messages[-(K * 2):]</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The demo conversation shows the memory shrinking as new messages arrive.
+With <code>K = 2</code>, only the last two exchanges remain, so the model remembers
+recent facts like:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>“I work as an engineer.”</p>
+</li>
+<li>
+<p>“I have two cats.”</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It forgets earlier ones like:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>“My name is Paulo.”</p>
+</li>
+<li>
+<p>“I live in Seattle.”</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_main_takeaway">Main takeaway</h4>
+<div class="paragraph">
+<p>Sliding window memory provides <strong>fixed-size, predictable conversation
+memory</strong>, lowering cost and avoiding context-window overflow, but it
+<strong>loses older context</strong>.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-10 10:56:07 +0300
+Last updated 2026-04-11 23:52:38 +0300
 </div>
 </div>
 </body>

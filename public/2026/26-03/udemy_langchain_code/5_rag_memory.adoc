@@ -551,9 +551,13 @@ to the same model without mixing their conversations.
 
 == 78. Hands-on ~ Message Trimming
 
+[NOTE]
 ====
 Trim messages::
 https://docs.langchain.com/oss/python/langgraph/add-memory#trim-messages
+
+trim_messages::
+https://reference.langchain.com/python/langchain-core/messages/utils/trim_messages
 ====
 
 The passage explains *message trimming*, which is the process of
@@ -587,4 +591,46 @@ messages*
 
 Overall, message trimming is a practical way to control how much
 conversation history is retained in AI applications.
+
+== 79. Hands-on ~ Windowed Memory
+
+[NOTE]
+====
+InMemoryChatMessageHistory::
+https://reference.langchain.com/python/langchain-core/chat_history/InMemoryChatMessageHistory
+====
+
+The passage explains *sliding window memory* for LLM conversations:
+
+* LLM costs grow because each new request may include the full chat
+history.
+* To control this, sliding window memory keeps only the *last K
+exchanges* and discards older messages.
+* In the demo, a custom `WindowChatHistory` class extends LangChain’s
+`InMemoryChatMessageHistory`.
+* It overrides `add++_++messages` to check whether the number of
+messages exceeds `K ++*++ 2`:
+** 1 exchange = 1 human {plus} 1 AI message
+** So `K` exchanges = `K ++*++ 2` messages
+* If the limit is exceeded, it slices the list to keep only the newest
+messages:
+** `self.messages = self.messages++[++-(K ++*++ 2):++]++`
+
+The demo conversation shows the memory shrinking as new messages arrive.
+With `K = 2`, only the last two exchanges remain, so the model remembers
+recent facts like:
+
+* “I work as an engineer.”
+* “I have two cats.”
+
+It forgets earlier ones like:
+
+* “My name is Paulo.”
+* “I live in Seattle.”
+
+==== Main takeaway
+
+Sliding window memory provides *fixed-size, predictable conversation
+memory*, lowering cost and avoiding context-window overflow, but it
+*loses older context*.
 

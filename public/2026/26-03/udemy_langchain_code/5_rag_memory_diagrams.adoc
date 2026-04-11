@@ -1,0 +1,113 @@
+= Diagrams: RAG and Memory - A Comprehensive Dive
+:source-highlighter: pygments
+:icons: font
+:toc: right
+
+link:udemy_langchain.html[<Contents>]
+
+---
+
+== 76. Hands-on ~ Conversation Memory - Basics
+
+=== Object map
+
+---
+++++
+<div class="mermaid">
+flowchart TD
+    subgraph Build["Build LangChain objects"]
+        A["init_chat_model('gpt-4o-mini')"] --> B["llm"]
+        C["ChatPromptTemplate.from_messages(...)"] --> D["prompt"]
+        E["StrOutputParser()"] --> F["output parser"]
+
+        click A href "https://reference.langchain.com/python/langchain/chat_models/base/init_chat_model" _blank
+        click C href "https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate" _blank
+        click E href "https://reference.langchain.com/python/langchain-core/output_parsers/string/StrOutputParser" _blank
+    end
+
+    subgraph PromptDef["Prompt definition"]
+        C1["system: You are a helpful assistant. Be concise."]
+        C2["MessagesPlaceholder('history')"]
+        C3["human: {input}"]
+        C1 --> C
+        C2 --> C
+        C3 --> C
+
+        click C2 href "https://reference.langchain.com/python/langchain-core/prompts/chat/MessagesPlaceholder" _blank
+    end
+
+    subgraph Chain["Runnable pipeline"]
+        D --> G["prompt | llm | StrOutputParser()"]
+        B --> G
+        F --> G
+        G --> H["chain"]
+    end
+
+    subgraph Memory["History management"]
+        I["store: Dict[str, InMemoryChatMessageHistory]"]
+        J["get_session_history(session_id)"]
+        K["RunnableWithMessageHistory(...)"]
+        L["config = {'configurable': {'session_id': 'user_123'}}"]
+
+        I --> J
+        J --> K
+        H --> K
+        L --> K
+
+        click I href "https://reference.langchain.com/python/langchain-core/chat_history/InMemoryChatMessageHistory" _blank
+        click J href "https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory/get_session_history" _blank
+        click K href "https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory" _blank
+    end
+
+    subgraph Invocation["Invocation"]
+        M["invoke({'input': msg}, config=config)"]
+        N["history injected into prompt"]
+        O["LLM response"]
+        P["history updated in store"]
+    end
+
+    K --> M
+    M --> N
+    N --> O
+    O --> P
+</div>
+++++
+---
+
+=== Invocation flow
+
+---
+++++
+<div class="mermaid">
+sequenceDiagram
+    participant U as User code
+    participant R as RunnableWithMessageHistory
+    participant H as get_session_history
+    participant S as InMemoryChatMessageHistory
+    participant P as ChatPromptTemplate
+    participant L as llm
+    participant O as StrOutputParser
+
+    U->>R: invoke({"input": msg}, config)
+    R->>H: get_session_history("user_123")
+    H->>S: load/create history
+    S-->>R: prior messages
+    R->>P: fill prompt with system + history + input
+    P-->>R: prompt value
+    R->>L: send prompt
+    L-->>R: AI message
+    R->>O: parse output
+    O-->>R: string response
+    R->>S: append human + AI messages
+    R-->>U: final response
+
+</div>
+++++
+---
+
+++++
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
+++++
