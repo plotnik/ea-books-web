@@ -446,6 +446,30 @@ RAG pipeline.
 
 == 76. Hands-on ~ Conversation Memory - Basics
 
+[NOTE]
+====
+init_chat_model::
+https://reference.langchain.com/python/langchain/chat_models/base/init_chat_model
+
+ChatPromptTemplate::
+https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate
+
+StrOutputParser::
+https://reference.langchain.com/python/langchain-core/output_parsers/string/StrOutputParser
+
+MessagesPlaceholder::
+https://reference.langchain.com/python/langchain-core/prompts/chat/MessagesPlaceholder
+
+InMemoryChatMessageHistory::
+https://reference.langchain.com/python/langchain-core/chat_history/InMemoryChatMessageHistory
+
+get_session_history::
+https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory/get_session_history
+
+RunnableWithMessageHistory::
+https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory
+====
+
 This document explains how to build `conversation++_++memory.py` to
 demonstrate conversational memory in LangChain.
 
@@ -633,4 +657,131 @@ It forgets earlier ones like:
 Sliding window memory provides *fixed-size, predictable conversation
 memory*, lowering cost and avoiding context-window overflow, but it
 *loses older context*.
+
+
+
+== 80. Hands-on ~ Summary Memory
+
+*Summary memory* keeps a conversation manageable by *compressing older
+messages into a running summary* instead of deleting them. It uses:
+
+* a *summary LLM* to maintain a stable, deterministic summary,
+* a *chat LLM* for the live conversation,
+* a prompt built from *running summary {plus} recent message buffer
+{plus} current user input*.
+
+==== How it works
+
+[arabic]
+. The model responds using the summary, recent messages, and new input.
+. The new exchange is added to a recent-message buffer.
+. When the buffer gets too large, the oldest messages are *summarized*.
+. That summary is merged into the running summary.
+
+==== Why it’s useful
+
+* *Recent context stays exact*
+* *Older context is preserved in compressed form*
+* *Token usage remains bounded*, preventing context overflow
+
+==== Key idea
+
+It’s a *hybrid memory strategy*:
+
+* *old info* → summarized
+* *new info* → kept verbatim
+
+This is especially useful for chatbots, RAG systems, and other
+long-running AI interactions.
+
+
+== 81. Exercise and Solution ~ Persistent Memory
+
+The passage explains how to build a chatbot with persistent memory using
+LangChain and SQLite.
+
+==== Main points
+
+* Use *`RunnableWithMessageHistory`* and *`SQLChatMessageHistory`* to
+store conversation history in a local *SQLite database*.
+* Each chat session is identified by a *session ID*, so messages are
+saved and retrieved per user/session.
+* The chatbot can remember preferences across restarts, such as:
+** “I prefer dark mode themes.”
+** “What theme do I prefer?”
+* To make this work, you:
+[arabic]
+. Import the needed LangChain chat history tools.
+. Set a SQLite `.db` file path.
+. Create a function that returns a `SQLChatMessageHistory` for a given
+session.
+. Build a prompt with a system message, `history`, and user input.
+. Wrap the chain with `RunnableWithMessageHistory`.
+. Pass a config containing the `session++_++id`.
+. Test that the bot remembers past messages.
+
+==== Persistence verification
+
+* To confirm memory is truly saved, you can:
+** run a conversation,
+** restart the chain,
+** reuse the same SQLite database,
+** and ask about earlier information.
+* You can also inspect the SQLite database directly to see stored human
+and AI messages.
+
+==== Summarization idea
+
+* After about *10 messages*, the conversation can be summarized
+automatically.
+* The summary can be stored as memory, while older raw messages may be
+pruned if desired.
+
+==== Overall goal
+
+The result is a chatbot that:
+
+* remembers preferences,
+* persists across restarts,
+* stores memory locally,
+* and can later be extended with automatic summarization.
+
+
+== 83. Project ~ AI Research Assistant - Indexing Documents (Part 1)
+
+The passage describes building the foundation of a RAG-based
+`ResearchAssistant`.
+
+==== Main points
+
+* It uses familiar imports and introduces no major new concepts there.
+* Two data models are defined:
+** *`ResearchResponse`*: structured final output with `answer`,
+`confidence`, `sources`, and `key++_++quotes`.
+** *`FollowUpQuestions`*: used to generate follow-up questions.
+* A *`ResearchAssistant`* class is created to manage the core RAG
+components:
+** *Embeddings* via `OpenAIEmbeddings` (`text-embedding-3-small`)
+** *Text splitting* via `RecursiveCharacterTextSplitter`
+** *Vector storage* via `Chroma` with persistence
+* The constructor sets default values for:
+** `persistent++_++directory="research++_++db"`
+** `chunk++_++size=1000`
+** `chunk++_++overlap=200`
+* The system is tested to confirm the vector store initializes empty.
+* Document ingestion is added through:
+** `add++_++documents`
+** `add++_++text`
+** `add++_++texts`
+* Utility methods are included:
+** `get++_++document++_++count`
+** `list++_++sources`
+* Final tests confirm that documents are split, indexed, stored, and
+persisted correctly.
+
+==== Overall takeaway
+
+This section builds the *storage and indexing layer* of the assistant.
+It can now ingest and persist documents, but it does *not yet answer
+questions*. The next step is to add retrieval and response generation.
 

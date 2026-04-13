@@ -520,6 +520,27 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_main_takeaway">Main takeaway</a></li>
 </ul>
 </li>
+<li><a href="#_80_hands_on_summary_memory">80. Hands-on ~ Summary Memory</a>
+<ul class="sectlevel3">
+<li><a href="#_how_it_works_4">How it works</a></li>
+<li><a href="#_why_its_useful">Why it’s useful</a></li>
+<li><a href="#_key_idea">Key idea</a></li>
+</ul>
+</li>
+<li><a href="#_81_exercise_and_solution_persistent_memory">81. Exercise and Solution ~ Persistent Memory</a>
+<ul class="sectlevel3">
+<li><a href="#_main_points_2">Main points</a></li>
+<li><a href="#_persistence_verification">Persistence verification</a></li>
+<li><a href="#_summarization_idea">Summarization idea</a></li>
+<li><a href="#_overall_goal">Overall goal</a></li>
+</ul>
+</li>
+<li><a href="#_83_project_ai_research_assistant_indexing_documents_part_1">83. Project ~ AI Research Assistant - Indexing Documents (Part 1)</a>
+<ul class="sectlevel3">
+<li><a href="#_main_points_3">Main points</a></li>
+<li><a href="#_overall_takeaway">Overall takeaway</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1625,6 +1646,49 @@ RAG pipeline.</p>
 <div class="sect1">
 <h2 id="_76_hands_on_conversation_memory_basics">76. Hands-on ~ Conversation Memory - Basics</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">init_chat_model</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langchain/chat_models/base/init_chat_model" class="bare">https://reference.langchain.com/python/langchain/chat_models/base/init_chat_model</a></p>
+</dd>
+<dt class="hdlist1">ChatPromptTemplate</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate" class="bare">https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate</a></p>
+</dd>
+<dt class="hdlist1">StrOutputParser</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langchain-core/output_parsers/string/StrOutputParser" class="bare">https://reference.langchain.com/python/langchain-core/output_parsers/string/StrOutputParser</a></p>
+</dd>
+<dt class="hdlist1">MessagesPlaceholder</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langchain-core/prompts/chat/MessagesPlaceholder" class="bare">https://reference.langchain.com/python/langchain-core/prompts/chat/MessagesPlaceholder</a></p>
+</dd>
+<dt class="hdlist1">InMemoryChatMessageHistory</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langchain-core/chat_history/InMemoryChatMessageHistory" class="bare">https://reference.langchain.com/python/langchain-core/chat_history/InMemoryChatMessageHistory</a></p>
+</dd>
+<dt class="hdlist1">get_session_history</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory/get_session_history" class="bare">https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory/get_session_history</a></p>
+</dd>
+<dt class="hdlist1">RunnableWithMessageHistory</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory" class="bare">https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory</a></p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>This document explains how to build <code>conversation_memory.py</code> to
 demonstrate conversational memory in LangChain.</p>
@@ -2064,10 +2128,331 @@ memory</strong>, lowering cost and avoiding context-window overflow, but it
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_80_hands_on_summary_memory">80. Hands-on ~ Summary Memory</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Summary memory</strong> keeps a conversation manageable by <strong>compressing older
+messages into a running summary</strong> instead of deleting them. It uses:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a <strong>summary LLM</strong> to maintain a stable, deterministic summary,</p>
+</li>
+<li>
+<p>a <strong>chat LLM</strong> for the live conversation,</p>
+</li>
+<li>
+<p>a prompt built from <strong>running summary &#43; recent message buffer
+&#43; current user input</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_how_it_works_4">How it works</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The model responds using the summary, recent messages, and new input.</p>
+</li>
+<li>
+<p>The new exchange is added to a recent-message buffer.</p>
+</li>
+<li>
+<p>When the buffer gets too large, the oldest messages are <strong>summarized</strong>.</p>
+</li>
+<li>
+<p>That summary is merged into the running summary.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_its_useful">Why it’s useful</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Recent context stays exact</strong></p>
+</li>
+<li>
+<p><strong>Older context is preserved in compressed form</strong></p>
+</li>
+<li>
+<p><strong>Token usage remains bounded</strong>, preventing context overflow</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_idea">Key idea</h4>
+<div class="paragraph">
+<p>It’s a <strong>hybrid memory strategy</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>old info</strong> → summarized</p>
+</li>
+<li>
+<p><strong>new info</strong> → kept verbatim</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This is especially useful for chatbots, RAG systems, and other
+long-running AI interactions.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_81_exercise_and_solution_persistent_memory">81. Exercise and Solution ~ Persistent Memory</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to build a chatbot with persistent memory using
+LangChain and SQLite.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_points_2">Main points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <strong><code>RunnableWithMessageHistory</code></strong> and <strong><code>SQLChatMessageHistory</code></strong> to
+store conversation history in a local <strong>SQLite database</strong>.</p>
+</li>
+<li>
+<p>Each chat session is identified by a <strong>session ID</strong>, so messages are
+saved and retrieved per user/session.</p>
+</li>
+<li>
+<p>The chatbot can remember preferences across restarts, such as:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>“I prefer dark mode themes.”</p>
+</li>
+<li>
+<p>“What theme do I prefer?”</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>To make this work, you:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Import the needed LangChain chat history tools.</p>
+</li>
+<li>
+<p>Set a SQLite <code>.db</code> file path.</p>
+</li>
+<li>
+<p>Create a function that returns a <code>SQLChatMessageHistory</code> for a given
+session.</p>
+</li>
+<li>
+<p>Build a prompt with a system message, <code>history</code>, and user input.</p>
+</li>
+<li>
+<p>Wrap the chain with <code>RunnableWithMessageHistory</code>.</p>
+</li>
+<li>
+<p>Pass a config containing the <code>session_id</code>.</p>
+</li>
+<li>
+<p>Test that the bot remembers past messages.</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_persistence_verification">Persistence verification</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>To confirm memory is truly saved, you can:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>run a conversation,</p>
+</li>
+<li>
+<p>restart the chain,</p>
+</li>
+<li>
+<p>reuse the same SQLite database,</p>
+</li>
+<li>
+<p>and ask about earlier information.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>You can also inspect the SQLite database directly to see stored human
+and AI messages.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_summarization_idea">Summarization idea</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>After about <strong>10 messages</strong>, the conversation can be summarized
+automatically.</p>
+</li>
+<li>
+<p>The summary can be stored as memory, while older raw messages may be
+pruned if desired.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_overall_goal">Overall goal</h4>
+<div class="paragraph">
+<p>The result is a chatbot that:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>remembers preferences,</p>
+</li>
+<li>
+<p>persists across restarts,</p>
+</li>
+<li>
+<p>stores memory locally,</p>
+</li>
+<li>
+<p>and can later be extended with automatic summarization.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_83_project_ai_research_assistant_indexing_documents_part_1">83. Project ~ AI Research Assistant - Indexing Documents (Part 1)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage describes building the foundation of a RAG-based
+<code>ResearchAssistant</code>.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_points_3">Main points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>It uses familiar imports and introduces no major new concepts there.</p>
+</li>
+<li>
+<p>Two data models are defined:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>ResearchResponse</code></strong>: structured final output with <code>answer</code>,
+<code>confidence</code>, <code>sources</code>, and <code>key_quotes</code>.</p>
+</li>
+<li>
+<p><strong><code>FollowUpQuestions</code></strong>: used to generate follow-up questions.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>A <strong><code>ResearchAssistant</code></strong> class is created to manage the core RAG
+components:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Embeddings</strong> via <code>OpenAIEmbeddings</code> (<code>text-embedding-3-small</code>)</p>
+</li>
+<li>
+<p><strong>Text splitting</strong> via <code>RecursiveCharacterTextSplitter</code></p>
+</li>
+<li>
+<p><strong>Vector storage</strong> via <code>Chroma</code> with persistence</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The constructor sets default values for:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>persistent_directory="research_db"</code></p>
+</li>
+<li>
+<p><code>chunk_size=1000</code></p>
+</li>
+<li>
+<p><code>chunk_overlap=200</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The system is tested to confirm the vector store initializes empty.</p>
+</li>
+<li>
+<p>Document ingestion is added through:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>add_documents</code></p>
+</li>
+<li>
+<p><code>add_text</code></p>
+</li>
+<li>
+<p><code>add_texts</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Utility methods are included:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>get_document_count</code></p>
+</li>
+<li>
+<p><code>list_sources</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Final tests confirm that documents are split, indexed, stored, and
+persisted correctly.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_overall_takeaway">Overall takeaway</h4>
+<div class="paragraph">
+<p>This section builds the <strong>storage and indexing layer</strong> of the assistant.
+It can now ingest and persist documents, but it does <strong>not yet answer
+questions</strong>. The next step is to add retrieval and response generation.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-11 23:52:38 +0300
+Last updated 2026-04-13 12:59:26 +0300
 </div>
 </div>
 </body>

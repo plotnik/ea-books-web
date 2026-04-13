@@ -28,6 +28,8 @@ Literate Programs
    grafana_stats.py     
    neo_rag.py
    book_chat.py
+   extract_adoc_defs.py
+   adoc_links.py
    li_extract.py
    L1_Router_Engine.py   
    time_intervals.py
@@ -47,7 +49,6 @@ Literate Programs
    extract_chunk.py
    curl_clean.py
    cmp_folders.py
-   adoc_links.py
    google_search.py
    ollama_chat.py
    cmp_text.py
