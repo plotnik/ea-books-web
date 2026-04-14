@@ -749,39 +749,235 @@ The result is a chatbot that:
 
 == 83. Project ~ AI Research Assistant - Indexing Documents (Part 1)
 
-The passage describes building the foundation of a RAG-based
-`ResearchAssistant`.
+The document outlines the setup of an *AIResearchAssistant* for a RAG
+pipeline using *Chroma*, *OpenAIEmbeddings*, and
+*RecursiveCharacterTextSplitter*.
 
 ==== Main points
 
-* It uses familiar imports and introduces no major new concepts there.
-* Two data models are defined:
-** *`ResearchResponse`*: structured final output with `answer`,
-`confidence`, `sources`, and `key++_++quotes`.
-** *`FollowUpQuestions`*: used to generate follow-up questions.
-* A *`ResearchAssistant`* class is created to manage the core RAG
+* Introduces structured output models:
+** *ResearchResponse*: includes `answer`, `confidence`, `sources`, and
+`key++_++quotes`
+** *follow++_++up++_++questions*: for generating follow-up prompts
+* Builds an *AIResearchAssistant* class that bundles the three core RAG
 components:
-** *Embeddings* via `OpenAIEmbeddings` (`text-embedding-3-small`)
-** *Text splitting* via `RecursiveCharacterTextSplitter`
-** *Vector storage* via `Chroma` with persistence
-* The constructor sets default values for:
+[arabic]
+. *Embedding model* (`OpenAIEmbeddings`, `text-embedding-3-small`)
+. *Text splitter* (`RecursiveCharacterTextSplitter`)
+. *Vector store* (`Chroma` with persistent storage)
+* The constructor sets defaults like:
 ** `persistent++_++directory="research++_++db"`
 ** `chunk++_++size=1000`
 ** `chunk++_++overlap=200`
-* The system is tested to confirm the vector store initializes empty.
-* Document ingestion is added through:
-** `add++_++documents`
-** `add++_++text`
-** `add++_++texts`
-* Utility methods are included:
+* Adds document ingestion methods:
+** `add++_++documents` to split, tag, timestamp, and store documents
+** `add++_++text` and `add++_++texts` as convenience wrappers for raw
+text
+* Includes inspection utilities:
 ** `get++_++document++_++count`
 ** `list++_++sources`
-* Final tests confirm that documents are split, indexed, stored, and
-persisted correctly.
+* Confirms persistence and indexing through tests and cleanup steps
 
 ==== Overall takeaway
 
-This section builds the *storage and indexing layer* of the assistant.
-It can now ingest and persist documents, but it does *not yet answer
-questions*. The next step is to add retrieval and response generation.
+The assistant is now able to *ingest, chunk, index, and persist
+documents*, but it does *not yet support retrieval or question
+answering*. The next step is to add those capabilities so it can respond
+to user queries.
 
+
+== 84. Project ~ AI Research Assistant - LLM Prompt and Output Parser (Part 2)
+
+The passage explains how to turn a basic document retriever into a
+simple RAG-style Q&A chain using three main parts: an LLM, a prompt, and
+an output parser.
+
+==== Main steps covered
+
+* Add a `ChatOpenAI` model to the assistant.
+* Build a retriever that uses similarity search and returns the top 4
+relevant chunks.
+* Test the retriever to confirm it returns relevant document fragments.
+* Add a function to format retrieved documents into plain-text context
+for the LLM.
+* Create an `ask` method that:
+[arabic]
+. retrieves documents,
+. formats them,
+. builds a prompt with system and human instructions,
+. runs a chain like `prompt ++|++ llm ++|++ StrOutputParser()`,
+. returns the generated answer.
+
+==== Testing and behavior
+
+The assistant is tested with three questions:
+
+[arabic]
+. A factual question about RAG
+. A question needing information from multiple sources
+. A follow-up question
+
+==== Key result
+
+The system works, but it has a major weakness: *no memory*. +
+Because of that, follow-up questions can be misinterpreted or
+hallucinated instead of being answered correctly. This shows why
+grounding helps, but also why conversational memory will be needed next.
+
+
+== 85. Project ~ AI Research Assistant - Adding Memory (Part 3)
+
+The passage explains how to add session-based memory to an AI Research
+Assistant so each user session keeps its own conversation history.
+
+Key points:
+
+* Add `self.session++_++store` as an in-memory dictionary to hold
+per-session chat history.
+* Create `++_++get++_++session++_++history(self, session++_++id)` to
+return or initialize a session’s message list.
+* Update the prompt in `ask` by inserting a `MessagesPlaceholder` named
+`history` between the system and human messages.
+* Inspecting session history shows it is just a list of stored messages,
+which only becomes useful when injected into the prompt.
+* In `ask`, retrieve the session history first and pass
+`history.messages` into the chain, optionally limiting the number of
+recent messages.
+* Before returning a response, save both sides of the exchange:
+** `HumanMessage` for the user question
+** `AIMessage` for the assistant reply
+* Add utility methods:
+** `clear++_++session(...)` to erase a session’s history
+** `get++_++session++_++history++_++display(...)` to view history in a
+readable format
+
+Testing shows:
+
+* Follow-up questions now work because prior context is available.
+* Each Q&A pair adds two messages to memory.
+* Different session IDs have isolated histories, so one user’s
+conversation does not affect another’s.
+
+Overall, the update gives the chatbot real conversational memory while
+keeping session histories separate.
+
+== 86. Project ~ AI Research Assistant - Multi-Query Implementation (Part 4)
+
+[NOTE]
+====
+MultiQueryRetriever::
+https://reference.langchain.com/python/langchain-classic/retrievers/multi_query/MultiQueryRetriever
+====
+
+The passage explains how to improve a RAG retriever by adding
+*multi-query retrieval*.
+
+==== Main idea
+
+* The current retriever only matches the query using similar words.
+* This works, but it can miss relevant chunks if the answer uses
+different terminology.
+* *Multi-query retrieval* fixes this by using an LLM to generate several
+semantically similar queries from the original question.
+
+==== Basic vs. advanced retriever
+
+* *Basic retriever*: simple similarity search, returns about four
+documents.
+* *Advanced retriever*: multi-query retrieval, which expands the
+original question into multiple related searches.
+
+==== Why it helps
+
+Different people may ask the same thing in different ways. Multi-query
+retrieval improves recall by searching from multiple angles, making it
+more likely to find useful chunks even when wording differs.
+
+==== Implementation described
+
+* Update `++_++build++_++retriever` in `AIResearchAssistant`.
+* Add a `use++_++advanced` flag.
+* If `false`, use the basic retriever.
+* If `true`, use the multi-query retriever.
+* Update `ask` to pass this flag through and handle retrieval the same
+way afterward.
+
+==== Testing and results
+
+* With debugging enabled, the advanced retriever shows generated
+alternate queries.
+* It returns more relevant and unique chunks than the basic retriever.
+* This gives the model richer context and usually improves answer
+quality.
+
+==== Conclusion
+
+Multi-query retrieval makes the RAG system smarter and more flexible by
+retrieving information from several semantically related searches
+instead of relying on one keyword-based query.
+
+The passage ends by noting the next step: moving from raw string answers
+to *structured output*, such as returning confidence, sources, and
+answer text in a predictable format.
+
+== 87. Project ~ AI Research Assistant - Structured Output - Final Part
+
+[NOTE]
+====
+with_structured_output::
+https://reference.langchain.com/python/langchain-core/language_models/chat_models/BaseChatModel/with_structured_output
+====
+
+The passage explains how to improve an `ask` function in a RAG system by
+changing its output from plain text to a structured object.
+
+==== Key points
+
+* The current `ask` function returns a plain string, which is hard to
+use programmatically.
+* A `ResearchResponse` data model already exists to solve this by
+structuring outputs with fields like:
+** `answer`
+** `confidence`
+** `sources`
+** `key++_++quotes`
+** `follow++_++up++_++questions`
+* A new function, `ask++_++structured`, is introduced right before
+`ask`.
+** It takes the same inputs as `ask`:
+*** `question`
+*** `session++_++id`
+*** `use++_++default`
+*** `use++_++advanced`
+** But it returns a `ResearchResponse` instead of a string.
+* Inside `ask++_++structured`, the LLM is wrapped with
+`with++_++structured++_++output(ResearchResponse)` so the model returns
+data in the schema format.
+* This makes it easy to access individual parts of the response directly
+in code, such as `response.answer` or `response.sources`.
+
+==== Why this matters
+
+* Plain text is fine for display, but structured output is better for
+downstream processing.
+* It makes it easier to extract answers, confidence scores, sources, and
+follow-up questions.
+
+==== Broader context
+
+* The project now includes a full RAG pipeline with:
+** a research assistant
+** advanced retrieval
+** conversation memory
+** structured responses
+* Document ingestion was intentionally left out for simplicity, but
+should be implemented separately in a real project:
+** upload file
+** extract content
+** store it in the database
+
+==== Conclusion
+
+The lesson shows how to use LangChain to build a more powerful RAG
+system, and it sets up the next topic: LangGraph, stateful agents, and
+how LangGraph and LangChain work together.
