@@ -1,0 +1,313 @@
+= 6. LangGraph - A Full Deep Dive
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+
+link:udemy_langchain.html[<Contents>]
+
+== 89. Hands-on ~ Create Your First Simple Graph
+
+[NOTE]
+====
+StateGraph::
+https://reference.langchain.com/python/langgraph/graph/state/StateGraph
+====
+
+The passage explains the basics of building a simple LangGraph workflow
+with `core.py`.
+
+==== Key points
+
+* `core.py` provides access to common LangGraph and LangChain classes
+like `HumanMessage`, `AIMessage`, `BaseMessage`, `ChatOpenAI`,
+`TypedDict`, and graph tools such as `StateGraph`, `START`, and `END`.
+* A *StateGraph* is a graph where nodes share and update a common state.
+* *Nodes* are functions that read the state and return updated values.
+* *Edges* define the execution flow between nodes.
+
+==== Example workflow
+
+[arabic]
+. Define a shared state with `TypedDict`:
+* `input: str`
+* `output: str`
+* `step: int`
+. Create a node function, such as `process`, that:
+* copies `input` to `output`
+* increments `step`
+. Build the graph with `StateGraph(SimpleState)`.
+. Add the node with `graph.add++_++node("process", process)`.
+. Connect the flow:
+* `START -++>++ process -++>++ END`
+. Compile the graph with `graph.compile()`.
+. Run it using `app.invoke(...)` with initial state values.
+
+==== Result
+
+The example shows how the state changes during execution:
+
+* `input` stays the same
+* `output` becomes the input value
+* `step` increases by 1
+
+==== Extra notes
+
+* LangSmith tracing can be disabled if it causes issues.
+* The graph can also be visualized as a diagram for easier
+understanding.
+
+==== Overall
+
+This is a basic template for creating LangGraph applications: define
+state, write node functions, connect them with edges, compile, and run.
+
+
+
+== 90. Hands-on ~ Understanding Reducers and Accumulating State
+
+[NOTE]
+====
+typing.TypedDict::
+https://docs.python.org/3/library/typing.html#typing.TypedDict
+
+Typing extensions::
+https://typing-extensions.readthedocs.io/en/latest/
+
+typing.Annotated::
+https://docs.python.org/3/library/typing.html#typing.Annotated
+====
+
+The passage explains how LangGraph state can *accumulate values* instead
+of overwriting them by using *reducers*.
+
+==== Main idea
+
+A workflow’s state is the *source of truth*, so it should preserve all
+important information as the graph runs.
+
+==== Example shown
+
+A new state class, *AccumulatingState*, is created with two fields:
+
+* *messages*: a list of strings using the *add* reducer, so new items
+are appended
+* *count*: an integer using the *add* reducer, so values are summed
+
+==== Graph behavior
+
+Two steps are defined and connected in a graph:
+
+[arabic]
+. *step one*
+* adds `"step one executed"` to `messages`
+* adds `1` to `count`
+. *step two*
+* adds `"step two executed"` to `messages`
+* adds `1` to `count`
+
+The graph runs in order:
+
+* start
+* step one
+* step two
+* end
+
+==== Result
+
+Starting from:
+
+* `messages = ++[++"initial message"++]++`
+* `count = 0`
+
+The final state becomes:
+
+* `messages = ++[++"initial message", "step one executed", "step two executed"++]++`
+* `count = 2`
+
+==== Key takeaway
+
+Reducers tell LangGraph *not to replace state values*, but to *combine
+new values with old ones*. This preserves context across nodes and is
+essential for correct workflow behavior.
+
+== 91. Hands-on ~ Message State - The Chat Pattern
+
+[NODE]
+====
+add_messages::
+https://reference.langchain.com/python/langgraph/graph/message/add_messages
+====
+
+This passage explains LangGraph’s *message state* pattern, which is
+especially important because many LangGraph apps are chat-based.
+
+==== Main idea
+
+Instead of creating a custom state structure, you can use
+`add++_++messages` so that a `messages` field automatically *accumulates
+conversation history* rather than being overwritten.
+
+==== Example shown
+
+* Define a `MessageState` with:
+** `messages: Annotated++[++list++[++BaseMessage++]++, add++_++messages++]++`
+* Create a chat node that:
+** takes the current messages
+** sends them to an LLM
+** appends the model response back into `messages`
+
+==== Graph setup
+
+The graph is built with:
+
+* `START -++>++ chat++_++node -++>++ END`
+
+Then it is invoked with a human message like:
+
+* “Say hello in Tagalog”
+
+The result contains both:
+
+* the original human message
+* the AI reply, e.g. “Kamusta”
+
+==== Why it matters
+
+The same message objects (`HumanMessage`, `AIMessage`, etc.) are used
+across LangGraph and LangChain, which makes it easy to:
+
+* pass prompts to models
+* manage chat history
+* build multi-node agent workflows without format conversion
+
+==== Key takeaway
+
+The combination of *message state {plus} an LLM node* is a core pattern
+for building chat agents in LangGraph, because it preserves conversation
+history across the graph.
+
+
+
+== 92. Hands-on ~ Multi-Node Pipelines - Chaining LLM Calls
+
+=== Agent handoffs in LangGraph: why they matter
+
+The post explains that a single chatbot agent can’t reliably handle
+every customer request, especially in production systems. To solve this,
+LangGraph uses a *handoff pattern* where a *triage agent* routes each
+request to the right specialist, such as:
+
+* *Billing* for charge and refund issues
+* *Support* for bugs and troubleshooting
+* *Sales* for upgrades and pricing
+* *Direct response* when no escalation is needed
+
+=== Why handoffs are useful
+
+Handoffs improve:
+
+* response accuracy
+* customer satisfaction
+* latency
+* operational cost
+
+They also reduce unnecessary LLM calls by allowing triage to answer
+simple questions directly.
+
+=== Shared state and structured routing
+
+The system uses shared state fields like:
+
+* `messages`
+* `current++_++agent`
+* `handoff++_++reason`
+* `context++_++summary`
+
+The triage agent makes routing decisions using *structured output*
+rather than free-form text, typically returning values like:
+
+* `sales`
+* `support`
+* `billing`
+* `stay`
+* `end`
+
+This keeps routing predictable and reliable.
+
+=== System design
+
+The architecture includes:
+
+* a *triage agent* that decides where the request goes
+* *specialist agents* for sales, support, and billing
+* a *routing function* that sends the flow based on `current++_++agent`
+
+Each specialist receives the context summary so it does not start from
+scratch.
+
+=== Handoff vs supervisor pattern
+
+The post contrasts:
+
+* *Handoff pattern*: triage sends the request once and the specialist
+handles it
+* *Supervisor pattern*: tasks often loop back to a central coordinator
+
+It notes that both can be combined in real systems.
+
+=== Main takeaway
+
+The handoff pattern is a practical production design that mirrors real
+organizations. It helps route users efficiently, save cost, and improve
+experience, while LangGraph provides the flexibility to build these
+workflows cleanly.
+
+== 93. Exercise ~ Build Your First Node
+
+The passage explains how to build a simple LangGraph workflow that:
+
+* accepts a *topic*
+* uses *Node 1* to generate *three questions* about that topic
+* uses *Node 2* to answer *one of those questions* (the first one)
+* uses *Node 4* to return *both the questions and the answer*
+
+==== Main steps described
+
+[arabic]
+. *Define the state*
+* Create a `TypedDict` with:
+** `topic`
+** `questions`
+** `answer`
+. *Initialize the LLM*
+. *Create node functions*
+* `generate++_++questions`: generates three questions from the topic
+* `answer++_++question`: answers the first generated question
+. *Build the graph*
+* add the nodes
+* connect them with edges
+* set the entry point
+* compile the graph
+. *Run the graph*
+* test it with a topic like *“The future of renewable energy”*
+
+==== Expected output
+
+The graph should return:
+
+* the original topic
+* three questions
+* one answer
+
+==== Key takeaway
+
+A LangGraph workflow is built from:
+
+* *state*
+* *nodes*
+* *edges*
+
+Understanding those three parts lets you create more advanced workflows
+later.
+

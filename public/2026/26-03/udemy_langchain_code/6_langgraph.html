@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Paulo Dichone">
-<title>Production AI Agents with LangChain + LangGraph [2026]</title>
+<title>6. LangGraph - A Full Deep Dive</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,156 +437,783 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><strong>Production AI Agents with LangChain + LangGraph [2026]</strong></h1>
-<div class="details">
-<span id="author" class="author">Paulo Dichone</span><br>
-</div>
+<h1>6. LangGraph - A Full Deep Dive</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_2_langchain_foundations_a_deep_dive">2. LangChain Foundations - A Deep Dive</a></li>
-<li><a href="#_3_chain_patterns">3. Chain Patterns</a></li>
-<li><a href="#_4_document_loading_chunking_embeddings_loaders_splitters_vector_stores">4. Document Loading, Chunking &amp; Embeddings - Loaders, Splitters, Vector Stores</a></li>
-<li><a href="#_5_rag_and_memory_a_comprehensive_dive">5. RAG and Memory - A Comprehensive Dive</a></li>
-<li><a href="#_6_langgraph_a_full_deep_dive">6. LangGraph - A Full Deep Dive</a></li>
-<li><a href="#_appendix">Appendix</a></li>
+<li><a href="#_89_hands_on_create_your_first_simple_graph">89. Hands-on ~ Create Your First Simple Graph</a>
+<ul class="sectlevel3">
+<li><a href="#_key_points">Key points</a></li>
+<li><a href="#_example_workflow">Example workflow</a></li>
+<li><a href="#_result">Result</a></li>
+<li><a href="#_extra_notes">Extra notes</a></li>
+<li><a href="#_overall">Overall</a></li>
+</ul>
+</li>
+<li><a href="#_90_hands_on_understanding_reducers_and_accumulating_state">90. Hands-on ~ Understanding Reducers and Accumulating State</a>
+<ul class="sectlevel3">
+<li><a href="#_main_idea">Main idea</a></li>
+<li><a href="#_example_shown">Example shown</a></li>
+<li><a href="#_graph_behavior">Graph behavior</a></li>
+<li><a href="#_result_2">Result</a></li>
+<li><a href="#_key_takeaway">Key takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_91_hands_on_message_state_the_chat_pattern">91. Hands-on ~ Message State - The Chat Pattern</a>
+<ul class="sectlevel3">
+<li><a href="#_main_idea_2">Main idea</a></li>
+<li><a href="#_example_shown_2">Example shown</a></li>
+<li><a href="#_graph_setup">Graph setup</a></li>
+<li><a href="#_why_it_matters">Why it matters</a></li>
+<li><a href="#_key_takeaway_2">Key takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_92_hands_on_multi_node_pipelines_chaining_llm_calls">92. Hands-on ~ Multi-Node Pipelines - Chaining LLM Calls</a>
+<ul class="sectlevel2">
+<li><a href="#_agent_handoffs_in_langgraph_why_they_matter">Agent handoffs in LangGraph: why they matter</a></li>
+<li><a href="#_why_handoffs_are_useful">Why handoffs are useful</a></li>
+<li><a href="#_shared_state_and_structured_routing">Shared state and structured routing</a></li>
+<li><a href="#_system_design">System design</a></li>
+<li><a href="#_handoff_vs_supervisor_pattern">Handoff vs supervisor pattern</a></li>
+<li><a href="#_main_takeaway">Main takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_93_exercise_build_your_first_node">93. Exercise ~ Build Your First Node</a>
+<ul class="sectlevel3">
+<li><a href="#_main_steps_described">Main steps described</a></li>
+<li><a href="#_expected_output">Expected output</a></li>
+<li><a href="#_key_takeaway_3">Key takeaway</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
+<div class="paragraph">
+<p><a href="udemy_langchain.html">&lt;Contents&gt;</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_89_hands_on_create_your_first_simple_graph">89. Hands-on ~ Create Your First Simple Graph</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">StateGraph</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langgraph/graph/state/StateGraph" class="bare">https://reference.langchain.com/python/langgraph/graph/state/StateGraph</a></p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The passage explains the basics of building a simple LangGraph workflow
+with <code>core.py</code>.</p>
+</div>
+<div class="sect3">
+<h4 id="_key_points">Key points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><code>core.py</code> provides access to common LangGraph and LangChain classes
+like <code>HumanMessage</code>, <code>AIMessage</code>, <code>BaseMessage</code>, <code>ChatOpenAI</code>,
+<code>TypedDict</code>, and graph tools such as <code>StateGraph</code>, <code>START</code>, and <code>END</code>.</p>
+</li>
+<li>
+<p>A <strong>StateGraph</strong> is a graph where nodes share and update a common state.</p>
+</li>
+<li>
+<p><strong>Nodes</strong> are functions that read the state and return updated values.</p>
+</li>
+<li>
+<p><strong>Edges</strong> define the execution flow between nodes.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_workflow">Example workflow</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Define a shared state with <code>TypedDict</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>input: str</code></p>
+</li>
+<li>
+<p><code>output: str</code></p>
+</li>
+<li>
+<p><code>step: int</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Create a node function, such as <code>process</code>, that:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>copies <code>input</code> to <code>output</code></p>
+</li>
+<li>
+<p>increments <code>step</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Build the graph with <code>StateGraph(SimpleState)</code>.</p>
+</li>
+<li>
+<p>Add the node with <code>graph.add_node("process", process)</code>.</p>
+</li>
+<li>
+<p>Connect the flow:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>START -&gt; process -&gt; END</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Compile the graph with <code>graph.compile()</code>.</p>
+</li>
+<li>
+<p>Run it using <code>app.invoke(&#8230;&#8203;)</code> with initial state values.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_result">Result</h4>
+<div class="paragraph">
+<p>The example shows how the state changes during execution:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>input</code> stays the same</p>
+</li>
+<li>
+<p><code>output</code> becomes the input value</p>
+</li>
+<li>
+<p><code>step</code> increases by 1</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_extra_notes">Extra notes</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>LangSmith tracing can be disabled if it causes issues.</p>
+</li>
+<li>
+<p>The graph can also be visualized as a diagram for easier
+understanding.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_overall">Overall</h4>
+<div class="paragraph">
+<p>This is a basic template for creating LangGraph applications: define
+state, write node functions, connect them with edges, compile, and run.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_90_hands_on_understanding_reducers_and_accumulating_state">90. Hands-on ~ Understanding Reducers and Accumulating State</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">typing.TypedDict</dt>
+<dd>
+<p><a href="https://docs.python.org/3/library/typing.html#typing.TypedDict" class="bare">https://docs.python.org/3/library/typing.html#typing.TypedDict</a></p>
+</dd>
+<dt class="hdlist1">Typing extensions</dt>
+<dd>
+<p><a href="https://typing-extensions.readthedocs.io/en/latest/" class="bare">https://typing-extensions.readthedocs.io/en/latest/</a></p>
+</dd>
+<dt class="hdlist1">typing.Annotated</dt>
+<dd>
+<p><a href="https://docs.python.org/3/library/typing.html#typing.Annotated" class="bare">https://docs.python.org/3/library/typing.html#typing.Annotated</a></p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The passage explains how LangGraph state can <strong>accumulate values</strong> instead
+of overwriting them by using <strong>reducers</strong>.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_idea">Main idea</h4>
+<div class="paragraph">
+<p>A workflow’s state is the <strong>source of truth</strong>, so it should preserve all
+important information as the graph runs.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_shown">Example shown</h4>
+<div class="paragraph">
+<p>A new state class, <strong>AccumulatingState</strong>, is created with two fields:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>messages</strong>: a list of strings using the <strong>add</strong> reducer, so new items
+are appended</p>
+</li>
+<li>
+<p><strong>count</strong>: an integer using the <strong>add</strong> reducer, so values are summed</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_graph_behavior">Graph behavior</h4>
+<div class="paragraph">
+<p>Two steps are defined and connected in a graph:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>step one</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>adds <code>"step one executed"</code> to <code>messages</code></p>
+</li>
+<li>
+<p>adds <code>1</code> to <code>count</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>step two</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>adds <code>"step two executed"</code> to <code>messages</code></p>
+</li>
+<li>
+<p>adds <code>1</code> to <code>count</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The graph runs in order:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>start</p>
+</li>
+<li>
+<p>step one</p>
+</li>
+<li>
+<p>step two</p>
+</li>
+<li>
+<p>end</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_result_2">Result</h4>
+<div class="paragraph">
+<p>Starting from:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>messages = ["initial message"]</code></p>
+</li>
+<li>
+<p><code>count = 0</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The final state becomes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>messages = ["initial message", "step one executed", "step two executed"]</code></p>
+</li>
+<li>
+<p><code>count = 2</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_takeaway">Key takeaway</h4>
+<div class="paragraph">
+<p>Reducers tell LangGraph <strong>not to replace state values</strong>, but to <strong>combine
+new values with old ones</strong>. This preserves context across nodes and is
+essential for correct workflow behavior.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_91_hands_on_message_state_the_chat_pattern">91. Hands-on ~ Message State - The Chat Pattern</h2>
+<div class="sectionbody">
 <div class="exampleblock">
 <div class="content">
 <div class="dlist">
 <dl>
-<dt class="hdlist1">Course on Udemy</dt>
+<dt class="hdlist1">add_messages</dt>
 <dd>
-<p><a href="https://www.udemy.com/course/production-ai-agents/" class="bare">https://www.udemy.com/course/production-ai-agents/</a></p>
+<p><a href="https://reference.langchain.com/python/langgraph/graph/message/add_messages" class="bare">https://reference.langchain.com/python/langgraph/graph/message/add_messages</a></p>
 </dd>
 </dl>
 </div>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_2_langchain_foundations_a_deep_dive"><a href="2_foundations.html">2. LangChain Foundations - A Deep Dive</a></h2>
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
 <div class="paragraph">
-<p><a href="2_foundations_summary.html">Summary</a></p>
+<p>This passage explains LangGraph’s <strong>message state</strong> pattern, which is
+especially important because many LangGraph apps are chat-based.</p>
 </div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_3_chain_patterns"><a href="3_chain_patterns.html">3. Chain Patterns</a></h2>
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
+<div class="sect3">
+<h4 id="_main_idea_2">Main idea</h4>
 <div class="paragraph">
-<p><a href="3_chain_patterns_summary.html">Summary</a></p>
-</div>
-</td>
-</tr>
-</table>
+<p>Instead of creating a custom state structure, you can use
+<code>add_messages</code> so that a <code>messages</code> field automatically <strong>accumulates
+conversation history</strong> rather than being overwritten.</p>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_4_document_loading_chunking_embeddings_loaders_splitters_vector_stores"><a href="4_document_loading.html">4. Document Loading, Chunking &amp; Embeddings - Loaders, Splitters, Vector Stores</a></h2>
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p><a href="4_document_loading_summary.html">Summary</a></p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_5_rag_and_memory_a_comprehensive_dive"><a href="5_rag_memory.html">5. RAG and Memory - A Comprehensive Dive</a></h2>
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
+<div class="sect3">
+<h4 id="_example_shown_2">Example shown</h4>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="5_rag_memory_summary.html">Summary</a></p>
-</li>
-<li>
-<p><a href="5_rag_memory_diagrams.html">Diagrams</a></p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_6_langgraph_a_full_deep_dive"><a href="6_langgraph.html">6. LangGraph - A Full Deep Dive</a></h2>
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_appendix">Appendix</h2>
-<div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
+<p>Define a <code>MessageState</code> with:</p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="useful_links.html">A1. Useful Links</a></p>
-</li>
-<li>
-<p><a href="a1_debug_vscode.html">A2. Debugging Python in VS Code</a></p>
+<p><code>messages: Annotated[list[BaseMessage], add_messages]</code></p>
 </li>
 </ul>
 </div>
+</li>
+<li>
+<p>Create a chat node that:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>takes the current messages</p>
+</li>
+<li>
+<p>sends them to an LLM</p>
+</li>
+<li>
+<p>appends the model response back into <code>messages</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_graph_setup">Graph setup</h4>
+<div class="paragraph">
+<p>The graph is built with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>START -&gt; chat_node -&gt; END</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Then it is invoked with a human message like:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>“Say hello in Tagalog”</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The result contains both:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the original human message</p>
+</li>
+<li>
+<p>the AI reply, e.g. “Kamusta”</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters">Why it matters</h4>
+<div class="paragraph">
+<p>The same message objects (<code>HumanMessage</code>, <code>AIMessage</code>, etc.) are used
+across LangGraph and LangChain, which makes it easy to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>pass prompts to models</p>
+</li>
+<li>
+<p>manage chat history</p>
+</li>
+<li>
+<p>build multi-node agent workflows without format conversion</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_takeaway_2">Key takeaway</h4>
+<div class="paragraph">
+<p>The combination of <strong>message state &#43; an LLM node</strong> is a core pattern
+for building chat agents in LangGraph, because it preserves conversation
+history across the graph.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_92_hands_on_multi_node_pipelines_chaining_llm_calls">92. Hands-on ~ Multi-Node Pipelines - Chaining LLM Calls</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_agent_handoffs_in_langgraph_why_they_matter">Agent handoffs in LangGraph: why they matter</h3>
+<div class="paragraph">
+<p>The post explains that a single chatbot agent can’t reliably handle
+every customer request, especially in production systems. To solve this,
+LangGraph uses a <strong>handoff pattern</strong> where a <strong>triage agent</strong> routes each
+request to the right specialist, such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Billing</strong> for charge and refund issues</p>
+</li>
+<li>
+<p><strong>Support</strong> for bugs and troubleshooting</p>
+</li>
+<li>
+<p><strong>Sales</strong> for upgrades and pricing</p>
+</li>
+<li>
+<p><strong>Direct response</strong> when no escalation is needed</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_why_handoffs_are_useful">Why handoffs are useful</h3>
+<div class="paragraph">
+<p>Handoffs improve:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>response accuracy</p>
+</li>
+<li>
+<p>customer satisfaction</p>
+</li>
+<li>
+<p>latency</p>
+</li>
+<li>
+<p>operational cost</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>They also reduce unnecessary LLM calls by allowing triage to answer
+simple questions directly.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_shared_state_and_structured_routing">Shared state and structured routing</h3>
+<div class="paragraph">
+<p>The system uses shared state fields like:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>messages</code></p>
+</li>
+<li>
+<p><code>current_agent</code></p>
+</li>
+<li>
+<p><code>handoff_reason</code></p>
+</li>
+<li>
+<p><code>context_summary</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The triage agent makes routing decisions using <strong>structured output</strong>
+rather than free-form text, typically returning values like:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>sales</code></p>
+</li>
+<li>
+<p><code>support</code></p>
+</li>
+<li>
+<p><code>billing</code></p>
+</li>
+<li>
+<p><code>stay</code></p>
+</li>
+<li>
+<p><code>end</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This keeps routing predictable and reliable.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_system_design">System design</h3>
+<div class="paragraph">
+<p>The architecture includes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a <strong>triage agent</strong> that decides where the request goes</p>
+</li>
+<li>
+<p><strong>specialist agents</strong> for sales, support, and billing</p>
+</li>
+<li>
+<p>a <strong>routing function</strong> that sends the flow based on <code>current_agent</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each specialist receives the context summary so it does not start from
+scratch.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_handoff_vs_supervisor_pattern">Handoff vs supervisor pattern</h3>
+<div class="paragraph">
+<p>The post contrasts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Handoff pattern</strong>: triage sends the request once and the specialist
+handles it</p>
+</li>
+<li>
+<p><strong>Supervisor pattern</strong>: tasks often loop back to a central coordinator</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It notes that both can be combined in real systems.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_main_takeaway">Main takeaway</h3>
+<div class="paragraph">
+<p>The handoff pattern is a practical production design that mirrors real
+organizations. It helps route users efficiently, save cost, and improve
+experience, while LangGraph provides the flexibility to build these
+workflows cleanly.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_93_exercise_build_your_first_node">93. Exercise ~ Build Your First Node</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to build a simple LangGraph workflow that:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>accepts a <strong>topic</strong></p>
+</li>
+<li>
+<p>uses <strong>Node 1</strong> to generate <strong>three questions</strong> about that topic</p>
+</li>
+<li>
+<p>uses <strong>Node 2</strong> to answer <strong>one of those questions</strong> (the first one)</p>
+</li>
+<li>
+<p>uses <strong>Node 4</strong> to return <strong>both the questions and the answer</strong></p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_main_steps_described">Main steps described</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Define the state</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a <code>TypedDict</code> with:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>topic</code></p>
+</li>
+<li>
+<p><code>questions</code></p>
+</li>
+<li>
+<p><code>answer</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Initialize the LLM</strong></p>
+</li>
+<li>
+<p><strong>Create node functions</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>generate_questions</code>: generates three questions from the topic</p>
+</li>
+<li>
+<p><code>answer_question</code>: answers the first generated question</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Build the graph</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>add the nodes</p>
+</li>
+<li>
+<p>connect them with edges</p>
+</li>
+<li>
+<p>set the entry point</p>
+</li>
+<li>
+<p>compile the graph</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Run the graph</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>test it with a topic like <strong>“The future of renewable energy”</strong></p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_expected_output">Expected output</h4>
+<div class="paragraph">
+<p>The graph should return:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the original topic</p>
+</li>
+<li>
+<p>three questions</p>
+</li>
+<li>
+<p>one answer</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_takeaway_3">Key takeaway</h4>
+<div class="paragraph">
+<p>A LangGraph workflow is built from:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>state</strong></p>
+</li>
+<li>
+<p><strong>nodes</strong></p>
+</li>
+<li>
+<p><strong>edges</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Understanding those three parts lets you create more advanced workflows
+later.</p>
 </div>
 </div>
 </div>
@@ -595,7 +1221,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-14 11:41:08 +0300
+Last updated 2026-04-15 12:54:57 +0300
 </div>
 </div>
 </body>

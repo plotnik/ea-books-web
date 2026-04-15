@@ -1,0 +1,219 @@
+= Summary: RAG and Memory - A Comprehensive Dive
+:source-highlighter: pygments
+:icons: font
+:toc: right
+
+
+link:udemy_langchain.html[<Contents>]
+
+== 64. Basic RAG Pipeline
+
+A basic RAG chain is built with LangChain by:
+
+* splitting a document into chunks and storing them in a vector store
+* creating a similarity-based retriever
+* formatting retrieved chunks into a context string
+* passing context and question through a prompt, LLM, and output parser
+
+The pipeline is modular and uses runnable composition:
+
+. retrieve relevant documents
+. format them as context
+. insert them into the prompt
+. generate an answer
+. parse the result
+
+The model is instructed to answer only from context and say it does not know if the answer is unavailable.
+
+== 65. RAG with Sources
+
+This extends basic RAG so the response includes citations or source references.
+
+* The retriever and vector store stay the same
+* Retrieved documents are formatted with source metadata
+* The prompt asks the model to answer using context and include sources
+
+This improves transparency, trust, and usefulness for Q&A systems and enterprise search.
+
+== 66. RAG with Fallback
+
+This adds safe handling for out-of-scope questions.
+
+* The prompt tells the model to answer only from the provided context
+* If no answer exists, it should return a fixed fallback message
+
+This reduces hallucinations and makes the assistant more reliable when the knowledge base does not contain the answer.
+
+== 67. RAG with Structured Outputs
+
+A structured RAG pipeline returns a validated object instead of plain text.
+
+* A `RAGResponse` schema defines fields such as `answer`, `confidence`, `sources_used`, and `follow_up`
+* The LLM is wrapped with structured output support
+* Retrieved documents are formatted with source metadata before prompting
+
+This makes the output predictable and easier to use in applications.
+
+== 70. Advanced RAG - Multi-Query Retriever
+
+Several advanced retrieval strategies are introduced, especially multi-query retrieval.
+
+* An LLM rewrites one user question into multiple similar queries
+* Each query searches the vector store
+* Results from all queries are combined
+
+This improves recall and helps find relevant documents even when the original wording is different, though it increases cost and latency.
+
+== 71. Advanced RAG - Contextual Compression
+
+Contextual compression reduces retrieved content before sending it to the final model.
+
+* A base retriever fetches documents
+* An LLM-based compressor extracts only relevant excerpts
+* The final context is smaller and cleaner
+
+Benefits include lower token usage, better precision, and faster generation, but at the cost of extra retrieval-time LLM calls.
+
+== 72. Advanced RAG - Hybrid Search
+
+Hybrid search combines keyword and semantic retrieval.
+
+* BM25 handles exact keyword matching well
+* Semantic retrieval handles meaning and intent
+* An ensemble retriever merges both using weighted rank fusion
+
+This is more robust than using either method alone and works well across both exact-term and concept-based queries.
+
+== 73. Advanced RAG - Parent Document Retriever
+
+Parent document retrieval balances retrieval precision and generation context.
+
+* Documents are split into small child chunks for search
+* The retriever returns the larger parent chunk to the model
+
+This gives accurate matching from small chunks while preserving broader context for the LLM.
+
+== 74. Combining Multi-Query and Compression
+
+Multi-query retrieval and contextual compression are combined into one RAG pipeline.
+
+* Multi-query improves recall
+* Compression improves precision
+* A prompt formats the retrieved context and drives the final answer
+
+The key lesson is that you can mix RAG strategies selectively based on the use case.
+
+== 76. Conversation Memory - Basics
+
+Conversation memory is implemented with session-based message history.
+
+* A chat model is wrapped with a prompt that includes a `MessagesPlaceholder`
+* `RunnableWithMessageHistory` automatically loads and stores messages
+* `InMemoryChatMessageHistory` keeps session-specific conversation state
+
+This allows the assistant to remember earlier messages such as a user’s name or current topic.
+
+== 77. Multiple Sessions Memory
+
+Multiple users can share one model while keeping separate conversation histories.
+
+* Each session ID maps to its own memory object
+* A helper creates or retrieves the correct history
+* The prompt uses the corresponding history for each session
+
+This prevents conversation mixing and keeps each user’s memory isolated.
+
+== 78. Message Trimming
+
+Message trimming shortens conversation history to fit context limits.
+
+* A token limit is applied
+* Strategies like `last` keep the most recent messages
+* System messages can be preserved
+* Partial messages may be disallowed
+
+This controls token usage and prevents long histories from overflowing the model context window.
+
+== 79. Windowed Memory
+
+Sliding window memory keeps only the last *K* exchanges.
+
+* A custom history class removes older messages once the limit is exceeded
+* Each exchange consists of one human and one AI message
+
+This gives fixed-size memory and predictable cost, but older context is lost.
+
+== 80. Summary Memory
+
+Summary memory compresses old conversation history into a running summary.
+
+* Recent messages are kept verbatim
+* Older messages are summarized
+* The summary is updated over time
+
+This preserves important long-term context while keeping token usage bounded.
+
+== 81. Persistent Memory
+
+Persistent memory stores chat history in SQLite.
+
+* `RunnableWithMessageHistory` is combined with `SQLChatMessageHistory`
+* Each session is stored under a session ID
+* Memory survives restarts
+
+This enables durable chatbot memory and can be verified by inspecting the database directly.
+
+== 83. AI Research Assistant - Indexing Documents
+
+An AI Research Assistant project begins with document ingestion and indexing.
+
+* Documents are split with `RecursiveCharacterTextSplitter`
+* Chunks are embedded with `OpenAIEmbeddings`
+* A persistent `Chroma` vector store stores the indexed content
+
+The assistant can ingest text, track sources, count documents, and persist data, but it does not yet answer questions at this stage.
+
+== 84. AI Research Assistant - Prompt and Output Parser
+
+The assistant is extended into a basic RAG Q&A chain.
+
+* A retriever fetches the top relevant chunks
+* Retrieved chunks are formatted into context
+* A prompt, LLM, and `StrOutputParser` produce an answer
+
+This works for factual questions, but follow-up questions reveal the lack of memory.
+
+== 85. AI Research Assistant - Adding Memory
+
+Session-based memory is added to the assistant.
+
+* A session store keeps message history per session
+* `MessagesPlaceholder` inserts history into the prompt
+* The assistant saves both human and AI messages after each turn
+* Utility methods support clearing and displaying session history
+
+This makes follow-up questions work while keeping sessions separate.
+
+== 86. AI Research Assistant - Multi-Query Retrieval
+
+The assistant’s retriever is upgraded with multi-query retrieval.
+
+* A basic retriever can miss relevant chunks if wording differs
+* Multi-query retrieval generates multiple semantically related queries
+* Retrieval becomes broader and more flexible
+
+This improves recall and usually yields better context for answering.
+
+== 87. AI Research Assistant - Structured Output
+
+The final improvement changes the assistant from plain-text answers to structured responses.
+
+* A `ResearchResponse` schema defines fields like `answer`, `confidence`, `sources`, `key_quotes`, and `follow_up_questions`
+* The LLM is wrapped with `with_structured_output`
+* The `ask_structured` function returns a validated object
+
+This makes the assistant easier to integrate with downstream code and completes a more advanced RAG system with retrieval, memory, and structured answers.
+
+---
+
+link:udemy_langchain.html[<Contents>]

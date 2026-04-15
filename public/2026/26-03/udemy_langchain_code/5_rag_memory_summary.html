@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Paulo Dichone">
-<title>Production AI Agents with LangChain + LangGraph [2026]</title>
+<title>Summary: RAG and Memory - A Comprehensive Dive</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,166 +435,553 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article toc2 toc-right">
 <div id="header">
-<h1><strong>Production AI Agents with LangChain + LangGraph [2026]</strong></h1>
-<div class="details">
-<span id="author" class="author">Paulo Dichone</span><br>
-</div>
+<h1>Summary: RAG and Memory - A Comprehensive Dive</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_2_langchain_foundations_a_deep_dive">2. LangChain Foundations - A Deep Dive</a></li>
-<li><a href="#_3_chain_patterns">3. Chain Patterns</a></li>
-<li><a href="#_4_document_loading_chunking_embeddings_loaders_splitters_vector_stores">4. Document Loading, Chunking &amp; Embeddings - Loaders, Splitters, Vector Stores</a></li>
-<li><a href="#_5_rag_and_memory_a_comprehensive_dive">5. RAG and Memory - A Comprehensive Dive</a></li>
-<li><a href="#_6_langgraph_a_full_deep_dive">6. LangGraph - A Full Deep Dive</a></li>
-<li><a href="#_appendix">Appendix</a></li>
+<li><a href="#_64_basic_rag_pipeline">64. Basic RAG Pipeline</a></li>
+<li><a href="#_65_rag_with_sources">65. RAG with Sources</a></li>
+<li><a href="#_66_rag_with_fallback">66. RAG with Fallback</a></li>
+<li><a href="#_67_rag_with_structured_outputs">67. RAG with Structured Outputs</a></li>
+<li><a href="#_70_advanced_rag_multi_query_retriever">70. Advanced RAG - Multi-Query Retriever</a></li>
+<li><a href="#_71_advanced_rag_contextual_compression">71. Advanced RAG - Contextual Compression</a></li>
+<li><a href="#_72_advanced_rag_hybrid_search">72. Advanced RAG - Hybrid Search</a></li>
+<li><a href="#_73_advanced_rag_parent_document_retriever">73. Advanced RAG - Parent Document Retriever</a></li>
+<li><a href="#_74_combining_multi_query_and_compression">74. Combining Multi-Query and Compression</a></li>
+<li><a href="#_76_conversation_memory_basics">76. Conversation Memory - Basics</a></li>
+<li><a href="#_77_multiple_sessions_memory">77. Multiple Sessions Memory</a></li>
+<li><a href="#_78_message_trimming">78. Message Trimming</a></li>
+<li><a href="#_79_windowed_memory">79. Windowed Memory</a></li>
+<li><a href="#_80_summary_memory">80. Summary Memory</a></li>
+<li><a href="#_81_persistent_memory">81. Persistent Memory</a></li>
+<li><a href="#_83_ai_research_assistant_indexing_documents">83. AI Research Assistant - Indexing Documents</a></li>
+<li><a href="#_84_ai_research_assistant_prompt_and_output_parser">84. AI Research Assistant - Prompt and Output Parser</a></li>
+<li><a href="#_85_ai_research_assistant_adding_memory">85. AI Research Assistant - Adding Memory</a></li>
+<li><a href="#_86_ai_research_assistant_multi_query_retrieval">86. AI Research Assistant - Multi-Query Retrieval</a></li>
+<li><a href="#_87_ai_research_assistant_structured_output">87. AI Research Assistant - Structured Output</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Course on Udemy</dt>
-<dd>
-<p><a href="https://www.udemy.com/course/production-ai-agents/" class="bare">https://www.udemy.com/course/production-ai-agents/</a></p>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_2_langchain_foundations_a_deep_dive"><a href="2_foundations.html">2. LangChain Foundations - A Deep Dive</a></h2>
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
 <div class="paragraph">
-<p><a href="2_foundations_summary.html">Summary</a></p>
-</div>
-</td>
-</tr>
-</table>
+<p><a href="udemy_langchain.html">&lt;Contents&gt;</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_3_chain_patterns"><a href="3_chain_patterns.html">3. Chain Patterns</a></h2>
+<h2 id="_64_basic_rag_pipeline">64. Basic RAG Pipeline</h2>
 <div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
 <div class="paragraph">
-<p><a href="3_chain_patterns_summary.html">Summary</a></p>
+<p>A basic RAG chain is built with LangChain by:</p>
 </div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_4_document_loading_chunking_embeddings_loaders_splitters_vector_stores"><a href="4_document_loading.html">4. Document Loading, Chunking &amp; Embeddings - Loaders, Splitters, Vector Stores</a></h2>
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p><a href="4_document_loading_summary.html">Summary</a></p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_5_rag_and_memory_a_comprehensive_dive"><a href="5_rag_memory.html">5. RAG and Memory - A Comprehensive Dive</a></h2>
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
 <div class="ulist">
 <ul>
 <li>
-<p><a href="5_rag_memory_summary.html">Summary</a></p>
+<p>splitting a document into chunks and storing them in a vector store</p>
 </li>
 <li>
-<p><a href="5_rag_memory_diagrams.html">Diagrams</a></p>
+<p>creating a similarity-based retriever</p>
+</li>
+<li>
+<p>formatting retrieved chunks into a context string</p>
+</li>
+<li>
+<p>passing context and question through a prompt, LLM, and output parser</p>
 </li>
 </ul>
 </div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_6_langgraph_a_full_deep_dive"><a href="6_langgraph.html">6. LangGraph - A Full Deep Dive</a></h2>
-<div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
 <div class="paragraph">
-<p>&#8230;&#8203;</p>
+<p>The pipeline is modular and uses runnable composition:</p>
 </div>
-</td>
-</tr>
-</table>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>retrieve relevant documents</p>
+</li>
+<li>
+<p>format them as context</p>
+</li>
+<li>
+<p>insert them into the prompt</p>
+</li>
+<li>
+<p>generate an answer</p>
+</li>
+<li>
+<p>parse the result</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The model is instructed to answer only from context and say it does not know if the answer is unavailable.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_appendix">Appendix</h2>
+<h2 id="_65_rag_with_sources">65. RAG with Sources</h2>
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="content">
+<div class="paragraph">
+<p>This extends basic RAG so the response includes citations or source references.</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="useful_links.html">A1. Useful Links</a></p>
+<p>The retriever and vector store stay the same</p>
 </li>
 <li>
-<p><a href="a1_debug_vscode.html">A2. Debugging Python in VS Code</a></p>
+<p>Retrieved documents are formatted with source metadata</p>
+</li>
+<li>
+<p>The prompt asks the model to answer using context and include sources</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>This improves transparency, trust, and usefulness for Q&amp;A systems and enterprise search.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_66_rag_with_fallback">66. RAG with Fallback</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This adds safe handling for out-of-scope questions.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The prompt tells the model to answer only from the provided context</p>
+</li>
+<li>
+<p>If no answer exists, it should return a fixed fallback message</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This reduces hallucinations and makes the assistant more reliable when the knowledge base does not contain the answer.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_67_rag_with_structured_outputs">67. RAG with Structured Outputs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A structured RAG pipeline returns a validated object instead of plain text.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A <code>RAGResponse</code> schema defines fields such as <code>answer</code>, <code>confidence</code>, <code>sources_used</code>, and <code>follow_up</code></p>
+</li>
+<li>
+<p>The LLM is wrapped with structured output support</p>
+</li>
+<li>
+<p>Retrieved documents are formatted with source metadata before prompting</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This makes the output predictable and easier to use in applications.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_70_advanced_rag_multi_query_retriever">70. Advanced RAG - Multi-Query Retriever</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Several advanced retrieval strategies are introduced, especially multi-query retrieval.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An LLM rewrites one user question into multiple similar queries</p>
+</li>
+<li>
+<p>Each query searches the vector store</p>
+</li>
+<li>
+<p>Results from all queries are combined</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This improves recall and helps find relevant documents even when the original wording is different, though it increases cost and latency.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_71_advanced_rag_contextual_compression">71. Advanced RAG - Contextual Compression</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Contextual compression reduces retrieved content before sending it to the final model.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A base retriever fetches documents</p>
+</li>
+<li>
+<p>An LLM-based compressor extracts only relevant excerpts</p>
+</li>
+<li>
+<p>The final context is smaller and cleaner</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Benefits include lower token usage, better precision, and faster generation, but at the cost of extra retrieval-time LLM calls.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_72_advanced_rag_hybrid_search">72. Advanced RAG - Hybrid Search</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Hybrid search combines keyword and semantic retrieval.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>BM25 handles exact keyword matching well</p>
+</li>
+<li>
+<p>Semantic retrieval handles meaning and intent</p>
+</li>
+<li>
+<p>An ensemble retriever merges both using weighted rank fusion</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This is more robust than using either method alone and works well across both exact-term and concept-based queries.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_73_advanced_rag_parent_document_retriever">73. Advanced RAG - Parent Document Retriever</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Parent document retrieval balances retrieval precision and generation context.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Documents are split into small child chunks for search</p>
+</li>
+<li>
+<p>The retriever returns the larger parent chunk to the model</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This gives accurate matching from small chunks while preserving broader context for the LLM.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_74_combining_multi_query_and_compression">74. Combining Multi-Query and Compression</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Multi-query retrieval and contextual compression are combined into one RAG pipeline.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Multi-query improves recall</p>
+</li>
+<li>
+<p>Compression improves precision</p>
+</li>
+<li>
+<p>A prompt formats the retrieved context and drives the final answer</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The key lesson is that you can mix RAG strategies selectively based on the use case.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_76_conversation_memory_basics">76. Conversation Memory - Basics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Conversation memory is implemented with session-based message history.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A chat model is wrapped with a prompt that includes a <code>MessagesPlaceholder</code></p>
+</li>
+<li>
+<p><code>RunnableWithMessageHistory</code> automatically loads and stores messages</p>
+</li>
+<li>
+<p><code>InMemoryChatMessageHistory</code> keeps session-specific conversation state</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This allows the assistant to remember earlier messages such as a user’s name or current topic.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_77_multiple_sessions_memory">77. Multiple Sessions Memory</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Multiple users can share one model while keeping separate conversation histories.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Each session ID maps to its own memory object</p>
+</li>
+<li>
+<p>A helper creates or retrieves the correct history</p>
+</li>
+<li>
+<p>The prompt uses the corresponding history for each session</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This prevents conversation mixing and keeps each user’s memory isolated.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_78_message_trimming">78. Message Trimming</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Message trimming shortens conversation history to fit context limits.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A token limit is applied</p>
+</li>
+<li>
+<p>Strategies like <code>last</code> keep the most recent messages</p>
+</li>
+<li>
+<p>System messages can be preserved</p>
+</li>
+<li>
+<p>Partial messages may be disallowed</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This controls token usage and prevents long histories from overflowing the model context window.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_79_windowed_memory">79. Windowed Memory</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sliding window memory keeps only the last <strong>K</strong> exchanges.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A custom history class removes older messages once the limit is exceeded</p>
+</li>
+<li>
+<p>Each exchange consists of one human and one AI message</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This gives fixed-size memory and predictable cost, but older context is lost.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_80_summary_memory">80. Summary Memory</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Summary memory compresses old conversation history into a running summary.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Recent messages are kept verbatim</p>
+</li>
+<li>
+<p>Older messages are summarized</p>
+</li>
+<li>
+<p>The summary is updated over time</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This preserves important long-term context while keeping token usage bounded.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_81_persistent_memory">81. Persistent Memory</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Persistent memory stores chat history in SQLite.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>RunnableWithMessageHistory</code> is combined with <code>SQLChatMessageHistory</code></p>
+</li>
+<li>
+<p>Each session is stored under a session ID</p>
+</li>
+<li>
+<p>Memory survives restarts</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This enables durable chatbot memory and can be verified by inspecting the database directly.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_83_ai_research_assistant_indexing_documents">83. AI Research Assistant - Indexing Documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An AI Research Assistant project begins with document ingestion and indexing.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Documents are split with <code>RecursiveCharacterTextSplitter</code></p>
+</li>
+<li>
+<p>Chunks are embedded with <code>OpenAIEmbeddings</code></p>
+</li>
+<li>
+<p>A persistent <code>Chroma</code> vector store stores the indexed content</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The assistant can ingest text, track sources, count documents, and persist data, but it does not yet answer questions at this stage.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_84_ai_research_assistant_prompt_and_output_parser">84. AI Research Assistant - Prompt and Output Parser</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The assistant is extended into a basic RAG Q&amp;A chain.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A retriever fetches the top relevant chunks</p>
+</li>
+<li>
+<p>Retrieved chunks are formatted into context</p>
+</li>
+<li>
+<p>A prompt, LLM, and <code>StrOutputParser</code> produce an answer</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This works for factual questions, but follow-up questions reveal the lack of memory.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_85_ai_research_assistant_adding_memory">85. AI Research Assistant - Adding Memory</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Session-based memory is added to the assistant.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A session store keeps message history per session</p>
+</li>
+<li>
+<p><code>MessagesPlaceholder</code> inserts history into the prompt</p>
+</li>
+<li>
+<p>The assistant saves both human and AI messages after each turn</p>
+</li>
+<li>
+<p>Utility methods support clearing and displaying session history</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This makes follow-up questions work while keeping sessions separate.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_86_ai_research_assistant_multi_query_retrieval">86. AI Research Assistant - Multi-Query Retrieval</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The assistant’s retriever is upgraded with multi-query retrieval.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A basic retriever can miss relevant chunks if wording differs</p>
+</li>
+<li>
+<p>Multi-query retrieval generates multiple semantically related queries</p>
+</li>
+<li>
+<p>Retrieval becomes broader and more flexible</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This improves recall and usually yields better context for answering.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_87_ai_research_assistant_structured_output">87. AI Research Assistant - Structured Output</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The final improvement changes the assistant from plain-text answers to structured responses.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A <code>ResearchResponse</code> schema defines fields like <code>answer</code>, <code>confidence</code>, <code>sources</code>, <code>key_quotes</code>, and <code>follow_up_questions</code></p>
+</li>
+<li>
+<p>The LLM is wrapped with <code>with_structured_output</code></p>
+</li>
+<li>
+<p>The <code>ask_structured</code> function returns a validated object</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This makes the assistant easier to integrate with downstream code and completes a more advanced RAG system with retrieval, memory, and structured answers.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p><a href="udemy_langchain.html">&lt;Contents&gt;</a></p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-14 11:41:08 +0300
+Last updated 2026-04-14 11:38:07 +0300
 </div>
 </div>
 </body>
