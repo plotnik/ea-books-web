@@ -39,6 +39,13 @@ Imports
   import time
   import sys
 
+Allow to print Unicode on Windows
+
+::
+
+  sys.stdout.reconfigure(encoding="utf-8")
+  sys.stderr.reconfigure(encoding="utf-8")
+
 Read the number of likes to delete from command line
 
 ::
