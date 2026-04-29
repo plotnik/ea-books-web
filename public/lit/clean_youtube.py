@@ -37,12 +37,18 @@
 
 from playwright.sync_api import sync_playwright
 import time
+import sys
 
-# Number of likes to delete.
+# Read the number of likes to delete from command line
 #
 # ::
     
 NUM_TO_DELETE = 100
+
+if len(sys.argv) > 1:
+    NUM_TO_DELETE = int(sys.argv[1])
+    
+print(f"Number of likes to delete: {NUM_TO_DELETE}")
 
 # Attach to Chrome.
 #

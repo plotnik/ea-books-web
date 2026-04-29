@@ -1,6 +1,6 @@
 YouTube Clean
 =============
-          
+         
 This is a
 `Playwright <https://playwright.dev/python/docs/running-tests>`__ script
 for deleting likes from videos one by one.
@@ -23,27 +23,33 @@ Here is invoke commad for MacOS:
 Here is invoke commad for Windows:  
 
 .. code:: python
-                                                          
+                                                         
    @task                                                                               
    def chrome_win(ctx):            
        chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
        ctx.run(f'"{chrome_path}" '
                 '--remote-debugging-port=9222 '
                 '--user-data-dir=.chrome', pty=False)
-                                       
+                                      
 Imports
 
 ::
 
   from playwright.sync_api import sync_playwright
   import time
+  import sys
 
-Number of likes to delete.
+Read the number of likes to delete from command line
 
 ::
     
   NUM_TO_DELETE = 100
-  
+
+  if len(sys.argv) > 1:
+      NUM_TO_DELETE = int(sys.argv[1])
+    
+  print(f"Number of likes to delete: {NUM_TO_DELETE}")
+
 Attach to Chrome.
 
 ::
@@ -57,7 +63,7 @@ Attach to Chrome.
           page.goto("https://www.youtube.com/playlist?list=LL")
           page.wait_for_selector("ytd-playlist-video-renderer", timeout=15000)
           time.sleep(2)
-          
+        
 Always target the first video since the list shifts up after each removal
 
 ::
@@ -85,7 +91,7 @@ Click "Remove from Liked videos" in the popup menu
           remove_option.wait_for(state="visible", timeout=5000)
           remove_option.click()
           time.sleep(1)
-        
+      
 Print the result
 
 ::
