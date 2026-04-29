@@ -59,16 +59,17 @@ def build_output(definitions: list[tuple[str, str]]) -> str:
     for letter in sorted(grouped.keys()):
         lines.append(f"=== {letter}")
         lines.append("")
-
+        lines.append("++++")
+        lines.append("<ul>")
         for def_name, url in grouped[letter]:
-            lines.append(f"{def_name}::")
-            lines.append(url)
+            lines.append(f'<li><a href="{url}" target="_blank">{def_name}</a></li>')
             lines.append("")
+        lines.append("</ul>")  
+        lines.append("++++")
 
     def_list = "\n".join(lines).rstrip()
     return f"""= Useful Links
 :toc: left
-
 
 link:{content_link}.html[<Contents>]
 

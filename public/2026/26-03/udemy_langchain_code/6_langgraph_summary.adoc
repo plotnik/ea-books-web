@@ -1,0 +1,287 @@
+= Summary: LangGraph - A Full Deep Dive
+:source-highlighter: pygments
+:icons: font
+:toc: right
+
+link:udemy_langchain.html[<Contents>]
+
+
+== Core LangGraph Basics
+
+LangGraph workflows are built from three main parts:
+
+* *State* — shared data passed through the graph
+* *Nodes* — functions that read and update state
+* *Edges* — connections that define execution order
+
+A simple `StateGraph` example uses a `TypedDict` with fields like
+`input`, `output`, and `step`. A node updates the state, the graph is
+wired from `START` to the node to `END`, then compiled and invoked.
+
+Key pattern:
+
+* define state
+* write node functions
+* connect nodes with edges
+* compile
+* run
+
+== Reducers and Accumulating State
+
+By default, state fields can be overwritten. Reducers let fields
+*accumulate* instead.
+
+Examples:
+
+* `messages` can append new entries
+* `count` can sum increments
+
+This preserves workflow history and makes state the reliable source of
+truth across nodes.
+
+Main takeaway:
+
+*reducers combine new values with existing state rather than replacing
+them.*
+
+== Message State for Chat Workflows
+
+For chat-based apps, a common pattern is a `messages` field annotated
+with `add_messages`.
+
+This allows:
+
+* `HumanMessage` and `AIMessage` objects to accumulate naturally
+* LLM nodes to receive full conversation history
+* responses to be appended back into state
+
+This is a foundational pattern for building chat agents in LangGraph.
+
+== Multi-Node and Sequential Pipelines
+
+LangGraph supports chaining multiple nodes into a pipeline.
+
+Examples include:
+
+* generating questions from a topic
+* answering one of those questions
+* returning both questions and answer
+
+Another example uses a conversation workflow with:
+
+* sentiment analysis node
+* response generation node
+
+This shows how state can carry intermediate outputs, such as sentiment,
+into later nodes.
+
+== Routing with Conditional Edges
+
+Conditional edges make graph execution dynamic.
+
+A common routing pattern is:
+
+*classify → route → handle*
+
+Example classifications:
+
+* `question`
+* `command`
+* `statement`
+
+A routing function returns a fixed branch, often typed with `Literal`,
+and the graph sends execution to the appropriate handler node.
+
+This keeps workflows modular and easy to extend.
+
+== Multipath Routing
+
+Routing can also branch across several dimensions.
+
+One example classifies tasks by:
+
+* urgency: `urgent` or `normal`
+* complexity: `complex` or `simple`
+
+This creates four possible paths:
+
+* `urgent_complex`
+* `urgent_simple`
+* `normal_complex`
+* `normal_simple`
+
+Each branch maps to a different handling strategy, such as senior team,
+quick response, specialist, or standard path.
+
+== Loops and Cycles
+
+LangGraph supports loops, which allows agents to retry and improve.
+
+=== Quality improvement loop
+
+A graph can:
+
+* evaluate content quality
+* improve content if needed
+* loop back for reevaluation
+* finalize when quality is high enough or iteration limit is reached
+
+=== Self-correcting code generation
+
+Another looped workflow:
+
+* generate code
+* validate code with real execution/compilation
+* retry if validation fails
+* stop on success or max iterations
+
+This demonstrates a strong pattern:
+
+*LLM generation + deterministic validation + controlled retry logic*
+
+== Iterative Research Agent
+
+An iterative research graph can:
+
+* research a topic
+* generate deeper follow-up questions
+* repeat until max depth
+* synthesize findings into a final summary
+
+Its state typically tracks:
+
+* topic
+* findings
+* questions
+* iteration
+* max depth
+* summary
+
+This shows how graphs can support controlled exploration and synthesis.
+
+== Handoff Pattern for Multi-Agent Systems
+
+LangGraph can model production-style agent routing with a *handoff*
+pattern.
+
+A *triage agent* decides whether to:
+
+* answer directly
+* route to sales
+* route to support
+* route to billing
+* end the interaction
+
+Shared state may include:
+
+* `messages`
+* `current_agent`
+* `handoff_reason`
+* `context_summary`
+
+Structured routing outputs make these decisions predictable and reliable.
+
+Compared with a supervisor pattern, handoffs are often simpler and more
+cost-efficient for one-time routing.
+
+== Human-in-the-Loop Workflows
+
+LangGraph supports pause-and-resume flows using checkpointing.
+
+=== Approval interrupt flow
+
+A graph can:
+
+* generate a draft
+* pause before approval
+* wait for human feedback
+* resume and finalize
+
+Typical state fields:
+
+* `request`
+* `draft`
+* `approved`
+* `feedback`
+* `final`
+
+Using a checkpointer such as `MemorySaver`, the app can stop, expose
+state for review, accept updates, and continue from the same point.
+
+=== Iterative review loop
+
+A richer workflow can repeatedly:
+
+* submit document for review
+* pause for human inspection
+* apply reviewer comments
+* resubmit
+* finalize when approved
+
+This enables repeated AI revision under human control.
+
+== Checkpointing
+
+Checkpointing makes LangGraph applications stateful.
+
+It enables:
+
+* memory across runs
+* crash recovery
+* pause/resume workflows
+* state inspection
+* replay and rollback
+* branching from earlier states
+
+Common checkpoint backends:
+
+* `MemorySaver` — useful for testing
+* `SqliteSaver` — durable persistence across restarts
+
+With thread IDs, conversations and workflows can continue over multiple
+runs.
+
+== Checkpoint Internals
+
+A checkpoint stores more than just state values. It includes:
+
+* current state
+* next node(s)
+* thread and checkpoint config
+* parent checkpoint reference
+* metadata
+* timestamps
+
+Checkpoint history forms a linked sequence of execution snapshots,
+showing how the graph progressed step by step.
+
+This is especially useful for:
+
+* debugging
+* auditing
+* human-in-the-loop systems
+* replaying or branching workflows
+
+== Overall Takeaways
+
+Across all examples, the major LangGraph ideas are:
+
+* *shared state* drives the workflow
+* *reducers* preserve accumulated context
+* *nodes* perform focused work
+* *conditional edges* enable routing
+* *loops* enable retry and refinement
+* *checkpointing* enables durable, inspectable execution
+* *human interrupts* allow approval and revision in the middle of a run
+
+LangGraph is especially strong for building:
+
+* chat agents
+* routed multi-agent systems
+* self-correcting workflows
+* iterative research pipelines
+* human-in-the-loop applications
+
+---
+
+link:udemy_langchain.html[<Contents>]

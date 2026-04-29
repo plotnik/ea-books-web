@@ -485,6 +485,82 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_key_takeaway_3">Key takeaway</a></li>
 </ul>
 </li>
+<li><a href="#_94_hands_on_full_langgraph_step_by_step_workflow">94. Hands-on ~ Full LangGraph Step-by-Step Workflow</a>
+<ul class="sectlevel3">
+<li><a href="#_main_behavior">Main behavior</a></li>
+<li><a href="#_overall_purpose">Overall purpose</a></li>
+</ul>
+</li>
+<li><a href="#_96_hands_on_basic_routing_with_literal_routing_types">96. Hands-on ~ Basic Routing with Literal Routing Types</a>
+<ul class="sectlevel3">
+<li><a href="#_summary">Summary</a></li>
+<li><a href="#_core_idea">Core idea</a></li>
+</ul>
+</li>
+<li><a href="#_97_hands_on_conditional_looping">97. Hands-on ~ Conditional Looping</a>
+<ul class="sectlevel3">
+<li><a href="#_main_components">Main components</a></li>
+<li><a href="#_loop_logic">Loop logic</a></li>
+<li><a href="#_graph_structure">Graph structure</a></li>
+<li><a href="#_example_run">Example run</a></li>
+<li><a href="#_overall_idea">Overall idea</a></li>
+</ul>
+</li>
+<li><a href="#_98_hands_on_multipath_routing">98. Hands-on ~ Multipath Routing</a>
+<ul class="sectlevel3">
+<li><a href="#_main_idea_3">Main idea</a></li>
+<li><a href="#_handlers">Handlers</a></li>
+<li><a href="#_graph_structure_2">Graph structure</a></li>
+<li><a href="#_example_outcomes">Example outcomes</a></li>
+<li><a href="#_key_takeaway_4">Key takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_99_hands_on_cycles_and_loops_self_correcting_code_writer">99. Hands-on ~ Cycles and Loops - Self-Correcting Code Writer</a>
+<ul class="sectlevel3">
+<li><a href="#_main_example_self_correcting_code_generator">Main example: self-correcting code generator</a></li>
+<li><a href="#_key_components">Key components</a></li>
+<li><a href="#_nodes">Nodes</a></li>
+<li><a href="#_workflow">Workflow</a></li>
+<li><a href="#_demonstration">Demonstration</a></li>
+<li><a href="#_core_lesson">Core lesson</a></li>
+</ul>
+</li>
+<li><a href="#_100_hands_on_iterative_research_agent_with_loops_and_cycles">100. Hands-on ~ Iterative Research Agent with Loops and Cycles</a>
+<ul class="sectlevel3">
+<li><a href="#_core_workflow">Core workflow</a></li>
+<li><a href="#_state_design">State design</a></li>
+<li><a href="#_nodes_in_the_graph">Nodes in the graph</a></li>
+<li><a href="#_control_flow">Control flow</a></li>
+<li><a href="#_example_run_2">Example run</a></li>
+<li><a href="#_main_takeaway_2">Main takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_102_hands_on_human_input_interrupt_for_approval">102. Hands-on ~ Human Input - Interrupt for Approval</a>
+<ul class="sectlevel3">
+<li><a href="#_workflow_pattern">Workflow pattern</a></li>
+<li><a href="#_main_pieces">Main pieces</a></li>
+<li><a href="#_graph_flow">Graph flow</a></li>
+<li><a href="#_execution_process">Execution process</a></li>
+<li><a href="#_key_idea">Key idea</a></li>
+<li><a href="#_purpose">Purpose</a></li>
+</ul>
+</li>
+<li><a href="#_103_full_human_in_the_loop_workflow">103. Full Human in the Loop Workflow</a>
+<ul class="sectlevel3">
+<li><a href="#_key_points_2">Key points:</a></li>
+<li><a href="#_main_takeaway_3">Main takeaway:</a></li>
+</ul>
+</li>
+<li><a href="#_104_hands_on_checkpointing_deep_dive">104. Hands-on ~ Checkpointing Deep Dive</a></li>
+<li><a href="#_105_checkpoint_internals_deep_dive">105. Checkpoint Internals Deep Dive</a>
+<ul class="sectlevel3">
+<li><a href="#_main_points">Main points</a></li>
+<li><a href="#_inspecting_checkpoints">Inspecting checkpoints</a></li>
+<li><a href="#_what_a_checkpoint_contains">What a checkpoint contains</a></li>
+<li><a href="#_why_checkpoints_matter">Why checkpoints matter</a></li>
+<li><a href="#_mental_model">Mental model</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1218,10 +1294,1335 @@ later.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_94_hands_on_full_langgraph_step_by_step_workflow">94. Hands-on ~ Full LangGraph Step-by-Step Workflow</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This walkthrough shows how to build a simple conversation graph with a
+stateful flow:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Define a <strong>ConversationState</strong> containing:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>messages</code> for chat history</p>
+</li>
+<li>
+<p><code>sentiment</code> for the latest sentiment label</p>
+</li>
+<li>
+<p><code>response_count</code> to track replies</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Create two graph <strong>nodes</strong>:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>analyze_sentiment</strong>: looks at the latest user message and
+classifies it as positive, negative, or neutral</p>
+</li>
+<li>
+<p><strong>generate_response</strong>: uses that sentiment to choose a response
+style and generate an AI reply</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Connect the nodes with <strong>edges</strong> so execution flows:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>analyze_sentiment</code> → <code>generate_response</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Compile the graph into an executable app and test it with example
+messages.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_main_behavior">Main behavior</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Positive input gets an enthusiastic reply</p>
+</li>
+<li>
+<p>Negative input gets an empathetic reply</p>
+</li>
+<li>
+<p>Neutral input gets a helpful reply</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_overall_purpose">Overall purpose</h4>
+<div class="paragraph">
+<p>The example demonstrates the basics of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>state management</p>
+</li>
+<li>
+<p>node definition</p>
+</li>
+<li>
+<p>graph wiring</p>
+</li>
+<li>
+<p>sequential graph execution</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It’s a simple introduction to building conversation workflows with a
+graph-based structure.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_96_hands_on_basic_routing_with_literal_routing_types">96. Hands-on ~ Basic Routing with Literal Routing Types</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">add_conditional_edges</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langgraph/graph/state/StateGraph/add_conditional_edges" class="bare">https://reference.langchain.com/python/langgraph/graph/state/StateGraph/add_conditional_edges</a></p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This example shows how to use <strong>conditional edges</strong> in a <code>StateGraph</code> to
+route inputs dynamically based on their type.</p>
+</div>
+<div class="sect3">
+<h4 id="_summary">Summary</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Define shared state</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A <code>RouterState</code> holds:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>query</code>: the user input</p>
+</li>
+<li>
+<p><code>query_type</code>: the classified category</p>
+</li>
+<li>
+<p><code>response</code>: the final output</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Create processing nodes</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>classify_query</code>: uses an LLM to label the query as <code>question</code>,
+<code>command</code>, or <code>statement</code></p>
+</li>
+<li>
+<p><code>handle_question</code>: answers the question</p>
+</li>
+<li>
+<p><code>handle_command</code>: returns a command-style response</p>
+</li>
+<li>
+<p><code>handle_statement</code>: acknowledges the statement</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Route based on classification</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>route_by_type</code> checks <code>query_type</code></p>
+</li>
+<li>
+<p>It returns one of three fixed branches using <code>Literal</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>"question"</code></p>
+</li>
+<li>
+<p><code>"command"</code></p>
+</li>
+<li>
+<p><code>"statement"</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Build the graph</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Add nodes for classification and each handler</p>
+</li>
+<li>
+<p>Set <code>classify</code> as the entry point</p>
+</li>
+<li>
+<p>Use <code>add_conditional_edges</code> to send the flow to the correct
+handler</p>
+</li>
+<li>
+<p>Each handler ends at <code>END</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Run the app</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Example inputs are processed differently depending on whether they are
+questions, commands, or statements</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_core_idea">Core idea</h4>
+<div class="paragraph">
+<p>The key pattern is:</p>
+</div>
+<div class="paragraph">
+<p><strong>classify → route conditionally → handle appropriately</strong></p>
+</div>
+<div class="paragraph">
+<p>This makes the graph flexible, modular, and easy to extend with more
+branches later.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_97_hands_on_conditional_looping">97. Hands-on ~ Conditional Looping</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">add_conditional_edges</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langgraph/graph/state/StateGraph/add_conditional_edges" class="bare">https://reference.langchain.com/python/langgraph/graph/state/StateGraph/add_conditional_edges</a></p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This passage explains a graph workflow that evaluates content quality,
+optionally improves it, and loops until it is good enough or a maximum
+number of iterations is reached.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_components">Main components</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>State fields:</strong> <code>content</code>, <code>quality_score</code>, <code>feedback</code>, <code>final</code>,
+and <code>iteration</code></p>
+</li>
+<li>
+<p><strong><code>evaluate_quality</code>:</strong> sends the content to an LLM and gets a
+quality score from 1 to 10; defaults to <code>5</code> if there is an error</p>
+</li>
+<li>
+<p><strong><code>improve_content</code>:</strong> uses the LLM to improve the content and
+increments <code>iteration</code></p>
+</li>
+<li>
+<p><strong><code>finalize_content</code>:</strong> outputs the final content plus feedback
+about whether it was approved</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_loop_logic">Loop logic</h4>
+<div class="paragraph">
+<p>A conditional route decides what happens after evaluation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If <strong>quality &gt;= 7</strong> → <strong>finalize</strong></p>
+</li>
+<li>
+<p>If <strong>iteration &lt;= 3</strong> → <strong>finalize</strong> because the iteration limit is
+reached</p>
+</li>
+<li>
+<p>Otherwise → <strong>improve</strong></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_graph_structure">Graph structure</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Start → <code>evaluate</code></p>
+</li>
+<li>
+<p><code>evaluate</code> routes conditionally to:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>improve</code></p>
+</li>
+<li>
+<p><code>finalize</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>improve</code> loops back to <code>evaluate</code></p>
+</li>
+<li>
+<p><code>finalize</code> ends the graph</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_run">Example run</h4>
+<div class="paragraph">
+<p>The graph is initialized with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>content: "AI is cool"</code></p>
+</li>
+<li>
+<p><code>quality: 0</code></p>
+</li>
+<li>
+<p><code>feedback: ""</code></p>
+</li>
+<li>
+<p><code>final: ""</code></p>
+</li>
+<li>
+<p><code>iteration: 0</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The workflow repeatedly evaluates and improves the content until it
+either:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>achieves a good enough quality score, or</p>
+</li>
+<li>
+<p>hits the maximum number of iterations.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The example ends with feedback like:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>approved after 1 iteration with a score of 7</p>
+</div>
+</blockquote>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_overall_idea">Overall idea</h4>
+<div class="paragraph">
+<p>This is a <strong>conditional loop in a graph</strong>, where content is repeatedly
+evaluated and improved until it passes the quality threshold or reaches
+the iteration cap.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_98_hands_on_multipath_routing">98. Hands-on ~ Multipath Routing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains <strong>multi-path routing</strong> in LangGraph, where a task is
+directed down one of several routes based on its properties.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_idea_3">Main idea</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Analyze the task first</strong> using an LLM-based node.</p>
+</li>
+<li>
+<p>The analysis node determines:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Urgency</strong>: <code>urgent</code> or <code>normal</code></p>
+</li>
+<li>
+<p><strong>Complexity</strong>: <code>complex</code> or <code>simple</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>These labels are then used by a <strong>routing function</strong> to choose one of
+four paths:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>urgent_complex</code></p>
+</li>
+<li>
+<p><code>urgent_simple</code></p>
+</li>
+<li>
+<p><code>normal_complex</code></p>
+</li>
+<li>
+<p><code>normal_simple</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_handlers">Handlers</h4>
+<div class="paragraph">
+<p>Each route has a corresponding handler:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Urgent &#43; Complex</strong> → senior team</p>
+</li>
+<li>
+<p><strong>Urgent &#43; Simple</strong> → quick response</p>
+</li>
+<li>
+<p><strong>Normal &#43; Complex</strong> → specialist</p>
+</li>
+<li>
+<p><strong>Normal &#43; Simple</strong> → standard path</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_graph_structure_2">Graph structure</h4>
+<div class="paragraph">
+<p>The graph is built by:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>adding the analysis node</p>
+</li>
+<li>
+<p>adding the four handler nodes</p>
+</li>
+<li>
+<p>setting the analysis node as the start</p>
+</li>
+<li>
+<p>using a <strong>conditional edge</strong> to route tasks based on urgency and
+complexity</p>
+</li>
+<li>
+<p>connecting each handler to the end node</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_outcomes">Example outcomes</h4>
+<div class="paragraph">
+<p>The passage gives examples such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>“Server is down, need immediate fix” → urgent, complex → senior team</p>
+</li>
+<li>
+<p>“Update the documentation for the API” → normal, simple → standard
+path</p>
+</li>
+<li>
+<p>“Fix the typo on the homepage” → urgent, simple → quick response</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_takeaway_4">Key takeaway</h4>
+<div class="paragraph">
+<p>Once conditional routing is understood, it can be used to build
+workflows of nearly any complexity. The core mechanics stay the same;
+only the number of branches grows.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_99_hands_on_cycles_and_loops_self_correcting_code_writer">99. Hands-on ~ Cycles and Loops - Self-Correcting Code Writer</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how <strong>LangGraph</strong> supports <strong>cycles and loops</strong>,
+enabling agents to retry and improve instead of following only a
+straight-line workflow.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_example_self_correcting_code_generator">Main example: self-correcting code generator</h4>
+<div class="paragraph">
+<p>A graph is built where the agent:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Generates code</strong></p>
+</li>
+<li>
+<p><strong>Validates the code</strong></p>
+</li>
+<li>
+<p>If validation fails, <strong>loops back</strong> and tries again</p>
+</li>
+<li>
+<p>Stops when the code works or when a <strong>maximum iteration limit</strong> is
+reached</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_components">Key components</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>State (<code>CodeGenState</code>)</strong> includes:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>task</code></p>
+</li>
+<li>
+<p><code>code</code></p>
+</li>
+<li>
+<p><code>errors</code></p>
+</li>
+<li>
+<p><code>iteration</code></p>
+</li>
+<li>
+<p><code>max_iterations</code></p>
+</li>
+<li>
+<p><code>success</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Errors</strong> use a reducer (<code>operator.add</code>) so new errors are appended,
+giving the agent memory of past failures.</p>
+</li>
+<li>
+<p><strong>Iteration limits</strong> prevent infinite loops.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_nodes">Nodes</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>generate_code</code></strong>: uses the LLM to produce or fix code based on
+prior errors.</p>
+</li>
+<li>
+<p><strong><code>validate_code</code></strong>: checks code using real Python
+compilation/execution, not the model’s judgment.</p>
+</li>
+<li>
+<p><strong><code>should_continue</code></strong>: decides whether to stop, loop again, or
+finalize.</p>
+</li>
+<li>
+<p><strong><code>finalize</code></strong>: clean exit node.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_workflow">Workflow</h4>
+<div class="paragraph">
+<p>The graph runs as:</p>
+</div>
+<div class="paragraph">
+<p><strong>generate → validate → (generate or finalize) → end</strong></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_demonstration">Demonstration</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>In a simple factorial task, the model succeeds on the first try.</p>
+</li>
+<li>
+<p>With stricter validation, the loop runs multiple times and may stop at
+the max iteration limit if it still fails.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_core_lesson">Core lesson</h4>
+<div class="paragraph">
+<p>The important pattern is:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>LLM for generation</strong></p>
+</li>
+<li>
+<p><strong>deterministic validation for checking</strong></p>
+</li>
+<li>
+<p><strong>graph logic for controlled retries</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This is what makes LangGraph useful for building more intelligent,
+self-correcting agents.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_100_hands_on_iterative_research_agent_with_loops_and_cycles">100. Hands-on ~ Iterative Research Agent with Loops and Cycles</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The demo describes an <strong>iterative research agent</strong> that repeatedly
+researches a topic, generates deeper follow-up questions, and continues
+until a maximum depth is reached, then synthesizes all findings into a
+final summary.</p>
+</div>
+<div class="sect3">
+<h4 id="_core_workflow">Core workflow</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Research</strong> the initial topic.</p>
+</li>
+<li>
+<p><strong>Generate a deeper question</strong> from the latest findings.</p>
+</li>
+<li>
+<p><strong>Repeat research</strong> using that new question.</p>
+</li>
+<li>
+<p>Use a <strong>router/condition</strong> to decide whether to continue or stop.</p>
+</li>
+<li>
+<p><strong>Synthesize</strong> all collected findings into one final response.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_state_design">State design</h4>
+<div class="paragraph">
+<p>The agent’s state tracks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>topic</code></p>
+</li>
+<li>
+<p><code>findings</code> (accumulated with a reducer)</p>
+</li>
+<li>
+<p><code>questions</code></p>
+</li>
+<li>
+<p><code>iteration</code></p>
+</li>
+<li>
+<p><code>max_depth</code></p>
+</li>
+<li>
+<p><code>summary</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_nodes_in_the_graph">Nodes in the graph</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Research node</strong>: searches the topic or the latest generated question.</p>
+</li>
+<li>
+<p><strong>Generate questions node</strong>: creates a deeper follow-up question and
+updates iteration.</p>
+</li>
+<li>
+<p><strong>Synthesizer node</strong>: combines all findings into a final summary.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_control_flow">Control flow</h4>
+<div class="paragraph">
+<p>A <code>should_continue</code> function checks whether the current iteration
+has reached <code>max_depth</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If not, it loops back to <strong>research</strong></p>
+</li>
+<li>
+<p>If yes, it routes to <strong>synthesize</strong></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_run_2">Example run</h4>
+<div class="paragraph">
+<p>With:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>topic: <code>"quantum computing applications"</code></p>
+</li>
+<li>
+<p><code>max_depth = 2</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>the graph:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>researches the topic,</p>
+</li>
+<li>
+<p>generates a deeper question,</p>
+</li>
+<li>
+<p>researches again,</p>
+</li>
+<li>
+<p>then synthesizes the results after reaching depth 2.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_main_takeaway_2">Main takeaway</h4>
+<div class="paragraph">
+<p>The demo shows how a graph of collaborating nodes can <strong>incrementally
+explore a topic</strong>, <strong>refine questions</strong>, and <strong>produce a final synthesized
+answer</strong> in a controlled loop.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_102_hands_on_human_input_interrupt_for_approval">102. Hands-on ~ Human Input - Interrupt for Approval</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">MemorySaver</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langgraph.checkpoint/memory/MemorySaver" class="bare">https://reference.langchain.com/python/langgraph.checkpoint/memory/MemorySaver</a></p>
+</dd>
+<dt class="hdlist1">get_state</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langgraph-sdk/_async/threads/ThreadsClient/get_state" class="bare">https://reference.langchain.com/python/langgraph-sdk/_async/threads/ThreadsClient/get_state</a></p>
+</dd>
+<dt class="hdlist1">update_state</dt>
+<dd>
+<p><a href="https://reference.langchain.com/python/langgraph-sdk/_async/threads/ThreadsClient/update_state" class="bare">https://reference.langchain.com/python/langgraph-sdk/_async/threads/ThreadsClient/update_state</a></p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This example explains how to build a <strong>human-in-the-loop workflow</strong> in
+<strong>LangGraph</strong> using a <strong>checkpointer</strong> (<code>MemorySaver</code>) so the graph can
+pause, accept human feedback, and then resume.</p>
+</div>
+<div class="sect3">
+<h4 id="_workflow_pattern">Workflow pattern</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Interrupt</strong></p>
+</li>
+<li>
+<p><strong>Review</strong></p>
+</li>
+<li>
+<p><strong>Modify</strong></p>
+</li>
+<li>
+<p><strong>Resume</strong></p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_main_pieces">Main pieces</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>State fields</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>request</code>: original user request</p>
+</li>
+<li>
+<p><code>draft</code>: LLM-generated draft</p>
+</li>
+<li>
+<p><code>approved</code>: human approval boolean</p>
+</li>
+<li>
+<p><code>feedback</code>: human revision notes</p>
+</li>
+<li>
+<p><code>final</code>: final output</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Nodes</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>create_draft</code>: generates a draft from the request</p>
+</li>
+<li>
+<p><code>wait_for_approval</code>: pause point before human review</p>
+</li>
+<li>
+<p><code>finalize</code>: either keeps the draft or revises it based on
+approval/feedback</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_graph_flow">Graph flow</h4>
+<div class="paragraph">
+<p><code>start -&gt; draft -&gt; approval -&gt; finalize -&gt; end</code></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_execution_process">Execution process</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run the graph with a unique <code>thread_id</code>.</p>
+</li>
+<li>
+<p>Use <code>get_state(config)</code> to inspect the paused state.</p>
+</li>
+<li>
+<p>Use <code>update_state(&#8230;&#8203;)</code> to add human approval or feedback.</p>
+</li>
+<li>
+<p>Resume with <code>invoke(None, config)</code> to continue from the pause point.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_idea">Key idea</h4>
+<div class="paragraph">
+<p>The checkpointer saves intermediate state, so LangGraph can stop before
+approval and later continue exactly where it left off.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_purpose">Purpose</h4>
+<div class="paragraph">
+<p>This pattern is useful when you want a human to review and possibly
+revise AI-generated output before it is finalized.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_103_full_human_in_the_loop_workflow">103. Full Human in the Loop Workflow</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Mermaid</dt>
+<dd>
+<p><a href="https://docs.langchain.com/oss/python/langgraph/use-graph-api#mermaid" class="bare">https://docs.langchain.com/oss/python/langgraph/use-graph-api#mermaid</a></p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The passage explains an <strong>iterative human review workflow</strong> using
+LangGraph, where a document can go through <strong>multiple review and revision
+cycles</strong> before final approval.</p>
+</div>
+<div class="sect3">
+<h4 id="_key_points_2">Key points:</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>State includes</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>document</code></p>
+</li>
+<li>
+<p><code>review_comments</code></p>
+</li>
+<li>
+<p><code>revision_count</code></p>
+</li>
+<li>
+<p><code>status</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Workflow nodes</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>submit for review</strong>: marks the document as waiting for human review</p>
+</li>
+<li>
+<p><strong>apply feedback</strong>: uses reviewer comments to revise the document and
+increments the revision count</p>
+</li>
+<li>
+<p><strong>route after review</strong>: sends the flow to either:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>finalize</code> if approved</p>
+</li>
+<li>
+<p><code>apply_feedback</code> if changes are still needed</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>finalize</strong>: ends the workflow cleanly</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Graph behavior</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The flow loops through review and revision repeatedly:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>submit → review decision → apply feedback → submit → &#8230;&#8203; → done</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>A <strong>checkpointer</strong> is used for memory</p>
+</li>
+<li>
+<p>An <strong>interrupt before submit</strong> pauses the workflow so a human can
+inspect and update the state</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Process example</strong>:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Initial document is submitted</p>
+</li>
+<li>
+<p>Human adds comments like “add more technical depth” and “include
+examples”</p>
+</li>
+<li>
+<p>Status is set to <code>needs_revision</code></p>
+</li>
+<li>
+<p>Workflow resumes, revises the document, and pauses again</p>
+</li>
+<li>
+<p>Eventually status is set to <code>approved</code></p>
+</li>
+<li>
+<p>Workflow finalizes and returns the completed document</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_main_takeaway_3">Main takeaway:</h4>
+<div class="paragraph">
+<p>This pattern enables a <strong>controlled human-in-the-loop loop</strong> where AI can
+revise content repeatedly based on feedback until a human approves it.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_104_hands_on_checkpointing_deep_dive">104. Hands-on ~ Checkpointing Deep Dive</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Checkpointing makes graph-based apps stateful instead of stateless. It
+saves a snapshot of the graph’s state after each node, which enables:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>conversation memory across runs</p>
+</li>
+<li>
+<p>recovery after crashes or failures</p>
+</li>
+<li>
+<p>human-in-the-loop pause and resume</p>
+</li>
+<li>
+<p>replay, rollback, and branching conversations</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The example shows how to define chat state with a <code>messages</code> field using
+<code>add_messages</code>, build a simple <code>StateGraph</code>, and compile it with a
+checkpointer.</p>
+</div>
+<div class="paragraph">
+<p>Two checkpointing backends are demonstrated:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>MemorySaver</strong> for in-memory testing</p>
+</li>
+<li>
+<p><strong>SqliteSaver</strong> for durable persistence across restarts</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>With a thread ID in the config, the app can retrieve previous state,
+continue a conversation, and inspect state history. SQLite persistence
+lets the same conversation be recovered after the app restarts.</p>
+</div>
+<div class="paragraph">
+<p>Checkpoint history is useful for debugging, auditing, and rewinding.
+Branching is also possible by copying a prior state into new thread IDs,
+allowing independent paths like alternative planning or what-if
+exploration.</p>
+</div>
+<div class="paragraph">
+<p>Overall, checkpointing turns temporary execution state into durable,
+inspectable, reusable memory.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_105_checkpoint_internals_deep_dive">105. Checkpoint Internals Deep Dive</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how a graph checkpoint stores and exposes execution
+state.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_points">Main points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>A simple two-node graph is built with:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>messages</code>: a list with an add reducer, so new messages append</p>
+</li>
+<li>
+<p><code>step</code>: a string</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The nodes are:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>analyze</code>: sends messages to the LLM and sets <code>step = "analyze"</code></p>
+</li>
+<li>
+<p><code>summarize</code>: summarizes the current state</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_inspecting_checkpoints">Inspecting checkpoints</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>After running the graph, <code>get_state()</code> shows:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>current state values</p>
+</li>
+<li>
+<p>current step</p>
+</li>
+<li>
+<p>messages</p>
+</li>
+<li>
+<p>next node to run</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>get_state_history()</code> shows the full checkpoint trail,
+including:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>step number</p>
+</li>
+<li>
+<p>source</p>
+</li>
+<li>
+<p>writes</p>
+</li>
+<li>
+<p>message count</p>
+</li>
+<li>
+<p>checkpoint ID</p>
+</li>
+<li>
+<p>timestamps</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_what_a_checkpoint_contains">What a checkpoint contains</h4>
+<div class="paragraph">
+<p>A checkpoint includes:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>State values</strong> — actual data like messages and step</p>
+</li>
+<li>
+<p><strong>Next nodes</strong> — what will run next</p>
+</li>
+<li>
+<p><strong>State config</strong> — thread ID and checkpoint ID</p>
+</li>
+<li>
+<p><strong>Parent config</strong> — link to the previous checkpoint</p>
+</li>
+<li>
+<p><strong>Metadata</strong> — source, step, and execution info</p>
+</li>
+<li>
+<p><strong>Timestamp</strong> — when it was created</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_checkpoints_matter">Why checkpoints matter</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>They are saved:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>before execution starts</p>
+</li>
+<li>
+<p>after each node runs</p>
+</li>
+<li>
+<p>at interrupt points</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>This enables pausing and resuming, especially for human-in-the-loop
+workflows.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_mental_model">Mental model</h4>
+<div class="paragraph">
+<p>Think of checkpoints as a linked list of snapshots:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>each checkpoint records the graph’s state at a moment in time</p>
+</li>
+<li>
+<p>each one points to its parent</p>
+</li>
+<li>
+<p>the latest checkpoint represents the current state</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Overall, the text shows how checkpoints preserve both current state and
+full execution history.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-15 12:54:57 +0300
+Last updated 2026-04-20 09:42:15 +0300
 </div>
 </div>
 </body>

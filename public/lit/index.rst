@@ -59,6 +59,7 @@ Literate Programs
    create_image.py
    albums.py
    st_gmail.py
+   clean_youtube.py
    youtube_transcript.py
    fw_picture.py
    checkers.py

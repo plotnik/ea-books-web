@@ -1,0 +1,45 @@
+= 7. Multi-Agent Systems with LangGraph and LangChain
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+
+link:udemy_langchain.html[<Contents>]
+
+---
+
+== 108. Hands-on ~ Tool Calling Agent
+
+This passage explains how to build a simple *tool-calling agent* with
+*LangGraph* using the *ReAct loop*:
+
+* *Define tools* with `@tool`, such as:
+** `calculate(expression)`
+** `get++_++weather(city)`
+** `search++_++web(query)`
+* *Define graph state* so messages are *appended*, not overwritten,
+using:
+** `messages: Annotated++[++list, add++_++messages++]++`
+* *Bind tools to the LLM*:
+** `llm++_++with++_++tools = llm.bind++_++tools(tools)`
+* *Create an agent node* that sends the message history to the LLM and
+returns its response.
+* *Route execution* based on whether the LLM produced tool calls:
+** If yes, go to the *ToolNode*
+** If no, end the graph
+* *Use `ToolNode(tools)`* to automatically execute requested tools.
+* *Build the graph*:
+** Start at the agent
+** Agent decides whether to call tools
+** Tools run if needed
+** Return to agent for the final response
+* *Debugging note*:
+** If messages always stay at length 1, the state is probably not using
+`add++_++messages`.
+
+Overall, it shows the standard *reason → act → reason* workflow:
+
+[arabic]
+. The model reasons about what tool to use,
+. the tool is executed,
+. the model reasons again to produce the final answer.

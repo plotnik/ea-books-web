@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<title>Useful Links</title>
+<title>Summary: LangGraph - A Full Deep Dive</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -433,24 +433,37 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article toc2 toc-right">
 <div id="header">
-<h1>Useful Links</h1>
+<h1>Summary: LangGraph - A Full Deep Dive</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_core_langgraph_basics">Core LangGraph Basics</a></li>
+<li><a href="#_reducers_and_accumulating_state">Reducers and Accumulating State</a></li>
+<li><a href="#_message_state_for_chat_workflows">Message State for Chat Workflows</a></li>
+<li><a href="#_multi_node_and_sequential_pipelines">Multi-Node and Sequential Pipelines</a></li>
+<li><a href="#_routing_with_conditional_edges">Routing with Conditional Edges</a></li>
+<li><a href="#_multipath_routing">Multipath Routing</a></li>
+<li><a href="#_loops_and_cycles">Loops and Cycles</a>
 <ul class="sectlevel2">
-<li><a href="#_a">A</a></li>
-<li><a href="#_c">C</a></li>
-<li><a href="#_g">G</a></li>
-<li><a href="#_i">I</a></li>
-<li><a href="#_l">L</a></li>
-<li><a href="#_m">M</a></li>
-<li><a href="#_r">R</a></li>
-<li><a href="#_s">S</a></li>
-<li><a href="#_t">T</a></li>
-<li><a href="#_u">U</a></li>
-<li><a href="#_w">W</a></li>
+<li><a href="#_quality_improvement_loop">Quality improvement loop</a></li>
+<li><a href="#_self_correcting_code_generation">Self-correcting code generation</a></li>
+</ul>
+</li>
+<li><a href="#_iterative_research_agent">Iterative Research Agent</a></li>
+<li><a href="#_handoff_pattern_for_multi_agent_systems">Handoff Pattern for Multi-Agent Systems</a></li>
+<li><a href="#_human_in_the_loop_workflows">Human-in-the-Loop Workflows</a>
+<ul class="sectlevel2">
+<li><a href="#_approval_interrupt_flow">Approval interrupt flow</a></li>
+<li><a href="#_iterative_review_loop">Iterative review loop</a></li>
+</ul>
+</li>
+<li><a href="#_checkpointing">Checkpointing</a></li>
+<li><a href="#_checkpoint_internals">Checkpoint Internals</a></li>
+<li><a href="#_overall_takeaways">Overall Takeaways</a></li>
 </ul>
 </div>
 </div>
@@ -460,108 +473,656 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p><a href="udemy_langchain.html">&lt;Contents&gt;</a></p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_core_langgraph_basics">Core LangGraph Basics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>LangGraph workflows are built from three main parts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>State</strong> — shared data passed through the graph</p>
+</li>
+<li>
+<p><strong>Nodes</strong> — functions that read and update state</p>
+</li>
+<li>
+<p><strong>Edges</strong> — connections that define execution order</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A simple <code>StateGraph</code> example uses a <code>TypedDict</code> with fields like
+<code>input</code>, <code>output</code>, and <code>step</code>. A node updates the state, the graph is
+wired from <code>START</code> to the node to <code>END</code>, then compiled and invoked.</p>
+</div>
+<div class="paragraph">
+<p>Key pattern:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>define state</p>
+</li>
+<li>
+<p>write node functions</p>
+</li>
+<li>
+<p>connect nodes with edges</p>
+</li>
+<li>
+<p>compile</p>
+</li>
+<li>
+<p>run</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_reducers_and_accumulating_state">Reducers and Accumulating State</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default, state fields can be overwritten. Reducers let fields
+<strong>accumulate</strong> instead.</p>
+</div>
+<div class="paragraph">
+<p>Examples:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>messages</code> can append new entries</p>
+</li>
+<li>
+<p><code>count</code> can sum increments</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This preserves workflow history and makes state the reliable source of
+truth across nodes.</p>
+</div>
+<div class="paragraph">
+<p>Main takeaway:</p>
+</div>
+<div class="paragraph">
+<p><strong>reducers combine new values with existing state rather than replacing
+them.</strong></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_message_state_for_chat_workflows">Message State for Chat Workflows</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For chat-based apps, a common pattern is a <code>messages</code> field annotated
+with <code>add_messages</code>.</p>
+</div>
+<div class="paragraph">
+<p>This allows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>HumanMessage</code> and <code>AIMessage</code> objects to accumulate naturally</p>
+</li>
+<li>
+<p>LLM nodes to receive full conversation history</p>
+</li>
+<li>
+<p>responses to be appended back into state</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This is a foundational pattern for building chat agents in LangGraph.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_multi_node_and_sequential_pipelines">Multi-Node and Sequential Pipelines</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>LangGraph supports chaining multiple nodes into a pipeline.</p>
+</div>
+<div class="paragraph">
+<p>Examples include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>generating questions from a topic</p>
+</li>
+<li>
+<p>answering one of those questions</p>
+</li>
+<li>
+<p>returning both questions and answer</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Another example uses a conversation workflow with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>sentiment analysis node</p>
+</li>
+<li>
+<p>response generation node</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This shows how state can carry intermediate outputs, such as sentiment,
+into later nodes.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_routing_with_conditional_edges">Routing with Conditional Edges</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Conditional edges make graph execution dynamic.</p>
+</div>
+<div class="paragraph">
+<p>A common routing pattern is:</p>
+</div>
+<div class="paragraph">
+<p><strong>classify → route → handle</strong></p>
+</div>
+<div class="paragraph">
+<p>Example classifications:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>question</code></p>
+</li>
+<li>
+<p><code>command</code></p>
+</li>
+<li>
+<p><code>statement</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A routing function returns a fixed branch, often typed with <code>Literal</code>,
+and the graph sends execution to the appropriate handler node.</p>
+</div>
+<div class="paragraph">
+<p>This keeps workflows modular and easy to extend.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_multipath_routing">Multipath Routing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Routing can also branch across several dimensions.</p>
+</div>
+<div class="paragraph">
+<p>One example classifies tasks by:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>urgency: <code>urgent</code> or <code>normal</code></p>
+</li>
+<li>
+<p>complexity: <code>complex</code> or <code>simple</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This creates four possible paths:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>urgent_complex</code></p>
+</li>
+<li>
+<p><code>urgent_simple</code></p>
+</li>
+<li>
+<p><code>normal_complex</code></p>
+</li>
+<li>
+<p><code>normal_simple</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each branch maps to a different handling strategy, such as senior team,
+quick response, specialist, or standard path.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_loops_and_cycles">Loops and Cycles</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>LangGraph supports loops, which allows agents to retry and improve.</p>
+</div>
+<div class="sect2">
+<h3 id="_quality_improvement_loop">Quality improvement loop</h3>
+<div class="paragraph">
+<p>A graph can:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>evaluate content quality</p>
+</li>
+<li>
+<p>improve content if needed</p>
+</li>
+<li>
+<p>loop back for reevaluation</p>
+</li>
+<li>
+<p>finalize when quality is high enough or iteration limit is reached</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_self_correcting_code_generation">Self-correcting code generation</h3>
+<div class="paragraph">
+<p>Another looped workflow:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>generate code</p>
+</li>
+<li>
+<p>validate code with real execution/compilation</p>
+</li>
+<li>
+<p>retry if validation fails</p>
+</li>
+<li>
+<p>stop on success or max iterations</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This demonstrates a strong pattern:</p>
+</div>
+<div class="paragraph">
+<p><strong>LLM generation + deterministic validation + controlled retry logic</strong></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_iterative_research_agent">Iterative Research Agent</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An iterative research graph can:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>research a topic</p>
+</li>
+<li>
+<p>generate deeper follow-up questions</p>
+</li>
+<li>
+<p>repeat until max depth</p>
+</li>
+<li>
+<p>synthesize findings into a final summary</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Its state typically tracks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>topic</p>
+</li>
+<li>
+<p>findings</p>
+</li>
+<li>
+<p>questions</p>
+</li>
+<li>
+<p>iteration</p>
+</li>
+<li>
+<p>max depth</p>
+</li>
+<li>
+<p>summary</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This shows how graphs can support controlled exploration and synthesis.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_handoff_pattern_for_multi_agent_systems">Handoff Pattern for Multi-Agent Systems</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>LangGraph can model production-style agent routing with a <strong>handoff</strong>
+pattern.</p>
+</div>
+<div class="paragraph">
+<p>A <strong>triage agent</strong> decides whether to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>answer directly</p>
+</li>
+<li>
+<p>route to sales</p>
+</li>
+<li>
+<p>route to support</p>
+</li>
+<li>
+<p>route to billing</p>
+</li>
+<li>
+<p>end the interaction</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Shared state may include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>messages</code></p>
+</li>
+<li>
+<p><code>current_agent</code></p>
+</li>
+<li>
+<p><code>handoff_reason</code></p>
+</li>
+<li>
+<p><code>context_summary</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Structured routing outputs make these decisions predictable and reliable.</p>
+</div>
+<div class="paragraph">
+<p>Compared with a supervisor pattern, handoffs are often simpler and more
+cost-efficient for one-time routing.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_human_in_the_loop_workflows">Human-in-the-Loop Workflows</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>LangGraph supports pause-and-resume flows using checkpointing.</p>
+</div>
+<div class="sect2">
+<h3 id="_approval_interrupt_flow">Approval interrupt flow</h3>
+<div class="paragraph">
+<p>A graph can:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>generate a draft</p>
+</li>
+<li>
+<p>pause before approval</p>
+</li>
+<li>
+<p>wait for human feedback</p>
+</li>
+<li>
+<p>resume and finalize</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Typical state fields:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>request</code></p>
+</li>
+<li>
+<p><code>draft</code></p>
+</li>
+<li>
+<p><code>approved</code></p>
+</li>
+<li>
+<p><code>feedback</code></p>
+</li>
+<li>
+<p><code>final</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Using a checkpointer such as <code>MemorySaver</code>, the app can stop, expose
+state for review, accept updates, and continue from the same point.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_iterative_review_loop">Iterative review loop</h3>
+<div class="paragraph">
+<p>A richer workflow can repeatedly:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>submit document for review</p>
+</li>
+<li>
+<p>pause for human inspection</p>
+</li>
+<li>
+<p>apply reviewer comments</p>
+</li>
+<li>
+<p>resubmit</p>
+</li>
+<li>
+<p>finalize when approved</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This enables repeated AI revision under human control.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_checkpointing">Checkpointing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Checkpointing makes LangGraph applications stateful.</p>
+</div>
+<div class="paragraph">
+<p>It enables:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>memory across runs</p>
+</li>
+<li>
+<p>crash recovery</p>
+</li>
+<li>
+<p>pause/resume workflows</p>
+</li>
+<li>
+<p>state inspection</p>
+</li>
+<li>
+<p>replay and rollback</p>
+</li>
+<li>
+<p>branching from earlier states</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Common checkpoint backends:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>MemorySaver</code> — useful for testing</p>
+</li>
+<li>
+<p><code>SqliteSaver</code> — durable persistence across restarts</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>With thread IDs, conversations and workflows can continue over multiple
+runs.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_checkpoint_internals">Checkpoint Internals</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A checkpoint stores more than just state values. It includes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>current state</p>
+</li>
+<li>
+<p>next node(s)</p>
+</li>
+<li>
+<p>thread and checkpoint config</p>
+</li>
+<li>
+<p>parent checkpoint reference</p>
+</li>
+<li>
+<p>metadata</p>
+</li>
+<li>
+<p>timestamps</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Checkpoint history forms a linked sequence of execution snapshots,
+showing how the graph progressed step by step.</p>
+</div>
+<div class="paragraph">
+<p>This is especially useful for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>debugging</p>
+</li>
+<li>
+<p>auditing</p>
+</li>
+<li>
+<p>human-in-the-loop systems</p>
+</li>
+<li>
+<p>replaying or branching workflows</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_overall_takeaways">Overall Takeaways</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Across all examples, the major LangGraph ideas are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>shared state</strong> drives the workflow</p>
+</li>
+<li>
+<p><strong>reducers</strong> preserve accumulated context</p>
+</li>
+<li>
+<p><strong>nodes</strong> perform focused work</p>
+</li>
+<li>
+<p><strong>conditional edges</strong> enable routing</p>
+</li>
+<li>
+<p><strong>loops</strong> enable retry and refinement</p>
+</li>
+<li>
+<p><strong>checkpointing</strong> enables durable, inspectable execution</p>
+</li>
+<li>
+<p><strong>human interrupts</strong> allow approval and revision in the middle of a run</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>LangGraph is especially strong for building:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>chat agents</p>
+</li>
+<li>
+<p>routed multi-agent systems</p>
+</li>
+<li>
+<p>self-correcting workflows</p>
+</li>
+<li>
+<p>iterative research pipelines</p>
+</li>
+<li>
+<p>human-in-the-loop applications</p>
+</li>
+</ul>
+</div>
 <hr>
+<div class="paragraph">
+<p><a href="udemy_langchain.html">&lt;Contents&gt;</a></p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_a">A</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langgraph/graph/state/StateGraph/add_conditional_edges" target="_blank">add_conditional_edges</a></li>
-
-<li><a href="https://reference.langchain.com/python/langgraph/graph/message/add_messages" target="_blank">add_messages</a></li>
-
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_c">C</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate" target="_blank">ChatPromptTemplate</a></li>
-
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_g">G</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory/get_session_history" target="_blank">get_session_history</a></li>
-
-<li><a href="https://reference.langchain.com/python/langgraph-sdk/_async/threads/ThreadsClient/get_state" target="_blank">get_state</a></li>
-
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_i">I</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langchain/chat_models/base/init_chat_model" target="_blank">init_chat_model</a></li>
-
-<li><a href="https://reference.langchain.com/python/langchain-core/chat_history/InMemoryChatMessageHistory" target="_blank">InMemoryChatMessageHistory</a></li>
-
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_l">L</h3>
-<ul>
-<li><a href="https://smith.langchain.com" target="_blank">LangSmith</a></li>
-
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_m">M</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langgraph.checkpoint/memory/MemorySaver" target="_blank">MemorySaver</a></li>
-
-<li><a href="https://docs.langchain.com/oss/python/langgraph/use-graph-api#mermaid" target="_blank">Mermaid</a></li>
-
-<li><a href="https://reference.langchain.com/python/langchain-core/prompts/chat/MessagesPlaceholder" target="_blank">MessagesPlaceholder</a></li>
-
-<li><a href="https://reference.langchain.com/python/langchain-classic/retrievers/multi_query/MultiQueryRetriever" target="_blank">MultiQueryRetriever</a></li>
-
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_r">R</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory" target="_blank">RunnableWithMessageHistory</a></li>
-
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_s">S</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langgraph/graph/state/StateGraph" target="_blank">StateGraph</a></li>
-
-<li><a href="https://reference.langchain.com/python/langchain-core/output_parsers/string/StrOutputParser" target="_blank">StrOutputParser</a></li>
-
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_t">T</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langchain-core/messages/utils/trim_messages" target="_blank">trim_messages</a></li>
-
-<li><a href="https://docs.python.org/3/library/typing.html#typing.Annotated" target="_blank">typing.Annotated</a></li>
-
-<li><a href="https://docs.python.org/3/library/typing.html#typing.TypedDict" target="_blank">typing.TypedDict</a></li>
-
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_u">U</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langgraph-sdk/_async/threads/ThreadsClient/update_state" target="_blank">update_state</a></li>
-
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_w">W</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langchain-core/language_models/chat_models/BaseChatModel/with_structured_output" target="_blank">with_structured_output</a></li>
-
-</ul>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-20 10:09:37 +0300
+Last updated 2026-04-20 10:07:05 +0300
 </div>
 </div>
 </body>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<title>Useful Links</title>
+<title>7. Multi-Agent Systems with LangGraph and LangChain</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -433,24 +433,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Useful Links</h1>
+<h1>7. Multi-Agent Systems with LangGraph and LangChain</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel2">
-<li><a href="#_a">A</a></li>
-<li><a href="#_c">C</a></li>
-<li><a href="#_g">G</a></li>
-<li><a href="#_i">I</a></li>
-<li><a href="#_l">L</a></li>
-<li><a href="#_m">M</a></li>
-<li><a href="#_r">R</a></li>
-<li><a href="#_s">S</a></li>
-<li><a href="#_t">T</a></li>
-<li><a href="#_u">U</a></li>
-<li><a href="#_w">W</a></li>
+<ul class="sectlevel1">
+<li><a href="#_108_hands_on_tool_calling_agent">108. Hands-on ~ Tool Calling Agent</a></li>
 </ul>
 </div>
 </div>
@@ -463,105 +454,126 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <hr>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_a">A</h3>
+<div class="sect1">
+<h2 id="_108_hands_on_tool_calling_agent">108. Hands-on ~ Tool Calling Agent</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This passage explains how to build a simple <strong>tool-calling agent</strong> with
+<strong>LangGraph</strong> using the <strong>ReAct loop</strong>:</p>
+</div>
+<div class="ulist">
 <ul>
-<li><a href="https://reference.langchain.com/python/langgraph/graph/state/StateGraph/add_conditional_edges" target="_blank">add_conditional_edges</a></li>
-
-<li><a href="https://reference.langchain.com/python/langgraph/graph/message/add_messages" target="_blank">add_messages</a></li>
-
+<li>
+<p><strong>Define tools</strong> with <code>@tool</code>, such as:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>calculate(expression)</code></p>
+</li>
+<li>
+<p><code>get_weather(city)</code></p>
+</li>
+<li>
+<p><code>search_web(query)</code></p>
+</li>
 </ul>
 </div>
-<div class="sect2">
-<h3 id="_c">C</h3>
+</li>
+<li>
+<p><strong>Define graph state</strong> so messages are <strong>appended</strong>, not overwritten,
+using:</p>
+<div class="ulist">
 <ul>
-<li><a href="https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate" target="_blank">ChatPromptTemplate</a></li>
-
+<li>
+<p><code>messages: Annotated[list, add_messages]</code></p>
+</li>
 </ul>
 </div>
-<div class="sect2">
-<h3 id="_g">G</h3>
+</li>
+<li>
+<p><strong>Bind tools to the LLM</strong>:</p>
+<div class="ulist">
 <ul>
-<li><a href="https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory/get_session_history" target="_blank">get_session_history</a></li>
-
-<li><a href="https://reference.langchain.com/python/langgraph-sdk/_async/threads/ThreadsClient/get_state" target="_blank">get_state</a></li>
-
+<li>
+<p><code>llm_with_tools = llm.bind_tools(tools)</code></p>
+</li>
 </ul>
 </div>
-<div class="sect2">
-<h3 id="_i">I</h3>
+</li>
+<li>
+<p><strong>Create an agent node</strong> that sends the message history to the LLM and
+returns its response.</p>
+</li>
+<li>
+<p><strong>Route execution</strong> based on whether the LLM produced tool calls:</p>
+<div class="ulist">
 <ul>
-<li><a href="https://reference.langchain.com/python/langchain/chat_models/base/init_chat_model" target="_blank">init_chat_model</a></li>
-
-<li><a href="https://reference.langchain.com/python/langchain-core/chat_history/InMemoryChatMessageHistory" target="_blank">InMemoryChatMessageHistory</a></li>
-
+<li>
+<p>If yes, go to the <strong>ToolNode</strong></p>
+</li>
+<li>
+<p>If no, end the graph</p>
+</li>
 </ul>
 </div>
-<div class="sect2">
-<h3 id="_l">L</h3>
+</li>
+<li>
+<p><strong>Use <code>ToolNode(tools)</code></strong> to automatically execute requested tools.</p>
+</li>
+<li>
+<p><strong>Build the graph</strong>:</p>
+<div class="ulist">
 <ul>
-<li><a href="https://smith.langchain.com" target="_blank">LangSmith</a></li>
-
+<li>
+<p>Start at the agent</p>
+</li>
+<li>
+<p>Agent decides whether to call tools</p>
+</li>
+<li>
+<p>Tools run if needed</p>
+</li>
+<li>
+<p>Return to agent for the final response</p>
+</li>
 </ul>
 </div>
-<div class="sect2">
-<h3 id="_m">M</h3>
+</li>
+<li>
+<p><strong>Debugging note</strong>:</p>
+<div class="ulist">
 <ul>
-<li><a href="https://reference.langchain.com/python/langgraph.checkpoint/memory/MemorySaver" target="_blank">MemorySaver</a></li>
-
-<li><a href="https://docs.langchain.com/oss/python/langgraph/use-graph-api#mermaid" target="_blank">Mermaid</a></li>
-
-<li><a href="https://reference.langchain.com/python/langchain-core/prompts/chat/MessagesPlaceholder" target="_blank">MessagesPlaceholder</a></li>
-
-<li><a href="https://reference.langchain.com/python/langchain-classic/retrievers/multi_query/MultiQueryRetriever" target="_blank">MultiQueryRetriever</a></li>
-
+<li>
+<p>If messages always stay at length 1, the state is probably not using
+<code>add_messages</code>.</p>
+</li>
 </ul>
 </div>
-<div class="sect2">
-<h3 id="_r">R</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langchain-core/runnables/history/RunnableWithMessageHistory" target="_blank">RunnableWithMessageHistory</a></li>
-
+</li>
 </ul>
 </div>
-<div class="sect2">
-<h3 id="_s">S</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langgraph/graph/state/StateGraph" target="_blank">StateGraph</a></li>
-
-<li><a href="https://reference.langchain.com/python/langchain-core/output_parsers/string/StrOutputParser" target="_blank">StrOutputParser</a></li>
-
-</ul>
+<div class="paragraph">
+<p>Overall, it shows the standard <strong>reason → act → reason</strong> workflow:</p>
 </div>
-<div class="sect2">
-<h3 id="_t">T</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langchain-core/messages/utils/trim_messages" target="_blank">trim_messages</a></li>
-
-<li><a href="https://docs.python.org/3/library/typing.html#typing.Annotated" target="_blank">typing.Annotated</a></li>
-
-<li><a href="https://docs.python.org/3/library/typing.html#typing.TypedDict" target="_blank">typing.TypedDict</a></li>
-
-</ul>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The model reasons about what tool to use,</p>
+</li>
+<li>
+<p>the tool is executed,</p>
+</li>
+<li>
+<p>the model reasons again to produce the final answer.</p>
+</li>
+</ol>
 </div>
-<div class="sect2">
-<h3 id="_u">U</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langgraph-sdk/_async/threads/ThreadsClient/update_state" target="_blank">update_state</a></li>
-
-</ul>
 </div>
-<div class="sect2">
-<h3 id="_w">W</h3>
-<ul>
-<li><a href="https://reference.langchain.com/python/langchain-core/language_models/chat_models/BaseChatModel/with_structured_output" target="_blank">with_structured_output</a></li>
-
-</ul>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-20 10:09:37 +0300
+Last updated 2026-04-29 11:34:55 +0300
 </div>
 </div>
 </body>

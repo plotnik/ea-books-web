@@ -19,7 +19,7 @@ First argument used to create backlink to home page.
   if len(sys.argv) != 2:
       print("Usage: extract_adoc_defs <content_link>")
       sys.exit(1)
-  
+
   content_link = sys.argv[1]
 
   PATTERN = re.compile(
@@ -59,16 +59,17 @@ Output file
       for letter in sorted(grouped.keys()):
           lines.append(f"=== {letter}")
           lines.append("")
-
+          lines.append("++++")
+          lines.append("<ul>")
           for def_name, url in grouped[letter]:
-              lines.append(f"{def_name}::")
-              lines.append(url)
+              lines.append(f'<li><a href="{url}" target="_blank">{def_name}</a></li>')
               lines.append("")
+          lines.append("</ul>")  
+          lines.append("++++")
 
       def_list = "\n".join(lines).rstrip()
       return f"""= Useful Links
   :toc: left
-
 
   link:{content_link}.html[<Contents>]
 

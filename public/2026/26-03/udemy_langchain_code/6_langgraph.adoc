@@ -311,3 +311,557 @@ A LangGraph workflow is built from:
 Understanding those three parts lets you create more advanced workflows
 later.
 
+
+
+
+== 94. Hands-on ~ Full LangGraph Step-by-Step Workflow
+
+This walkthrough shows how to build a simple conversation graph with a
+stateful flow:
+
+* Define a *ConversationState* containing:
+** `messages` for chat history
+** `sentiment` for the latest sentiment label
+** `response++_++count` to track replies
+* Create two graph *nodes*:
+[arabic]
+. *analyze++_++sentiment*: looks at the latest user message and
+classifies it as positive, negative, or neutral
+. *generate++_++response*: uses that sentiment to choose a response
+style and generate an AI reply
+* Connect the nodes with *edges* so execution flows:
+** `analyze++_++sentiment` → `generate++_++response`
+* Compile the graph into an executable app and test it with example
+messages.
+
+==== Main behavior
+
+* Positive input gets an enthusiastic reply
+* Negative input gets an empathetic reply
+* Neutral input gets a helpful reply
+
+==== Overall purpose
+
+The example demonstrates the basics of:
+
+* state management
+* node definition
+* graph wiring
+* sequential graph execution
+
+It’s a simple introduction to building conversation workflows with a
+graph-based structure.
+
+
+
+== 96. Hands-on ~ Basic Routing with Literal Routing Types
+
+[NOTE]
+====
+add_conditional_edges::
+https://reference.langchain.com/python/langgraph/graph/state/StateGraph/add_conditional_edges
+====
+This example shows how to use *conditional edges* in a `StateGraph` to
+route inputs dynamically based on their type.
+
+==== Summary
+
+[arabic]
+. *Define shared state*
+* A `RouterState` holds:
+** `query`: the user input
+** `query++_++type`: the classified category
+** `response`: the final output
+. *Create processing nodes*
+* `classify++_++query`: uses an LLM to label the query as `question`,
+`command`, or `statement`
+* `handle++_++question`: answers the question
+* `handle++_++command`: returns a command-style response
+* `handle++_++statement`: acknowledges the statement
+. *Route based on classification*
+* `route++_++by++_++type` checks `query++_++type`
+* It returns one of three fixed branches using `Literal`:
+** `"question"`
+** `"command"`
+** `"statement"`
+. *Build the graph*
+* Add nodes for classification and each handler
+* Set `classify` as the entry point
+* Use `add++_++conditional++_++edges` to send the flow to the correct
+handler
+* Each handler ends at `END`
+. *Run the app*
+* Example inputs are processed differently depending on whether they are
+questions, commands, or statements
+
+==== Core idea
+
+The key pattern is:
+
+*classify → route conditionally → handle appropriately*
+
+This makes the graph flexible, modular, and easy to extend with more
+branches later.
+
+
+
+== 97. Hands-on ~ Conditional Looping
+
+[NOTE]
+====
+add_conditional_edges::
+https://reference.langchain.com/python/langgraph/graph/state/StateGraph/add_conditional_edges
+====
+
+This passage explains a graph workflow that evaluates content quality,
+optionally improves it, and loops until it is good enough or a maximum
+number of iterations is reached.
+
+==== Main components
+
+* *State fields:* `content`, `quality++_++score`, `feedback`, `final`,
+and `iteration`
+* *`evaluate++_++quality`:* sends the content to an LLM and gets a
+quality score from 1 to 10; defaults to `5` if there is an error
+* *`improve++_++content`:* uses the LLM to improve the content and
+increments `iteration`
+* *`finalize++_++content`:* outputs the final content plus feedback
+about whether it was approved
+
+==== Loop logic
+
+A conditional route decides what happens after evaluation:
+
+* If *quality ++>++= 7* → *finalize*
+* If *iteration ++<++= 3* → *finalize* because the iteration limit is
+reached
+* Otherwise → *improve*
+
+==== Graph structure
+
+* Start → `evaluate`
+* `evaluate` routes conditionally to:
+** `improve`
+** `finalize`
+* `improve` loops back to `evaluate`
+* `finalize` ends the graph
+
+==== Example run
+
+The graph is initialized with:
+
+* `content: "AI is cool"`
+* `quality: 0`
+* `feedback: ""`
+* `final: ""`
+* `iteration: 0`
+
+The workflow repeatedly evaluates and improves the content until it
+either:
+
+* achieves a good enough quality score, or
+* hits the maximum number of iterations.
+
+The example ends with feedback like:
+
+____
+approved after 1 iteration with a score of 7
+____
+
+==== Overall idea
+
+This is a *conditional loop in a graph*, where content is repeatedly
+evaluated and improved until it passes the quality threshold or reaches
+the iteration cap.
+
+
+
+== 98. Hands-on ~ Multipath Routing
+
+The passage explains *multi-path routing* in LangGraph, where a task is
+directed down one of several routes based on its properties.
+
+==== Main idea
+
+[arabic]
+. *Analyze the task first* using an LLM-based node.
+. The analysis node determines:
+* *Urgency*: `urgent` or `normal`
+* *Complexity*: `complex` or `simple`
+. These labels are then used by a *routing function* to choose one of
+four paths:
+* `urgent++_++complex`
+* `urgent++_++simple`
+* `normal++_++complex`
+* `normal++_++simple`
+
+==== Handlers
+
+Each route has a corresponding handler:
+
+* *Urgent {plus} Complex* → senior team
+* *Urgent {plus} Simple* → quick response
+* *Normal {plus} Complex* → specialist
+* *Normal {plus} Simple* → standard path
+
+==== Graph structure
+
+The graph is built by:
+
+* adding the analysis node
+* adding the four handler nodes
+* setting the analysis node as the start
+* using a *conditional edge* to route tasks based on urgency and
+complexity
+* connecting each handler to the end node
+
+==== Example outcomes
+
+The passage gives examples such as:
+
+* “Server is down, need immediate fix” → urgent, complex → senior team
+* “Update the documentation for the API” → normal, simple → standard
+path
+* “Fix the typo on the homepage” → urgent, simple → quick response
+
+==== Key takeaway
+
+Once conditional routing is understood, it can be used to build
+workflows of nearly any complexity. The core mechanics stay the same;
+only the number of branches grows.
+
+
+== 99. Hands-on ~ Cycles and Loops - Self-Correcting Code Writer
+
+
+The passage explains how *LangGraph* supports *cycles and loops*,
+enabling agents to retry and improve instead of following only a
+straight-line workflow.
+
+==== Main example: self-correcting code generator
+
+A graph is built where the agent:
+
+[arabic]
+. *Generates code*
+. *Validates the code*
+. If validation fails, *loops back* and tries again
+. Stops when the code works or when a *maximum iteration limit* is
+reached
+
+==== Key components
+
+* *State (`CodeGenState`)* includes:
+** `task`
+** `code`
+** `errors`
+** `iteration`
+** `max++_++iterations`
+** `success`
+* *Errors* use a reducer (`operator.add`) so new errors are appended,
+giving the agent memory of past failures.
+* *Iteration limits* prevent infinite loops.
+
+==== Nodes
+
+* *`generate++_++code`*: uses the LLM to produce or fix code based on
+prior errors.
+* *`validate++_++code`*: checks code using real Python
+compilation/execution, not the model’s judgment.
+* *`should++_++continue`*: decides whether to stop, loop again, or
+finalize.
+* *`finalize`*: clean exit node.
+
+==== Workflow
+
+The graph runs as:
+
+*generate → validate → (generate or finalize) → end*
+
+==== Demonstration
+
+* In a simple factorial task, the model succeeds on the first try.
+* With stricter validation, the loop runs multiple times and may stop at
+the max iteration limit if it still fails.
+
+==== Core lesson
+
+The important pattern is:
+
+* *LLM for generation*
+* *deterministic validation for checking*
+* *graph logic for controlled retries*
+
+This is what makes LangGraph useful for building more intelligent,
+self-correcting agents.
+
+== 100. Hands-on ~ Iterative Research Agent with Loops and Cycles
+
+The demo describes an *iterative research agent* that repeatedly
+researches a topic, generates deeper follow-up questions, and continues
+until a maximum depth is reached, then synthesizes all findings into a
+final summary.
+
+==== Core workflow
+
+[arabic]
+. *Research* the initial topic.
+. *Generate a deeper question* from the latest findings.
+. *Repeat research* using that new question.
+. Use a *router/condition* to decide whether to continue or stop.
+. *Synthesize* all collected findings into one final response.
+
+==== State design
+
+The agent’s state tracks:
+
+* `topic`
+* `findings` (accumulated with a reducer)
+* `questions`
+* `iteration`
+* `max++_++depth`
+* `summary`
+
+==== Nodes in the graph
+
+* *Research node*: searches the topic or the latest generated question.
+* *Generate questions node*: creates a deeper follow-up question and
+updates iteration.
+* *Synthesizer node*: combines all findings into a final summary.
+
+==== Control flow
+
+A `should++_++continue` function checks whether the current iteration
+has reached `max++_++depth`:
+
+* If not, it loops back to *research*
+* If yes, it routes to *synthesize*
+
+==== Example run
+
+With:
+
+* topic: `"quantum computing applications"`
+* `max++_++depth = 2`
+
+the graph:
+
+* researches the topic,
+* generates a deeper question,
+* researches again,
+* then synthesizes the results after reaching depth 2.
+
+==== Main takeaway
+
+The demo shows how a graph of collaborating nodes can *incrementally
+explore a topic*, *refine questions*, and *produce a final synthesized
+answer* in a controlled loop.
+
+
+== 102. Hands-on ~ Human Input - Interrupt for Approval
+
+[NOTE]
+====
+MemorySaver::
+https://reference.langchain.com/python/langgraph.checkpoint/memory/MemorySaver
+
+get_state::
+https://reference.langchain.com/python/langgraph-sdk/_async/threads/ThreadsClient/get_state
+
+update_state::
+https://reference.langchain.com/python/langgraph-sdk/_async/threads/ThreadsClient/update_state
+====
+
+This example explains how to build a *human-in-the-loop workflow* in
+*LangGraph* using a *checkpointer* (`MemorySaver`) so the graph can
+pause, accept human feedback, and then resume.
+
+==== Workflow pattern
+
+[arabic]
+. *Interrupt*
+. *Review*
+. *Modify*
+. *Resume*
+
+==== Main pieces
+
+* *State fields*:
+** `request`: original user request
+** `draft`: LLM-generated draft
+** `approved`: human approval boolean
+** `feedback`: human revision notes
+** `final`: final output
+* *Nodes*:
+** `create++_++draft`: generates a draft from the request
+** `wait++_++for++_++approval`: pause point before human review
+** `finalize`: either keeps the draft or revises it based on
+approval/feedback
+
+==== Graph flow
+
+`start -++>++ draft -++>++ approval -++>++ finalize -++>++ end`
+
+==== Execution process
+
+[arabic]
+. Run the graph with a unique `thread++_++id`.
+. Use `get++_++state(config)` to inspect the paused state.
+. Use `update++_++state(...)` to add human approval or feedback.
+. Resume with `invoke(None, config)` to continue from the pause point.
+
+==== Key idea
+
+The checkpointer saves intermediate state, so LangGraph can stop before
+approval and later continue exactly where it left off.
+
+==== Purpose
+
+This pattern is useful when you want a human to review and possibly
+revise AI-generated output before it is finalized.
+
+
+
+== 103. Full Human in the Loop Workflow
+
+[NOTE]
+====
+Mermaid::
+https://docs.langchain.com/oss/python/langgraph/use-graph-api#mermaid
+====
+
+The passage explains an *iterative human review workflow* using
+LangGraph, where a document can go through *multiple review and revision
+cycles* before final approval.
+
+==== Key points:
+
+* *State includes*:
+** `document`
+** `review++_++comments`
+** `revision++_++count`
+** `status`
+* *Workflow nodes*:
+** *submit for review*: marks the document as waiting for human review
+** *apply feedback*: uses reviewer comments to revise the document and
+increments the revision count
+** *route after review*: sends the flow to either:
+*** `finalize` if approved
+*** `apply++_++feedback` if changes are still needed
+** *finalize*: ends the workflow cleanly
+* *Graph behavior*:
+** The flow loops through review and revision repeatedly:
+*** `submit → review decision → apply feedback → submit → ... → done`
+** A *checkpointer* is used for memory
+** An *interrupt before submit* pauses the workflow so a human can
+inspect and update the state
+* *Process example*:
+[arabic]
+. Initial document is submitted
+. Human adds comments like “add more technical depth” and “include
+examples”
+. Status is set to `needs++_++revision`
+. Workflow resumes, revises the document, and pauses again
+. Eventually status is set to `approved`
+. Workflow finalizes and returns the completed document
+
+==== Main takeaway:
+
+This pattern enables a *controlled human-in-the-loop loop* where AI can
+revise content repeatedly based on feedback until a human approves it.
+
+
+== 104. Hands-on ~ Checkpointing Deep Dive
+
+
+Checkpointing makes graph-based apps stateful instead of stateless. It
+saves a snapshot of the graph’s state after each node, which enables:
+
+* conversation memory across runs
+* recovery after crashes or failures
+* human-in-the-loop pause and resume
+* replay, rollback, and branching conversations
+
+The example shows how to define chat state with a `messages` field using
+`add++_++messages`, build a simple `StateGraph`, and compile it with a
+checkpointer.
+
+Two checkpointing backends are demonstrated:
+
+* *MemorySaver* for in-memory testing
+* *SqliteSaver* for durable persistence across restarts
+
+With a thread ID in the config, the app can retrieve previous state,
+continue a conversation, and inspect state history. SQLite persistence
+lets the same conversation be recovered after the app restarts.
+
+Checkpoint history is useful for debugging, auditing, and rewinding.
+Branching is also possible by copying a prior state into new thread IDs,
+allowing independent paths like alternative planning or what-if
+exploration.
+
+Overall, checkpointing turns temporary execution state into durable,
+inspectable, reusable memory.
+
+
+== 105. Checkpoint Internals Deep Dive
+
+The passage explains how a graph checkpoint stores and exposes execution
+state.
+
+==== Main points
+
+* A simple two-node graph is built with:
+** `messages`: a list with an add reducer, so new messages append
+** `step`: a string
+* The nodes are:
+** `analyze`: sends messages to the LLM and sets `step = "analyze"`
+** `summarize`: summarizes the current state
+
+==== Inspecting checkpoints
+
+* After running the graph, `get++_++state()` shows:
+** current state values
+** current step
+** messages
+** next node to run
+* `get++_++state++_++history()` shows the full checkpoint trail,
+including:
+** step number
+** source
+** writes
+** message count
+** checkpoint ID
+** timestamps
+
+==== What a checkpoint contains
+
+A checkpoint includes:
+
+[arabic]
+. *State values* — actual data like messages and step
+. *Next nodes* — what will run next
+. *State config* — thread ID and checkpoint ID
+. *Parent config* — link to the previous checkpoint
+. *Metadata* — source, step, and execution info
+. *Timestamp* — when it was created
+
+==== Why checkpoints matter
+
+* They are saved:
+** before execution starts
+** after each node runs
+** at interrupt points
+* This enables pausing and resuming, especially for human-in-the-loop
+workflows.
+
+==== Mental model
+
+Think of checkpoints as a linked list of snapshots:
+
+* each checkpoint records the graph’s state at a moment in time
+* each one points to its parent
+* the latest checkpoint represents the current state
+
+Overall, the text shows how checkpoints preserve both current state and
+full execution history.

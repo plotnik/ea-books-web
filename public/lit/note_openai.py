@@ -15,21 +15,24 @@
 #
 # ----
 #
+# 🧭 **Prompt guidance**
+#    https://developers.openai.com/api/docs/guides/prompt-guidance
+#
+# 🤖 **Using GPT-5.5**
+#    https://developers.openai.com/api/docs/guides/latest-model
+#
+# 🎛️ **Prompt Optimizer**
+#    https://platform.openai.com/chat/edit?models=gpt-5.2&optimize=true
+#
 # 🧠 **Text generation**
 #    https://platform.openai.com/docs/guides/text
 #
 # 🪄 **Prompt engineering**
 #    https://platform.openai.com/docs/guides/prompt-engineering
 #
-# 🎛️ **Prompt Optimizer**
-#    https://platform.openai.com/chat/edit?models=gpt-5.2&optimize=true
-#
-# 🧭 **GPT-5.2 Prompting Guide**
-#    https://cookbook.openai.com/examples/gpt-5/gpt-5-2_prompting_guide
-#
 # 📚 **OpenAI Cookbook**
 #    https://cookbook.openai.com/
-#  
+#
 # ----
 #
 # 🔢 **Tiktoken CodeWiki**
@@ -130,7 +133,7 @@ client = OpenAI()
 # - ``name``: A short, unique identifier for the prompt.
 # - ``note``: Prompt body.
 # - ``tags``: A list of categories (for example, ``text`` or ``python``) that describe the prompt’s domain or usage.
-#  
+#
 # ::
 
 prompts_file = "openai_helper.yml"
@@ -197,6 +200,7 @@ st.write(prompt)
 # ::
 
 llm_prices = {
+    "gpt-5.5": (5.00, 30.00),
     "gpt-5.4": (2.50, 15.00),
     "gpt-5.4-mini": (0.75, 4.50),
     "gpt-5.4-nano": (0.20, 1.25),
@@ -284,14 +288,14 @@ st.write(st.session_state.llm_output)
 if st.button("Clipboard", icon=":material/content_copy:"):
     pyperclip.copy(st.session_state.llm_output)
     st.write(f'Copied to clipboard') 
-  
+
 # Show last execution time
 #
 # ::
 
 if "execution_time" in st.session_state:
     st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 2)}` sec")
-  
+
 if "output_price" in st.session_state:
     st.sidebar.write(f"Output price: `{round(st.session_state.output_price, 5)}` cents")  
-     
+ 
