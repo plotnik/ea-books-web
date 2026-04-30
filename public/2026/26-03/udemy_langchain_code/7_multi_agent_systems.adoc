@@ -43,3 +43,214 @@ Overall, it shows the standard *reason → act → reason* workflow:
 . The model reasons about what tool to use,
 . the tool is executed,
 . the model reasons again to produce the final answer.
+
+
+== 109. Custom Tool with Error Handling
+
+The passage explains how to build a LangGraph agent with a custom
+`divide` tool that handles errors gracefully.
+
+Key points:
+
+* A `divide` tool is created that returns the division result for two
+floats.
+* If the second number is `0`, the tool returns an error string like:
+*“Division by zero is undefined.”*
+* The tool is added to a `tools` list and bound to the LLM with
+`llm++_++with++_++tools`.
+* An agent node processes messages and returns responses.
+* A `should++_++continue` function checks the last message to decide
+whether to continue to the tools node or end.
+* A `ToolNode` is created with the tool, and the graph is wired:
+** agent → tools if tool use is needed
+** agent → end otherwise
+** tools → agent to complete the loop
+
+Behavior:
+
+* Query like *“What is 100 divided by 5?”* returns *20*.
+* Query like *“What is 100 divided by 0?”* does not crash; the tool
+returns an error message, and the LLM explains the problem naturally.
+
+Main lesson:
+
+* In production, tools should *return errors instead of raising
+exceptions*.
+* The LLM can interpret those error messages and respond appropriately.
+* This keeps the agent robust without needing try/except logic in the
+graph itself.
+
+
+== 110. Hands-on ~ The Supervisor Agent
+
+The passage explains the *supervisor pattern* in multi-agent systems,
+where a central *supervisor agent* coordinates specialized agents.
+
+==== Main idea
+
+* A user query is received.
+* The supervisor decides which specialist agent should handle each step.
+* The specialist performs the task and returns the result.
+* The supervisor reviews the output, decides the next step, and keeps
+routing until the job is finished.
+
+==== Supervisor responsibilities
+
+The supervisor:
+
+* understands the user’s intent,
+* breaks complex work into subtasks,
+* routes tasks to the right agent,
+* collects and combines results,
+* decides when the workflow is complete.
+
+==== Implementation overview
+
+A graph-based workflow is built with:
+
+* shared *state* for messages and routing info,
+* a structured routing schema like `RouteDecision`,
+* a *supervisor node* that makes routing decisions,
+* specialist agents such as:
+** *researcher*
+** *writer*
+** *critic*
+* a *finalizer* node to end the workflow.
+
+==== Workflow behavior
+
+* Specialists do *not* call each other directly.
+* All routing goes back through the supervisor, creating a
+*hub-and-spoke* architecture.
+* The system loops until the supervisor sends the task to `finish`.
+
+==== Example
+
+For a request like “Write a short blog about the benefits of AI in
+healthcare,” the workflow may be:
+
+[arabic]
+. supervisor → researcher
+. supervisor → writer
+. supervisor → critic
+. supervisor → writer again if revisions are needed
+. supervisor → finish
+
+==== Why it matters
+
+This pattern is useful because it provides:
+
+* *separation of concerns*
+* *dynamic, adaptive workflows*
+* a common architecture used in real-world systems like *CrewAI*,
+*AutoGen*, and enterprise agent platforms.
+
+==== Key takeaway
+
+The supervisor pattern uses a central controller to manage specialized
+agents through structured routing until the task is complete.
+
+
+
+== 111. Hands-on ~ Agent Handoffs in LangGraph
+
+The passage explains *agent handoffs in LangGraph* and why they’re
+important in real-world customer service systems.
+
+==== Core idea
+
+A single chatbot agent can’t handle every kind of request well, so the
+system uses *triage* to route the message to the right specialist agent,
+such as:
+
+* *sales*
+* *support*
+* *billing*
+* or *end* if no escalation is needed
+
+==== Why handoffs matter
+
+Handoffs improve:
+
+* response quality
+* speed of resolution
+* customer satisfaction
+* system efficiency
+
+This mirrors how real enterprise support systems work.
+
+==== Shared state
+
+All agents share state fields like:
+
+* `messages` — conversation history
+* `current++_++agent` — who is handling the request
+* `handoff++_++reason` — why it was transferred
+* `context++_++summary` — key info for the next agent
+
+These fields help preserve context so the next agent doesn’t start from
+scratch.
+
+==== Structured routing
+
+Instead of trusting free-form text, the triage agent returns *structured
+output* with:
+
+* `handoff++_++to`
+* `reason`
+* `context`
+
+Using fixed options like `sales`, `support`, `billing`, `stay`, or `end`
+makes routing reliable.
+
+==== How the system works
+
+[arabic]
+. *Triage agent* reads the message and decides where it should go.
+. If the decision is *end*, the system responds directly.
+. If the decision is a specialist, the conversation is handed off with
+full context.
+. The specialist handles the request and finishes the workflow.
+
+==== Specialist agents
+
+Each specialist has a specific role:
+
+* *Sales*: upgrades, pricing, purchases
+* *Support*: bugs, crashes, technical issues
+* *Billing*: charges, invoices, duplicate payments
+
+==== Graph structure
+
+The LangGraph has nodes for:
+
+* triage
+* sales
+* support
+* billing
+
+The flow starts at triage, routes conditionally, and then ends after the
+specialist responds.
+
+==== Supervisor vs handoff
+
+* *Supervisor pattern*: agents often report back to a manager agent
+* *Handoff pattern*: triage sends the request directly to the right
+specialist, and the workflow usually ends there
+
+==== Why this is valuable
+
+The system avoids unnecessary escalation, which saves:
+
+* latency
+* compute
+* cost
+
+At scale, even routing a portion of requests directly can significantly
+reduce LLM usage and expenses.
+
+==== Big picture
+
+The passage argues that *handoffs are a practical production pattern*,
+not just a demo. LangGraph lets you combine routing, context transfer,
+and specialist agents into a flexible architecture.

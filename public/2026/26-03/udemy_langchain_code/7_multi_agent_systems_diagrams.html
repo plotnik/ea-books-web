@@ -442,6 +442,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_108_hands_on_tool_calling_agent">108. Hands-on ~ Tool Calling Agent</a></li>
+<li><a href="#_110_hands_on_the_supervisor_agent">110. Hands-on ~ The Supervisor Agent</a></li>
+<li><a href="#_111_hands_on_agent_handoffs_in_langgraph">111. Hands-on ~ Agent Handoffs in LangGraph</a></li>
 </ul>
 </div>
 </div>
@@ -478,6 +480,72 @@ graph TD;
 	classDef last fill:#bfb6fc
 </div>
 <hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_110_hands_on_the_supervisor_agent">110. Hands-on ~ The Supervisor Agent</h2>
+<div class="sectionbody">
+<hr>
+<div class="mermaid">
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	supervisor(supervisor)
+	researcher(researcher)
+	writer(writer)
+	critic(critic)
+	finalize(finalize)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> supervisor;
+	critic --> supervisor;
+	researcher --> supervisor;
+	supervisor -.-> critic;
+	supervisor -.-> finalize;
+	supervisor -.-> researcher;
+	supervisor -.-> writer;
+	writer --> supervisor;
+	finalize --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_111_hands_on_agent_handoffs_in_langgraph">111. Hands-on ~ Agent Handoffs in LangGraph</h2>
+<div class="sectionbody">
+<hr>
+<div class="mermaid">
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	triage(triage)
+	sales(sales)
+	support(support)
+	billing(billing)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> triage;
+	triage -. &nbsp;end&nbsp; .-> __end__;
+	triage -.-> billing;
+	triage -.-> sales;
+	triage -.-> support;
+	billing --> __end__;
+	sales --> __end__;
+	support --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
+</div>
+<hr>
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
   mermaid.initialize({ startOnLoad: true });
@@ -487,7 +555,7 @@ graph TD;
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-20 11:45:39 +0300
+Last updated 2026-04-30 08:39:28 +0300
 </div>
 </div>
 </body>

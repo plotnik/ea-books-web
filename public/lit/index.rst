@@ -34,6 +34,7 @@ Literate Programs
    L1_Router_Engine.py   
    time_intervals.py
    pan_ui.py 
+   ppdict.py
    jira_stats.py
    explain_java.py
    code_review.py

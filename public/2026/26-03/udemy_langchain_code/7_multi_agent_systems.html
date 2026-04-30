@@ -442,6 +442,32 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_108_hands_on_tool_calling_agent">108. Hands-on ~ Tool Calling Agent</a></li>
+<li><a href="#_109_custom_tool_with_error_handling">109. Custom Tool with Error Handling</a></li>
+<li><a href="#_110_hands_on_the_supervisor_agent">110. Hands-on ~ The Supervisor Agent</a>
+<ul class="sectlevel3">
+<li><a href="#_main_idea">Main idea</a></li>
+<li><a href="#_supervisor_responsibilities">Supervisor responsibilities</a></li>
+<li><a href="#_implementation_overview">Implementation overview</a></li>
+<li><a href="#_workflow_behavior">Workflow behavior</a></li>
+<li><a href="#_example">Example</a></li>
+<li><a href="#_why_it_matters">Why it matters</a></li>
+<li><a href="#_key_takeaway">Key takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_111_hands_on_agent_handoffs_in_langgraph">111. Hands-on ~ Agent Handoffs in LangGraph</a>
+<ul class="sectlevel3">
+<li><a href="#_core_idea">Core idea</a></li>
+<li><a href="#_why_handoffs_matter">Why handoffs matter</a></li>
+<li><a href="#_shared_state">Shared state</a></li>
+<li><a href="#_structured_routing">Structured routing</a></li>
+<li><a href="#_how_the_system_works">How the system works</a></li>
+<li><a href="#_specialist_agents">Specialist agents</a></li>
+<li><a href="#_graph_structure">Graph structure</a></li>
+<li><a href="#_supervisor_vs_handoff">Supervisor vs handoff</a></li>
+<li><a href="#_why_this_is_valuable">Why this is valuable</a></li>
+<li><a href="#_big_picture">Big picture</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -570,10 +596,473 @@ returns its response.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_109_custom_tool_with_error_handling">109. Custom Tool with Error Handling</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to build a LangGraph agent with a custom
+<code>divide</code> tool that handles errors gracefully.</p>
+</div>
+<div class="paragraph">
+<p>Key points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A <code>divide</code> tool is created that returns the division result for two
+floats.</p>
+</li>
+<li>
+<p>If the second number is <code>0</code>, the tool returns an error string like:
+<strong>“Division by zero is undefined.”</strong></p>
+</li>
+<li>
+<p>The tool is added to a <code>tools</code> list and bound to the LLM with
+<code>llm_with_tools</code>.</p>
+</li>
+<li>
+<p>An agent node processes messages and returns responses.</p>
+</li>
+<li>
+<p>A <code>should_continue</code> function checks the last message to decide
+whether to continue to the tools node or end.</p>
+</li>
+<li>
+<p>A <code>ToolNode</code> is created with the tool, and the graph is wired:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>agent → tools if tool use is needed</p>
+</li>
+<li>
+<p>agent → end otherwise</p>
+</li>
+<li>
+<p>tools → agent to complete the loop</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Behavior:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Query like <strong>“What is 100 divided by 5?”</strong> returns <strong>20</strong>.</p>
+</li>
+<li>
+<p>Query like <strong>“What is 100 divided by 0?”</strong> does not crash; the tool
+returns an error message, and the LLM explains the problem naturally.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Main lesson:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In production, tools should <strong>return errors instead of raising
+exceptions</strong>.</p>
+</li>
+<li>
+<p>The LLM can interpret those error messages and respond appropriately.</p>
+</li>
+<li>
+<p>This keeps the agent robust without needing try/except logic in the
+graph itself.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_110_hands_on_the_supervisor_agent">110. Hands-on ~ The Supervisor Agent</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains the <strong>supervisor pattern</strong> in multi-agent systems,
+where a central <strong>supervisor agent</strong> coordinates specialized agents.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_idea">Main idea</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>A user query is received.</p>
+</li>
+<li>
+<p>The supervisor decides which specialist agent should handle each step.</p>
+</li>
+<li>
+<p>The specialist performs the task and returns the result.</p>
+</li>
+<li>
+<p>The supervisor reviews the output, decides the next step, and keeps
+routing until the job is finished.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_supervisor_responsibilities">Supervisor responsibilities</h4>
+<div class="paragraph">
+<p>The supervisor:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>understands the user’s intent,</p>
+</li>
+<li>
+<p>breaks complex work into subtasks,</p>
+</li>
+<li>
+<p>routes tasks to the right agent,</p>
+</li>
+<li>
+<p>collects and combines results,</p>
+</li>
+<li>
+<p>decides when the workflow is complete.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_implementation_overview">Implementation overview</h4>
+<div class="paragraph">
+<p>A graph-based workflow is built with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>shared <strong>state</strong> for messages and routing info,</p>
+</li>
+<li>
+<p>a structured routing schema like <code>RouteDecision</code>,</p>
+</li>
+<li>
+<p>a <strong>supervisor node</strong> that makes routing decisions,</p>
+</li>
+<li>
+<p>specialist agents such as:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>researcher</strong></p>
+</li>
+<li>
+<p><strong>writer</strong></p>
+</li>
+<li>
+<p><strong>critic</strong></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>a <strong>finalizer</strong> node to end the workflow.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_workflow_behavior">Workflow behavior</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Specialists do <strong>not</strong> call each other directly.</p>
+</li>
+<li>
+<p>All routing goes back through the supervisor, creating a
+<strong>hub-and-spoke</strong> architecture.</p>
+</li>
+<li>
+<p>The system loops until the supervisor sends the task to <code>finish</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example">Example</h4>
+<div class="paragraph">
+<p>For a request like “Write a short blog about the benefits of AI in
+healthcare,” the workflow may be:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>supervisor → researcher</p>
+</li>
+<li>
+<p>supervisor → writer</p>
+</li>
+<li>
+<p>supervisor → critic</p>
+</li>
+<li>
+<p>supervisor → writer again if revisions are needed</p>
+</li>
+<li>
+<p>supervisor → finish</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_it_matters">Why it matters</h4>
+<div class="paragraph">
+<p>This pattern is useful because it provides:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>separation of concerns</strong></p>
+</li>
+<li>
+<p><strong>dynamic, adaptive workflows</strong></p>
+</li>
+<li>
+<p>a common architecture used in real-world systems like <strong>CrewAI</strong>,
+<strong>AutoGen</strong>, and enterprise agent platforms.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_takeaway">Key takeaway</h4>
+<div class="paragraph">
+<p>The supervisor pattern uses a central controller to manage specialized
+agents through structured routing until the task is complete.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_111_hands_on_agent_handoffs_in_langgraph">111. Hands-on ~ Agent Handoffs in LangGraph</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains <strong>agent handoffs in LangGraph</strong> and why they’re
+important in real-world customer service systems.</p>
+</div>
+<div class="sect3">
+<h4 id="_core_idea">Core idea</h4>
+<div class="paragraph">
+<p>A single chatbot agent can’t handle every kind of request well, so the
+system uses <strong>triage</strong> to route the message to the right specialist agent,
+such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>sales</strong></p>
+</li>
+<li>
+<p><strong>support</strong></p>
+</li>
+<li>
+<p><strong>billing</strong></p>
+</li>
+<li>
+<p>or <strong>end</strong> if no escalation is needed</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_handoffs_matter">Why handoffs matter</h4>
+<div class="paragraph">
+<p>Handoffs improve:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>response quality</p>
+</li>
+<li>
+<p>speed of resolution</p>
+</li>
+<li>
+<p>customer satisfaction</p>
+</li>
+<li>
+<p>system efficiency</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This mirrors how real enterprise support systems work.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_shared_state">Shared state</h4>
+<div class="paragraph">
+<p>All agents share state fields like:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>messages</code> — conversation history</p>
+</li>
+<li>
+<p><code>current_agent</code> — who is handling the request</p>
+</li>
+<li>
+<p><code>handoff_reason</code> — why it was transferred</p>
+</li>
+<li>
+<p><code>context_summary</code> — key info for the next agent</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These fields help preserve context so the next agent doesn’t start from
+scratch.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_structured_routing">Structured routing</h4>
+<div class="paragraph">
+<p>Instead of trusting free-form text, the triage agent returns <strong>structured
+output</strong> with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>handoff_to</code></p>
+</li>
+<li>
+<p><code>reason</code></p>
+</li>
+<li>
+<p><code>context</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Using fixed options like <code>sales</code>, <code>support</code>, <code>billing</code>, <code>stay</code>, or <code>end</code>
+makes routing reliable.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_how_the_system_works">How the system works</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Triage agent</strong> reads the message and decides where it should go.</p>
+</li>
+<li>
+<p>If the decision is <strong>end</strong>, the system responds directly.</p>
+</li>
+<li>
+<p>If the decision is a specialist, the conversation is handed off with
+full context.</p>
+</li>
+<li>
+<p>The specialist handles the request and finishes the workflow.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_specialist_agents">Specialist agents</h4>
+<div class="paragraph">
+<p>Each specialist has a specific role:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Sales</strong>: upgrades, pricing, purchases</p>
+</li>
+<li>
+<p><strong>Support</strong>: bugs, crashes, technical issues</p>
+</li>
+<li>
+<p><strong>Billing</strong>: charges, invoices, duplicate payments</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_graph_structure">Graph structure</h4>
+<div class="paragraph">
+<p>The LangGraph has nodes for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>triage</p>
+</li>
+<li>
+<p>sales</p>
+</li>
+<li>
+<p>support</p>
+</li>
+<li>
+<p>billing</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The flow starts at triage, routes conditionally, and then ends after the
+specialist responds.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_supervisor_vs_handoff">Supervisor vs handoff</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Supervisor pattern</strong>: agents often report back to a manager agent</p>
+</li>
+<li>
+<p><strong>Handoff pattern</strong>: triage sends the request directly to the right
+specialist, and the workflow usually ends there</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_this_is_valuable">Why this is valuable</h4>
+<div class="paragraph">
+<p>The system avoids unnecessary escalation, which saves:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>latency</p>
+</li>
+<li>
+<p>compute</p>
+</li>
+<li>
+<p>cost</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>At scale, even routing a portion of requests directly can significantly
+reduce LLM usage and expenses.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_big_picture">Big picture</h4>
+<div class="paragraph">
+<p>The passage argues that <strong>handoffs are a practical production pattern</strong>,
+not just a demo. LangGraph lets you combine routing, context transfer,
+and specialist agents into a flexible architecture.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-29 11:34:55 +0300
+Last updated 2026-04-30 09:56:16 +0300
 </div>
 </div>
 </body>
