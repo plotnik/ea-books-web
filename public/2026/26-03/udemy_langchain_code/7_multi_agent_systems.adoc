@@ -254,3 +254,265 @@ reduce LLM usage and expenses.
 The passage argues that *handoffs are a practical production pattern*,
 not just a demo. LangGraph lets you combine routing, context transfer,
 and specialist agents into a flexible architecture.
+
+
+
+== 112. Hands-on ~ Map-Reduce Strategy
+
+The passage explains two multi-agent workflow patterns:
+
+==== Parallel agent execution
+
+* A shared state is defined with fields for the query, three agent
+outputs, and a final synthesis.
+* Three agents run *in parallel*:
+** *Research agent* for factual/academic output
+** *Creative agent* for imaginative output
+** *Technical agent* for technical depth
+* A *synthesizer* then combines the three results into one coherent
+final response.
+* The graph fans out from `START` to all three agents, then fans back in
+to the synthesizer, which outputs `final++_++synthesis`.
+
+==== MapReduce summarization
+
+* This pattern is used for document summarization with a *map* and
+*reduce* phase.
+* State includes:
+** `documents`
+** `summaries`
+** `final++_++summary`
+* In the *map* step, each document is summarized independently.
+* In the *reduce* step, all summaries are combined into one final
+overview.
+* The graph is simple: `START -++>++ map -++>++ reduce -++>++ END`.
+* It scales to many documents, but large inputs may exceed context
+limits.
+* A common production fix is *hierarchical reduction*, where summaries
+are reduced in batches repeatedly until one final summary remains.
+
+
+== 113. How Agents Communicate ~ Reducers Deep Dive
+
+The passage explains how communication works in multi-agent systems and
+why *shared state* is usually better than direct agent-to-agent calls.
+
+==== Main points
+
+* In single-agent systems, communication is not an issue.
+* In multi-agent systems, agents need a way to share information.
+
+==== 1. Direct agent-to-agent calls
+
+* Agent A calls Agent B directly.
+* This is *tightly coupled*:
+** A must know B exists
+** A must know B’s format and interface
+* It scales poorly because connections grow rapidly as more agents are
+added.
+* Similar to everyone in an office having to call each other directly.
+
+==== 2. Shared state / blackboard pattern
+
+* Agents communicate through a *shared workspace* instead of directly.
+* One agent writes to the state, another reads from it.
+* This is:
+** *decoupled*
+** easier to extend
+** easier to inspect, debug, log, replay, and audit
+* Similar to people writing on a whiteboard for others to read later.
+
+==== 3. Real-world relevance
+
+* This pattern is common in:
+** message queues like Kafka or RabbitMQ
+** Redux-like state systems
+** enterprise source-of-truth architectures
+
+==== 4. Three communication patterns
+
+* *Message passing*: agents share one conversation thread.
+** Best for chat and Q&A
+* *Shared state*: each agent writes to structured fields.
+** Best for pipelines and parallel workflows
+* *Blackboard pattern*: combines both messages and typed fields.
+** Often the most practical approach
+
+==== 5. Reducers
+
+* Reducers determine what happens when multiple agents write to the same
+state.
+* Common behaviors:
+** *Overwrite*: last write wins
+** *Append*: keep all values in a list
+** *Add messages*: special handling for chat/tool messages
+** *Custom merge*: domain-specific logic like voting or conflict
+resolution
+
+==== 6. Choosing a reducer
+
+* Use *overwrite* for latest-only values
+* Use *operator.add* for accumulating items
+* Use *add++_++messages* for chat/tool message workflows
+* Use a *custom reducer* for special merging logic
+
+==== Final takeaway
+
+Multi-agent communication is usually best handled through *shared state
+or a blackboard*, with *reducers* defining how conflicting writes are
+merged.
+
+
+
+== 114. Hands-on ~ Message Passing Pattern
+
+This example shows *agent communication via message passing* in a simple
+workflow:
+
+* A shared *state* is passed through the pipeline, containing:
+** `messages`: an annotated list of `BaseMessage` objects
+** `current++_++phase`: a string indicating which agent acts next
+
+==== Workflow agents
+
+[arabic]
+. *Researcher*
+* Reads the shared state
+* Researches the topic
+* Adds its findings as a message
+* Sets `current++_++phase` to `"fact++_++checker"`
+. *Fact Checker*
+* Reviews the researcher’s output
+* Verifies accuracy
+* Adds a fact-checker message
+* Sets `current++_++phase` to `"summarizer"`
+. *Summarizer*
+* Uses all accumulated messages
+* Produces a final summary
+* Sets `current++_++phase` to `"done"`
+
+==== Graph setup
+
+The state graph is built with these nodes and edges:
+
+* `START -++>++ researcher`
+* `researcher -++>++ fact++_++checker`
+* `fact++_++checker -++>++ summarizer`
+* `summarizer -++>++ END`
+
+==== Demo
+
+The pipeline is run with an input like:
+
+* “What are the main benefits of renewable energy?”
+
+Execution proceeds in order:
+
+[arabic]
+. Researcher
+. Fact checker
+. Summarizer
+
+==== Main point
+
+This demonstrates *message passing* where each agent reads from and
+writes to a shared message state, while control moves through defined
+workflow phases.
+
+
+== 115. Hands-on ~ Shared Field State
+
+This passage explains the *shared state* pattern for multi-agent
+systems, also called a *typed field* approach.
+
+==== Core idea
+
+Agents communicate by writing to and reading from *shared structured
+fields* in a common state object. Each field has a clear purpose, such
+as `raw++_++data`, `analysis`, `confidence`, or `recommendation`.
+
+==== Example workflow
+
+[arabic]
+. *Data collector agent*
+* Reads the user query
+* Generates data points with the LLM
+* Stores them in `raw++_++data`
+. *Analyst agent*
+* Reads `raw++_++data` and `query`
+* Summarizes the information
+* Writes to `analysis` and `confidence`
+. *Advisor agent*
+* Reads `analysis`, `confidence`, and `query`
+* Produces a final recommendation
+* Writes to `recommendation`
+
+==== Graph flow
+
+The pipeline goes:
+
+*Data Collector → Analyst → Advisor → End*
+
+==== Why it’s useful
+
+Shared state makes the system:
+
+* easier to understand
+* easier to debug
+* easier to extend
+* more organized, since each agent has a defined role
+
+==== Summary
+
+In this pattern, agents collaborate through *shared fields*: one agent
+collects data, the next analyzes it, and the final one makes a
+recommendation.
+
+
+
+== 117. Hands-on ~ The Blackboard Iterative Refinement
+
+The blackboard pattern uses a shared state where agents iteratively
+refine the same artifact until it passes a quality check.
+
+* *Drafter* reads critiques and writes a better draft.
+* *Critic* reviews the latest draft, returns structured feedback, and
+either approves it or asks for more changes.
+* They communicate only through the shared blackboard, not directly.
+
+==== Shared state includes
+
+* message history
+* topic
+* all drafts
+* all critiques
+* iteration count
+* approval flag
+
+==== Key reducer behavior
+
+* *messages*: merged by ID to preserve history
+* *drafts/critiques*: appended so all versions are kept
+* *iteration/is++_++approved*: overwritten because only the latest value
+matters
+
+==== Flow
+
+[arabic]
+. Drafter creates a draft
+. Critic evaluates it
+. If approved, stop
+. If not, send control back to the drafter
+. Repeat up to a max number of iterations
+
+==== Why it’s useful
+
+It’s best for tasks that benefit from repeated refinement, such as:
+
+* writing
+* editing
+* code review
+* planning
+* collaborative analysis
+
+In short, it’s a *writer–editor loop* built on a shared workspace.

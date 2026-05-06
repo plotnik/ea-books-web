@@ -468,6 +468,49 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_big_picture">Big picture</a></li>
 </ul>
 </li>
+<li><a href="#_112_hands_on_map_reduce_strategy">112. Hands-on ~ Map-Reduce Strategy</a>
+<ul class="sectlevel3">
+<li><a href="#_parallel_agent_execution">Parallel agent execution</a></li>
+<li><a href="#_mapreduce_summarization">MapReduce summarization</a></li>
+</ul>
+</li>
+<li><a href="#_113_how_agents_communicate_reducers_deep_dive">113. How Agents Communicate ~ Reducers Deep Dive</a>
+<ul class="sectlevel3">
+<li><a href="#_main_points">Main points</a></li>
+<li><a href="#_1_direct_agent_to_agent_calls">1. Direct agent-to-agent calls</a></li>
+<li><a href="#_2_shared_state_blackboard_pattern">2. Shared state / blackboard pattern</a></li>
+<li><a href="#_3_real_world_relevance">3. Real-world relevance</a></li>
+<li><a href="#_4_three_communication_patterns">4. Three communication patterns</a></li>
+<li><a href="#_5_reducers">5. Reducers</a></li>
+<li><a href="#_6_choosing_a_reducer">6. Choosing a reducer</a></li>
+<li><a href="#_final_takeaway">Final takeaway</a></li>
+</ul>
+</li>
+<li><a href="#_114_hands_on_message_passing_pattern">114. Hands-on ~ Message Passing Pattern</a>
+<ul class="sectlevel3">
+<li><a href="#_workflow_agents">Workflow agents</a></li>
+<li><a href="#_graph_setup">Graph setup</a></li>
+<li><a href="#_demo">Demo</a></li>
+<li><a href="#_main_point">Main point</a></li>
+</ul>
+</li>
+<li><a href="#_115_hands_on_shared_field_state">115. Hands-on ~ Shared Field State</a>
+<ul class="sectlevel3">
+<li><a href="#_core_idea_2">Core idea</a></li>
+<li><a href="#_example_workflow">Example workflow</a></li>
+<li><a href="#_graph_flow">Graph flow</a></li>
+<li><a href="#_why_its_useful">Why it’s useful</a></li>
+<li><a href="#_summary">Summary</a></li>
+</ul>
+</li>
+<li><a href="#_117_hands_on_the_blackboard_iterative_refinement">117. Hands-on ~ The Blackboard Iterative Refinement</a>
+<ul class="sectlevel3">
+<li><a href="#_shared_state_includes">Shared state includes</a></li>
+<li><a href="#_key_reducer_behavior">Key reducer behavior</a></li>
+<li><a href="#_flow">Flow</a></li>
+<li><a href="#_why_its_useful_2">Why it’s useful</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1059,10 +1102,672 @@ and specialist agents into a flexible architecture.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_112_hands_on_map_reduce_strategy">112. Hands-on ~ Map-Reduce Strategy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains two multi-agent workflow patterns:</p>
+</div>
+<div class="sect3">
+<h4 id="_parallel_agent_execution">Parallel agent execution</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>A shared state is defined with fields for the query, three agent
+outputs, and a final synthesis.</p>
+</li>
+<li>
+<p>Three agents run <strong>in parallel</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Research agent</strong> for factual/academic output</p>
+</li>
+<li>
+<p><strong>Creative agent</strong> for imaginative output</p>
+</li>
+<li>
+<p><strong>Technical agent</strong> for technical depth</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>A <strong>synthesizer</strong> then combines the three results into one coherent
+final response.</p>
+</li>
+<li>
+<p>The graph fans out from <code>START</code> to all three agents, then fans back in
+to the synthesizer, which outputs <code>final_synthesis</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_mapreduce_summarization">MapReduce summarization</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>This pattern is used for document summarization with a <strong>map</strong> and
+<strong>reduce</strong> phase.</p>
+</li>
+<li>
+<p>State includes:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>documents</code></p>
+</li>
+<li>
+<p><code>summaries</code></p>
+</li>
+<li>
+<p><code>final_summary</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>In the <strong>map</strong> step, each document is summarized independently.</p>
+</li>
+<li>
+<p>In the <strong>reduce</strong> step, all summaries are combined into one final
+overview.</p>
+</li>
+<li>
+<p>The graph is simple: <code>START -&gt; map -&gt; reduce -&gt; END</code>.</p>
+</li>
+<li>
+<p>It scales to many documents, but large inputs may exceed context
+limits.</p>
+</li>
+<li>
+<p>A common production fix is <strong>hierarchical reduction</strong>, where summaries
+are reduced in batches repeatedly until one final summary remains.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_113_how_agents_communicate_reducers_deep_dive">113. How Agents Communicate ~ Reducers Deep Dive</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how communication works in multi-agent systems and
+why <strong>shared state</strong> is usually better than direct agent-to-agent calls.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_points">Main points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>In single-agent systems, communication is not an issue.</p>
+</li>
+<li>
+<p>In multi-agent systems, agents need a way to share information.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_1_direct_agent_to_agent_calls">1. Direct agent-to-agent calls</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Agent A calls Agent B directly.</p>
+</li>
+<li>
+<p>This is <strong>tightly coupled</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A must know B exists</p>
+</li>
+<li>
+<p>A must know B’s format and interface</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>It scales poorly because connections grow rapidly as more agents are
+added.</p>
+</li>
+<li>
+<p>Similar to everyone in an office having to call each other directly.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_2_shared_state_blackboard_pattern">2. Shared state / blackboard pattern</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Agents communicate through a <strong>shared workspace</strong> instead of directly.</p>
+</li>
+<li>
+<p>One agent writes to the state, another reads from it.</p>
+</li>
+<li>
+<p>This is:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>decoupled</strong></p>
+</li>
+<li>
+<p>easier to extend</p>
+</li>
+<li>
+<p>easier to inspect, debug, log, replay, and audit</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Similar to people writing on a whiteboard for others to read later.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_3_real_world_relevance">3. Real-world relevance</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>This pattern is common in:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>message queues like Kafka or RabbitMQ</p>
+</li>
+<li>
+<p>Redux-like state systems</p>
+</li>
+<li>
+<p>enterprise source-of-truth architectures</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_three_communication_patterns">4. Three communication patterns</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Message passing</strong>: agents share one conversation thread.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Best for chat and Q&amp;A</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Shared state</strong>: each agent writes to structured fields.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Best for pipelines and parallel workflows</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Blackboard pattern</strong>: combines both messages and typed fields.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Often the most practical approach</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_5_reducers">5. Reducers</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Reducers determine what happens when multiple agents write to the same
+state.</p>
+</li>
+<li>
+<p>Common behaviors:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Overwrite</strong>: last write wins</p>
+</li>
+<li>
+<p><strong>Append</strong>: keep all values in a list</p>
+</li>
+<li>
+<p><strong>Add messages</strong>: special handling for chat/tool messages</p>
+</li>
+<li>
+<p><strong>Custom merge</strong>: domain-specific logic like voting or conflict
+resolution</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_6_choosing_a_reducer">6. Choosing a reducer</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <strong>overwrite</strong> for latest-only values</p>
+</li>
+<li>
+<p>Use <strong>operator.add</strong> for accumulating items</p>
+</li>
+<li>
+<p>Use <strong>add_messages</strong> for chat/tool message workflows</p>
+</li>
+<li>
+<p>Use a <strong>custom reducer</strong> for special merging logic</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_final_takeaway">Final takeaway</h4>
+<div class="paragraph">
+<p>Multi-agent communication is usually best handled through <strong>shared state
+or a blackboard</strong>, with <strong>reducers</strong> defining how conflicting writes are
+merged.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_114_hands_on_message_passing_pattern">114. Hands-on ~ Message Passing Pattern</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This example shows <strong>agent communication via message passing</strong> in a simple
+workflow:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A shared <strong>state</strong> is passed through the pipeline, containing:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>messages</code>: an annotated list of <code>BaseMessage</code> objects</p>
+</li>
+<li>
+<p><code>current_phase</code>: a string indicating which agent acts next</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_workflow_agents">Workflow agents</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Researcher</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reads the shared state</p>
+</li>
+<li>
+<p>Researches the topic</p>
+</li>
+<li>
+<p>Adds its findings as a message</p>
+</li>
+<li>
+<p>Sets <code>current_phase</code> to <code>"fact_checker"</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Fact Checker</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reviews the researcher’s output</p>
+</li>
+<li>
+<p>Verifies accuracy</p>
+</li>
+<li>
+<p>Adds a fact-checker message</p>
+</li>
+<li>
+<p>Sets <code>current_phase</code> to <code>"summarizer"</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Summarizer</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Uses all accumulated messages</p>
+</li>
+<li>
+<p>Produces a final summary</p>
+</li>
+<li>
+<p>Sets <code>current_phase</code> to <code>"done"</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_graph_setup">Graph setup</h4>
+<div class="paragraph">
+<p>The state graph is built with these nodes and edges:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>START -&gt; researcher</code></p>
+</li>
+<li>
+<p><code>researcher -&gt; fact_checker</code></p>
+</li>
+<li>
+<p><code>fact_checker -&gt; summarizer</code></p>
+</li>
+<li>
+<p><code>summarizer -&gt; END</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_demo">Demo</h4>
+<div class="paragraph">
+<p>The pipeline is run with an input like:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>“What are the main benefits of renewable energy?”</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Execution proceeds in order:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Researcher</p>
+</li>
+<li>
+<p>Fact checker</p>
+</li>
+<li>
+<p>Summarizer</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_main_point">Main point</h4>
+<div class="paragraph">
+<p>This demonstrates <strong>message passing</strong> where each agent reads from and
+writes to a shared message state, while control moves through defined
+workflow phases.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_115_hands_on_shared_field_state">115. Hands-on ~ Shared Field State</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This passage explains the <strong>shared state</strong> pattern for multi-agent
+systems, also called a <strong>typed field</strong> approach.</p>
+</div>
+<div class="sect3">
+<h4 id="_core_idea_2">Core idea</h4>
+<div class="paragraph">
+<p>Agents communicate by writing to and reading from <strong>shared structured
+fields</strong> in a common state object. Each field has a clear purpose, such
+as <code>raw_data</code>, <code>analysis</code>, <code>confidence</code>, or <code>recommendation</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_workflow">Example workflow</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Data collector agent</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reads the user query</p>
+</li>
+<li>
+<p>Generates data points with the LLM</p>
+</li>
+<li>
+<p>Stores them in <code>raw_data</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Analyst agent</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reads <code>raw_data</code> and <code>query</code></p>
+</li>
+<li>
+<p>Summarizes the information</p>
+</li>
+<li>
+<p>Writes to <code>analysis</code> and <code>confidence</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Advisor agent</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reads <code>analysis</code>, <code>confidence</code>, and <code>query</code></p>
+</li>
+<li>
+<p>Produces a final recommendation</p>
+</li>
+<li>
+<p>Writes to <code>recommendation</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_graph_flow">Graph flow</h4>
+<div class="paragraph">
+<p>The pipeline goes:</p>
+</div>
+<div class="paragraph">
+<p><strong>Data Collector → Analyst → Advisor → End</strong></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_its_useful">Why it’s useful</h4>
+<div class="paragraph">
+<p>Shared state makes the system:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>easier to understand</p>
+</li>
+<li>
+<p>easier to debug</p>
+</li>
+<li>
+<p>easier to extend</p>
+</li>
+<li>
+<p>more organized, since each agent has a defined role</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_summary">Summary</h4>
+<div class="paragraph">
+<p>In this pattern, agents collaborate through <strong>shared fields</strong>: one agent
+collects data, the next analyzes it, and the final one makes a
+recommendation.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_117_hands_on_the_blackboard_iterative_refinement">117. Hands-on ~ The Blackboard Iterative Refinement</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The blackboard pattern uses a shared state where agents iteratively
+refine the same artifact until it passes a quality check.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Drafter</strong> reads critiques and writes a better draft.</p>
+</li>
+<li>
+<p><strong>Critic</strong> reviews the latest draft, returns structured feedback, and
+either approves it or asks for more changes.</p>
+</li>
+<li>
+<p>They communicate only through the shared blackboard, not directly.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_shared_state_includes">Shared state includes</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>message history</p>
+</li>
+<li>
+<p>topic</p>
+</li>
+<li>
+<p>all drafts</p>
+</li>
+<li>
+<p>all critiques</p>
+</li>
+<li>
+<p>iteration count</p>
+</li>
+<li>
+<p>approval flag</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_key_reducer_behavior">Key reducer behavior</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>messages</strong>: merged by ID to preserve history</p>
+</li>
+<li>
+<p><strong>drafts/critiques</strong>: appended so all versions are kept</p>
+</li>
+<li>
+<p><strong>iteration/is_approved</strong>: overwritten because only the latest value
+matters</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_flow">Flow</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Drafter creates a draft</p>
+</li>
+<li>
+<p>Critic evaluates it</p>
+</li>
+<li>
+<p>If approved, stop</p>
+</li>
+<li>
+<p>If not, send control back to the drafter</p>
+</li>
+<li>
+<p>Repeat up to a max number of iterations</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_its_useful_2">Why it’s useful</h4>
+<div class="paragraph">
+<p>It’s best for tasks that benefit from repeated refinement, such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>writing</p>
+</li>
+<li>
+<p>editing</p>
+</li>
+<li>
+<p>code review</p>
+</li>
+<li>
+<p>planning</p>
+</li>
+<li>
+<p>collaborative analysis</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In short, it’s a <strong>writer–editor loop</strong> built on a shared workspace.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-30 09:56:16 +0300
+Last updated 2026-05-06 15:30:55 +0300
 </div>
 </div>
 </body>
