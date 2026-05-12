@@ -22,6 +22,7 @@ Literate Programs
    ai_obsidian.py
    o_ed.py
    o-bases.py
+   alchem.py
    grafana_npe.py
    grafana_json.py
    grafana_panels.py
@@ -35,6 +36,7 @@ Literate Programs
    time_intervals.py
    pan_ui.py 
    ppdict.py
+   wiki_num.py
    jira_stats.py
    explain_java.py
    code_review.py

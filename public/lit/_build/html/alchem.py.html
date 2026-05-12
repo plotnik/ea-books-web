@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Reflect DB Schema &#8212; lit  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=0c176c8a" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Grafana NPE" href="grafana_npe.py.html" />
+    <link rel="prev" title="Obsidian Bases" href="o-bases.py.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="reflect-db-schema">
+<h1>Reflect DB Schema<a class="headerlink" href="#reflect-db-schema" title="Link to this heading">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">streamlit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">st</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_engine</span><span class="p">,</span> <span class="n">MetaData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+</pre></div>
+</div>
+<p>Read DB configuration</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">db_config_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;alchem.yml&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">db_config_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">db_config_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">db_config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="n">db_name</span> <span class="o">=</span> <span class="n">db_config</span><span class="p">[</span><span class="s2">&quot;db_name&quot;</span><span class="p">]</span>
+    <span class="n">db_user</span> <span class="o">=</span> <span class="n">db_config</span><span class="p">[</span><span class="s2">&quot;db_user&quot;</span><span class="p">]</span>
+    <span class="n">db_pass</span> <span class="o">=</span> <span class="n">db_config</span><span class="p">[</span><span class="s2">&quot;db_pass&quot;</span><span class="p">]</span>
+    <span class="n">db_schema</span> <span class="o">=</span> <span class="n">db_config</span><span class="p">[</span><span class="s2">&quot;db_schema&quot;</span><span class="p">]</span>
+
+<span class="n">db_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;db name&quot;</span><span class="p">,</span> <span class="n">db_name</span><span class="p">)</span>
+<span class="n">db_user</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;db user&quot;</span><span class="p">,</span> <span class="n">db_user</span><span class="p">)</span>
+<span class="n">db_pass</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;db pass&quot;</span><span class="p">,</span> <span class="n">db_pass</span><span class="p">)</span>
+<span class="n">db_schema</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;db schema&quot;</span><span class="p">,</span> <span class="n">db_schema</span><span class="p">)</span>
+
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">db_schema</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Reflect DB Schema</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Reflect schema&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">):</span>
+
+    <span class="n">DATABASE_URL</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;postgresql+psycopg://</span><span class="si">{</span><span class="n">db_user</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">db_pass</span><span class="si">}</span><span class="s2">@localhost:5432/</span><span class="si">{</span><span class="n">db_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
+        <span class="n">DATABASE_URL</span><span class="p">,</span>
+        <span class="n">echo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">pool_pre_ping</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">metadata</span><span class="o">.</span><span class="n">reflect</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">tables</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lit</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_chat_lc.py.html">Obsidian Chat (LC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udemy_html_toc.py.html">Udemy HTML TOC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qr_code.py.html">QR-Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_chat.py.html">Obsidian Chat (LI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o-bases.py.html">Obsidian Bases</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reflect DB Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_npe.py.html">Grafana NPE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_json.py.html">Grafana Record</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_panels.py.html">Grafana Panels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo_rag.py.html">Neo RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book_chat.py.html">Book Chat (LI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extract_adoc_defs.py.html">AsciiDoc Defs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="li_extract.py.html">LlamaIndex Extractors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_intervals.py.html">Time Intervals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ppdict.py.html">Pretty-print dict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wiki_num.py.html">Renum Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explain_java.py.html">Explain Java</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firebase_edit.py.html">FB Prompts Edit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firebase_xml_sync.py.html">FB Prompts Xml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epub_toc.py.html">EPUB TOC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pom_csv.py.html">POM CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_yaml.py.html">exc yaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_ui.py.html">exc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_histo.py.html">exc histo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extract_chunk.py.html">Log Chunk</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curl_clean.py.html">curl clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
+<li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ollama_chat.py.html">Ollama Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_text.py.html">Compare Text</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_image.py.html">Create Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
+<li class="toctree-l1"><a class="reference internal" href="st_gmail.py.html">GMail Clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clean_youtube.py.html">YouTube Clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fw_picture.py.html">FW Picture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkers.py.html">Шашки</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PersistedList.py.html">Persisted List</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="o-bases.py.html" title="previous chapter">Obsidian Bases</a></li>
+      <li>Next: <a href="grafana_npe.py.html" title="next chapter">Grafana NPE</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, EA.
+      
+      |
+      Powered by 
+      <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
+      &amp; 
+      <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; 
+      <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/alchem.py.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -511,6 +511,26 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_why_its_useful_2">Why it’s useful</a></li>
 </ul>
 </li>
+<li><a href="#_119_hands_on_single_department_in_isolation">119. Hands-on ~ Single Department in Isolation</a>
+<ul class="sectlevel3">
+<li><a href="#_main_points_2">Main points:</a></li>
+<li><a href="#_research_team_subgraph">Research team subgraph</a></li>
+<li><a href="#_graph_structure_2">Graph structure</a></li>
+<li><a href="#_purpose_single_department_isolation">Purpose: single-department isolation</a></li>
+<li><a href="#_demo_2">Demo</a></li>
+<li><a href="#_conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li><a href="#_120_hands_on_hierarchical_routing_and_full_tracing">120. Hands-on ~ Hierarchical Routing and Full Tracing</a>
+<ul class="sectlevel3">
+<li><a href="#_main_points_3">Main points</a></li>
+<li><a href="#_top_level_routing">Top-level routing</a></li>
+<li><a href="#_full_graph_flow">Full graph flow</a></li>
+<li><a href="#_demos">Demos</a></li>
+<li><a href="#_why_this_matters">Why this matters</a></li>
+<li><a href="#_final_takeaway_2">Final takeaway</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1764,10 +1784,346 @@ matters</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_119_hands_on_single_department_in_isolation">119. Hands-on ~ Single Department in Isolation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to build and test a <strong>single subgraph module</strong> in
+a hierarchical agent system, specifically the <strong>research department</strong>.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_points_2">Main points:</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>A shared state schema is defined with:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>team_state</code></p>
+</li>
+<li>
+<p><code>messages</code></p>
+</li>
+<li>
+<p><code>final_answer</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>add_messages</code> is used so new messages are appended to the state’s
+message list.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_research_team_subgraph">Research team subgraph</h4>
+<div class="paragraph">
+<p>A function called <code>build_research_team</code> creates a <code>StateGraph</code>
+for the research department, consisting of:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Web Researcher</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Searches the web using a query passed as a human message.</p>
+</li>
+<li>
+<p>Returns structured output.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Paper Reviewer</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reviews gathered technical sources.</p>
+</li>
+<li>
+<p>Uses a system message and returns the full result payload.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Research Lead</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Combines the outputs from both researchers.</p>
+</li>
+<li>
+<p>Appends messages and produces the final synthesized response.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_graph_structure_2">Graph structure</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>The <strong>web researcher</strong> and <strong>paper reviewer</strong> run in parallel from the
+start node.</p>
+</li>
+<li>
+<p>Their outputs then converge into the <strong>research lead</strong>.</p>
+</li>
+<li>
+<p>The research lead then connects to the end node.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This demonstrates a <strong>fan-out / fan-in</strong> pattern:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Start → Web Researcher</p>
+</li>
+<li>
+<p>Start → Paper Reviewer</p>
+</li>
+<li>
+<p>Both → Research Lead → End</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_purpose_single_department_isolation">Purpose: single-department isolation</h4>
+<div class="paragraph">
+<p>The key idea is that the research team can be run <strong>independently</strong> of the
+rest of the system:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>No CEO</p>
+</li>
+<li>
+<p>No other departments</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This lets you <strong>test the department in isolation</strong> before integrating it
+into a larger hierarchical architecture.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_demo_2">Demo</h4>
+<div class="paragraph">
+<p>A <code>demo_single_department</code> function:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>builds the research team,</p>
+</li>
+<li>
+<p>compiles the graph,</p>
+</li>
+<li>
+<p>provides the initial state with messages,</p>
+</li>
+<li>
+<p>and runs it to produce:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>a research brief</p>
+</li>
+<li>
+<p>a final answer</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_conclusion">Conclusion</h4>
+<div class="paragraph">
+<p>The example shows that each department can function as a standalone
+module, making it easier to test, validate, and later compose into a
+larger multi-department system.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_120_hands_on_hierarchical_routing_and_full_tracing">120. Hands-on ~ Hierarchical Routing and Full Tracing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains how to build a <strong>hierarchical, modular multi-agent
+system</strong> by composing independent department subgraphs under a top-level
+router.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_points_3">Main points</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Research department already exists</strong> as an independent subgraph, with
+specialized agents like a web searcher and paper reviewer.</p>
+</li>
+<li>
+<p>The same pattern is used to build:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>a <strong>Content team</strong> subgraph with:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Content Writer</strong></p>
+</li>
+<li>
+<p><strong>Content Editor</strong></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>an <strong>Analysis team</strong> subgraph with:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Data Analyst</strong></p>
+</li>
+<li>
+<p><strong>Strategy Advisor</strong></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_top_level_routing">Top-level routing</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>A <strong>CEO supervisor</strong> acts as the top-level router.</p>
+</li>
+<li>
+<p>It uses an LLM with <strong>structured output</strong> to choose the correct
+department.</p>
+</li>
+<li>
+<p>A routing schema like <code>DepartmentRoute</code> includes:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>department</code> (<code>research</code>, <code>content</code>, or <code>analysis</code>)</p>
+</li>
+<li>
+<p><code>description</code></p>
+</li>
+<li>
+<p><code>reasoning</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_full_graph_flow">Full graph flow</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>The CEO receives the user query.</p>
+</li>
+<li>
+<p>It routes the request to the appropriate department subgraph.</p>
+</li>
+<li>
+<p>That department processes the request.</p>
+</li>
+<li>
+<p>The result is returned to the end.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_demos">Demos</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>One demo shows the <strong>full routed system</strong> on sample queries.</p>
+</li>
+<li>
+<p>Another demo shows the <strong>full internal trace</strong>, making each step
+visible.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_this_matters">Why this matters</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Each department has a <strong>focused responsibility</strong>.</p>
+</li>
+<li>
+<p>The design is <strong>testable, composable, scalable, and maintainable</strong>.</p>
+</li>
+<li>
+<p>New departments can be added later without changing existing ones.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_final_takeaway_2">Final takeaway</h4>
+<div class="paragraph">
+<p>This architecture is a <strong>production-ready hierarchical multi-agent
+system</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>independent subgraphs for each department</p>
+</li>
+<li>
+<p>top-level routing via a supervisor</p>
+</li>
+<li>
+<p>isolated responsibilities</p>
+</li>
+<li>
+<p>easy expansion and maintenance</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-05-06 15:30:55 +0300
+Last updated 2026-05-12 16:08:27 +0300
 </div>
 </div>
 </body>

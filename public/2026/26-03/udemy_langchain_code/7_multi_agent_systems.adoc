@@ -516,3 +516,134 @@ It’s best for tasks that benefit from repeated refinement, such as:
 * collaborative analysis
 
 In short, it’s a *writer–editor loop* built on a shared workspace.
+
+
+== 119. Hands-on ~ Single Department in Isolation
+
+The passage explains how to build and test a *single subgraph module* in
+a hierarchical agent system, specifically the *research department*.
+
+==== Main points:
+
+* A shared state schema is defined with:
+** `team++_++state`
+** `messages`
+** `final++_++answer`
+* `add++_++messages` is used so new messages are appended to the state’s
+message list.
+
+==== Research team subgraph
+
+A function called `build++_++research++_++team` creates a `StateGraph`
+for the research department, consisting of:
+
+[arabic]
+. *Web Researcher*
+* Searches the web using a query passed as a human message.
+* Returns structured output.
+. *Paper Reviewer*
+* Reviews gathered technical sources.
+* Uses a system message and returns the full result payload.
+. *Research Lead*
+* Combines the outputs from both researchers.
+* Appends messages and produces the final synthesized response.
+
+==== Graph structure
+
+* The *web researcher* and *paper reviewer* run in parallel from the
+start node.
+* Their outputs then converge into the *research lead*.
+* The research lead then connects to the end node.
+
+This demonstrates a *fan-out / fan-in* pattern:
+
+* Start → Web Researcher
+* Start → Paper Reviewer
+* Both → Research Lead → End
+
+==== Purpose: single-department isolation
+
+The key idea is that the research team can be run *independently* of the
+rest of the system:
+
+* No CEO
+* No other departments
+
+This lets you *test the department in isolation* before integrating it
+into a larger hierarchical architecture.
+
+==== Demo
+
+A `demo++_++single++_++department` function:
+
+* builds the research team,
+* compiles the graph,
+* provides the initial state with messages,
+* and runs it to produce:
+** a research brief
+** a final answer
+
+==== Conclusion
+
+The example shows that each department can function as a standalone
+module, making it easier to test, validate, and later compose into a
+larger multi-department system.
+
+
+
+== 120. Hands-on ~ Hierarchical Routing and Full Tracing
+
+The passage explains how to build a *hierarchical, modular multi-agent
+system* by composing independent department subgraphs under a top-level
+router.
+
+==== Main points
+
+* *Research department already exists* as an independent subgraph, with
+specialized agents like a web searcher and paper reviewer.
+* The same pattern is used to build:
+** a *Content team* subgraph with:
+*** *Content Writer*
+*** *Content Editor*
+** an *Analysis team* subgraph with:
+*** *Data Analyst*
+*** *Strategy Advisor*
+
+==== Top-level routing
+
+* A *CEO supervisor* acts as the top-level router.
+* It uses an LLM with *structured output* to choose the correct
+department.
+* A routing schema like `DepartmentRoute` includes:
+** `department` (`research`, `content`, or `analysis`)
+** `description`
+** `reasoning`
+
+==== Full graph flow
+
+* The CEO receives the user query.
+* It routes the request to the appropriate department subgraph.
+* That department processes the request.
+* The result is returned to the end.
+
+==== Demos
+
+* One demo shows the *full routed system* on sample queries.
+* Another demo shows the *full internal trace*, making each step
+visible.
+
+==== Why this matters
+
+* Each department has a *focused responsibility*.
+* The design is *testable, composable, scalable, and maintainable*.
+* New departments can be added later without changing existing ones.
+
+==== Final takeaway
+
+This architecture is a *production-ready hierarchical multi-agent
+system*:
+
+* independent subgraphs for each department
+* top-level routing via a supervisor
+* isolated responsibilities
+* easy expansion and maintenance
