@@ -531,6 +531,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_final_takeaway_2">Final takeaway</a></li>
 </ul>
 </li>
+<li><a href="#_122_hands_on_state_schema_and_send_api_overview">122. Hands-on ~ State Schema and Send API Overview</a>
+<ul class="sectlevel3">
+<li><a href="#_core_workflow">Core workflow</a></li>
+<li><a href="#_iterative_refinement">Iterative refinement</a></li>
+<li><a href="#_state_design">State design</a></li>
+<li><a href="#_search_task_state">Search task state</a></li>
+<li><a href="#_supervisor_node_and_json_handling">Supervisor node and JSON handling</a></li>
+<li><a href="#_send_api">Send API</a></li>
+<li><a href="#_overall">Overall</a></li>
+</ul>
+</li>
+<li><a href="#_123_final_project_research_system_from_the_ground_up">123. Final Project ~ Research System from the Ground Up</a>
+<ul class="sectlevel3">
+<li><a href="#_main_components">Main components</a></li>
+<li><a href="#_testing_and_workflow">Testing and workflow</a></li>
+<li><a href="#_demo_and_result">Demo and result</a></li>
+<li><a href="#_overall_takeaway">Overall takeaway</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -2120,10 +2139,365 @@ system</strong>:</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_122_hands_on_state_schema_and_send_api_overview">122. Hands-on ~ State Schema and Send API Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The section describes a multi-agent research workflow built around a
+supervisor, parallel search agents, an analyst, a report writer, and a
+quality checker.</p>
+</div>
+<div class="sect3">
+<h4 id="_core_workflow">Core workflow</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Supervisor</strong> plans the research and breaks the topic into queries.</p>
+</li>
+<li>
+<p><strong>Parallel search agents</strong> run those queries using the <strong>send API</strong>, which
+dynamically spawns tasks at runtime.</p>
+</li>
+<li>
+<p><strong>Analyst</strong> collects all shared findings and synthesizes them using the
+<strong>blackboard pattern</strong>.</p>
+</li>
+<li>
+<p><strong>Report writer</strong> turns the analysis into a final report.</p>
+</li>
+<li>
+<p><strong>Quality checker</strong> scores the report and may trigger refinement.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_iterative_refinement">Iterative refinement</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>If <code>score &lt; 0.7</code> and <code>iteration &lt; 2</code>, the workflow loops back
+to the report writer.</p>
+</li>
+<li>
+<p>This creates a bounded refinement loop so the system does not iterate
+forever.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_state_design">State design</h4>
+<div class="paragraph">
+<p>The shared state includes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>messages</code> with <strong>add_messages</strong> to accumulate and deduplicate
+conversation history</p>
+</li>
+<li>
+<p><code>topic</code> with overwrite behavior</p>
+</li>
+<li>
+<p><code>search_queries</code> with overwrite behavior</p>
+</li>
+<li>
+<p><code>findings</code> with <strong>operator.add</strong> so parallel search results are
+accumulated</p>
+</li>
+<li>
+<p><code>analysis</code>, <code>report</code>, <code>quality_score</code>, <code>quality_feedback</code>, and
+<code>iteration</code> with overwrite behavior</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A key point is that <strong><code>findings</code> must use <code>operator.add</code></strong>, because
+multiple search agents write in parallel and their results must be
+merged, not overwritten.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_search_task_state">Search task state</h4>
+<div class="paragraph">
+<p>Each individual search task has its own smaller state:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>search</code> as a single query string</p>
+</li>
+<li>
+<p><code>findings</code> using <strong>operator.add</strong></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_supervisor_node_and_json_handling">Supervisor node and JSON handling</h4>
+<div class="paragraph">
+<p>The supervisor:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>uses a system message and the topic from state</p>
+</li>
+<li>
+<p>returns JSON instead of structured Pydantic output</p>
+</li>
+<li>
+<p>is parsed with <code>json.loads</code></p>
+</li>
+<li>
+<p>includes <code>try/except</code> fallback handling in case the model returns
+malformed or decorated JSON</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_send_api">Send API</h4>
+<div class="paragraph">
+<p>The <strong>send API</strong> enables <strong>dynamic parallel fan-out</strong>, meaning the number of
+search agents is decided at runtime rather than being hard-coded. Each
+send creates an isolated search task, and the results are merged back
+into shared state.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_overall">Overall</h4>
+<div class="paragraph">
+<p>The workflow is: <strong>Supervisor → parallel search tasks → analyst → report
+writer → quality checker → optional refinement loop → end</strong></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_123_final_project_research_system_from_the_ground_up">123. Final Project ~ Research System from the Ground Up</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This passage describes how to build a production-style research workflow
+using multiple LLM agents in a graph.</p>
+</div>
+<div class="sect3">
+<h4 id="_main_components">Main components</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Search agent</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Processes one query at a time.</p>
+</li>
+<li>
+<p>Pulls <code>search_query</code> from state, calls the LLM with system &#43;
+human messages, and uses <code>try/except</code> for safe failure handling.</p>
+</li>
+<li>
+<p>Tags each result with its originating query and appends it to
+<code>findings</code>.</p>
+</li>
+<li>
+<p>Supports traceability, debugging, and auditing.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Fan-out with <code>Send</code></strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Uses <code>Send</code> to dispatch multiple search tasks in parallel, one per
+query.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Analyst / synthesizer</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reads all findings from shared state.</p>
+</li>
+<li>
+<p>Does not need to know how many searches ran or which queries were
+used.</p>
+</li>
+<li>
+<p>Demonstrates the <strong>blackboard pattern</strong>: search agents write, analyst
+reads.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Report writer</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Produces the final report and incorporates feedback if revisions are
+needed.</p>
+</li>
+<li>
+<p>Uses higher temperature for more creative writing, while
+routing/analysis agents use temperature 0 for determinism.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Quality checker</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Uses structured output with <code>score</code>, <code>feedback</code>, and <code>approved</code>.</p>
+</li>
+<li>
+<p>Makes the result easier to validate and act on.</p>
+</li>
+<li>
+<p>Implements a <strong>circuit breaker</strong> by limiting revision loops to 2
+attempts.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Quality gate</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Accepts the report if the score is high enough.</p>
+</li>
+<li>
+<p>Otherwise loops back only to the report writer, not the whole
+pipeline.</p>
+</li>
+<li>
+<p>This is called <strong>surgical iteration</strong>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_testing_and_workflow">Testing and workflow</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Each agent can be tested independently, which is a major advantage of
+the architecture.</p>
+</li>
+<li>
+<p>The full workflow is:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Supervisor plans queries</p>
+</li>
+<li>
+<p>Search agents run in parallel</p>
+</li>
+<li>
+<p>Analyst synthesizes findings</p>
+</li>
+<li>
+<p>Report writer drafts the report</p>
+</li>
+<li>
+<p>Quality checker evaluates it</p>
+</li>
+<li>
+<p>Quality gate approves or triggers revision</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_demo_and_result">Demo and result</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>The system can stream progress in real time.</p>
+</li>
+<li>
+<p>A sample run on “The impact of AI agents” shows the full pipeline
+working end to end.</p>
+</li>
+<li>
+<p>The final report includes:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>executive summary</p>
+</li>
+<li>
+<p>key findings</p>
+</li>
+<li>
+<p>analysis</p>
+</li>
+<li>
+<p>recommendations</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>It also outputs stats like total findings, quality score, and
+iteration count.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_overall_takeaway">Overall takeaway</h4>
+<div class="paragraph">
+<p>The passage presents a <strong>production-ready agent workflow pattern</strong> that
+emphasizes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>parallelism</p>
+</li>
+<li>
+<p>traceability</p>
+</li>
+<li>
+<p>structured outputs</p>
+</li>
+<li>
+<p>controlled revision loops</p>
+</li>
+<li>
+<p>modular testing</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It can be extended with real web search, vector retrieval, human review,
+and stronger quality controls.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-05-12 16:08:27 +0300
+Last updated 2026-06-07 23:32:39 +0300
 </div>
 </div>
 </body>

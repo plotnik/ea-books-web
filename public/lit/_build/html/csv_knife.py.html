@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CSV Knife &#8212; lit  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=0c176c8a" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Grafana NPE" href="grafana_npe.py.html" />
+    <link rel="prev" title="Reflect DB Schema" href="alchem.py.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="csv-knife">
+<h1>CSV Knife<a class="headerlink" href="#csv-knife" title="Link to this heading">¶</a></h1>
+<p>A small command-line utility for applying focused CSV
+transformations.</p>
+<p>The script reads UTF-8 CSV data with Python’s standard <code class="xref py py-mod docutils literal notranslate"><span class="pre">csv</span></code> module.
+Input can come from a file path or from standard input by passing <code class="docutils literal notranslate"><span class="pre">-</span></code>.
+Output is written to standard output unless <code class="docutils literal notranslate"><span class="pre">--output</span></code> is provided.</p>
+<p><strong>Commands</strong></p>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">reverse</span></code></dt><dd><p>Reverse CSV row order. By default, the first row is treated as a header
+and kept in place. Pass <code class="docutils literal notranslate"><span class="pre">--no-header</span></code> to reverse every row.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">remove-columns</span></code></dt><dd><p>Remove one or more columns by exact header name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">truncate</span></code></dt><dd><p>Shorten values longer than a configured character limit and append a
+suffix showing how many characters were removed.</p>
+<p>For example, truncating <code class="docutils literal notranslate"><span class="pre">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">10</span></code>
+characters produces:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>abcdefghij(...16 more)
+</pre></div>
+</div>
+<p>The command also prints the maximum value length found in the input.</p>
+</dd>
+</dl>
+<p><strong>Usage</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>csv_knife.py<span class="w"> </span>--help
+python<span class="w"> </span>csv_knife.py<span class="w"> </span>reverse<span class="w"> </span>input.csv<span class="w"> </span>--output<span class="w"> </span>reversed.csv
+python<span class="w"> </span>csv_knife.py<span class="w"> </span>remove-columns<span class="w"> </span>input.csv<span class="w"> </span>email<span class="w"> </span>phone<span class="w"> </span>--output<span class="w"> </span>public.csv
+python<span class="w"> </span>csv_knife.py<span class="w"> </span>truncate<span class="w"> </span>input.csv<span class="w"> </span><span class="m">80</span><span class="w"> </span>--output<span class="w"> </span>shortened.csv
+</pre></div>
+</div>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">TextIO</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="open_input">
+<span class="sig-name descname"><span class="pre">open_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TextIO</span></span></span><a class="headerlink" href="#open_input" title="Link to this definition">¶</a></dt>
+<dd><p>Open a CSV input stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – File path to read, or <code class="docutils literal notranslate"><span class="pre">&quot;-&quot;</span></code> to use <code class="xref py py-data docutils literal notranslate"><span class="pre">sys.stdin</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A readable text stream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">open_input</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TextIO</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="open_output">
+<span class="sig-name descname"><span class="pre">open_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TextIO</span></span></span><a class="headerlink" href="#open_output" title="Link to this definition">¶</a></dt>
+<dd><p>Open a CSV output stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – File path to write, <code class="docutils literal notranslate"><span class="pre">&quot;-&quot;</span></code> for <code class="xref py py-data docutils literal notranslate"><span class="pre">sys.stdout</span></code>, or
+<code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code> to use <code class="xref py py-data docutils literal notranslate"><span class="pre">sys.stdout</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A writable text stream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">open_output</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TextIO</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="read_csv">
+<span class="sig-name descname"><span class="pre">read_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#read_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Read all rows from a CSV source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – File path to read, or <code class="docutils literal notranslate"><span class="pre">&quot;-&quot;</span></code> to read from standard input.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>CSV rows as a list of string lists.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">with</span> <span class="n">open_input</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="write_csv">
+<span class="sig-name descname"><span class="pre">write_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#write_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Write rows to a CSV destination.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rows</strong> – Row values to write.</p></li>
+<li><p><strong>output</strong> – File path to write, <code class="docutils literal notranslate"><span class="pre">&quot;-&quot;</span></code> for standard output, or
+<code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code> for standard output.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">write_csv</span><span class="p">(</span><span class="n">rows</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">open_output</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="reverse_csv">
+<span class="sig-name descname"><span class="pre">reverse_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">argparse.Namespace</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#reverse_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Run the <code class="docutils literal notranslate"><span class="pre">reverse</span></code> subcommand.</p>
+<p>The first row is preserved as a header unless <code class="docutils literal notranslate"><span class="pre">args.no_header</span></code> is true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – Parsed command-line arguments with <code class="docutils literal notranslate"><span class="pre">input</span></code>, <code class="docutils literal notranslate"><span class="pre">output</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">no_header</span></code> attributes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">reverse_csv</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Reversing CSV rows from </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;stdout&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">no_header</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="n">write_csv</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">header</span><span class="p">,</span> <span class="n">data_rows</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">write_csv</span><span class="p">([</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="nb">reversed</span><span class="p">(</span><span class="n">data_rows</span><span class="p">)],</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="remove_columns">
+<span class="sig-name descname"><span class="pre">remove_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">argparse.Namespace</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#remove_columns" title="Link to this definition">¶</a></dt>
+<dd><p>Run the <code class="docutils literal notranslate"><span class="pre">remove-columns</span></code> subcommand.</p>
+<p>Columns are matched by exact header name. Rows shorter than the header are
+padded with empty strings for any retained column positions they do not
+contain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – Parsed command-line arguments with <code class="docutils literal notranslate"><span class="pre">input</span></code>, <code class="docutils literal notranslate"><span class="pre">output</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">columns</span></code> attributes.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>SystemExit</strong> – If any requested column is missing from the header.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">remove_columns</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Removing columns </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">columns</span><span class="si">}</span><span class="s2"> from CSV &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;stdout&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="n">write_csv</span><span class="p">([],</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">header</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">missing_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">column</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">header</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">missing_columns</span><span class="p">:</span>
+        <span class="n">joined</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_columns</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown column(s): </span><span class="si">{</span><span class="n">joined</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">columns_to_remove</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    <span class="n">kept_indexes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">index</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="k">if</span> <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">columns_to_remove</span>
+    <span class="p">]</span>
+    <span class="n">filtered_rows</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">kept_indexes</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span>
+    <span class="p">)</span>
+    <span class="n">write_csv</span><span class="p">(</span><span class="n">filtered_rows</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="truncate_value">
+<span class="sig-name descname"><span class="pre">truncate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#truncate_value" title="Link to this definition">¶</a></dt>
+<dd><p>Return a value shortened to <code class="docutils literal notranslate"><span class="pre">limit</span></code> characters when needed.</p>
+<p>Values longer than <code class="docutils literal notranslate"><span class="pre">limit</span></code> are returned as <code class="docutils literal notranslate"><span class="pre">value[:limit]</span></code> followed by
+<code class="docutils literal notranslate"><span class="pre">(...N</span> <span class="pre">more)</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the number of omitted characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – Original CSV value.</p></li>
+<li><p><strong>limit</strong> – Maximum number of original characters to keep.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The original value or its truncated representation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">truncate_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">remaining_chars</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="n">limit</span>
+    <span class="k">if</span> <span class="n">remaining_chars</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span><span class="si">}</span><span class="s2">(...</span><span class="si">{</span><span class="n">remaining_chars</span><span class="si">}</span><span class="s2"> more)&quot;</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="truncate_csv">
+<span class="sig-name descname"><span class="pre">truncate_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">argparse.Namespace</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#truncate_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Run the <code class="docutils literal notranslate"><span class="pre">truncate</span></code> subcommand.</p>
+<p>The command prints the maximum value length found in the input to standard
+error, then writes the transformed CSV rows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – Parsed command-line arguments with <code class="docutils literal notranslate"><span class="pre">input</span></code>, <code class="docutils literal notranslate"><span class="pre">output</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">limit</span></code> attributes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">truncate_csv</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Truncating CSV values from </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;to </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;stdout&#39;</span><span class="si">}</span><span class="s2"> with limit </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">limit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+    <span class="n">max_value_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum value length: </span><span class="si">{</span><span class="n">max_value_length</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+    <span class="n">truncated_rows</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">[</span><span class="n">truncate_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">limit</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span>
+    <span class="p">)</span>
+    <span class="n">write_csv</span><span class="p">(</span><span class="n">truncated_rows</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="build_parser">
+<span class="sig-name descname"><span class="pre">build_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">argparse.ArgumentParser</span></span></span><a class="headerlink" href="#build_parser" title="Link to this definition">¶</a></dt>
+<dd><p>Build the top-level argument parser and subcommand parsers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Configured <code class="xref py py-class docutils literal notranslate"><span class="pre">argparse.ArgumentParser</span></code> instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">build_parser</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Process CSV files with small command-line transformations.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s2">&quot;command&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">reverse_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;reverse&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Reverse the order of CSV data rows.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">reverse_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Input CSV path, or &#39;-&#39; for stdin.&quot;</span><span class="p">)</span>
+    <span class="n">reverse_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output CSV path. Defaults to stdout.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">reverse_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--no-header&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Reverse all rows instead of preserving the first row as a header.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">reverse_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">reverse_csv</span><span class="p">)</span>
+
+    <span class="n">remove_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;remove-columns&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Remove columns by header name.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">remove_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Input CSV path, or &#39;-&#39; for stdin.&quot;</span><span class="p">)</span>
+    <span class="n">remove_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;columns&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;One or more column names to remove.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">remove_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output CSV path. Defaults to stdout.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">remove_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">remove_columns</span><span class="p">)</span>
+
+    <span class="n">truncate_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Truncate values longer than the specified limit.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">truncate_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Input CSV path, or &#39;-&#39; for stdin.&quot;</span><span class="p">)</span>
+    <span class="n">truncate_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum number of original characters to keep.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">truncate_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output CSV path. Defaults to stdout.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">truncate_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">truncate_csv</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parser</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="main">
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#main" title="Link to this definition">¶</a></dt>
+<dd><p>Parse command-line arguments and dispatch to the selected subcommand.</p>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">build_parser</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;limit must be greater than or equal to 0&quot;</span><span class="p">)</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lit</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_chat_lc.py.html">Obsidian Chat (LC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udemy_html_toc.py.html">Udemy HTML TOC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_logs.py.html">Compare Logs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="st_cmp.py.html">Compare CSV Lines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_text.py.html">Compare Text</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
+<li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qr_code.py.html">QR-Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_chat.py.html">Obsidian Chat (LI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o-bases.py.html">Obsidian Bases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alchem.py.html">Reflect DB Schema</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CSV Knife</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#open_input"><code class="docutils literal notranslate"><span class="pre">open_input()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#open_output"><code class="docutils literal notranslate"><span class="pre">open_output()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read_csv"><code class="docutils literal notranslate"><span class="pre">read_csv()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#write_csv"><code class="docutils literal notranslate"><span class="pre">write_csv()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reverse_csv"><code class="docutils literal notranslate"><span class="pre">reverse_csv()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#remove_columns"><code class="docutils literal notranslate"><span class="pre">remove_columns()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#truncate_value"><code class="docutils literal notranslate"><span class="pre">truncate_value()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#truncate_csv"><code class="docutils literal notranslate"><span class="pre">truncate_csv()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build_parser"><code class="docutils literal notranslate"><span class="pre">build_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_npe.py.html">Grafana NPE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_json.py.html">Grafana Record</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_panels.py.html">Grafana Panels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo_rag.py.html">Neo RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book_chat.py.html">Book Chat (LI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extract_adoc_defs.py.html">AsciiDoc Defs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="li_extract.py.html">LlamaIndex Extractors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_intervals.py.html">Time Intervals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ppdict.py.html">Pretty-Print Dict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wiki_num.py.html">Renum Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explain_java.py.html">Explain Java</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firebase_edit.py.html">FB Prompts Edit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firebase_xml_sync.py.html">FB Prompts Xml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epub_toc.py.html">EPUB TOC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pom_csv.py.html">POM CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_yaml.py.html">exc yaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_ui.py.html">exc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_histo.py.html">exc histo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="split_log.py.html">Split Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extract_chunk.py.html">Log Chunk</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curl_clean.py.html">curl clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ollama_chat.py.html">Ollama Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_image.py.html">Create Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
+<li class="toctree-l1"><a class="reference internal" href="st_gmail.py.html">GMail Clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clean_youtube.py.html">YouTube Clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fw_picture.py.html">FW Picture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkers.py.html">Шашки</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonts.py.html">Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PersistedList.py.html">Persisted List</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="alchem.py.html" title="previous chapter">Reflect DB Schema</a></li>
+      <li>Next: <a href="grafana_npe.py.html" title="next chapter">Grafana NPE</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, EA.
+      
+      |
+      Powered by 
+      <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
+      &amp; 
+      <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; 
+      <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/csv_knife.py.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

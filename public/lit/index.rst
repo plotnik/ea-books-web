@@ -11,11 +11,19 @@ Literate Programs
    :caption: Contents:
 
    note_openai.py
+   research_cli.py
    book_lc.py
    o_chat_lc.py
    udemy.py
    udemy_html_toc.py
    ai_note.py
+
+   cmp_logs.py
+   st_cmp.py
+   cmp_text.py
+   cmp_props.py
+   cmp_folders.py
+      
    md_view.py   
    qr_code.py
    o_chat.py
@@ -23,6 +31,7 @@ Literate Programs
    o_ed.py
    o-bases.py
    alchem.py
+   csv_knife.py
    grafana_npe.py
    grafana_json.py
    grafana_panels.py
@@ -49,13 +58,12 @@ Literate Programs
    exc_yaml.py
    exc_ui.py
    exc_histo.py
+   split_log.py
    extract_chunk.py
    curl_clean.py
-   cmp_folders.py
-   google_search.py
    ollama_chat.py
-   cmp_text.py
-   cmp_props.py
+   google_search.py
+
    pi_keys.py
    bi.py
 
@@ -66,5 +74,6 @@ Literate Programs
    youtube_transcript.py
    fw_picture.py
    checkers.py
+   fonts.py
    PersistedList.py
 

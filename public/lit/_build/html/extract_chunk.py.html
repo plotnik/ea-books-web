@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="curl clean" href="curl_clean.py.html" />
-    <link rel="prev" title="exc histo" href="exc_histo.py.html" />
+    <link rel="prev" title="Split Log" href="split_log.py.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -39,27 +39,38 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="truncate_filename">
+<span class="sig-name descname"><span class="pre">truncate_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#truncate_filename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">truncate_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">truncate_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Truncate filename (without extension) to max_length characters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">name</span><span class="p">[:</span><span class="n">max_length</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="extract_chunk">
+<span class="sig-name descname"><span class="pre">extract_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#extract_chunk" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">extract_chunk</span><span class="p">(</span><span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">extract_chunk</span><span class="p">(</span><span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract a chunk of lines from source_file starting at &#39;start&#39;</span>
 <span class="sd">    and taking &#39;number&#39; lines.</span>
 <span class="sd">    Returns the output file name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">number</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="o">-</span><span class="n">number</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">start</span> <span class="o">-</span> <span class="n">number</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Start line cannot be negative&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">number</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of lines must be positive&quot;</span><span class="p">)</span>
 
     <span class="n">output_base</span> <span class="o">=</span> <span class="n">truncate_filename</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
     <span class="n">output_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;chunk-</span><span class="si">{</span><span class="n">output_base</span><span class="si">}</span><span class="s2">.log&quot;</span>
@@ -74,9 +85,14 @@
                 <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">output_file</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="main">
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Extract a chunk of lines from a log file.&quot;</span>
     <span class="p">)</span>
@@ -89,8 +105,8 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s2">&quot;--start&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Start line (0-based). Default: 0&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Start line (1-based). Default: 1&quot;</span>
     <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -107,7 +123,7 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">output_file</span> <span class="o">=</span> <span class="n">extract_chunk</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">logfile</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">extract_chunk</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">logfile</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">start</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Chunk written to: </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
@@ -149,11 +165,17 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o_chat_lc.py.html">Obsidian Chat (LC)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="udemy_html_toc.py.html">Udemy HTML TOC</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_logs.py.html">Compare Logs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="st_cmp.py.html">Compare CSV Lines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_text.py.html">Compare Text</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
 <li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="qr_code.py.html">QR-Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o_chat.py.html">Obsidian Chat (LI)</a></li>
@@ -161,6 +183,7 @@
 <li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="o-bases.py.html">Obsidian Bases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="alchem.py.html">Reflect DB Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="csv_knife.py.html">CSV Knife</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grafana_npe.py.html">Grafana NPE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grafana_json.py.html">Grafana Record</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grafana_panels.py.html">Grafana Panels</a></li>
@@ -173,7 +196,7 @@
 <li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_intervals.py.html">Time Intervals</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ppdict.py.html">Pretty-print dict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ppdict.py.html">Pretty-Print Dict</a></li>
 <li class="toctree-l1"><a class="reference internal" href="wiki_num.py.html">Renum Wiki</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="explain_java.py.html">Explain Java</a></li>
@@ -187,13 +210,16 @@
 <li class="toctree-l1"><a class="reference internal" href="exc_yaml.py.html">exc yaml</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exc_ui.py.html">exc UI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exc_histo.py.html">exc histo</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Log Chunk</a></li>
+<li class="toctree-l1"><a class="reference internal" href="split_log.py.html">Split Log</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Log Chunk</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#truncate_filename"><code class="docutils literal notranslate"><span class="pre">truncate_filename()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extract_chunk"><code class="docutils literal notranslate"><span class="pre">extract_chunk()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="curl_clean.py.html">curl clean</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
-<li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ollama_chat.py.html">Ollama Chat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cmp_text.py.html">Compare Text</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_image.py.html">Create Image</a></li>
@@ -203,6 +229,7 @@
 <li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fw_picture.py.html">FW Picture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="checkers.py.html">Шашки</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonts.py.html">Fonts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PersistedList.py.html">Persisted List</a></li>
 </ul>
 
@@ -210,7 +237,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="exc_histo.py.html" title="previous chapter">exc histo</a></li>
+      <li>Previous: <a href="split_log.py.html" title="previous chapter">Split Log</a></li>
       <li>Next: <a href="curl_clean.py.html" title="next chapter">curl clean</a></li>
   </ul></li>
 </ul>

@@ -5,7 +5,25 @@ import streamlit as st
 import qrcode
 from PIL import Image
 
+# Banner
+
 st.set_page_config(page_title="QR Code Generator", page_icon="🔳")
+
+@st.cache_data
+def print_banner():
+    print("""
+                                              .___              
+      _____________            ____  ____   __| _/____          
+     / ____/\\_  __ \\  ______ _/ ___\\/  _ \\ / __ |/ __ \\         
+    < <_|  | |  | \\/ /_____/ \\  \\__(  <_> ) /_/ \\  ___/         
+     \\__   | |__|             \\___  >____/\\____ |\\___  >        
+        |__|                      \\/           \\/    \\/         
+    """)
+    return 1
+
+print_banner()
+
+# Page
 
 st.title("🔳 QR Code Generator")
 
@@ -44,7 +62,7 @@ else:
     img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
 
     st.subheader("Preview")
-    st.image(img, caption="Generated QR code", use_container_width=False)
+    st.image(img, caption="Generated QR code", width="stretch")
 
     # Offer download
     import io

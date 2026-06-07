@@ -8,6 +8,10 @@ Log Chunk
   import sys
 
 
+.. function:: truncate_filename(filename: str, max_length: int = 16) -> str
+
+::
+
   def truncate_filename(filename: str, max_length: int = 16) -> str:
       """
       Truncate filename (without extension) to max_length characters.
@@ -15,18 +19,22 @@ Log Chunk
       base = os.path.basename(filename)
       name, _ = os.path.splitext(base)
       return name[:max_length]
+       
+.. function:: extract_chunk(source_file: str, start: int, number: int) -> str
 
+::
 
   def extract_chunk(source_file: str, start: int, number: int) -> str:
       """
       Extract a chunk of lines from source_file starting at 'start'
       and taking 'number' lines.
       Returns the output file name.
-      """
+      """  
+      if number < 0:
+          number = -number
+          start = start - number + 1
       if start < 0:
           raise ValueError("Start line cannot be negative")
-      if number <= 0:
-          raise ValueError("Number of lines must be positive")
 
       output_base = truncate_filename(source_file)
       output_file = f"chunk-{output_base}.log"
@@ -43,6 +51,10 @@ Log Chunk
       return output_file
 
 
+.. function:: main()
+
+::
+
   def main():
       parser = argparse.ArgumentParser(
           description="Extract a chunk of lines from a log file."
@@ -56,10 +68,10 @@ Log Chunk
       parser.add_argument(
           "-s", "--start",
           type=int,
-          default=0,
-          help="Start line (0-based). Default: 0"
+          default=1,
+          help="Start line (1-based). Default: 1"
       )
-
+   
       parser.add_argument(
           "-n", "--number",
           type=int,
@@ -74,7 +86,7 @@ Log Chunk
           sys.exit(1)
 
       try:
-          output_file = extract_chunk(args.logfile, args.start, args.number)
+          output_file = extract_chunk(args.logfile, args.start-1, args.number)
           print(f"Chunk written to: {output_file}")
       except Exception as e:
           print(f"Error: {e}", file=sys.stderr)

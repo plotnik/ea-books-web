@@ -647,3 +647,156 @@ system*:
 * top-level routing via a supervisor
 * isolated responsibilities
 * easy expansion and maintenance
+
+
+== 122. Hands-on ~ State Schema and Send API Overview
+
+The section describes a multi-agent research workflow built around a
+supervisor, parallel search agents, an analyst, a report writer, and a
+quality checker.
+
+==== Core workflow
+
+[arabic]
+. *Supervisor* plans the research and breaks the topic into queries.
+. *Parallel search agents* run those queries using the *send API*, which
+dynamically spawns tasks at runtime.
+. *Analyst* collects all shared findings and synthesizes them using the
+*blackboard pattern*.
+. *Report writer* turns the analysis into a final report.
+. *Quality checker* scores the report and may trigger refinement.
+
+==== Iterative refinement
+
+* If `score ++<++ 0.7` and `iteration ++<++ 2`, the workflow loops back
+to the report writer.
+* This creates a bounded refinement loop so the system does not iterate
+forever.
+
+==== State design
+
+The shared state includes:
+
+* `messages` with *add++_++messages* to accumulate and deduplicate
+conversation history
+* `topic` with overwrite behavior
+* `search++_++queries` with overwrite behavior
+* `findings` with *operator.add* so parallel search results are
+accumulated
+* `analysis`, `report`, `quality++_++score`, `quality++_++feedback`, and
+`iteration` with overwrite behavior
+
+A key point is that *`findings` must use `operator.add`*, because
+multiple search agents write in parallel and their results must be
+merged, not overwritten.
+
+==== Search task state
+
+Each individual search task has its own smaller state:
+
+* `search` as a single query string
+* `findings` using *operator.add*
+
+==== Supervisor node and JSON handling
+
+The supervisor:
+
+* uses a system message and the topic from state
+* returns JSON instead of structured Pydantic output
+* is parsed with `json.loads`
+* includes `try/except` fallback handling in case the model returns
+malformed or decorated JSON
+
+==== Send API
+
+The *send API* enables *dynamic parallel fan-out*, meaning the number of
+search agents is decided at runtime rather than being hard-coded. Each
+send creates an isolated search task, and the results are merged back
+into shared state.
+
+==== Overall
+
+The workflow is: *Supervisor → parallel search tasks → analyst → report
+writer → quality checker → optional refinement loop → end*
+
+
+
+
+== 123. Final Project ~ Research System from the Ground Up
+
+This passage describes how to build a production-style research workflow
+using multiple LLM agents in a graph.
+
+==== Main components
+
+* *Search agent*
+** Processes one query at a time.
+** Pulls `search++_++query` from state, calls the LLM with system {plus}
+human messages, and uses `try/except` for safe failure handling.
+** Tags each result with its originating query and appends it to
+`findings`.
+** Supports traceability, debugging, and auditing.
+* *Fan-out with `Send`*
+** Uses `Send` to dispatch multiple search tasks in parallel, one per
+query.
+* *Analyst / synthesizer*
+** Reads all findings from shared state.
+** Does not need to know how many searches ran or which queries were
+used.
+** Demonstrates the *blackboard pattern*: search agents write, analyst
+reads.
+* *Report writer*
+** Produces the final report and incorporates feedback if revisions are
+needed.
+** Uses higher temperature for more creative writing, while
+routing/analysis agents use temperature 0 for determinism.
+* *Quality checker*
+** Uses structured output with `score`, `feedback`, and `approved`.
+** Makes the result easier to validate and act on.
+** Implements a *circuit breaker* by limiting revision loops to 2
+attempts.
+* *Quality gate*
+** Accepts the report if the score is high enough.
+** Otherwise loops back only to the report writer, not the whole
+pipeline.
+** This is called *surgical iteration*.
+
+==== Testing and workflow
+
+* Each agent can be tested independently, which is a major advantage of
+the architecture.
+* The full workflow is:
+[arabic]
+. Supervisor plans queries
+. Search agents run in parallel
+. Analyst synthesizes findings
+. Report writer drafts the report
+. Quality checker evaluates it
+. Quality gate approves or triggers revision
+
+==== Demo and result
+
+* The system can stream progress in real time.
+* A sample run on “The impact of AI agents” shows the full pipeline
+working end to end.
+* The final report includes:
+** executive summary
+** key findings
+** analysis
+** recommendations
+* It also outputs stats like total findings, quality score, and
+iteration count.
+
+==== Overall takeaway
+
+The passage presents a *production-ready agent workflow pattern* that
+emphasizes:
+
+* parallelism
+* traceability
+* structured outputs
+* controlled revision loops
+* modular testing
+
+It can be extended with real web search, vector retrieval, human review,
+and stronger quality controls.

@@ -22,7 +22,7 @@ It integrates with OpenAI's **Responses API** to provide intelligent text operat
    https://developers.openai.com/api/docs/guides/latest-model
 
 🎛️ **Prompt Optimizer**
-   https://platform.openai.com/chat/edit?models=gpt-5.2&optimize=true
+   https://platform.openai.com/chat/edit?optimize=true
 
 🧠 **Text generation**
    https://platform.openai.com/docs/guides/text
@@ -155,6 +155,7 @@ See: PersistedList_
   from PersistedList import PersistedList
   tags_persisted = PersistedList(".tags")  
   prompts_persisted = PersistedList(".prompts")  
+  llms_persisted = PersistedList(".llms") 
 
 Read a list of strings from a file
 
@@ -185,7 +186,7 @@ Select prompt body by its name
       return False
 
   all_prompt_names_set = {item['name'] for item in prompts}
-  all_prompt_names = prompts_persisted.sort_by_pattern(list(all_prompt_names_set))
+  all_prompt_names = prompts_persisted.sort_by_pattern(list(all_prompt_names_set), tag_name)
   prompt_names = [name for name in all_prompt_names if has_tag(name, tag_name)]
 
   prompt_name = st.sidebar.selectbox(
@@ -209,6 +210,7 @@ Select OpenAI LLM
   }    
 
   llm_models = list(llm_prices.keys())
+  all_llm_models = llms_persisted.sort_by_pattern(llm_models, tag_name + "/" + prompt_name)
 
 Select LLM model
 
@@ -216,7 +218,7 @@ Select LLM model
 
   llm_model = st.sidebar.selectbox(
      "LLM Model",
-     llm_models
+     all_llm_models
   )
 
 Count the number of tokens in the user’s input using the ``tiktoken`` library, 
@@ -268,8 +270,10 @@ Run Query
       tokens = encoding.encode(st.session_state.llm_output)
       st.session_state.output_price = len(tokens) * llm_prices[llm_model][1]/10000
 
-      # Move selected tag to the beginning of the list
-      all_tags = tags_persisted.select(tag_name)
+      # Remember persisted selections
+      tags_persisted.select(tag_name)
+      prompts_persisted.select(prompt_name, tag_name)
+      llms_persisted.select(llm_model, tag_name + "/" + prompt_name)
 
       if platform.system() == 'Darwin':
           os.system("afplay /System/Library/Sounds/Glass.aiff")
@@ -298,4 +302,4 @@ Show last execution time
 
   if "output_price" in st.session_state:
       st.sidebar.write(f"Output price: `{round(st.session_state.output_price, 5)}` cents")  
-   
+ 

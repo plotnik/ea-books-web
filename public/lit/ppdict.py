@@ -1,4 +1,4 @@
-# Pretty-print dict
+# Pretty-Print Dict
 # =================
 #
 # Parse and pretty-print a string that looks like a Python dictionary.
@@ -91,6 +91,7 @@ dict_str = st.text_area("dict:", height=300)
 
 class SafeTransformer(ast.NodeTransformer):
     def visit_Call(self, node):
+        self.generic_visit(node)
         # Convert something like HumanMessage(...) into a dict
         return ast.Dict(
             keys=[ast.Constant("type")] + [kw.arg and ast.Constant(kw.arg) for kw in node.keywords],

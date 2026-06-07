@@ -8,6 +8,11 @@ import yaml
 
 # Read DB configuration
 
+db_name = ""
+db_user = ""
+db_pass = ""
+db_schema = ""
+
 db_config_file = Path("alchem.yml")
 if db_config_file.exists():
     with open(db_config_file, 'r') as file:

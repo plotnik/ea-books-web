@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Compare Logs &#8212; lit  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=0c176c8a" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Compare CSV Lines" href="st_cmp.py.html" />
+    <link rel="prev" title="Note-AI" href="ai_note.py.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="compare-logs">
+<h1>Compare Logs<a class="headerlink" href="#compare-logs" title="Link to this heading">¶</a></h1>
+<p>Compare two log files produced by the same code by matching configurable
+signature substrings.</p>
+<p><strong>Overview</strong></p>
+<p>The script reads signature substrings from <code class="docutils literal notranslate"><span class="pre">cmp_logs.txt</span></code>. Each non-empty line
+in that file is treated as one signature.</p>
+<p>Starting from the current position in both logs, the script searches for the next
+occurrence of any configured signature in each file. The next matching signature
+must be the same in both logs.</p>
+<p>If the signatures are different, the script prints a warning in the console
+and tries to resynchronize using a signature from the first file.</p>
+<p>For each comparison step, the script creates a block from each log. A block
+includes all lines from the current position through the line containing the
+matched signature.</p>
+<p>The resulting blocks are written side by side to an HTML report. The report uses
+different highlighting for each log and additional highlighting for signature
+occurrences.</p>
+<p><strong>Usage</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python cmp_logs.py log1.txt log2.txt</span>
+<span class="go">python cmp_logs.py log1.txt log2.txt -o cmp_logs.html -s cmp_logs.txt</span>
+</pre></div>
+</div>
+<p><strong>Options</strong></p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">cmp_logs.html</span></code></dt><dd><p>Path to the generated HTML comparison report.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">cmp_logs.txt</span></code></dt><dd><p>Path to the signature file. Each non-empty line is treated as a signature
+substring.</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">html</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="SignatureHit">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SignatureHit</span></span><a class="headerlink" href="#SignatureHit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SignatureHit</span><span class="p">:</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">line_index</span><span class="p">:</span> <span class="nb">int</span>      <span class="c1"># 0-based line index in the original log</span>
+    <span class="n">signature_index</span><span class="p">:</span> <span class="nb">int</span> <span class="c1"># 0-based index in the signatures file</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="BlockPair">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BlockPair</span></span><a class="headerlink" href="#BlockPair" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BlockPair</span><span class="p">:</span>
+    <span class="n">block_no</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">signature_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">log1_start_line</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">log1_end_line</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">log2_start_line</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">log2_end_line</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">log1_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">log2_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="LogCompareError">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LogCompareError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">RuntimeError</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LogCompareError" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">LogCompareError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="read_lines">
+<span class="sig-name descname"><span class="pre">read_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#read_lines" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">read_lines</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LogCompareError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not read </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="read_signatures">
+<span class="sig-name descname"><span class="pre">read_signatures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#read_signatures" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">read_signatures</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="n">signatures</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">raw_lines</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LogCompareError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not read signatures file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">raw_lines</span><span class="p">:</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">sig</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sig</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+            <span class="n">signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">signatures</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LogCompareError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No signatures found in </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">signatures</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="find_next_signature">
+<span class="sig-name descname"><span class="pre">find_next_signature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signatures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#SignatureHit" title="SignatureHit"><span class="pre">SignatureHit</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#find_next_signature" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">find_next_signature</span><span class="p">(</span>
+    <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">start_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">signatures</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SignatureHit</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the earliest signature hit at or after start_index.</span>
+
+<span class="sd">    If multiple signatures occur on the same line, the signature that appears</span>
+<span class="sd">    earliest in the line is preferred. If still tied, the earlier signature in</span>
+<span class="sd">    cmp_logs.txt is preferred.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">best</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># tuple is: line_index, char_position, signature_index, signature</span>
+
+    <span class="k">for</span> <span class="n">line_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_index</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">line_index</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">signature_index</span><span class="p">,</span> <span class="n">signature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">signatures</span><span class="p">):</span>
+            <span class="n">char_position</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">signature</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">char_position</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">candidate</span> <span class="o">=</span> <span class="p">(</span><span class="n">line_index</span><span class="p">,</span> <span class="n">char_position</span><span class="p">,</span> <span class="n">signature_index</span><span class="p">,</span> <span class="n">signature</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">best</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">candidate</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">best</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
+                    <span class="n">best</span> <span class="o">=</span> <span class="n">candidate</span>
+
+        <span class="c1"># Once a hit is found on this line, no later line can be earlier.</span>
+        <span class="k">if</span> <span class="n">best</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">line_index</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SignatureHit</span><span class="p">(</span>
+                <span class="n">signature</span><span class="o">=</span><span class="n">best</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                <span class="n">line_index</span><span class="o">=</span><span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">signature_index</span><span class="o">=</span><span class="n">best</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="compare_logs">
+<span class="sig-name descname"><span class="pre">compare_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log1_lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log2_lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signatures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#BlockPair" title="BlockPair"><span class="pre">BlockPair</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#compare_logs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compare_logs</span><span class="p">(</span>
+    <span class="n">log1_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">log2_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">signatures</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BlockPair</span><span class="p">]:</span>
+    <span class="n">blocks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BlockPair</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pos1</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">pos2</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">block_no</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">while</span> <span class="n">pos1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">log1_lines</span><span class="p">)</span> <span class="ow">or</span> <span class="n">pos2</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">log2_lines</span><span class="p">):</span>
+        <span class="n">hit1</span> <span class="o">=</span> <span class="n">find_next_signature</span><span class="p">(</span><span class="n">log1_lines</span><span class="p">,</span> <span class="n">pos1</span><span class="p">,</span> <span class="n">signatures</span><span class="p">)</span>
+        <span class="n">hit2</span> <span class="o">=</span> <span class="n">find_next_signature</span><span class="p">(</span><span class="n">log2_lines</span><span class="p">,</span> <span class="n">pos2</span><span class="p">,</span> <span class="n">signatures</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">hit1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">hit2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Remaining tail after the final signature.</span>
+            <span class="k">if</span> <span class="n">pos1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">log1_lines</span><span class="p">)</span> <span class="ow">or</span> <span class="n">pos2</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">log2_lines</span><span class="p">):</span>
+                <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">BlockPair</span><span class="p">(</span>
+                        <span class="n">block_no</span><span class="o">=</span><span class="n">block_no</span><span class="p">,</span>
+                        <span class="n">signature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">signature_index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">log1_start_line</span><span class="o">=</span><span class="n">pos1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">log1_end_line</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">log1_lines</span><span class="p">),</span>
+                        <span class="n">log2_start_line</span><span class="o">=</span><span class="n">pos2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">log2_end_line</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">log2_lines</span><span class="p">),</span>
+                        <span class="n">log1_lines</span><span class="o">=</span><span class="n">log1_lines</span><span class="p">[</span><span class="n">pos1</span><span class="p">:],</span>
+                        <span class="n">log2_lines</span><span class="o">=</span><span class="n">log2_lines</span><span class="p">[</span><span class="n">pos2</span><span class="p">:],</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">hit1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">hit2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># One log has no further signature while the other still has one.</span>
+            <span class="c1"># Put the remaining lines from BOTH logs into a final block.</span>
+            <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">BlockPair</span><span class="p">(</span>
+                    <span class="n">block_no</span><span class="o">=</span><span class="n">block_no</span><span class="p">,</span>
+                    <span class="n">signature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">signature_index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">log1_start_line</span><span class="o">=</span><span class="n">pos1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">log1_end_line</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">log1_lines</span><span class="p">),</span>
+                    <span class="n">log2_start_line</span><span class="o">=</span><span class="n">pos2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">log2_end_line</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">log2_lines</span><span class="p">),</span>
+                    <span class="n">log1_lines</span><span class="o">=</span><span class="n">log1_lines</span><span class="p">[</span><span class="n">pos1</span><span class="p">:],</span>
+                    <span class="n">log2_lines</span><span class="o">=</span><span class="n">log2_lines</span><span class="p">[</span><span class="n">pos2</span><span class="p">:],</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">hit1</span><span class="o">.</span><span class="n">signature</span> <span class="o">!=</span> <span class="n">hit2</span><span class="o">.</span><span class="n">signature</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Signatures differ: </span><span class="si">{</span><span class="n">hit1</span><span class="o">.</span><span class="n">signature</span><span class="si">}</span><span class="s2"> != </span><span class="si">{</span><span class="n">hit2</span><span class="o">.</span><span class="n">signature</span><span class="si">}</span><span class="s2"> in block </span><span class="si">{</span><span class="n">block_no</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Signatures differ — try to synchronize by searching log2</span>
+            <span class="c1"># for hit1.signature.</span>
+            <span class="n">synced_hit2</span><span class="p">:</span> <span class="n">SignatureHit</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">line_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pos2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">log2_lines</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">hit1</span><span class="o">.</span><span class="n">signature</span> <span class="ow">in</span> <span class="n">log2_lines</span><span class="p">[</span><span class="n">line_index</span><span class="p">]:</span>
+                    <span class="n">synced_hit2</span> <span class="o">=</span> <span class="n">SignatureHit</span><span class="p">(</span>
+                        <span class="n">signature</span><span class="o">=</span><span class="n">hit1</span><span class="o">.</span><span class="n">signature</span><span class="p">,</span>
+                        <span class="n">line_index</span><span class="o">=</span><span class="n">line_index</span><span class="p">,</span>
+                        <span class="n">signature_index</span><span class="o">=</span><span class="n">hit1</span><span class="o">.</span><span class="n">signature_index</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">synced_hit2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># hit1.signature not found in log2 — dump remainder as tail.</span>
+                <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">BlockPair</span><span class="p">(</span>
+                        <span class="n">block_no</span><span class="o">=</span><span class="n">block_no</span><span class="p">,</span>
+                        <span class="n">signature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">signature_index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">log1_start_line</span><span class="o">=</span><span class="n">pos1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">log1_end_line</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">log1_lines</span><span class="p">),</span>
+                        <span class="n">log2_start_line</span><span class="o">=</span><span class="n">pos2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">log2_end_line</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">log2_lines</span><span class="p">),</span>
+                        <span class="n">log1_lines</span><span class="o">=</span><span class="n">log1_lines</span><span class="p">[</span><span class="n">pos1</span><span class="p">:],</span>
+                        <span class="n">log2_lines</span><span class="o">=</span><span class="n">log2_lines</span><span class="p">[</span><span class="n">pos2</span><span class="p">:],</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">break</span>
+
+            <span class="n">hit2</span> <span class="o">=</span> <span class="n">synced_hit2</span>
+
+        <span class="c1"># if hit1 is None:</span>
+        <span class="c1">#     raise LogCompareError(</span>
+        <span class="c1">#         &quot;Log 1 has no further signature, but Log 2 found &quot;</span>
+        <span class="c1">#         f&quot;signature #{hit2.signature_index + 1} on line {hit2.line_index + 1}: &quot;</span>
+        <span class="c1">#         f&quot;{hit2.signature!r}&quot;</span>
+        <span class="c1">#     )</span>
+
+        <span class="c1"># if hit2 is None:</span>
+        <span class="c1">#     raise LogCompareError(</span>
+        <span class="c1">#         &quot;Log 2 has no further signature, but Log 1 found &quot;</span>
+        <span class="c1">#         f&quot;signature #{hit1.signature_index + 1} on line {hit1.line_index + 1}: &quot;</span>
+        <span class="c1">#         f&quot;{hit1.signature!r}&quot;</span>
+        <span class="c1">#     )</span>
+
+        <span class="c1"># if hit1.signature != hit2.signature:</span>
+        <span class="c1">#     raise LogCompareError(</span>
+        <span class="c1">#         &quot;Next signatures differ:\n&quot;</span>
+        <span class="c1">#         f&quot;  Log 1: signature #{hit1.signature_index + 1} &quot;</span>
+        <span class="c1">#         f&quot;on line {hit1.line_index + 1}: {hit1.signature!r}\n&quot;</span>
+        <span class="c1">#         f&quot;  Log 2: signature #{hit2.signature_index + 1} &quot;</span>
+        <span class="c1">#         f&quot;on line {hit2.line_index + 1}: {hit2.signature!r}&quot;</span>
+        <span class="c1">#     )</span>
+
+        <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">BlockPair</span><span class="p">(</span>
+                <span class="n">block_no</span><span class="o">=</span><span class="n">block_no</span><span class="p">,</span>
+                <span class="n">signature</span><span class="o">=</span><span class="n">hit1</span><span class="o">.</span><span class="n">signature</span><span class="p">,</span>
+                <span class="n">signature_index</span><span class="o">=</span><span class="n">hit1</span><span class="o">.</span><span class="n">signature_index</span><span class="p">,</span>
+                <span class="n">log1_start_line</span><span class="o">=</span><span class="n">pos1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">log1_end_line</span><span class="o">=</span><span class="n">hit1</span><span class="o">.</span><span class="n">line_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">log2_start_line</span><span class="o">=</span><span class="n">pos2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">log2_end_line</span><span class="o">=</span><span class="n">hit2</span><span class="o">.</span><span class="n">line_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">log1_lines</span><span class="o">=</span><span class="n">log1_lines</span><span class="p">[</span><span class="n">pos1</span> <span class="p">:</span> <span class="n">hit1</span><span class="o">.</span><span class="n">line_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="n">log2_lines</span><span class="o">=</span><span class="n">log2_lines</span><span class="p">[</span><span class="n">pos2</span> <span class="p">:</span> <span class="n">hit2</span><span class="o">.</span><span class="n">line_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">pos1</span> <span class="o">=</span> <span class="n">hit1</span><span class="o">.</span><span class="n">line_index</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">pos2</span> <span class="o">=</span> <span class="n">hit2</span><span class="o">.</span><span class="n">line_index</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">block_no</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">blocks</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="highlight_signatures">
+<span class="sig-name descname"><span class="pre">highlight_signatures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signatures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#highlight_signatures" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">highlight_signatures</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signatures</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Escape text for HTML and wrap signature occurrences in &lt;mark&gt;.</span>
+
+<span class="sd">    This intentionally uses substring matching, same as comparison.</span>
+<span class="sd">    Longer signatures are applied first to reduce nested/partial highlighting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">escaped</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="c1"># Work on escaped signatures because the text has already been escaped.</span>
+    <span class="n">escaped_signatures</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="p">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span> <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">signatures</span> <span class="k">if</span> <span class="n">sig</span><span class="p">},</span>
+        <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span>
+        <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">escaped_signatures</span><span class="p">:</span>
+        <span class="n">escaped</span> <span class="o">=</span> <span class="n">escaped</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&lt;mark class=&quot;signature&quot;&gt;</span><span class="si">{</span><span class="n">sig</span><span class="si">}</span><span class="s1">&lt;/mark&gt;&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">escaped</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="render_lines">
+<span class="sig-name descname"><span class="pre">render_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_line_no</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signatures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#render_lines" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">render_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">first_line_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">signatures</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;div class=&quot;empty&quot;&gt;(no lines)&lt;/div&gt;&#39;</span>
+
+    <span class="n">rendered</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">first_line_no</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">offset</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+        <span class="n">line_no</span> <span class="o">=</span> <span class="n">first_line_no</span> <span class="o">+</span> <span class="n">offset</span>
+        <span class="n">rendered_line</span> <span class="o">=</span> <span class="n">highlight_signatures</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">signatures</span><span class="p">)</span>
+        <span class="n">rendered</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="s1">&#39;&lt;div class=&quot;log-line&quot;&gt;&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;span class=&quot;line-no&quot;&gt;</span><span class="si">{</span><span class="n">line_no</span><span class="si">:</span><span class="s1">&gt;</span><span class="si">{</span><span class="n">width</span><span class="si">}}</span><span class="s1">&lt;/span&gt;&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;span class=&quot;line-text&quot;&gt;</span><span class="si">{</span><span class="n">rendered_line</span><span class="si">}</span><span class="s1">&lt;/span&gt;&#39;</span>
+            <span class="s1">&#39;&lt;/div&gt;&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rendered</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="render_html">
+<span class="sig-name descname"><span class="pre">render_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#BlockPair" title="BlockPair"><span class="pre">BlockPair</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log1_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log2_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signatures_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signatures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#render_html" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">render_html</span><span class="p">(</span>
+    <span class="n">blocks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BlockPair</span><span class="p">],</span>
+    <span class="n">log1_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">log2_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">signatures_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">signatures</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">total_signature_blocks</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">blocks</span> <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">signature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">block_html</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">signature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Block </span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">block_no</span><span class="si">}</span><span class="s2">: tail after final signature&quot;</span>
+            <span class="n">sig_meta</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Block </span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">block_no</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">sig_meta</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;&lt;div class=&quot;signature-title&quot;&gt;&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Signature: </span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">signature</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;&lt;/div&gt;&#39;</span>
+            <span class="p">)</span>
+
+        <span class="n">block_class</span> <span class="o">=</span> <span class="s2">&quot;block tail-block&quot;</span> <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">signature</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;block&quot;</span>
+
+        <span class="n">block_html</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">&lt;section class=&quot;</span><span class="si">{</span><span class="n">block_class</span><span class="si">}</span><span class="s1">&quot;&gt;</span>
+<span class="s1">  &lt;header class=&quot;block-header&quot;&gt;</span>
+<span class="s1">    &lt;div&gt;</span>
+<span class="s1">      &lt;h2&gt;</span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">title</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/h2&gt;</span>
+<span class="s1">      </span><span class="si">{</span><span class="n">sig_meta</span><span class="si">}</span>
+<span class="s1">    &lt;/div&gt;</span>
+<span class="s1">    &lt;!--a href=&quot;#top&quot;&gt;top&lt;/a--&gt;</span>
+<span class="s1">  &lt;/header&gt;</span>
+
+<span class="s1">  &lt;div class=&quot;columns&quot;&gt;</span>
+<span class="s1">    &lt;article class=&quot;panel log1&quot;&gt;</span>
+<span class="s1">      &lt;h3&gt;</span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">log1_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">: lines </span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">log1_start_line</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">log1_end_line</span><span class="si">}</span><span class="s1">&lt;/h3&gt;</span>
+<span class="s1">      &lt;pre&gt;</span><span class="si">{</span><span class="n">render_lines</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">log1_lines</span><span class="p">,</span><span class="w"> </span><span class="n">block</span><span class="o">.</span><span class="n">log1_start_line</span><span class="p">,</span><span class="w"> </span><span class="n">signatures</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/pre&gt;</span>
+<span class="s1">    &lt;/article&gt;</span>
+
+<span class="s1">    &lt;article class=&quot;panel log2&quot;&gt;</span>
+<span class="s1">      &lt;h3&gt;</span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">log2_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">: lines </span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">log2_start_line</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">log2_end_line</span><span class="si">}</span><span class="s1">&lt;/h3&gt;</span>
+<span class="s1">      &lt;pre&gt;</span><span class="si">{</span><span class="n">render_lines</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">log2_lines</span><span class="p">,</span><span class="w"> </span><span class="n">block</span><span class="o">.</span><span class="n">log2_start_line</span><span class="p">,</span><span class="w"> </span><span class="n">signatures</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/pre&gt;</span>
+<span class="s1">    &lt;/article&gt;</span>
+<span class="s1">  &lt;/div&gt;</span>
+<span class="s1">&lt;/section&gt;</span>
+<span class="s1">&#39;&#39;&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;&lt;!doctype html&gt;</span>
+<span class="s1">&lt;html lang=&quot;en&quot;&gt;</span>
+<span class="s1">&lt;head&gt;</span>
+<span class="s1">  &lt;meta charset=&quot;utf-8&quot;&gt;</span>
+<span class="s1">  &lt;title&gt;Log comparison: </span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">log1_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1"> vs </span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">log2_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/title&gt;</span>
+<span class="s1">  &lt;style&gt;</span>
+<span class="s1">    :root </span><span class="se">{{</span>
+<span class="s1">      --bg: #f6f8fa;</span>
+<span class="s1">      --text: #1f2328;</span>
+<span class="s1">      --muted: #57606a;</span>
+<span class="s1">      --border: #d0d7de;</span>
+<span class="s1">      --log1-bg: #eef6ff;</span>
+<span class="s1">      --log1-border: #9ec5fe;</span>
+<span class="s1">      --log2-bg: #fff3e6;</span>
+<span class="s1">      --log2-border: #ffc078;</span>
+<span class="s1">      --signature-bg: #ffeb3b;</span>
+<span class="s1">      --signature-text: #111;</span>
+<span class="s1">      --header-bg: #ffffff;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    body </span><span class="se">{{</span>
+<span class="s1">      margin: 0;</span>
+<span class="s1">      font-family: system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;</span>
+<span class="s1">      background: var(--bg);</span>
+<span class="s1">      color: var(--text);</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    header.page-header </span><span class="se">{{</span>
+<span class="s1">      position: sticky;</span>
+<span class="s1">      top: 0;</span>
+<span class="s1">      z-index: 10;</span>
+<span class="s1">      background: var(--header-bg);</span>
+<span class="s1">      border-bottom: 1px solid var(--border);</span>
+<span class="s1">      padding: 16px 24px;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    h1 </span><span class="se">{{</span>
+<span class="s1">      margin: 0 0 8px;</span>
+<span class="s1">      font-size: 22px;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .meta </span><span class="se">{{</span>
+<span class="s1">      display: flex;</span>
+<span class="s1">      flex-wrap: wrap;</span>
+<span class="s1">      gap: 12px;</span>
+<span class="s1">      color: var(--muted);</span>
+<span class="s1">      font-size: 14px;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    main </span><span class="se">{{</span>
+<span class="s1">      padding: 20px 24px 40px;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .block </span><span class="se">{{</span>
+<span class="s1">      margin: 0 0 24px;</span>
+<span class="s1">      border: 1px solid var(--border);</span>
+<span class="s1">      border-radius: 12px;</span>
+<span class="s1">      overflow: hidden;</span>
+<span class="s1">      background: white;</span>
+<span class="s1">      box-shadow: 0 1px 2px rgba(31, 35, 40, 0.06);</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .block-header </span><span class="se">{{</span>
+<span class="s1">      display: flex;</span>
+<span class="s1">      justify-content: space-between;</span>
+<span class="s1">      gap: 16px;</span>
+<span class="s1">      align-items: flex-start;</span>
+<span class="s1">      border-bottom: 1px solid var(--border);</span>
+<span class="s1">      padding: 14px 16px;</span>
+<span class="s1">      background: #ffffff;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .block-header h2 </span><span class="se">{{</span>
+<span class="s1">      margin: 0 0 6px;</span>
+<span class="s1">      font-size: 17px;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .signature-title </span><span class="se">{{</span>
+<span class="s1">      font-family: ui-monospace, SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, monospace;</span>
+<span class="s1">      font-size: 13px;</span>
+<span class="s1">      color: var(--muted);</span>
+<span class="s1">      word-break: break-word;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .columns </span><span class="se">{{</span>
+<span class="s1">      display: grid;</span>
+<span class="s1">      grid-template-columns: 1fr 1fr;</span>
+<span class="s1">      gap: 0;</span>
+<span class="s1">      align-items: stretch;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .panel </span><span class="se">{{</span>
+<span class="s1">      min-width: 0;</span>
+<span class="s1">      padding: 0;</span>
+<span class="s1">      display: flex;</span>
+<span class="s1">      flex-direction: column;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .panel h3 </span><span class="se">{{</span>
+<span class="s1">      position: sticky;</span>
+<span class="s1">      top: 75px;</span>
+<span class="s1">      z-index: 5;</span>
+<span class="s1">      margin: 0;</span>
+<span class="s1">      padding: 10px 12px;</span>
+<span class="s1">      font-size: 14px;</span>
+<span class="s1">      border-bottom: 1px solid var(--border);</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .log1 </span><span class="se">{{</span>
+<span class="s1">      background: var(--log1-bg);</span>
+<span class="s1">      border-right: 1px solid var(--border);</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .log1 h3 </span><span class="se">{{</span>
+<span class="s1">      background: var(--log1-bg);</span>
+<span class="s1">      border-left: 4px solid var(--log1-border);</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .log2 </span><span class="se">{{</span>
+<span class="s1">      background: var(--log2-bg);</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .log2 h3 </span><span class="se">{{</span>
+<span class="s1">      background: var(--log2-bg);</span>
+<span class="s1">      border-left: 4px solid var(--log2-border);</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    pre </span><span class="se">{{</span>
+<span class="s1">      margin: 0;</span>
+<span class="s1">      padding: 12px;</span>
+<span class="s1">      overflow-x: hidden;</span>
+<span class="s1">      overflow-y: auto;</span>
+<span class="s1">      font-family: ui-monospace, SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, monospace;</span>
+<span class="s1">      font-size: 12px;</span>
+<span class="s1">      line-height: 1.45;</span>
+<span class="s1">      white-space: pre-wrap;</span>
+<span class="s1">      overflow-wrap: anywhere;</span>
+<span class="s1">      word-break: break-word;</span>
+<span class="s1">      flex: 1;</span>
+<span class="s1">      display: flex;</span>
+<span class="s1">      flex-direction: column;</span>
+<span class="s1">      justify-content: flex-end;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .log-line </span><span class="se">{{</span>
+<span class="s1">      display: flex;</span>
+<span class="s1">      gap: 12px;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .line-no </span><span class="se">{{</span>
+<span class="s1">      user-select: none;</span>
+<span class="s1">      color: var(--muted);</span>
+<span class="s1">      text-align: right;</span>
+<span class="s1">      flex: 0 0 auto;</span>
+<span class="s1">      border-right: 1px solid rgba(0, 0, 0, 0.12);</span>
+<span class="s1">      padding-right: 8px;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .line-text </span><span class="se">{{</span>
+<span class="s1">      min-width: 0;</span>
+<span class="s1">      white-space: pre-wrap;</span>
+<span class="s1">      overflow-wrap: anywhere;</span>
+<span class="s1">      word-break: break-word;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    mark.signature </span><span class="se">{{</span>
+<span class="s1">      background: var(--signature-bg);</span>
+<span class="s1">      color: var(--signature-text);</span>
+<span class="s1">      padding: 0 2px;</span>
+<span class="s1">      border-radius: 3px;</span>
+<span class="s1">      font-weight: 700;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .tail-block pre </span><span class="se">{{</span>
+<span class="s1">      justify-content: flex-start;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    .empty </span><span class="se">{{</span>
+<span class="s1">      color: var(--muted);</span>
+<span class="s1">      font-style: italic;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    a </span><span class="se">{{</span>
+<span class="s1">      color: #0969da;</span>
+<span class="s1">      text-decoration: none;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    a:hover </span><span class="se">{{</span>
+<span class="s1">      text-decoration: underline;</span>
+<span class="s1">    </span><span class="se">}}</span>
+
+<span class="s1">    @media (max-width: 900px) </span><span class="se">{{</span>
+<span class="s1">      .columns </span><span class="se">{{</span>
+<span class="s1">        grid-template-columns: 1fr;</span>
+<span class="s1">      </span><span class="se">}}</span>
+
+<span class="s1">      .log1 </span><span class="se">{{</span>
+<span class="s1">        border-right: 0;</span>
+<span class="s1">        border-bottom: 1px solid var(--border);</span>
+<span class="s1">      </span><span class="se">}}</span>
+
+<span class="s1">      .panel h3 </span><span class="se">{{</span>
+<span class="s1">        position: static;</span>
+<span class="s1">      </span><span class="se">}}</span>
+<span class="s1">    </span><span class="se">}}</span>
+<span class="s1">  &lt;/style&gt;</span>
+<span class="s1">&lt;/head&gt;</span>
+<span class="s1">&lt;body&gt;</span>
+<span class="s1">  &lt;header id=&quot;top&quot; class=&quot;page-header&quot;&gt;</span>
+<span class="s1">    &lt;h1&gt;Log comparison&lt;/h1&gt;</span>
+<span class="s1">    &lt;div class=&quot;meta&quot;&gt;</span>
+<span class="s1">      &lt;span&gt;&lt;strong&gt;Log 1:&lt;/strong&gt; </span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">log1_path</span><span class="p">))</span><span class="si">}</span><span class="s1">&lt;/span&gt;</span>
+<span class="s1">      &lt;span&gt;&lt;strong&gt;Log 2:&lt;/strong&gt; </span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">log2_path</span><span class="p">))</span><span class="si">}</span><span class="s1">&lt;/span&gt;</span>
+<span class="s1">      &lt;span&gt;&lt;strong&gt;Signatures:&lt;/strong&gt; </span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">signatures_path</span><span class="p">))</span><span class="si">}</span><span class="s1">&lt;/span&gt;</span>
+<span class="s1">      &lt;span&gt;&lt;strong&gt;Matched signature blocks:&lt;/strong&gt; </span><span class="si">{</span><span class="n">total_signature_blocks</span><span class="si">}</span><span class="s1">&lt;/span&gt;</span>
+<span class="s1">      &lt;span&gt;&lt;strong&gt;Total blocks:&lt;/strong&gt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/span&gt;</span>
+<span class="s1">    &lt;/div&gt;</span>
+<span class="s1">  &lt;/header&gt;</span>
+
+<span class="s1">  &lt;main&gt;</span>
+<span class="s1">    </span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">block_html</span><span class="p">)</span><span class="si">}</span>
+<span class="s1">  &lt;/main&gt;</span>
+<span class="s1">&lt;/body&gt;</span>
+<span class="s1">&lt;/html&gt;</span>
+<span class="s1">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="parse_args">
+<span class="sig-name descname"><span class="pre">parse_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">argv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">argparse.Namespace</span></span></span><a class="headerlink" href="#parse_args" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Compare two logs using signature substrings and write an HTML report.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;log1&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;First log file&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;log2&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Second log file&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--signatures&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;cmp_logs.txt&quot;</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Signature file, one substring per line. Default: cmp_logs.txt&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;cmp_logs.html&quot;</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output HTML file. Default: cmp_logs.html&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="main">
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">argv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#main" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">log1_lines</span> <span class="o">=</span> <span class="n">read_lines</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">log1</span><span class="p">)</span>
+        <span class="n">log2_lines</span> <span class="o">=</span> <span class="n">read_lines</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">log2</span><span class="p">)</span>
+        <span class="n">signatures</span> <span class="o">=</span> <span class="n">read_signatures</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">signatures</span><span class="p">)</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="n">compare_logs</span><span class="p">(</span><span class="n">log1_lines</span><span class="p">,</span> <span class="n">log2_lines</span><span class="p">,</span> <span class="n">signatures</span><span class="p">)</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="n">render_html</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">log1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">log2</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">signatures</span><span class="p">,</span> <span class="n">signatures</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">LogCompareError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">2</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Could not write output file </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">2</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Blocks: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Signature blocks: </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">block</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">block</span><span class="o">.</span><span class="n">signature</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">0</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lit</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_chat_lc.py.html">Obsidian Chat (LC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udemy_html_toc.py.html">Udemy HTML TOC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Compare Logs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#SignatureHit"><code class="docutils literal notranslate"><span class="pre">SignatureHit</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#BlockPair"><code class="docutils literal notranslate"><span class="pre">BlockPair</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#LogCompareError"><code class="docutils literal notranslate"><span class="pre">LogCompareError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read_lines"><code class="docutils literal notranslate"><span class="pre">read_lines()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read_signatures"><code class="docutils literal notranslate"><span class="pre">read_signatures()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#find_next_signature"><code class="docutils literal notranslate"><span class="pre">find_next_signature()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compare_logs"><code class="docutils literal notranslate"><span class="pre">compare_logs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#highlight_signatures"><code class="docutils literal notranslate"><span class="pre">highlight_signatures()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#render_lines"><code class="docutils literal notranslate"><span class="pre">render_lines()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#render_html"><code class="docutils literal notranslate"><span class="pre">render_html()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parse_args"><code class="docutils literal notranslate"><span class="pre">parse_args()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="st_cmp.py.html">Compare CSV Lines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_text.py.html">Compare Text</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
+<li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qr_code.py.html">QR-Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_chat.py.html">Obsidian Chat (LI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o-bases.py.html">Obsidian Bases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alchem.py.html">Reflect DB Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="csv_knife.py.html">CSV Knife</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_npe.py.html">Grafana NPE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_json.py.html">Grafana Record</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_panels.py.html">Grafana Panels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo_rag.py.html">Neo RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book_chat.py.html">Book Chat (LI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extract_adoc_defs.py.html">AsciiDoc Defs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="li_extract.py.html">LlamaIndex Extractors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_intervals.py.html">Time Intervals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ppdict.py.html">Pretty-Print Dict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wiki_num.py.html">Renum Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explain_java.py.html">Explain Java</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firebase_edit.py.html">FB Prompts Edit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firebase_xml_sync.py.html">FB Prompts Xml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epub_toc.py.html">EPUB TOC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pom_csv.py.html">POM CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_yaml.py.html">exc yaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_ui.py.html">exc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_histo.py.html">exc histo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="split_log.py.html">Split Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extract_chunk.py.html">Log Chunk</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curl_clean.py.html">curl clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ollama_chat.py.html">Ollama Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_image.py.html">Create Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
+<li class="toctree-l1"><a class="reference internal" href="st_gmail.py.html">GMail Clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clean_youtube.py.html">YouTube Clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fw_picture.py.html">FW Picture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkers.py.html">Шашки</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonts.py.html">Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PersistedList.py.html">Persisted List</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="ai_note.py.html" title="previous chapter">Note-AI</a></li>
+      <li>Next: <a href="st_cmp.py.html" title="next chapter">Compare CSV Lines</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, EA.
+      
+      |
+      Powered by 
+      <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
+      &amp; 
+      <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; 
+      <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/cmp_logs.py.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
