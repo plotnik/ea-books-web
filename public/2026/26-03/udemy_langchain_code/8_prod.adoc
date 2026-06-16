@@ -1,0 +1,63 @@
+= 8. Production Deployment - Deploying AI Agents
+:source-highlighter: pygments
+:icons: font
+:toc: left
+
+
+link:udemy_langchain.html[<Contents>]
+
+---
+
+== 126. Setting Up LangSmith and Testing Observability Traces
+
+LangSmith is a framework-agnostic platform for building, debugging,
+deploying, and monitoring AI agents and LLM apps. It supports tracing
+requests, inspecting inputs/outputs, evaluating model behavior, and
+monitoring workflows.
+
+==== Setup overview
+
+[arabic]
+. Sign up at *smith.langchain.com*
+. Create a *personal access API key*
+. Add environment variables like:
+* `LANGSMITH++_++API++_++KEY`
+* `LANGSMITH++_++TRACING`
+* `LANGSMITH++_++PROJECT`
+
+==== Python tracing
+
+Enable tracing in Python by setting the environment values and using the
+`@traceable` decorator on functions. You can also attach tags and
+metadata to runs.
+
+==== What LangSmith records
+
+When traced functions run, LangSmith captures:
+
+* run name
+* latency
+* token usage
+* inputs/outputs
+* metadata
+* tags
+* cost estimates
+
+==== Why it’s useful
+
+It helps with:
+
+* debugging chains and agents
+* monitoring production
+* comparing outputs
+* evaluating performance over time
+
+==== Main takeaway
+
+To use LangSmith observability, you:
+
+[arabic]
+. create an API key
+. configure env vars
+. add `@traceable`
+. review runs in the dashboard
