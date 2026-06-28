@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Markdown Utils &#8212; lit  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=0c176c8a" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="QR-Code" href="qr_code.py.html" />
+    <link rel="prev" title="Markdown Converter" href="mark.py.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="markdown-utils">
+<h1>Markdown Utils<a class="headerlink" href="#markdown-utils" title="Link to this heading">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">markdown</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bs4</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeautifulSoup</span>
+</pre></div>
+</div>
+<section id="tailwind-css">
+<h2>Tailwind CSS<a class="headerlink" href="#tailwind-css" title="Link to this heading">¶</a></h2>
+<p>Parse HTML and add Tailwind CSS classes to improve styling.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">enhance_html_with_tailwind</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Headings</span>
+    <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;h</span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;text-4xl&#39;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;text-3xl&#39;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;text-2xl&#39;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;text-xl&#39;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;text-lg&#39;</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;text-base&#39;</span><span class="p">,</span>
+            <span class="p">}[</span><span class="n">level</span><span class="p">]</span>
+            <span class="n">tag</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="n">size</span><span class="p">,</span> <span class="s1">&#39;font-bold&#39;</span><span class="p">,</span> <span class="s1">&#39;mt-4&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-2&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Paragraphs</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">):</span>
+        <span class="n">p</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;mb-4&#39;</span><span class="p">,</span> <span class="s1">&#39;leading-relaxed&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Links</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;text-blue-600&#39;</span><span class="p">,</span> <span class="s1">&#39;hover:underline&#39;</span><span class="p">]</span>
+        <span class="n">a</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;_blank&#39;</span>
+
+    <span class="c1"># Images</span>
+    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;img&#39;</span><span class="p">):</span>
+        <span class="n">img</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;my-4&#39;</span><span class="p">,</span> <span class="s1">&#39;max-w-full&#39;</span><span class="p">,</span> <span class="s1">&#39;h-auto&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Lists</span>
+    <span class="k">for</span> <span class="n">ul</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">):</span>
+        <span class="n">ul</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ul</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;list-disc&#39;</span><span class="p">,</span> <span class="s1">&#39;ml-6&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-4&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">ol</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;ol&#39;</span><span class="p">):</span>
+        <span class="n">ol</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ol</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;list-decimal&#39;</span><span class="p">,</span> <span class="s1">&#39;ml-6&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-4&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Code blocks</span>
+    <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="p">):</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">parent</span>
+        <span class="c1"># Inline code</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;pre&#39;</span><span class="p">:</span>
+            <span class="n">code</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;bg-gray-100&#39;</span><span class="p">,</span> <span class="s1">&#39;px-1&#39;</span><span class="p">,</span> <span class="s1">&#39;py-0.5&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">pre</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">):</span>
+        <span class="n">pre</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;bg-gray-900&#39;</span><span class="p">,</span> <span class="s1">&#39;text-gray-100&#39;</span><span class="p">,</span> <span class="s1">&#39;p-4&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">,</span> <span class="s1">&#39;overflow-auto&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-4&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Blockquotes</span>
+    <span class="k">for</span> <span class="n">bq</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;blockquote&#39;</span><span class="p">):</span>
+        <span class="n">bq</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bq</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;border-l-4&#39;</span><span class="p">,</span> <span class="s1">&#39;border-gray-300&#39;</span><span class="p">,</span> <span class="s1">&#39;pl-4&#39;</span><span class="p">,</span> <span class="s1">&#39;italic&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-4&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Wrap in basic HTML structure</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            &lt;!DOCTYPE html&gt;</span>
+<span class="s2">            &lt;html lang=</span><span class="se">\&quot;</span><span class="s2">en</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">            &lt;head&gt;</span>
+<span class="s2">                &lt;meta charset=</span><span class="se">\&quot;</span><span class="s2">UTF-8</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">                &lt;meta name=</span><span class="se">\&quot;</span><span class="s2">viewport</span><span class="se">\&quot;</span><span class="s2"> content=</span><span class="se">\&quot;</span><span class="s2">width=device-width, initial-scale=1.0</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">                &lt;script src=</span><span class="se">\&quot;</span><span class="s2">https://cdn.tailwindcss.com</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;/script&gt;</span>
+<span class="s2">                &lt;title&gt;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&lt;/title&gt;</span>
+<span class="s2">            &lt;/head&gt;</span>
+<span class="s2">            &lt;body class=</span><span class="se">\&quot;</span><span class="s2">prose mx-auto p-8</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">            </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">            &lt;/body&gt;</span>
+<span class="s2">            &lt;/html&gt;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="bootstrap-css">
+<h2>Bootstrap CSS<a class="headerlink" href="#bootstrap-css" title="Link to this heading">¶</a></h2>
+<p>Parse HTML and add Bootstrap CSS classes to improve styling.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">enhance_html_with_bootstrap</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Headings</span>
+    <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;h</span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
+            <span class="c1"># Add Bootstrap display headings</span>
+            <span class="n">display</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;display-1&#39;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;display-2&#39;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;display-3&#39;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;display-4&#39;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;h1&#39;</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;h2&#39;</span><span class="p">,</span>
+            <span class="p">}[</span><span class="n">level</span><span class="p">]</span>
+            <span class="n">tag</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="n">display</span><span class="p">,</span> <span class="s1">&#39;mt-4&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-3&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Paragraphs</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">):</span>
+        <span class="n">p</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;mb-3&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Links</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;link-primary&#39;</span><span class="p">]</span>
+        <span class="n">a</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;_blank&#39;</span>
+
+    <span class="c1"># Images</span>
+    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;img&#39;</span><span class="p">):</span>
+        <span class="n">img</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;img-fluid&#39;</span><span class="p">,</span> <span class="s1">&#39;my-3&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Lists</span>
+    <span class="k">for</span> <span class="n">ul</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">):</span>
+        <span class="n">ul</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ul</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;list-unstyled&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-3&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">ol</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;ol&#39;</span><span class="p">):</span>
+        <span class="n">ol</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ol</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;mb-3&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Code blocks</span>
+    <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="p">):</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">parent</span>
+        <span class="c1"># Inline code</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;pre&#39;</span><span class="p">:</span>
+            <span class="n">code</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;bg-light&#39;</span><span class="p">,</span> <span class="s1">&#39;px-1&#39;</span><span class="p">,</span> <span class="s1">&#39;py-0&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">pre</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">):</span>
+        <span class="n">pre</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;bg-dark&#39;</span><span class="p">,</span> <span class="s1">&#39;text-light&#39;</span><span class="p">,</span> <span class="s1">&#39;p-3&#39;</span><span class="p">,</span> <span class="s1">&#39;rounded&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-3&#39;</span><span class="p">,</span> <span class="s1">&#39;overflow-auto&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Blockquotes</span>
+    <span class="k">for</span> <span class="n">bq</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;blockquote&#39;</span><span class="p">):</span>
+        <span class="n">bq</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bq</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;blockquote&#39;</span><span class="p">,</span> <span class="s1">&#39;ps-3&#39;</span><span class="p">,</span> <span class="s1">&#39;border-start&#39;</span><span class="p">,</span> <span class="s1">&#39;mb-3&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        &lt;!DOCTYPE html&gt;</span>
+<span class="s2">        &lt;html lang=</span><span class="se">\&quot;</span><span class="s2">en</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">        &lt;head&gt;</span>
+<span class="s2">            &lt;meta charset=</span><span class="se">\&quot;</span><span class="s2">UTF-8</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">            &lt;meta name=</span><span class="se">\&quot;</span><span class="s2">viewport</span><span class="se">\&quot;</span><span class="s2"> content=</span><span class="se">\&quot;</span><span class="s2">width=device-width, initial-scale=1.0</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">            &lt;!-- Bootstrap CSS --&gt;</span>
+<span class="s2">            &lt;link href=</span><span class="se">\&quot;</span><span class="s2">https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css</span><span class="se">\&quot;</span><span class="s2"> rel=</span><span class="se">\&quot;</span><span class="s2">stylesheet</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">            &lt;title&gt;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&lt;/title&gt;</span>
+<span class="s2">        &lt;/head&gt;</span>
+<span class="s2">        &lt;body class=</span><span class="se">\&quot;</span><span class="s2">container py-5</span><span class="se">\&quot;</span><span class="s2">&gt;</span>
+<span class="s2">        </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">        &lt;!-- Bootstrap JS Bundle --&gt;</span>
+<span class="s2">        &lt;script src=</span><span class="se">\&quot;</span><span class="s2">https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;/script&gt;</span>
+<span class="s2">        &lt;/body&gt;</span>
+<span class="s2">        &lt;/html&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="save-html">
+<h2>Save HTML<a class="headerlink" href="#save-html" title="Link to this heading">¶</a></h2>
+<p>Convert Markdown to HTML and enhance it with Tailwind or Booststrap styles.
+Then save the resulting HTML file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">save_html</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">html_format</span><span class="p">):</span>
+    <span class="n">html_text</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span>
+        <span class="s1">&#39;fenced_code&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;codehilite&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;tables&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;toc&#39;</span>
+    <span class="p">])</span>
+    <span class="k">if</span> <span class="n">html_format</span> <span class="o">==</span> <span class="s2">&quot;Bootstrap&quot;</span><span class="p">:</span>
+        <span class="n">html_text</span> <span class="o">=</span> <span class="n">enhance_html_with_bootstrap</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">html_format</span> <span class="o">==</span> <span class="s2">&quot;Tailwind&quot;</span><span class="p">:</span>
+        <span class="n">html_text</span> <span class="o">=</span> <span class="n">enhance_html_with_tailwind</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="n">filename</span> <span class="o">+=</span> <span class="s2">&quot;.html&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html_text</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lit</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_chat_lc.py.html">Obsidian Chat (LC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udemy.py.html">Udemy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udemy_html_toc.py.html">Udemy HTML TOC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_note.py.html">Note-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_logs.py.html">Compare Logs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="st_cmp.py.html">Compare CSV Lines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_text.py.html">Compare Text</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_props.py.html">Compare Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmp_folders.py.html">Сравнение папок</a></li>
+<li class="toctree-l1"><a class="reference internal" href="md_view.py.html">Markdown Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mark.py.html">Markdown Converter</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Markdown Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tailwind-css">Tailwind CSS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bootstrap-css">Bootstrap CSS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#save-html">Save HTML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qr_code.py.html">QR-Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_chat.py.html">Obsidian Chat (LI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_obsidian.py.html">Obsidian-AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_ed.py.html">Obsidian Web Editor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o-bases.py.html">Obsidian Bases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alchem.py.html">Reflect DB Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="csv_knife.py.html">CSV Knife</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_npe.py.html">Grafana NPE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_json.py.html">Grafana Record</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_panels.py.html">Grafana Panels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grafana_stats.py.html">Grafana Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo_rag.py.html">Neo RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book_chat.py.html">Book Chat (LI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extract_adoc_defs.py.html">AsciiDoc Defs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="li_extract.py.html">LlamaIndex Extractors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="L1_Router_Engine.py.html">Llamaindex Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_intervals.py.html">Time Intervals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pan_ui.py.html">Pandoc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ppdict.py.html">Pretty-Print Dict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wiki_num.py.html">Renum Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jira_stats.py.html">Jira Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explain_java.py.html">Explain Java</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_review.py.html">Code Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firebase_edit.py.html">FB Prompts Edit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firebase_xml_sync.py.html">FB Prompts Xml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_note.py.html">Doc-Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="up_file.py.html">Upload File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epub_toc.py.html">EPUB TOC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pom_csv.py.html">POM CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_yaml.py.html">exc yaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_ui.py.html">exc UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exc_histo.py.html">exc histo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="split_log.py.html">Split Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extract_chunk.py.html">Log Chunk</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curl_clean.py.html">curl clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ollama_chat.py.html">Ollama Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_keys.py.html">Rasp Hotkeys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_image.py.html">Create Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="albums.py.html">Albums</a></li>
+<li class="toctree-l1"><a class="reference internal" href="st_gmail.py.html">GMail Clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clean_youtube.py.html">YouTube Clean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="youtube_transcript.py.html">YouTube Transcript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fw_picture.py.html">FW Picture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkers.py.html">Шашки</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonts.py.html">Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PersistedList.py.html">Persisted List</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="mark.py.html" title="previous chapter">Markdown Converter</a></li>
+      <li>Next: <a href="qr_code.py.html" title="next chapter">QR-Code</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, EA.
+      
+      |
+      Powered by 
+      <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
+      &amp; 
+      <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; 
+      <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/md_utils.py.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

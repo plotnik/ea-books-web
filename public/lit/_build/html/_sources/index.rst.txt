@@ -25,6 +25,8 @@ Literate Programs
    cmp_folders.py
       
    md_view.py   
+   mark.py
+   md_utils.py
    qr_code.py
    o_chat.py
    ai_obsidian.py
