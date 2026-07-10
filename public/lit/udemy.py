@@ -70,6 +70,9 @@ st.logo("https://ea-books.netlify.app/lit/udemy.svg")
 # ::
 
 llm_prices = {
+    "gpt-5.6-sol": (5.00, 30.00),
+    "gpt-5.6-terra": (2.50, 15.00),
+    "gpt-5.6-luna": (1.00, 6.00),    
     "gpt-5.5": (5.00, 30.00),
     "gpt-5.4": (2.50, 15.00),
     "gpt-5.4-mini": (0.75, 4.50),

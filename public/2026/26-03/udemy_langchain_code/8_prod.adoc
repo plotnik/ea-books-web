@@ -192,3 +192,120 @@ LLM call for every request.
 Layer 3 adds an important final security check to ensure only clean,
 safe input reaches the main LLM.
 
+
+== 131. Hands-on ~ Output Validator and Summary
+
+The passage explains a secure LLM pipeline with multiple defenses:
+
+* *Output validation* is added in the constructor by initializing a *PII
+detector*.
+* The output validator performs *two checks* on model responses:
+[arabic]
+. *PII detection*: sensitive data like emails, phone numbers, or SSNs is
+*masked* so the response remains useful.
+. *Harmful content detection*: dangerous content such as hacking
+instructions or secrets is *blocked entirely*.
+
+The validator returns:
+
+[arabic]
+. Whether the output is trustworthy
+. The cleaned output
+. A reason for masking or blocking
+
+An example shows:
+
+* Safe text passes unchanged
+* PII is masked
+* Harmful content is blocked
+
+The document then combines all security layers into a full pipeline:
+
+[arabic]
+. *Input sanitization*
+. *Input PII masking*
+. *LLM guard check*
+. *LLM processing*
+. *Output validation*
+
+The key principle is *“fail fast, fail cheap”*: run cheap checks first,
+expensive ones later.
+
+The final response includes:
+
+* original input
+* whether it was blocked
+* the output
+* security notes
+
+These notes act as an *audit trail* for debugging and security review.
+
+It also highlights the value of *tracing and logging*, which show
+exactly what happened to each request and why.
+
+Finally, it summarizes five security layers:
+
+[arabic]
+. Sanitizer
+. PII detector
+. LLM guard
+. Output validator
+. Tracing/logging
+
+And it compares approaches:
+
+* *Regex checks* are fast, cheap, and predictable but limited
+* *LLM guards* are smarter and better at novel attacks but slower and
+more expensive
+
+Best practice: use *both* together.
+
+== 134. Hands-on ~ Integration Testing
+
+The integration test suite evaluates an actual LLM through traceable
+basic Q&A tests. It:
+
+* Configures the model and runs predefined questions with expected
+keywords.
+* Determines success by checking whether the response contains the
+expected keyword or phrase rather than requiring an exact match,
+accommodating natural LLM variation.
+* Records each question, response, and pass/fail status in a results
+list and LangSmith.
+* Can be run by instantiating the test suite and calling
+`test++_++basic++_++qa()`.
+* Uses LangSmith’s `expected++_++contains` field to inspect the expected
+content and outcome.
+
+Because these tests rely on real APIs, they are slower, incur costs, and
+may be affected by latency, rate limits, or provider availability. They
+should therefore run on schedules, before deployments, or after changes
+to the model, prompt, or retrieval setup—not on every commit.
+
+== 135. Hands-on ~ LLM-as-Judge Evaluation
+
+The content explains how to build and use an *LLM-as-judge evaluator*
+with an `LLMEvaluator` class. The evaluator uses a separate language
+model to assess another model’s response based on:
+
+* *Correctness*
+* *Relevance*
+* *Clarity*
+* *Completeness*
+* *Overall quality*
+
+Each criterion is scored from 1 to 10, and the evaluator is instructed
+to return only a structured JSON object, making the results easy to
+parse programmatically.
+
+LLM-based judging is especially useful for open-ended questions where
+keyword matching cannot adequately measure answer quality. The evaluator
+considers the original question, generated response, and optional
+reference answer.
+
+Evaluations can be traced in LangSmith, allowing users to inspect the
+inputs, outputs, and generated scores. However, LLM judges may produce
+biased, inconsistent, or incorrect assessments. Therefore, they should
+support—not replace—human review. A recommended workflow is to use the
+LLM for large-scale evaluation, flag low-confidence or unusual cases,
+and have humans verify those results.

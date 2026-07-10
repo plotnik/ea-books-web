@@ -18,6 +18,7 @@ Literate Programs
    udemy_html_toc.py
    ai_note.py
 
+   cmp_json.py
    cmp_logs.py
    st_cmp.py
    cmp_text.py

@@ -539,6 +539,9 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
 <li><a href="#_overall">Overall</a></li>
 </ul>
 </li>
+<li><a href="#_131_hands_on_output_validator_and_summary">131. Hands-on ~ Output Validator and Summary</a></li>
+<li><a href="#_134_hands_on_integration_testing">134. Hands-on ~ Integration Testing</a></li>
+<li><a href="#_135_hands_on_llm_as_judge_evaluation">135. Hands-on ~ LLM-as-Judge Evaluation</a></li>
 </ul>
 </div>
 </div>
@@ -987,10 +990,252 @@ safe input reaches the main LLM.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_131_hands_on_output_validator_and_summary">131. Hands-on ~ Output Validator and Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The passage explains a secure LLM pipeline with multiple defenses:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Output validation</strong> is added in the constructor by initializing a <strong>PII
+detector</strong>.</p>
+</li>
+<li>
+<p>The output validator performs <strong>two checks</strong> on model responses:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>PII detection</strong>: sensitive data like emails, phone numbers, or SSNs is
+<strong>masked</strong> so the response remains useful.</p>
+</li>
+<li>
+<p><strong>Harmful content detection</strong>: dangerous content such as hacking
+instructions or secrets is <strong>blocked entirely</strong>.</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The validator returns:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Whether the output is trustworthy</p>
+</li>
+<li>
+<p>The cleaned output</p>
+</li>
+<li>
+<p>A reason for masking or blocking</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>An example shows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Safe text passes unchanged</p>
+</li>
+<li>
+<p>PII is masked</p>
+</li>
+<li>
+<p>Harmful content is blocked</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The document then combines all security layers into a full pipeline:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Input sanitization</strong></p>
+</li>
+<li>
+<p><strong>Input PII masking</strong></p>
+</li>
+<li>
+<p><strong>LLM guard check</strong></p>
+</li>
+<li>
+<p><strong>LLM processing</strong></p>
+</li>
+<li>
+<p><strong>Output validation</strong></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The key principle is <strong>“fail fast, fail cheap”</strong>: run cheap checks first,
+expensive ones later.</p>
+</div>
+<div class="paragraph">
+<p>The final response includes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>original input</p>
+</li>
+<li>
+<p>whether it was blocked</p>
+</li>
+<li>
+<p>the output</p>
+</li>
+<li>
+<p>security notes</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These notes act as an <strong>audit trail</strong> for debugging and security review.</p>
+</div>
+<div class="paragraph">
+<p>It also highlights the value of <strong>tracing and logging</strong>, which show
+exactly what happened to each request and why.</p>
+</div>
+<div class="paragraph">
+<p>Finally, it summarizes five security layers:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Sanitizer</p>
+</li>
+<li>
+<p>PII detector</p>
+</li>
+<li>
+<p>LLM guard</p>
+</li>
+<li>
+<p>Output validator</p>
+</li>
+<li>
+<p>Tracing/logging</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>And it compares approaches:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Regex checks</strong> are fast, cheap, and predictable but limited</p>
+</li>
+<li>
+<p><strong>LLM guards</strong> are smarter and better at novel attacks but slower and
+more expensive</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Best practice: use <strong>both</strong> together.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_134_hands_on_integration_testing">134. Hands-on ~ Integration Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The integration test suite evaluates an actual LLM through traceable
+basic Q&amp;A tests. It:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Configures the model and runs predefined questions with expected
+keywords.</p>
+</li>
+<li>
+<p>Determines success by checking whether the response contains the
+expected keyword or phrase rather than requiring an exact match,
+accommodating natural LLM variation.</p>
+</li>
+<li>
+<p>Records each question, response, and pass/fail status in a results
+list and LangSmith.</p>
+</li>
+<li>
+<p>Can be run by instantiating the test suite and calling
+<code>test_basic_qa()</code>.</p>
+</li>
+<li>
+<p>Uses LangSmith’s <code>expected_contains</code> field to inspect the expected
+content and outcome.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Because these tests rely on real APIs, they are slower, incur costs, and
+may be affected by latency, rate limits, or provider availability. They
+should therefore run on schedules, before deployments, or after changes
+to the model, prompt, or retrieval setup—not on every commit.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_135_hands_on_llm_as_judge_evaluation">135. Hands-on ~ LLM-as-Judge Evaluation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The content explains how to build and use an <strong>LLM-as-judge evaluator</strong>
+with an <code>LLMEvaluator</code> class. The evaluator uses a separate language
+model to assess another model’s response based on:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Correctness</strong></p>
+</li>
+<li>
+<p><strong>Relevance</strong></p>
+</li>
+<li>
+<p><strong>Clarity</strong></p>
+</li>
+<li>
+<p><strong>Completeness</strong></p>
+</li>
+<li>
+<p><strong>Overall quality</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each criterion is scored from 1 to 10, and the evaluator is instructed
+to return only a structured JSON object, making the results easy to
+parse programmatically.</p>
+</div>
+<div class="paragraph">
+<p>LLM-based judging is especially useful for open-ended questions where
+keyword matching cannot adequately measure answer quality. The evaluator
+considers the original question, generated response, and optional
+reference answer.</p>
+</div>
+<div class="paragraph">
+<p>Evaluations can be traced in LangSmith, allowing users to inspect the
+inputs, outputs, and generated scores. However, LLM judges may produce
+biased, inconsistent, or incorrect assessments. Therefore, they should
+support—not replace—human review. A recommended workflow is to use the
+LLM for large-scale evaluation, flag low-confidence or unusual cases,
+and have humans verify those results.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-06-28 12:16:41 +0300
+Last updated 2026-07-11 01:01:18 +0300
 </div>
 </div>
 </body>
