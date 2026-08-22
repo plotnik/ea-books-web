@@ -258,14 +258,15 @@ prompt_name = st.sidebar.selectbox(
 prompt = get_prompt(prompt_name)
 st.write(prompt)  
 
-# 3) Select **OpenAI LLM model**
+
+# LLM Prices - Short context
 #
 # ::
 
 llm_prices = {
     "gpt-5.6-sol": (5.00, 30.00),
-    "gpt-5.6-terra": (2.50, 15.00),
-    "gpt-5.6-luna": (1.00, 6.00),
+    "gpt-5.6-terra": (2.00, 12.00),
+    "gpt-5.6-luna": (0.20, 1.20),
     "gpt-5.5": (5.00, 30.00),
     "gpt-5.4": (2.50, 15.00),
     "gpt-5.4-mini": (0.75, 4.50),
@@ -273,6 +274,28 @@ llm_prices = {
     "gpt-4o-mini": (0.15, 0.60),
     "gpt-4.1-nano": (0.10, 0.40),
 }    
+
+# LLM Prices - Long context
+#
+# ::
+
+llm_long_prices = {
+    "gpt-5.6-sol": (10.00, 45.00),
+    "gpt-5.6-terra": (4.00, 18.00),
+    "gpt-5.6-luna": (0.40, 1.80),
+    "gpt-5.5": (10.00, 45.00),
+    "gpt-5.4": (5.00, 22.50),
+    "gpt-5.4-mini": (0.75, 4.50),
+    "gpt-5.4-nano": (0.20, 1.25),
+    "gpt-4o-mini": (0.15, 0.60),
+    "gpt-4.1-nano": (0.10, 0.40),
+}
+
+LONG_LIMIT_TOKENS = 272 * 1024
+
+# 3) Select **OpenAI LLM model**
+#
+# ::
 
 llm_models = list(llm_prices.keys())
 
@@ -316,8 +339,10 @@ reasoning_effort = st.sidebar.selectbox(
 
 encoding = tiktoken.get_encoding("o200k_base")
 tokens = encoding.encode(input_text)
+token_count = len(tokens)
 
-cents = round(len(tokens) * llm_prices[llm_model][0]/10000, 5)
+prices = llm_long_prices if token_count > LONG_LIMIT_TOKENS else llm_prices
+cents = round(token_count * prices[llm_model][0] / 10000, 5)
 
 st.sidebar.write(f'''
     | Chars | Tokens | Cents |

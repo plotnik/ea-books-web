@@ -40,7 +40,7 @@ It integrates with OpenAI's |robot| `Responses API`_ to provide intelligent text
 
 |label| **OpenAI Model Pricing**
    https://developers.openai.com/api/docs/pricing#latest-models
-   
+  
 ----   
 
 .. _Prompt Examples:
@@ -70,7 +70,7 @@ It integrates with OpenAI's |robot| `Responses API`_ to provide intelligent text
 
 |books| **OpenAI Cookbook**
    https://developers.openai.com/cookbook
-   
+  
 
 ----
 
@@ -84,13 +84,13 @@ It integrates with OpenAI's |robot| `Responses API`_ to provide intelligent text
 
 .. admonition:: |yin_yang| Literate Programming
    :class: note
-   
+  
     - Get |snake| `Python Source`_. Save it as ``note_openai.py``. 
     - Save |snake| `PersistedList.py`_ in the same folder.
-    
-    
+   
+   
     Script is written in |eyeglasses| `literate programming`_.
-    
+   
     - See |yin_yang| `PyLit Tutorial`_
     - See |compass| `reStructuredText Primer`_
 
@@ -258,14 +258,15 @@ Select prompt body by its name
   prompt = get_prompt(prompt_name)
   st.write(prompt)  
 
-3) Select **OpenAI LLM model**
+
+LLM Prices - Short context
 
 ::
 
   llm_prices = {
       "gpt-5.6-sol": (5.00, 30.00),
-      "gpt-5.6-terra": (2.50, 15.00),
-      "gpt-5.6-luna": (1.00, 6.00),
+      "gpt-5.6-terra": (2.00, 12.00),
+      "gpt-5.6-luna": (0.20, 1.20),
       "gpt-5.5": (5.00, 30.00),
       "gpt-5.4": (2.50, 15.00),
       "gpt-5.4-mini": (0.75, 4.50),
@@ -273,6 +274,28 @@ Select prompt body by its name
       "gpt-4o-mini": (0.15, 0.60),
       "gpt-4.1-nano": (0.10, 0.40),
   }    
+
+LLM Prices - Long context
+
+::
+
+  llm_long_prices = {
+      "gpt-5.6-sol": (10.00, 45.00),
+      "gpt-5.6-terra": (4.00, 18.00),
+      "gpt-5.6-luna": (0.40, 1.80),
+      "gpt-5.5": (10.00, 45.00),
+      "gpt-5.4": (5.00, 22.50),
+      "gpt-5.4-mini": (0.75, 4.50),
+      "gpt-5.4-nano": (0.20, 1.25),
+      "gpt-4o-mini": (0.15, 0.60),
+      "gpt-4.1-nano": (0.10, 0.40),
+  }
+
+  LONG_LIMIT_TOKENS = 272 * 1024
+
+3) Select **OpenAI LLM model**
+
+::
 
   llm_models = list(llm_prices.keys())
 
@@ -316,8 +339,10 @@ and display both the token count and the corresponding price.
 
   encoding = tiktoken.get_encoding("o200k_base")
   tokens = encoding.encode(input_text)
+  token_count = len(tokens)
 
-  cents = round(len(tokens) * llm_prices[llm_model][0]/10000, 5)
+  prices = llm_long_prices if token_count > LONG_LIMIT_TOKENS else llm_prices
+  cents = round(token_count * prices[llm_model][0] / 10000, 5)
 
   st.sidebar.write(f'''
       | Chars | Tokens | Cents |
@@ -438,7 +463,7 @@ Step 2: Configure Your Environment
         - tiktoken
         - streamlit
         - pyperclip
-       
+      
 2. **Select conda-forge Channel**
 
    Open your terminal or command prompt and execute the following
