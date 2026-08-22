@@ -1,0 +1,401 @@
+= 4. Prompt Engineering & Structured Output - *Claude Certification Guide*
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+:example-caption:
+
+https://claudecertificationguide.com/learn/4-prompt-engineering
+
+== 4.1 System Prompts with Explicit Criteria
+
+Effective production prompts should use *explicit, categorical criteria*
+rather than vague instructions such as “be conservative” or “only report
+high-confidence findings.” Vague language provides no actionable
+decision boundary and can lead to inconsistent classifications, missed
+bugs, and excessive false positives.
+
+For code review prompts, clearly specify:
+
+* What to report: bugs and security vulnerabilities.
+* What to skip: minor style preferences and local patterns.
+* When to flag documentation: only when claimed behavior contradicts
+actual code behavior.
+
+High false positive rates in one review category can undermine developer
+trust in every category, including accurate ones. The recommended
+response is to *temporarily disable problematic categories*, refine
+their criteria using concrete examples, and re-enable them only after
+precision improves.
+
+Severity calibration should also rely on *actual code examples*, not
+broad prose definitions. For example, unsanitized SQL input can
+illustrate a critical issue, while inconsistent variable naming can
+illustrate a minor issue. Examples reduce ambiguity and produce more
+consistent results.
+
+Confidence-based filtering is not a substitute for explicit criteria
+because LLM self-reported confidence is poorly calibrated. Confidence is
+better used later for routing uncertain findings to human review.
+
+The recommended hierarchy is:
+
+[arabic]
+. Define explicit criteria and severity examples.
+. Measure false positives and consistency.
+. Use confidence-based routing only after valid criteria are
+established.
+. Disable categories exceeding acceptable false-positive thresholds—such
+as 25%—until their prompts are improved.
+
+== 4.2 Few-Shot Prompting
+
+=== Summary
+
+Few-shot prompting is presented as the preferred method for improving
+Claude’s consistency and output quality when detailed instructions alone
+are insufficient.
+
+==== When to use few-shot examples
+
+Use them when:
+
+[arabic]
+. *Output formatting is inconsistent* despite detailed instructions.
+. *Judgment calls vary* across similar or ambiguous cases, such as
+severity classification or tool routing.
+. *Extraction fields are empty* even though the information exists,
+especially when data appears in narrative or mixed document structures.
+
+==== How to create effective examples
+
+* Use *2–4 targeted examples* focused on the actual failure cases.
+* Include *input, output, and reasoning*. The reasoning helps Claude
+learn the underlying decision principle rather than merely copying
+surface patterns.
+* Cover varied structures and edge cases, such as tables, narrative
+paragraphs, and mixed formats.
+* Include examples of both issues to flag and acceptable cases to
+ignore, which can reduce false positives.
+
+Few-shot examples can also reduce hallucinations in extraction tasks by
+demonstrating how to handle information across different document
+formats without inventing missing values.
+
+==== Choosing the right technique
+
+[cols=",",options="header",]
+|===
+|Problem |Recommended approach
+|Inconsistent formatting |Few-shot examples
+
+|Malformed JSON |Tool use with JSON schemas
+
+|Fabricated values for missing data |Optional or nullable schema fields
+
+|Incorrect tool selection |Improve tool descriptions first, then use
+few-shot examples
+
+|Missing data in narrative text |Few-shot examples showing narrative
+extraction
+
+|Extraction totals do not match |Validation and retry loop
+|===
+
+==== Common exam traps
+
+* Adding more instructions when formatting remains inconsistent.
+* Assuming examples only teach literal pattern matching.
+* Using confidence thresholds to solve inconsistent judgments.
+
+==== Practice and build exercise
+
+The recommended workflow is to:
+
+[arabic]
+. Establish a baseline using detailed instructions without examples.
+. Test across documents with tables, narrative text, and mixed formats.
+. Identify which fields and structures fail.
+. Add three reasoning-rich examples targeting those failures.
+. Re-test and measure empty-field rates, consistency, and accuracy.
+. Document which issues improved with few-shot prompting and which
+require schemas or validation loops.
+
+The core principle is: *when instructions alone do not produce
+consistent results, add a small number of targeted examples with
+reasoning before adding more instructions.*
+
+== 4.3 Structured Output with Tool Use
+
+=== Summary
+
+For reliable structured output from Claude, use *`tool++_++use` with
+JSON schemas* rather than asking for JSON in a prompt. Schemas eliminate
+JSON syntax problems, while prompt-based JSON may be malformed.
+
+==== `tool++_++choice` modes
+
+* *`"auto"`*: The model may call a tool or respond with text. It does
+not guarantee structured output.
+* *`"any"`*: The model must call a tool but chooses which one. Use this
+when the document type is unknown and multiple extraction tools are
+available.
+* *Forced tool selection* — `++{++ type: "tool", name: "..." }`: The
+model must call a specific tool, useful for mandatory extraction steps.
+
+==== What schemas do and do not guarantee
+
+JSON schemas prevent structural or syntax errors such as missing
+brackets and invalid JSON. They do *not* prevent semantic errors,
+including:
+
+* Incorrect totals or sums
+* Values placed in the wrong fields
+* Fabricated values for missing information
+
+Semantic correctness requires additional validation.
+
+==== Schema design recommendations
+
+* Make fields *optional or nullable* when source documents may omit
+them, allowing the model to return `null` rather than fabricate data.
+* Include an *`"unclear"`* enum value for ambiguous classifications.
+* Include an *`"other"`* category with a nullable detail field for
+unexpected cases.
+* Put formatting requirements, such as ISO dates or decimal currency
+values, in the prompt.
+
+==== Main exam lessons
+
+* Use *`any`* for guaranteed structured output when the appropriate tool
+is unknown.
+* Do not confuse *`auto`* with `any`; `auto` permits text responses.
+* Do not make every field required merely for completeness, since this
+can encourage hallucinated values.
+* Tool use guarantees structure, not factual accuracy.
+
+== 4.4 Validation, Retry, and Feedback Loops
+
+=== Summary
+
+Production extraction systems need validation and retry workflows
+because documents may contain formatting issues, misplaced values,
+missing fields, or inconsistent totals.
+
+==== Retry-with-error-feedback
+
+An effective retry sends the model:
+
+[arabic]
+. The original document
+. The failed extraction
+. The specific validation error
+
+This gives the model enough context to correct issues such as missed
+line items, incorrect field placement, or calculation errors. Naive
+retries without error details often repeat the same mistake.
+
+==== What retries can and cannot fix
+
+Retries are effective for:
+
+* Format mismatches
+* Structural errors
+* Misplaced values
+* Mathematical inconsistencies
+
+Retries cannot fix:
+
+* Information absent from the source
+* Information located in an unavailable external document
+* Fields requiring knowledge the model does not possess
+
+Unfixable cases should return `null` where permitted or be escalated for
+human review.
+
+==== Self-correction schema design
+
+Schemas can include fields that expose inconsistencies, such as:
+
+* `calculated++_++total`
+* `stated++_++total`
+* `total++_++discrepancy`
+* `conflict++_++detected`
+
+For contradictory source information, the model should capture both
+values and flag the conflict rather than silently choosing one.
+
+For code-analysis findings, `detected++_++pattern` records the construct
+that triggered each finding. Tracking dismissal rates by pattern
+supports systematic prompt refinement.
+
+==== Schema versus semantic validation
+
+* *Schema validation* catches malformed JSON, missing fields, incorrect
+types, and invalid structure. `tool++_++use` with strict JSON schemas
+can enforce this.
+* *Semantic validation* catches incorrect but structurally valid data,
+such as totals that do not match, invalid date ordering, misplaced
+values, or contradictory fields.
+
+Semantic validation requires external logic and retry loops.
+
+==== Pydantic’s role
+
+Pydantic can enforce both:
+
+* Structural rules through types, required fields, and enums
+* Business rules through custom validators, such as matching line-item
+totals or enforcing date order
+
+Its `ValidationError` provides specific, machine-readable feedback that
+can be inserted into the retry prompt. Even with strict tool use or SDK
+parsing, semantic validation remains the application’s responsibility.
+
+==== Core exam lessons
+
+* Do not assume retries always work.
+* Always include the exact validation error in the retry request.
+* Do not rely on schema validation alone for business rules.
+* Pydantic remains useful even when tool schemas are enforced.
+* Retry only when the source contains enough information to correct the
+error.
+
+==== Recommended workflow
+
+[arabic]
+. Define a structured extraction schema with discrepancy, conflict, and
+pattern-tracking fields.
+. Validate completeness, totals, enums, and date relationships.
+. If a fixable error occurs, retry with the document, failed extraction,
+and detailed error.
+. If required information is absent, stop retrying and flag the case for
+review.
+. Track `detected++_++pattern` dismissals to prioritize prompt
+improvements.
+
+For the practice scenario, Document A should be retried because the
+total discrepancy may result from a missed or incorrectly extracted line
+item. Document B should not be repeatedly retried because the department
+name is absent from the source.
+
+== 4.5 Batch Processing Strategies
+
+=== Summary: Batch Processing Strategies
+
+The Message Batches API reduces costs by *50%*, but results may take *up
+to 24 hours* and have *no latency SLA*. It also does not support
+multi-turn tool calling within a single request. Each request should use
+a unique `custom++_++id` to correlate results with the original input.
+
+==== When to use each API
+
+* *Synchronous API:* Use for blocking or time-sensitive workflows where
+a person or system is waiting, such as:
+** Pre-merge CI/CD checks
+** Real-time code reviews
+** Agent workflows requiring tool calls
+* *Batch API:* Use for latency-tolerant workflows whose results are
+consumed later, such as:
+** Overnight technical debt reports
+** Weekly code audits
+** Nightly test generation
+** Batch document extraction
+
+Cost savings alone do not justify moving blocking workflows to batch
+processing.
+
+==== SLA planning
+
+For a *30-hour SLA*, the 24-hour maximum batch processing window leaves
+*6 hours of buffer* for collecting inputs, validation, and operational
+delays. Batches should be submitted early enough to allow the full
+24-hour window, with submissions every *4–6 hours* during the buffer
+period to maintain coverage.
+
+==== Failure handling
+
+The recommended retry process is:
+
+[arabic]
+. Parse results and identify failed requests by `custom++_++id`.
+. Resubmit only failed documents, not the entire batch.
+. Modify retries as needed, such as:
+* Chunking oversized documents
+* Increasing `max++_++tokens`
+* Simplifying prompts
+* Adding format-specific examples
+
+Before full submission, test prompts on a representative *5–10 document
+sample* covering different formats and edge cases. Iterative prompt
+refinement improves first-pass success and reduces retry costs.
+
+==== Main exam traps
+
+* Do not switch all workflows to batch for cost savings.
+* Do not assume batches usually finish quickly; design for the 24-hour
+maximum.
+* Do not use batch requests for workflows requiring multi-turn tool
+calling.
+* Always use unique `custom++_++id` values for result correlation.
+* Retry only failures with targeted modifications.
+
+== 4.6 Multi-Instance and Multi-Pass Review
+
+=== Summary
+
+The guide explains how to improve AI review quality by avoiding
+same-session self-review and by dividing large reviews into focused
+stages.
+
+==== Core principles
+
+* *Use an independent model instance for review.* +
+When Claude reviews output it generated in the same session, it retains
+its original reasoning and is more likely to confirm its decisions. A
+fresh instance has no prior reasoning context and is more likely to
+identify subtle bugs or errors.
+* *Use multi-pass review for large inputs.*
+[arabic]
+. *Per-file local analysis:* Review each file independently for bugs,
+security issues, and logic errors.
+. *Cross-file integration:* Feed the individual findings to another
+instance to detect data-flow problems, API contract violations,
+dependency issues, and contradictory findings.
+* *Address attention dilution through decomposition.* +
+Reviewing many files in one pass can cause uneven depth, missed bugs,
+and inconsistent judgments. A larger context window does not solve this;
+focused per-file passes do.
+* *Route findings based on calibrated confidence.* +
+Findings should include confidence scores, but raw self-reported
+confidence should not be trusted automatically. Use labelled validation
+data or independent reviews to determine how confidence correlates with
+correctness, then set routing thresholds:
+** High-confidence findings → report directly
+** Low-confidence findings → send to human review
+
+==== Recommended production architecture
+
+[arabic]
+. One instance generates the code, extraction, or analysis.
+. Independent instances review each output unit.
+. A separate integration pass checks consistency across units.
+. Confidence scores determine whether findings are automatically
+reported or escalated.
+. Calibration data is used to refine confidence thresholds over time.
+
+==== Exam traps
+
+* Same-session self-review is not equivalent to independent review.
+* A single pass over a large multi-file change causes attention
+dilution.
+* Increasing context-window size does not guarantee better attention
+quality.
+* Uncalibrated confidence scores should not control automated routing.
+
+==== Practice scenario
+
+For a 14-file pull request with inconsistent and contradictory feedback,
+restructure the process into independent per-file reviews followed by a
+separate cross-file integration review. Add calibrated confidence-based
+routing so uncertain findings receive human validation.

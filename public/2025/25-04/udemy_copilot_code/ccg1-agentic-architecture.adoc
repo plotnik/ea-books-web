@@ -1,0 +1,513 @@
+= 1. Agentic Architecture & Orchestration - *Claude Certification Guide*
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+:example-caption:
+
+https://claudecertificationguide.com/learn/1-agentic-architecture
+
+== 1.1 Agentic Loops
+
+=== Summary: Agentic Loops
+
+An agentic loop is deterministic code that repeatedly sends requests to
+Claude, processes tool calls, and continues until Claude signals
+completion.
+
+==== Core lifecycle
+
+[arabic]
+. Send the conversation to Claude through the Messages API.
+. Inspect the response’s `stop++_++reason`.
+. If `stop++_++reason == "tool++_++use"`:
+* Execute the requested tool(s).
+* Append the assistant response and tool results to the conversation
+history.
+* Send the updated history back to Claude.
+. If `stop++_++reason == "end++_++turn"`, return Claude’s final
+response.
+
+Tool results must be added to the conversation; otherwise Claude cannot
+use the new information in later iterations.
+
+==== Loop-control principles
+
+* `stop++_++reason` is the authoritative completion signal.
+* Do not determine completion by:
+** Parsing phrases such as “I’m done.”
+** Checking whether the response contains text.
+** Using a fixed iteration count as the primary mechanism.
+* Claude may return explanatory text and `tool++_++use` blocks together,
+so `response.content++[++0++]++.type == "text"` is unreliable.
+* `tool++_++choice: "any"` should not be forced to prevent text
+responses, since it can cause unnecessary or infinite tool calls.
+* Iteration limits are appropriate only as safety bounds, such as a
+maximum of 20 iterations.
+
+==== Model-driven tool selection
+
+Claude should generally decide which tool to call and in what order
+based on the current context. This is more flexible than hard-coded tool
+sequences. However, deterministic programmatic enforcement should take
+priority for financial, security, regulatory, or other business-critical
+requirements.
+
+==== Additional production states
+
+Beyond the basic exam values `tool++_++use` and `end++_++turn`,
+production code may need to handle:
+
+* `pause++_++turn`
+* `max++_++tokens`
+* `stop++_++sequence`
+* `refusal`
+* `model++_++context++_++window++_++exceeded`
+
+Production loops should treat any value other than `end++_++turn` as
+requiring further inspection rather than assuming it means
+`tool++_++use`.
+
+==== Practical implementation
+
+A robust multi-tool agent should:
+
+* Register tools with names, descriptions, and JSON schemas.
+* Loop over Messages API requests.
+* Check `stop++_++reason` after every response.
+* Execute requested tools and append properly formatted
+`tool++_++result` messages.
+* Return final text only after `end++_++turn`.
+* Test sequential tool calls.
+* Include a safety iteration cap and warning log without using the cap
+as the normal termination mechanism.
+
+== 1.2 Multi-Agent Orchestration
+
+=== Summary
+
+This guide explains the *hub-and-spoke pattern* for multi-agent
+orchestration, which is the architecture emphasized by the exam.
+
+* A central *coordinator agent* receives the main task, decomposes it,
+selects subagents, passes them explicit context, aggregates results,
+handles errors, and manages refinement.
+* *Subagents* perform specialized tasks such as searching, analyzing
+documents, or synthesizing information.
+* All communication between subagents must pass through the coordinator.
+Direct subagent-to-subagent communication is treated as incorrect for
+exam purposes, even though Claude Code may support nested delegation in
+practice.
+
+==== Key Principles
+
+[arabic]
+. *Centralized communication*
+* Enables observability, consistent error handling, and controlled
+information flow.
+. *Subagent isolation*
+* Subagents do not inherit the coordinator’s system prompt, conversation
+history, other agents’ results, or shared memory.
+* Each invocation is independent.
+* Required context must be explicitly included in every prompt.
+. *Coordinator responsibilities*
+* Dynamically select only the necessary subagents.
+* Partition research into distinct, non-overlapping scopes.
+* Evaluate results and iteratively re-delegate when gaps exist.
+* Route all communication centrally.
+. *Trace failures to the coordinator*
+* If a report misses entire categories, the likely problem is incomplete
+task decomposition, not poor work by downstream agents.
+* Adding more agents does not fix a narrow decomposition; the
+coordinator must broaden the assigned subtopics.
+
+==== Example
+
+If a renewable-energy report covers only solar and wind, despite
+thorough research, the coordinator likely failed to assign topics such
+as geothermal, tidal, biomass, and fusion.
+
+==== Build Exercise
+
+The recommended implementation should:
+
+[arabic]
+. Create a coordinator accepting a broad research topic.
+. Decompose it into at least five comprehensive subtopics.
+. Spawn search and analysis agents with explicit context.
+. Aggregate results and assess coverage.
+. Iteratively target missing areas until coverage is sufficient.
+. Test using renewable energy and verify coverage of solar, wind,
+geothermal, tidal, biomass, and fusion.
+
+== 1.3 Subagent Invocation and Context Passing
+
+=== Summary
+
+This section explains how coordinators invoke subagents and pass
+information between them in Claude’s agent architecture.
+
+* *Subagent invocation:* Coordinators use the *Task tool*, renamed
+*Agent* in current Claude Code. The coordinator’s `allowedTools` must
+explicitly include `"Task"` or `"Agent"`; otherwise it cannot spawn
+subagents.
+* *Agent definitions:* Each subagent should specify:
+[arabic]
+. A description,
+. A system prompt,
+. Role-appropriate tool restrictions.
+* *Context isolation:* Subagents do not automatically receive the
+coordinator’s conversation history or other agents’ outputs. The
+coordinator must explicitly include all necessary information in each
+subagent’s prompt.
+* *Structured metadata:* Findings passed between agents should preserve
+both content and attribution metadata, such as:
+** Claim or analysis
+** Source URL
+** Document name
+** Page number
+** Confidence
+** Retrieving agent
++
+Missing metadata is the likely cause when a synthesis agent produces
+accurate but unsourced claims. The solution is to fix the coordinator’s
+context passing, not to give the synthesis agent more tools or merely
+alter its prompt.
+* *Prompt design:* Coordinator prompts should state goals and quality
+criteria rather than rigid procedures, allowing subagents to adapt.
+* *Parallel invocation:* Independent subagents should be spawned through
+multiple Task/Agent calls in a single coordinator response. This reduces
+unnecessary latency compared with sequential invocation.
+* *`fork++_++session` vs. `--resume`:*
+** `fork++_++session` creates independent branches from a shared
+analysis state for exploring divergent approaches.
+** `--resume` continues an existing named session.
+
+The practical exercise focuses on enabling Task/Agent access, defining
+scoped research agents, preserving structured metadata, passing complete
+results to synthesis, verifying citations, and parallelizing independent
+research tasks.
+
+== 1.4 Workflow Enforcement and Handoff
+
+=== Summary
+
+This guide explains how to enforce agent workflows reliably, especially
+for high-stakes operations.
+
+* *Prompt-based guidance is probabilistic:* System prompts and few-shot
+examples can improve behavior but may still be ignored or
+misinterpreted.
+* *Programmatic enforcement is deterministic:* Hooks, prerequisite
+gates, and code-level checks can block invalid tool calls entirely.
+* Use programmatic enforcement whenever a failure could cause:
+** Financial loss, such as unauthorized refunds or transfers
+** Security breaches, such as skipped identity verification
+** Compliance violations, such as missed AML checks
+* Prompt guidance is generally sufficient for low-stakes concerns like
+formatting or response style.
+
+==== Prerequisite Gates
+
+A prerequisite gate prevents a downstream tool from running until a
+required condition is satisfied. For example, `process++_++refund`
+should be blocked unless `get++_++customer` has returned a verified
+customer ID during the current session. This eliminates failures caused
+by the agent skipping verification.
+
+==== Subagent Hooks
+
+* *SubagentStart* observes subagent creation and may log or add context,
+but cannot block the spawn. Use a `PreToolUse` hook on the Agent tool to
+enforce spawning rules.
+* *SubagentStop* validates completion and can block a subagent from
+finishing, sending it back to continue working.
+* Neither lifecycle hook rewrites returned output. Use `PostToolUse` on
+the Agent tool with `updatedToolOutput` to transform or redact results.
+* Subagents may define their own scoped `PreToolUse` and `PostToolUse`
+hooks.
+* Stop hooks in subagent configuration are automatically converted into
+`SubagentStop` events.
+
+==== Multi-Concern Requests
+
+For requests involving multiple issues:
+
+[arabic]
+. Decompose the request into separate concerns.
+. Investigate them in parallel using shared context.
+. Produce one unified response addressing every concern.
+
+Agents should not handle only the first issue or create disconnected
+sequential conversations.
+
+==== Structured Human Handoffs
+
+Because human agents may not have access to the original transcript,
+every handoff must be self-contained. It should include:
+
+* Customer ID
+* Conversation summary
+* Root cause analysis
+* Specific refund amount, when relevant
+* Recommended action
+
+==== Key Exam Lesson
+
+If an agent processes refunds incorrectly despite being instructed to
+verify identity, strengthening the prompt is not enough. The correct
+solution is a *programmatic prerequisite gate* that blocks refunds until
+verification succeeds. Routing classifiers, stronger prompts, and
+few-shot examples do not guarantee compliance.
+
+
+== 1.5 Agent SDK Hooks
+
+=== Summary: Agent SDK Hooks
+
+Agent SDK hooks add deterministic controls to an otherwise probabilistic
+agent system by intercepting tool calls and results.
+
+==== Hook Types
+
+* *PostToolUse hooks*
+** Run after a tool executes but before the model receives the result.
+** Used for data transformation and normalization.
+** Examples:
+*** Unix timestamps → ISO 8601 dates
+*** Numeric or coded statuses → human-readable strings
+*** Inconsistent currency and date formats → standardized
+representations
+* *PreToolUse hooks*
+** Run before a tool executes.
+** Used to enforce policies by blocking, modifying, or redirecting tool
+calls.
+** Examples:
+*** Block refunds above $500 and send them for human approval.
+*** Prevent fund transfers until AML verification succeeds.
+*** Require manager approval for discounts above a specified threshold.
+
+==== Core Decision Rule
+
+* Use *hooks* when compliance must be deterministic and failures could
+cause financial, legal, security, or regulatory harm.
+* Use *prompts* for preferences where occasional deviation is
+acceptable, such as response formatting or style.
+
+==== Important Exam Distinction
+
+* *PostToolUse cannot prevent an action*, because the tool has already
+executed.
+* *PreToolUse must be used to block or control actions before
+execution.*
+* Relying on prompts for 100% compliance is insufficient because prompts
+are probabilistic.
+
+==== Practical Example
+
+When multiple MCP tools return dates and statuses in different formats,
+a PostToolUse hook can normalize all results before the model processes
+them. This prevents interpretation errors and ensures consistent data.
+
+For compliance and financial workflows, PreToolUse hooks can inspect
+tool arguments and session state, blocking operations that exceed
+thresholds or lack required prerequisites.
+
+==== Build Exercise Goals
+
+The exercise involves:
+
+[arabic]
+. Creating tools with heterogeneous date and status formats.
+. Normalizing their outputs with a PostToolUse hook.
+. Verifying that the model receives consistent results.
+. Blocking large refunds with a PreToolUse hook.
+. Blocking transfers until AML approval is recorded.
+. Confirming blocked tools never execute and that valid operations still
+succeed.
+
+==== Practice Scenario Answer
+
+Replace the prompt-only AML instruction with a *PreToolUse hook* that
+blocks `transfer++_++funds` unless a successful AML check is recorded
+for the current session. This provides deterministic, 100% enforcement.
+
+
+== 1.6 Task Decomposition Strategies
+
+== Summary
+
+The material explains two task decomposition strategies and how to
+address attention dilution in agentic workflows.
+
+=== 1. Fixed Sequential Pipelines
+
+Also called prompt chaining, fixed pipelines use predetermined steps
+executed in order, with each step passing its output to the next.
+
+*Best for:*
+
+* Predictable, structured tasks
+* Code reviews with local and cross-file stages
+* Document extraction
+* Data processing
+* Compliance checks
+
+*Strengths:*
+
+* Consistent and reliable
+* Easy to debug and monitor
+
+*Limitation:*
+
+* Cannot adapt when intermediate findings require a change in approach
+
+=== 2. Dynamic Adaptive Decomposition
+
+Dynamic decomposition begins with a high-level goal and generates or
+revises subtasks as new information is discovered.
+
+*Best for:*
+
+* Open-ended investigations
+* Legacy codebase exploration
+* Security audits
+* Research
+* Debugging unfamiliar systems
+
+*Strengths:*
+
+* Adapts to unexpected complexity
+* Better suited to unknown or evolving scope
+
+*Limitations:*
+
+* Less predictable execution time and resource use
+* More difficult to estimate and debug
+
+==== Choosing Between Them
+
+* Use a *fixed pipeline* when the steps and inputs are known in advance.
+* Use *dynamic decomposition* when the scope or solution path is
+uncertain.
+
+The appropriate choice depends on the task, not on which approach
+appears more sophisticated.
+
+=== Attention Dilution
+
+Attention dilution occurs when an agent analyzes too many items in a
+single pass. Attention becomes unevenly distributed, causing:
+
+* Detailed analysis of early items
+* Increasingly shallow analysis of later items
+* Obvious issues being missed
+* Identical patterns being judged inconsistently across files
+
+For example, in a 14-file review, early files may receive detailed bug
+reports while later files receive superficial feedback. A loop may be
+criticized in one file but approved in another despite being identical.
+
+=== Recommended Solution: Multi-Pass Architecture
+
+The solution is structural rather than a more powerful model, larger
+context window, or better prompt.
+
+A robust workflow has two layers:
+
+[arabic]
+. *Per-item local analysis*
+* Review each file or document in its own pass.
+* Record structured findings such as bug counts, severity, and line
+references.
+* Ensures consistent attention for every item.
+. *Cross-item integration*
+* Review all local summaries together.
+* Detect data-flow problems, API inconsistencies, cross-file
+dependencies, and inconsistent pattern usage.
+
+Simply batching files into groups reduces dilution within each batch but
+still misses issues spanning batches unless a dedicated integration pass
+is included.
+
+=== Key Exam Lessons
+
+* Fixed pipelines suit predictable, structured work.
+* Dynamic decomposition suits open-ended, evolving investigations.
+* Attention dilution is an architectural problem.
+* Multi-pass processing is the correct remedy.
+* Better prompts, larger contexts, or stronger models do not guarantee
+consistent attention.
+* A complete multi-pass review requires both per-item analysis and
+cross-item integration.
+
+
+== 1.7 Session State and Resumption
+
+=== Summary
+
+Session management has three distinct strategies:
+
+* *`--resume ++<++session-name++>++`*: Continues an existing named
+session with its full conversation history and tool results. Use it when
+the codebase has not changed and the previous context remains valid.
+Sessions are named at creation with `--name`/`-n`, or renamed with
+`/rename`; `--continue` resumes the most recent session in the current
+directory.
+* *`fork++_++session`*: Creates an independent branch from a shared
+baseline. Use it to compare divergent approaches, such as different
+refactoring or testing strategies. It is not intended for ordinary
+continuation or fixing stale context.
+* *Fresh session with summary injection*: Starts without old tool
+results while preserving key conclusions through a structured summary.
+Use it after files, dependencies, or APIs have changed, or when a long
+session has accumulated excessive irrelevant context.
+
+==== Stale Context Problem
+
+Resuming after modifying files restores old tool results alongside
+current information. The agent may therefore recommend fixes that were
+already applied, refer to deleted code, or give contradictory advice.
+Asking it to reread the files helps but does not remove the stale
+results from history. Forking is also insufficient because the fork
+inherits that stale context.
+
+The reliable solution is to start a fresh session, inject a concise
+summary of prior findings, identify the changed files, and request
+*targeted re-analysis* of only those files. Unchanged parts of the
+codebase are represented by the summary, avoiding both stale reasoning
+and unnecessary full re-exploration.
+
+==== Decision Guide
+
+[cols=",",options="header",]
+|===
+|Situation |Recommended approach
+|Continue work with no meaningful changes |`--resume`
+
+|Compare independent solutions |`fork++_++session`
+
+|Resume after modifying a few files |Fresh session {plus} summary
+
+|History is cluttered or context has degraded |Fresh session {plus}
+summary
+
+|Dependency updates may affect many files |Fresh session {plus} summary
+|===
+
+==== Example Workflow
+
+[arabic]
+. Start and name a session to analyze a codebase.
+. Record structured findings by file, including issues, severity, and
+recommendations.
+. Modify selected files.
+. Observe possible contradictions when using `--resume`.
+. Start a clean session with the summary and list the changed files.
+. Re-analyze only those files and compare the result with the stale
+resumed session.
+
+The central distinction is: *resume for continuation, fork for
+divergence, and fresh summary-based sessions for changed or stale
+environments.*
+

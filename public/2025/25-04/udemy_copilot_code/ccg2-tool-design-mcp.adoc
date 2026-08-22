@@ -1,0 +1,328 @@
+= 2. Tool Design & MCP Integration - *Claude Certification Guide*
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+:example-caption:
+
+https://claudecertificationguide.com/learn/2-tool-design-mcp
+
+== 2.1 Tool Interface Design
+
+=== Summary
+
+Tool descriptions are the primary mechanism LLMs use to choose among
+tools. Minimal descriptions often cause misrouting when tools have
+overlapping purposes.
+
+Effective, production-grade descriptions should specify:
+
+[arabic]
+. The tool’s purpose
+. Required and optional inputs, including formats and constraints
+. Example queries it handles
+. Edge cases and limitations
+. Explicit boundaries explaining when not to use it and which
+alternative tool to use
+
+For example, `get++_++customer` should clearly handle customer identity
+and account information, while `lookup++_++order` should handle order
+numbers or tracking IDs and order-specific requests.
+
+When misrouting results from ambiguous descriptions, the preferred first
+fix is to expand and clarify the descriptions. Few-shot examples,
+routing classifiers, and tool consolidation are considered less
+appropriate initial responses because they add complexity or cost
+without addressing the root cause directly.
+
+Other interface improvements include:
+
+* Splitting broad tools into narrowly focused, purpose-specific tools
+* Renaming confusingly similar tools to make their roles obvious
+* Reviewing system prompts for keyword-based instructions that may
+override tool descriptions
+
+However, better descriptions are not sufficient when the toolkit is
+inherently too large. Once an agent has roughly 4–5 or more tools,
+selection may degrade because of decision complexity. In that case, the
+problem is tool overload rather than merely unclear descriptions, and
+the toolkit should be scoped or reorganized.
+
+The practical exercise demonstrates this by testing ambiguous tools,
+measuring misrouting, rewriting descriptions with all five elements,
+rerunning the tests, and checking for conflicting system-prompt
+instructions.
+
+== 2.2 Structured Error Responses
+
+
+MCP tool errors should provide structured information so agents can
+recover intelligently rather than blindly retrying or escalating. Set
+`isError: true` for actual failures and include:
+
+* `errorCategory`
+* `isRetryable`
+* A human-readable `description`
+
+=== Four Error Categories
+
+[arabic]
+. *Transient* — Timeouts, rate limits, or temporary service outages. +
+Retry the same request, typically with a delay. `isRetryable: true`.
+. *Validation* — Invalid formats, missing fields, or invalid values. +
+Correct the input and retry. `isRetryable: true`, but the request must
+be fixed first.
+. *Business* — Policy violations or business-rule conflicts, such as
+exceeding a refund limit. +
+Retrying will not help; use an alternative workflow or escalate.
+`isRetryable: false`.
+. *Permission* — Access denied or insufficient credentials. +
+Request different credentials or escalate. `isRetryable: false`.
+
+`isRetryable` means whether retrying could ever succeed, not necessarily
+whether the identical request should be resent.
+
+=== Empty Results vs. Access Failures
+
+This is a critical distinction:
+
+* *Valid empty result:* The query executed successfully but found no
+matches. Return `isError: false` and, for example, `resultCount: 0`. Do
+not retry.
+* *Access failure:* The tool could not query the data source because of
+a timeout, authentication problem, or outage. Return `isError: true`
+with appropriate error metadata.
+
+Treating an empty result as a failure causes unnecessary retries and
+incorrect escalations.
+
+=== Multi-Agent Error Propagation
+
+Subagents should:
+
+[arabic]
+. Retry transient errors locally.
+. Propagate only unresolved failures.
+. Report partial results and describe which sources or attempts failed.
+
+They should not silently convert failures into empty successful results,
+since this prevents coordinators from distinguishing “no data” from
+“search failed.”
+
+=== Key Exam Traps
+
+* Retrying after a successful empty query.
+* Returning generic messages such as “Operation failed.”
+* Treating business errors as retryable.
+* Hiding subagent failures by returning empty results.
+
+The recommended agent logic is: retry transient failures, correct
+validation errors, escalate business errors, request credentials for
+permission errors, and accept valid empty results without retrying.
+
+== 2.3 Tool Distribution & Tool Choice
+
+=== Summary
+
+Reliable tool use in multi-agent systems depends on both *how many tools
+each agent receives* and *how well those tools match its role*.
+
+==== Core principles
+
+* Keep agents to roughly *4–5 role-specific tools*. Large toolsets
+increase selection errors.
+* Give agents only the capabilities they need. For example, synthesis
+agents should not receive web-search tools.
+* Do not assume splitting tools across MCP servers reduces complexity;
+connected tools are still presented as one combined list.
+* Before rewriting descriptions, count the tools:
+** Small set with ambiguous tools → improve descriptions.
+** Distinct responsibilities → split by agent role.
+** Many near-duplicate tools → consolidate into one parameterized tool
+with an enum.
+** Excessively broad capabilities → constrain the tool.
+
+==== `tool++_++choice` modes
+
+* *`auto`*: The model may call a tool or respond with text.
+* *`any`*: The model must call one of the available tools, useful when
+structured output is required.
+* *Forced selection*: The model must call a specific named tool, useful
+for mandatory workflow steps such as metadata extraction before
+analysis.
+
+==== Scoped cross-role tools
+
+When an agent frequently needs a simple capability from another role,
+provide a constrained version directly rather than routing every request
+through the coordinator. For example, a synthesis agent can use a scoped
+`verify++_++fact` tool for simple, single-source lookups, while complex
+verification is escalated. This avoids unnecessary round trips and
+latency.
+
+==== Least-privilege tool design
+
+Replace broad tools such as `fetch++_++url` with constrained
+alternatives like `load++_++document`, which accepts only validated
+document URLs. This reduces misuse, clarifies intent, and limits side
+effects.
+
+==== Example distribution
+
+* *Web Search*: search, page fetching, link extraction, snippet saving
+* *Document Analysis*: metadata extraction, data extraction,
+summarization, claim verification
+* *Synthesis*: report compilation, scoped fact verification, citation
+formatting, coverage assessment
+* *Coordinator*: agent spawning, output review, revision requests
+
+The key exam takeaway is to combine role-specific tool scoping,
+parameterized consolidation, constrained capabilities, and the correct
+`tool++_++choice` mode for each workflow step.
+
+== 2.4 MCP Server Integration
+
+=== Summary: MCP Server Integration
+
+MCP servers connect Claude to external systems such as GitHub, Jira,
+databases, and internal APIs. Correct configuration depends primarily on
+scoping, credential handling, resource exposure, and clear tool
+descriptions.
+
+==== Configuration Scoping
+
+* *Project-level `.mcp.json`*
+** Stored in the repository root.
+** Version-controlled and shared with the team.
+** Use for team-wide integrations such as GitHub, Jira, or internal
+APIs.
+* *User-level `~/.claude.json`*
+** Stored in the user’s home directory.
+** Personal, not version-controlled, and not shared.
+** Use for experiments or personal integrations.
+
+All reachable servers from both locations are connected and made
+available simultaneously; no manual activation is required.
+
+==== Credentials and Environment Variables
+
+Use `$++{++VARIABLE++_++NAME}` in `.mcp.json` rather than committing
+secrets directly. Each developer supplies their own credentials through
+shell variables, `.env` files, or a secrets manager. This keeps
+credentials out of repository history and simplifies token rotation.
+
+==== MCP Resources
+
+MCP resources provide agents with structured information upfront, such
+as:
+
+* Jira issue summaries
+* Documentation tables of contents
+* Database schemas
+
+Resources reduce unnecessary exploratory calls. They show agents what
+data exists, while tools enable actions on that data.
+
+==== Use Existing Servers Before Building Custom Ones
+
+For standard integrations such as Jira, GitHub, Slack, Linear, or
+Notion, evaluate maintained community MCP servers first. Build a custom
+server only when:
+
+* Community servers cannot support required workflows
+* Custom business logic is necessary
+* The system is proprietary and lacks an appropriate integration
+
+==== Tool Description Quality
+
+Sparse MCP tool descriptions may cause Claude to choose
+better-documented built-in tools such as Grep. MCP descriptions should
+explain:
+
+* What the tool does
+* What it returns
+* When it should be used
+* Why it may be better than built-in alternatives
+
+Detailed descriptions help Claude select the MCP tool when it offers
+superior capabilities.
+
+==== Key Exam Traps
+
+* Building a custom Jira server before evaluating community options
+* Putting team configuration in `~/.claude.json`
+* Committing credentials directly in `.mcp.json`
+* Leaving MCP tool descriptions too vague
+
+==== Practice Scenario Answer
+
+For a Jira integration, the correct first step is to *evaluate and use
+an existing community MCP server* before considering a custom
+implementation.
+
+== 2.5 Built-in Tools
+
+=== Summary
+
+Claude Code provides six built-in tools for codebase work:
+
+* *Grep*: Searches file *contents* for text such as function calls,
+imports, error messages, or variables.
+* *Glob*: Matches file *paths* by name, extension, or directory pattern.
+* *Read*: Examines file contents.
+* *Write*: Replaces or creates entire files; generally a fallback for
+modifications.
+* *Edit*: Makes targeted text replacements and should be the default
+modification tool.
+* *Bash*: Runs shell commands.
+
+==== Most important distinction
+
+* Use *Grep* to find _what is inside files_.
+* Use *Glob* to find files based on _their names or paths_.
+
+For example, finding callers of `processLegacyOrder()` requires Grep,
+while finding `++*++.test.tsx` files requires Glob.
+
+==== Editing guidance
+
+Use *Edit* first for changes. If the target text is not unique:
+
+[arabic]
+. Expand `old++_++string` with surrounding context until it identifies
+one location, or
+. Use `replace++_++all: true` when every occurrence should change.
+. Only use Read {plus} Write if the target cannot be safely
+disambiguated.
+
+Read {plus} Write is less efficient because it loads and rewrites the
+entire file.
+
+==== Incremental codebase exploration
+
+Do not read every file upfront. Instead:
+
+[arabic]
+. Grep for relevant entry points, such as function names or errors.
+. Read only the files discovered.
+. Grep again for wrappers, re-exports, or consumers.
+. Expand exploration only when needed.
+
+When tracing functions through wrapper or barrel modules, search first
+for the definition, inspect its exports, then Grep for exported and
+wrapper names to find indirect consumers.
+
+==== Deprecated-function workflow
+
+To find callers of a deprecated function and their tests:
+
+[arabic]
+. *Grep* for the deprecated function to find direct references.
+. *Glob* for matching sibling test files based on caller filenames.
+. *Grep* for wrapper names to find indirect usage and coverage.
+. *Read* the relevant caller files.
+. *Edit* each caller to migrate to the new API, widening the edit anchor
+or using `replace++_++all` if necessary.
+
+The central exam pattern is: *Grep → Glob → Read → Edit*, with
+additional Grep searches for wrappers and indirect references.

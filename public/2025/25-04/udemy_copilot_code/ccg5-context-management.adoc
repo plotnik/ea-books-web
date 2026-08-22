@@ -1,0 +1,429 @@
+= 5. Context Management & Reliability - *Claude Certification Guide*
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+:example-caption:
+
+https://claudecertificationguide.com/learn/5-context-management
+
+== 5.1 Context Window Management
+
+Context window management is essential for reliable multi-turn and
+multi-agent Claude systems. The main risks are losing critical facts
+during summarisation, burying important information in long inputs, and
+wasting tokens on verbose tool outputs.
+
+=== Key Practices
+
+==== 1. Preserve transactional facts separately
+
+Progressive summarisation often removes amounts, dates, identifiers, and
+customer expectations. For example, a specific refund request can become
+an unusably vague summary.
+
+Use a persistent, structured *case facts block* containing information
+such as:
+
+* Customer and order IDs
+* Dates
+* Amounts
+* Statuses
+* Item descriptions
+
+Include this block in every prompt outside the summarised conversation
+history. For multi-issue conversations, store each issue separately to
+prevent facts from being mixed up.
+
+==== 2. Mitigate the “lost in the middle” effect
+
+Models tend to use information at the beginning and end of long contexts
+more reliably than information buried in the middle.
+
+The structural solution is to:
+
+* Put a concise *Key Findings Summary* at the beginning
+* Use clear section headers
+* Follow the summary with detailed findings from each source or subagent
+
+Simply instructing the model to pay attention is less reliable than
+arranging the context effectively.
+
+==== 3. Trim tool results
+
+Tool outputs may contain dozens of irrelevant fields that remain in the
+conversation history on every subsequent turn. Filter results before
+they enter the context, preferably in the tool implementation or a
+`PostToolUse` hook.
+
+Keep only task-relevant fields, such as:
+
+* Order ID
+* Order date
+* Total amount
+* Return eligibility
+* Item description
+
+==== 4. Account for API statelessness
+
+The Claude API does not maintain server-side conversation state. Each
+request must include the conversation history and all information needed
+for coherence.
+
+Because history grows over time, separate durable facts into the
+persistent case facts block and summarise only the narrative flow rather
+than selectively deleting earlier messages.
+
+==== 5. Structure upstream agent outputs
+
+In multi-agent systems, upstream agents should return structured
+findings rather than verbose reasoning or raw content. Useful fields
+include:
+
+* Claims
+* Citations and URLs
+* Relevance scores
+* Publication dates
+* Methodological context
+
+This reduces token use and makes downstream synthesis more accurate and
+efficient.
+
+==== 6. Use prompt caching correctly
+
+Prompt caching reduces the cost of repeatedly processing stable content.
+Place static material first, including:
+
+* System instructions
+* Tool definitions
+* Reference documents
+
+Set a `cache++_++control` breakpoint at the end of the stable prefix,
+then place dynamic user content afterward. Dynamic content placed before
+the static block prevents cache matches. Ephemeral caching lasts roughly
+five minutes since last use, so it is most useful for bursts of related
+requests.
+
+=== Exam Traps
+
+* Progressive summarisation is unsafe for numerical and transactional
+data.
+* The lost-in-the-middle problem is best addressed through context
+structure, not reminders.
+* Full tool outputs should not be retained when only a few fields are
+relevant.
+* Selectively truncating conversation history can damage coherence
+because the API is stateless.
+
+=== Practice Scenario Answer
+
+For the refund example, the effective fix is to extract and persist the
+exact refund amount, order number, and date in a case facts block that
+is included in every prompt outside the summarised history.
+
+=== Build Exercise Goals
+
+The exercise asks learners to:
+
+[arabic]
+. Extract transactional facts from raw tool output.
+. Prepend a persistent case facts block to every prompt.
+. Trim large order responses to relevant fields.
+. Verify that facts survive summarisation across multiple turns.
+. Place key findings at the start of aggregated research inputs.
+
+== 5.2 Escalation & Ambiguity Resolution
+
+=== Summary
+
+This guide explains how to calibrate customer-support escalation
+decisions and avoid unnecessary handoffs.
+
+==== Valid escalation triggers
+
+Escalate only when:
+
+[arabic]
+. *The customer explicitly requests a human* — escalate immediately,
+without attempting to resolve the issue first.
+. *The request involves a policy gap or exception* — escalate when
+documented policy is silent or an exception requires human judgment. A
+documented policy violation can be handled according to the existing
+policy.
+. *The agent cannot make meaningful progress* — escalate after a genuine
+attempt fails due to tool errors, unavailable access, or technical
+issues.
+
+==== Unreliable escalation triggers
+
+Avoid using:
+
+* *Customer sentiment or frustration*: Emotional intensity does not
+indicate case complexity. A frustrated customer with a simple issue
+should generally receive an immediate resolution.
+* *LLM self-reported confidence scores*: These are poorly calibrated and
+may cause escalation of easy cases while allowing the agent to attempt
+difficult ones.
+
+==== Handling frustration and human requests
+
+* Resolve straightforward issues even when the customer is frustrated,
+while acknowledging their frustration.
+* Escalate if the customer later reiterates that they want a human.
+* Escalate immediately if they request a human at the outset.
+
+==== Ambiguous customer matches
+
+If a search returns multiple possible customer records, ask for
+additional identifiers such as an email address, phone number, or order
+number. Never choose the most recent, active, or otherwise heuristically
+selected record, since this risks privacy breaches and incorrect
+actions.
+
+==== Recommended implementation
+
+The preferred first step is to improve the system prompt with explicit
+escalation rules and few-shot examples before adding classifiers,
+sentiment analysis, or other infrastructure. Examples should cover:
+
+* Immediate escalation for a human request
+* Autonomous resolution of a frustrated customer’s simple issue
+* Escalation for policy gaps
+* Structured escalation handoffs
+* Safe disambiguation of multiple customer matches
+
+The key exam rules are to honor explicit human requests immediately and
+never make heuristic selections among ambiguous customer records.
+
+== 5.3 Error Propagation in Multi-Agent Systems
+
+=== Summary
+
+Reliable multi-agent systems should propagate failures using structured
+context rather than hiding or terminating on errors.
+
+==== Structured error context
+
+When a subagent fails, it should report:
+
+[arabic]
+. *Failure type:* transient, validation, business, or permission.
+. *Attempted action:* tool, query, parameters, and target system.
+. *Partial results:* any useful data gathered before failure.
+. *Alternative approaches:* possible retries, fallback sources, or
+modified queries.
+
+This information lets the coordinator decide whether to retry, use an
+alternative, continue with partial results, or escalate.
+
+==== Two major anti-patterns
+
+* *Silent suppression:* Returning empty results as a successful response
+after a failure. This causes the coordinator to believe the search
+succeeded and prevents recovery.
+* *Workflow termination:* Stopping the entire pipeline because one
+subagent failed, which wastes results from successful agents.
+
+The preferred approach is structured error propagation with targeted
+recovery.
+
+==== Access failures vs. valid empty results
+
+* *Access failure:* The source was unreachable or the query did not
+execute, such as a timeout, connection error, or permission denial. It
+should generally be considered for retry.
+* *Valid empty result:* The query executed successfully but found no
+matches. This is a legitimate answer and should not be retried.
+
+Confusing these cases either hides recoverable failures or wastes
+resources on unnecessary retries.
+
+==== Recovery and transparency
+
+Subagents should handle transient failures locally using retries,
+exponential backoff, fallback sources, or degraded responses before
+escalating persistent failures. Partial results must be preserved.
+
+Synthesis agents should add *coverage annotations* identifying
+well-supported topics and areas limited or unavailable because sources
+could not be accessed. This prevents gaps from appearing intentional or
+going unnoticed.
+
+==== Build exercise objectives
+
+The exercise asks learners to:
+
+* Define a structured error schema.
+* Distinguish access failures from successful empty results.
+* Implement local retry logic, such as three attempts with exponential
+backoff.
+* Build a coordinator that selects informed recovery strategies.
+* Add coverage annotations to final synthesis output.
+
+== 5.4 Codebase Exploration & Context Degradation
+
+=== Summary
+
+Large codebase exploration can cause *context degradation*: as verbose
+file contents, search results, and listings accumulate, the model loses
+track of specific earlier discoveries and begins referring to generic
+“typical patterns.” This is an attention-quality problem, not simply a
+token or context-window limit problem.
+
+==== Main Mitigations
+
+* *Scratchpad files:* Persist important findings—class names, file
+paths, dependency chains, issues, and test coverage—outside the
+conversation. Read the scratchpad before each subsequent exploration
+step.
+* *Subagent delegation:* Delegate focused investigations to isolated
+subagents. Their structured summaries protect the coordinator’s context
+from verbose exploration. The key benefit is *context isolation*, not
+merely parallel execution.
+* *Summary injection:* At the end of one exploration phase, summarize
+architecture and findings, then inject that summary into prompts for the
+next phase. This prevents duplicated discovery and gives subagents the
+necessary context.
+* *Proactive `/compact`:* Use Claude Code’s `/compact` command during
+extended sessions to preserve context quality, rather than waiting until
+context limits are reached.
+* *Structured state manifests:* Save session state—including explored
+paths, findings, current phase, unresolved questions, and next steps—in
+a JSON manifest. On restart, load and inject the manifest so exploration
+can resume without repeating work.
+
+==== Key Exam Traps
+
+* Increasing the context window does not fundamentally solve
+degradation.
+* Subagent delegation is primarily for context isolation, not just
+parallelization.
+* Restarting without saving state loses accumulated knowledge.
+* `/compact` should be used proactively, not only at the point of
+exhaustion.
+
+==== Recommended Explorer Design
+
+A resilient codebase explorer should:
+
+[arabic]
+. Coordinate focused subagent investigations.
+. Store detailed findings in a scratchpad after each step.
+. Inject Phase 1 summaries into Phase 2 prompts.
+. Persist recovery state in a structured manifest.
+. Compare exploration with and without scratchpads to verify that
+specific class names and paths remain available over long sessions.
+
+
+== 5.5 Human Review & Confidence Calibration
+
+=== Summary
+
+Human review should be used strategically to improve accuracy while
+controlling cost. The key principles are:
+
+* *Avoid aggregate accuracy metrics.* A high overall score, such as 97%,
+can hide severe failures in specific document types or fields because
+high-volume, easy documents dominate the average. Accuracy must be
+measured by both *document type and field segment*.
+* *Use stratified random sampling for ongoing validation.* Samples
+should include every relevant document type, field type, and confidence
+band—including high-confidence automated extractions. This helps detect
+novel or systematic errors that ordinary low-confidence review would
+miss.
+* *Calibrate field-level confidence scores.* Raw model confidence is not
+an absolute probability of correctness and may mean different things for
+different fields or document types. Use labelled ground-truth data to
+map reported confidence to actual accuracy, then establish routing
+thresholds.
+* *Prioritise reviewer capacity dynamically.* Send the most uncertain or
+historically error-prone items to reviewers first, rather than
+distributing review evenly or processing chronologically. Priority
+should consider low confidence, ambiguous documents, poor-performing
+document types, and contradictory interpretations.
+* *Follow the correct sequence:*
+[arabic]
+. Measure segmented accuracy.
+. Calibrate confidence scores.
+. Set automation and review thresholds.
+. Apply stratified sampling to automated outputs.
+. Reduce human review only for consistently validated segments.
+
+The central exam lesson is that *97% aggregate accuracy does not justify
+broad automation*. Reliable automation requires segmented measurement,
+calibrated confidence, high-confidence sampling, and uncertainty-based
+review prioritisation.
+
+== 5.6 Information Provenance & Multi-Source Synthesis
+
+=== Summary
+
+This guide explains how to preserve information provenance and manage
+uncertainty when synthesizing research from multiple sources.
+
+==== Core principles
+
+* Every claim should include a structured provenance record containing:
+** Claim
+** Source URL
+** Document name
+** Supporting excerpt
+** Publication or data-collection date
+* Provenance often disappears during summarization, so every downstream
+agent must explicitly preserve and merge claim–source mappings.
+* Final reports should use inline citations or a reference section so
+each claim remains traceable.
+
+==== Handling conflicting sources
+
+When credible sources report different values:
+
+* Do not arbitrarily choose the newest, most authoritative, or average
+value.
+* Present both values with complete attribution.
+* Include relevant reporting periods, methodologies, and possible
+explanations.
+* Leave the final judgment to the coordinator or consumer.
+
+Conflicting figures may reflect different definitions, measurement
+periods, audited versus preliminary data, or methodologies rather than
+actual contradictions.
+
+==== Importance of temporal context
+
+Publication and data-collection dates are essential. Different dates can
+explain changing values and reveal trends rather than conflicts. Dates
+must be preserved from subagent outputs through final synthesis.
+
+==== Appropriate presentation formats
+
+* *Financial data:* Tables for comparisons, values, and trends.
+* *News and current events:* Prose for narrative and chronology.
+* *Technical findings:* Structured bullet or numbered lists.
+
+Uniformly rendering all content as prose, tables, or lists reduces
+clarity.
+
+==== Multi-agent provenance workflow
+
+[arabic]
+. Research agents collect structured claim-source mappings.
+. Analysis agents assess findings while preserving their mappings.
+. Synthesis agents merge findings without losing attribution.
+. Report generation presents claims with citations and distinguishes
+established findings from contested ones.
+
+Analysis agents should report conflicts intact rather than resolving
+them. Coordinators or human analysts can then decide whether to present
+both figures, investigate further, or escalate.
+
+==== Main exam traps
+
+* Selecting one value when credible sources disagree.
+* Treating differently dated figures as contradictions.
+* Allowing paraphrasing to remove source mappings.
+* Using one presentation format for every content type.
+
+The central lesson is that trustworthy synthesis requires traceable
+claims, preserved uncertainty, temporal awareness, and
+content-appropriate rendering.

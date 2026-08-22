@@ -1,0 +1,451 @@
+= 3. Claude Code Configuration & Workflows - *Claude Certification Guide*
+:source-highlighter: coderay
+:icons: font
+:toc: left
+:toclevels: 4
+:example-caption:
+
+https://claudecertificationguide.com/learn/3-claude-code-config
+
+== 3.1 CLAUDE.md Hierarchy, Scoping, and Modular Organisation
+
+=== Summary
+
+Claude Code loads `CLAUDE.md` instructions from three scopes:
+
+* *User-level:* `~/.claude/CLAUDE.md` +
+Personal preferences only; not version-controlled or shared with
+teammates.
+* *Project-level:* root `CLAUDE.md` or `.claude/CLAUDE.md` +
+Shared, version-controlled team conventions such as naming, testing,
+architecture, and review standards.
+* *Directory-level:* `CLAUDE.md` files in subdirectories +
+Package- or directory-specific rules that apply when working in that
+area.
+
+==== Loading and conflicts
+
+Files are concatenated into context rather than used as strict
+overrides. They load from broadest to most specific scope, with nearer
+files read later. `CLAUDE.local.md` is appended after the regular
+`CLAUDE.md` at the same level.
+
+However, later or more specific instructions are *not guaranteed to win*
+if rules conflict. Claude may resolve contradictions arbitrarily. Rules
+requiring deterministic enforcement should use `settings.json` or hooks
+instead. Unlike `CLAUDE.md`, `settings.json` has a defined precedence
+hierarchy and is enforced by the client.
+
+==== Modular configuration
+
+Large configuration files can be split using path-only imports:
+
+[source,markdown]
+----
+@./standards/naming-conventions.md
+----
+
+There is no `@import` keyword. Imported files are eagerly inlined, so
+imports improve organisation but do not reduce the context size. Use
+`.claude/rules/` with path-scoped frontmatter when rules should load
+only for matching files or directories.
+
+==== `CLAUDE.local.md`
+
+`CLAUDE.local.md` can exist beside any `CLAUDE.md`. It is intended for
+personal, repository-specific notes and is commonly added to
+`.gitignore`. It loads after the corresponding `CLAUDE.md`, but still
+does not provide guaranteed precedence over conflicting rules.
+
+==== `.claude/rules/`
+
+This directory supports topic-specific files such as:
+
+* `testing.md`
+* `api-conventions.md`
+* `deployment.md`
+
+Without path frontmatter, these rules apply broadly. With path-scoped
+frontmatter, they load only for matching paths.
+
+==== Diagnosing loaded files
+
+The guide distinguishes between:
+
+* `/memory`: traditionally the exam answer for showing memory files; in
+current Claude Code it lists memory locations and can open them.
+* `/context`: shows what actually loaded in the current session under
+*Memory files*.
+
+Neither command activates configuration; files load automatically based
+on location.
+
+==== Compaction behavior
+
+Project-root `CLAUDE.md` is re-read and restored after `/compact`.
+Nested `CLAUDE.md` files and path-scoped rules may not return until
+Claude works in a matching directory or file again. Instructions given
+only in conversation may also be lost or summarized.
+
+==== Key exam scenario
+
+If a new teammate clones the same repository but does not receive team
+conventions, the rules were likely placed in the original developer’s
+`~/.claude/CLAUDE.md`. Move shared instructions into the repository’s
+root `CLAUDE.md` or `.claude/CLAUDE.md`.
+
+The main exam traps are assuming:
+
+[arabic]
+. More-specific files always override broader ones.
+. `/memory` loads configuration.
+. Directory-level files apply across the entire project.
+. User-level configuration is shared through Git.
+
+== 3.2 Custom Slash Commands and Skills
+
+=== Summary
+
+Claude Code now uses a unified *Skills system* for custom commands.
+
+==== Locations and structure
+
+* *Project-scoped/shared:* `.claude/skills/` or `.claude/commands/`
+* *User-scoped/personal:* `~/.claude/skills/` or `~/.claude/commands/`
+* `.claude/skills/` is the canonical location.
+* A skill must be a directory containing `SKILL.md`, such as:
+`.claude/skills/deploy/SKILL.md`
+* A command is a flat Markdown file, such as:
+`.claude/commands/deploy.md`
+* A loose `.md` file directly inside `.claude/skills/` is not
+recognized.
+* Skills take precedence if a skill and command have the same name.
+
+==== Scoping
+
+Project configuration is shared through git and is appropriate for team
+workflows such as `/review` or `/deploy-check`. User configuration is
+personal and should be used for individual workflows.
+
+==== Skill frontmatter
+
+Useful `SKILL.md` frontmatter includes:
+
+* `description`: Helps Claude automatically determine when the skill
+matches the user’s intent.
+* `context: fork`: Runs verbose or exploratory work in an isolated
+sub-agent context, keeping the main conversation clean.
+* `allowed-tools`: Pre-approves tools for use without permission
+prompts; it does not actually prohibit other tools.
+* `argument-hint`: Prompts for needed arguments when the skill is
+invoked without them.
+* `disallowed-tools`: The actual mechanism for preventing tool use.
+
+Other supported fields include `disable-model-invocation`, `model`,
+`effort`, and `when++_++to++_++use`.
+
+==== Skills vs. CLAUDE.md
+
+* *Skills:* On-demand, task-specific workflows. They can be explicitly
+invoked or automatically selected based on their descriptions or paths.
+* *CLAUDE.md:* Always-loaded project or user guidance for universal
+standards.
+* `.claude/rules/` is preferable for always-on conventions tied to
+specific file types or paths.
+
+Task-specific procedures should go in skills, while universal coding
+standards belong in `CLAUDE.md` or rules.
+
+==== Key exam traps
+
+* Do not place `.claude/skills/review.md`; use
+`.claude/skills/review/SKILL.md` or `.claude/commands/review.md`.
+* Do not put shared team commands under `~/.claude/`.
+* Do not treat skills as always-loaded guidance.
+* Use `context: fork` for noisy analysis or brainstorming.
+* Do not place task workflows in `CLAUDE.md`.
+
+==== Practice scenario answer
+
+Create:
+
+* Team command: `.claude/commands/review.md` or preferably
+`.claude/skills/review/SKILL.md`
+* Personal verbose brainstorming skill:
+`~/.claude/skills/brainstorm/SKILL.md`
+
+The brainstorming skill should include `context: fork`, `allowed-tools`
+such as `Read`, `Grep`, and `Glob`, and an `argument-hint` describing
+the required feature or codebase area.
+
+== 3.3 Path-Specific Rules for Conditional Convention Loading
+
+=== Summary
+
+Path-specific rules in `.claude/rules/` apply conventions only when
+editing files that match glob patterns defined in YAML frontmatter:
+
+[source]
+----
+---
+paths: ["**/*.test.ts", "**/*.test.tsx"]
+---
+----
+
+They are best for conventions tied to file types or patterns spread
+across many directories, such as co-located test files, API routes, or
+Terraform files.
+
+==== Key benefits
+
+* *Cross-directory coverage:* A single rule can match files throughout
+the codebase.
+* *Lower maintenance:* Avoids duplicating `CLAUDE.md` files in dozens of
+directories.
+* *Token efficiency:* Rules load only when relevant, unlike root
+`CLAUDE.md`, which loads every session.
+* *Automatic convention application:* Rules provide ongoing background
+guidance whenever matching files are being edited.
+
+==== Examples
+
+* Tests: `++**++/++*++.test.ts`, `++**++/++*++.spec.tsx`
+* APIs: `src/api/++**++/++*++`, `++**++/routes/++**++/++*++`,
+`++**++/++*++.controller.ts`
+* Terraform: `terraform/++**++/++*++`, `++**++/++*++.tf`
+
+==== Choosing the right mechanism
+
+[cols=",",options="header",]
+|===
+|Need |Recommended approach
+|Standards for the entire project |Root `CLAUDE.md`
+|Rules for one package or directory |Directory-level `CLAUDE.md`
+|File-type conventions across many directories |Path-specific rules
+|On-demand task workflows |Skills in `.claude/skills/`
+|===
+
+==== Common exam traps
+
+* Do not use directory-level `CLAUDE.md` for conventions affecting files
+across many directories.
+* Do not put file-specific conventions in the root `CLAUDE.md`, since
+this wastes context and tokens.
+* Do not confuse path-specific rules with skills: rules provide
+automatic background guidance, while skills are task-oriented workflows
+invoked by intent or explicitly.
+
+The recommended solution for tests co-located across 50{plus}
+directories is one `.claude/rules/testing.md` file with appropriate glob
+patterns. The guide also recommends using `/memory` to confirm which
+rules load for test files, API handlers, and Terraform files, and to
+compare the resulting token footprint with a monolithic root
+`CLAUDE.md`.
+
+== 3.4 Plan Mode vs Direct Execution
+
+=== Summary
+
+Claude Code has two execution modes, and the choice depends primarily on
+*ambiguity and scope*, not overall difficulty.
+
+==== Plan Mode
+
+Use plan mode when a task requires investigation or design before
+implementation, such as:
+
+* Architectural restructuring
+* Multi-file changes or migrations
+* Multiple valid implementation approaches
+* Dependency, data-flow, or codebase exploration
+* Decisions involving service boundaries, modules, or API contracts
+
+Plan mode explores and analyzes the codebase without modifying files,
+then proposes an implementation strategy.
+
+==== Direct Execution
+
+Use direct execution for changes that are:
+
+* Clearly scoped
+* Limited to one function or file
+* Based on a known cause and solution
+* Free of meaningful design decisions
+
+Examples include fixing a single-file bug with a clear stack trace,
+adding a validation check, or changing a configuration value. Planning
+would add unnecessary overhead.
+
+==== Explore Subagent
+
+The Explore subagent performs verbose discovery separately from the main
+conversation. It:
+
+[arabic]
+. Explores the codebase in isolation
+. Summarizes its findings
+. Returns only the summaries
+. Preserves the main context for implementation
+
+It is especially useful for complex tasks involving extensive file
+listings, dependency analysis, or code excerpts.
+
+==== Hybrid Plan-Then-Execute Pattern
+
+Many complex tasks use both modes:
+
+[arabic]
+. *Plan:* Explore dependencies, compare approaches, identify affected
+files, and design a consistent strategy.
+. *Execute:* Switch to direct execution and implement the approved plan.
+
+For example, a logging-library migration across 30 files should be
+planned first, then applied file by file using direct execution.
+
+==== Key Decision Rule
+
+* *Complex but well-defined:* Direct execution may still be appropriate.
+* *Seemingly simple but ambiguous or broad:* Use plan mode.
+* Do not begin with direct execution when complexity is already clear in
+the requirements.
+* Do not use plan mode for a simple, well-understood fix.
+
+==== Typical Choices
+
+[cols=",",options="header",]
+|===
+|Task |Recommended mode
+|Monolith-to-microservices restructuring |Plan mode
+|Large library migration |Plan, then direct execution
+|Multiple possible architectures |Plan mode
+|Codebase exploration |Plan mode, possibly with Explore
+|Single-file bug with clear cause |Direct execution
+|One-function validation change |Direct execution
+|Configuration update |Direct execution
+|===
+
+== 3.5 Iterative Refinement Techniques
+
+=== Summary: Iterative Refinement Techniques
+
+Claude Code work is iterative, and the best refinement technique depends
+on the problem:
+
+[arabic]
+. *Concrete input/output examples* +
+Use 2–3 before-and-after examples when Claude interprets a prose
+instruction inconsistently. Examples reduce ambiguity and help the model
+generalize the intended transformation. Add edge-case examples if
+necessary.
+. *Test-driven iteration* +
+For complex transformations, write tests covering happy paths, edge
+cases, errors, and performance requirements. Share test failures with
+Claude because messages such as “Expected X, got Y” provide precise,
+unambiguous feedback.
+. *Interview pattern* +
+For unfamiliar domains, ask Claude to question you about requirements,
+constraints, edge cases, security, failure modes, and other
+considerations before implementing. This differs from examples:
+interviews address missing domain knowledge, while examples address
+inconsistent interpretation of a known transformation.
+
+==== Batch vs. Sequential Feedback
+
+* *Batch feedback:* Provide multiple issues in one message when they
+interact, so Claude can satisfy all related constraints coherently.
+* *Sequential feedback:* Address independent issues one at a time to
+avoid confusion about which feedback applies to which code.
+
+==== Key Exam Traps
+
+* Do not respond to inconsistent interpretation with increasingly
+detailed prose; use concrete examples first.
+* Distinguish interdependent issues, which should be batched, from
+independent issues, which should be handled sequentially.
+* Do not confuse the interview pattern with example-based communication.
+
+The recommended workflow is to observe inconsistency, provide a few
+representative examples, verify generalization on new cases, and add
+targeted edge-case examples only when needed.
+
+== 3.6 CICD Integration
+
+=== Summary: CI/CD Integration with Claude Code
+
+Claude Code can run in CI/CD as a non-interactive review and generation
+tool.
+
+==== Core concepts
+
+* *Use `-p` / `--print` in CI:* +
+This switches Claude Code from interactive mode to non-interactive mode,
+allowing it to process a prompt, print the result, and exit. Without it,
+CI jobs may hang waiting for keyboard input.
+* *Use structured output for automation:*
+** `--output-format json` produces a machine-readable JSON envelope.
+** `--json-schema` validates the final response against a schema.
+** Validated data is found in `.structured++_++output`, e.g.:
++
+[source,bash]
+----
+jq '.structured_output'
+----
++
+Structured findings can include file, line, severity, and message fields
+for inline PR comments and dashboards.
+* *Isolate generation and review sessions:* +
+Code should be generated and reviewed by separate Claude invocations. An
+independent review session avoids the reasoning bias created when Claude
+reviews decisions it previously made in the same session.
+* *Use incremental review context:* +
+Pass previous findings into later review runs and instruct Claude to
+report only:
+[arabic]
+. New issues
+. Previously reported issues that remain unresolved +
+This prevents duplicate comments and preserves developer trust.
+* *Use `CLAUDE.md` for project-specific CI context:* +
+It can document testing standards, fixtures, review criteria, coding
+conventions, and existing coverage so CI-generated tests and reviews
+follow team practices.
+
+==== Important CLI options
+
+* System prompts:
+** `--system-prompt` / `--system-prompt-file`: replace the default
+prompt
+** `--append-system-prompt` / `--append-system-prompt-file`: add to the
+default prompt
+* Output and execution:
+** `--output-format text++|++json++|++stream-json`
+** `--input-format text++|++stream-json`
+** `--json-schema`
+** `--max-turns`
+** `--verbose`
+* Permissions and scope:
+** `--permission-mode`
+** `--allowedTools`
+** `--disallowedTools`
+** `--tools`
+** `--add-dir`
+** `--model`
+* Sessions and startup:
+** `--continue` and `--resume` reuse sessions
+** `--bare` skips automatic discovery of project configuration, hooks,
+skills, plugins, MCP servers, memory, and `CLAUDE.md`
+
+==== Batch API versus real-time API
+
+* Use *real-time API* for blocking pre-merge checks because developers
+need prompt results.
+* Use the *Batch API* for latency-tolerant jobs such as overnight
+reports, weekly audits, and nightly test generation. It costs less but
+can take up to 24 hours without a latency guarantee.
+
+==== Main exam traps
+
+* A hanging CI job usually requires `claude -p`.
+* `CLAUDE++_++HEADLESS=true` and `--batch` are not the documented fixes.
+* Same-session self-review is weaker than independent review.
+* Batch processing is unsuitable for blocking pre-merge checks.
+* Prior findings should be included to avoid repeated comments.
