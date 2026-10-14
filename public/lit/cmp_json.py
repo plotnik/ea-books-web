@@ -12,6 +12,20 @@ from typing import Any
 
 import streamlit as st
 
+# Print banner
+
+st.set_page_config(
+    page_title="CMP-JSON",
+)
+
+@st.cache_data
+def print_banner():
+    print("### CMP-JSON")
+    return 1
+
+print_banner()
+
+# Max diffs
 
 MAX_DIFFS = 200
 
@@ -43,7 +57,7 @@ def format_json(value: Any) -> str:
 # ::
 
 def preview_value(value: Any) -> str:
-    rendered = json.dumps(value, sort_keys=True, ensure_ascii=False)
+    rendered = value if isinstance(value, str) else json.dumps(value, sort_keys=True, ensure_ascii=False)
     return rendered if len(rendered) <= 140 else f"{rendered[:137]}..."
 
 
@@ -55,22 +69,30 @@ def path_join(path: str, part: str) -> str:
     return f"{path}.{part}" if path else part
 
 
-# .. function:: compare_json(left: Any, right: Any, path: str = "$") -> list[str]
+# .. function:: compare_json(left: Any, right: Any, path: str = "$") -> list[dict[str, str]]
 #
 # ::
 
-def compare_json(left: Any, right: Any, path: str = "$") -> list[str]:
-    diffs: list[str] = []
+def compare_json(left: Any, right: Any, path: str = "$") -> list[dict[str, str]]:
+    diffs: list[dict[str, str]] = []
+    missing = object()
 
-    def add(message: str) -> bool:
-        diffs.append(message)
+    def add(current_path: str, difference: str, left_value: Any = missing, right_value: Any = missing) -> bool:
+        diffs.append({
+            "Path": current_path,
+            "Difference": difference,
+            "Left": "(missing)" if left_value is missing else preview_value(left_value),
+            "Right": "(missing)" if right_value is missing else preview_value(right_value),
+        })
         return len(diffs) >= MAX_DIFFS
 
     def walk(left_value: Any, right_value: Any, current_path: str) -> bool:
         if type(left_value) is not type(right_value):
             return add(
-                f"{current_path}: type differs "
-                f"({type(left_value).__name__} != {type(right_value).__name__})"
+                current_path,
+                f"type differs ({type(left_value).__name__} != {type(right_value).__name__})",
+                left_value,
+                right_value,
             )
 
         if isinstance(left_value, dict):
@@ -78,11 +100,11 @@ def compare_json(left: Any, right: Any, path: str = "$") -> list[str]:
             right_keys = set(right_value)
 
             for key in sorted(left_keys - right_keys):
-                if add(f"{path_join(current_path, key)}: only in left"):
+                if add(path_join(current_path, key), "only in left", left_value=left_value[key]):
                     return True
 
             for key in sorted(right_keys - left_keys):
-                if add(f"{path_join(current_path, key)}: only in right"):
+                if add(path_join(current_path, key), "only in right", right_value=right_value[key]):
                     return True
 
             for key in sorted(left_keys & right_keys):
@@ -100,20 +122,19 @@ def compare_json(left: Any, right: Any, path: str = "$") -> list[str]:
 
             if len(left_value) > len(right_value):
                 for index in range(common_length, len(left_value)):
-                    if add(f"{current_path}[{index}]: only in left"):
+                    if add(f"{current_path}[{index}]", "only in left", left_value=left_value[index]):
                         return True
 
             if len(right_value) > len(left_value):
                 for index in range(common_length, len(right_value)):
-                    if add(f"{current_path}[{index}]: only in right"):
+                    if add(f"{current_path}[{index}]", "only in right", right_value=right_value[index]):
                         return True
 
             return False
 
         if left_value != right_value:
             return add(
-                f"{current_path}: value differs "
-                f"({preview_value(left_value)} != {preview_value(right_value)})"
+                current_path, "value differs", left_value, right_value
             )
 
         return False
@@ -163,12 +184,13 @@ if "are_equal" not in st.session_state:
 left_column, right_column = st.columns(2)
 
 with left_column:
-    st.text_area("Left JSON", key="left_json", height=520)
+    st.text_area("🟢 Left JSON", key="left_json", height=520)
 
 with right_column:
-    st.text_area("Right JSON", key="right_json", height=520)
+    st.text_area("🔵 Right JSON", key="right_json", height=520)
 
 st.button("Compare", type="primary", on_click=compare_inputs)
+show_values = st.toggle("Show differing values", value=True)
 
 if st.session_state.left_error:
     st.error(f"Left JSON: {st.session_state.left_error}")
@@ -180,5 +202,26 @@ if not st.session_state.left_error and not st.session_state.right_error:
     if st.session_state.are_equal:
         st.success("JSON documents are equal after normalization.")
     elif st.session_state.diffs:
-        st.warning(f"JSON documents differ. Showing up to {MAX_DIFFS} differences.")
-        st.code("\n".join(st.session_state.diffs), language="text")
+        visible_diffs = [
+            diff for diff in st.session_state.diffs
+            if show_values or diff["Difference"] in ("only in left", "only in right")
+        ]
+        st.warning(f"JSON documents differ. Showing {len(visible_diffs)} differences (max {MAX_DIFFS}).")
+        columns = ["Path", "Difference", "Left", "Right"] if show_values else ["Path", "Difference"]
+        if visible_diffs:
+            difference_icons = {
+                "only in left": "🟢 Only in left",
+                "only in right": "🔵 Only in right",
+                "value differs": "≠",
+            }
+            st.table([
+                {
+                    column: difference_icons.get(diff[column], diff[column])
+                    if column == "Difference" else diff[column]
+                    for column in columns
+                }
+                for diff in visible_diffs
+            ])
+            st.caption("🟢 Only in left · 🔵 Only in right · ≠ Value differs")
+        else:
+            st.info("All recorded differences are hidden. Enable 'Show differing values' to display them.")

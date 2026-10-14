@@ -70,15 +70,8 @@ st.logo("https://ea-books.netlify.app/lit/udemy.svg")
 # ::
 
 llm_prices = {
-    "gpt-5.6-sol": (5.00, 30.00),
-    "gpt-5.6-terra": (2.00, 12.00),
-    "gpt-5.6-luna": (0.20, 1.20),  
-    "gpt-5.5": (5.00, 30.00),
-    "gpt-5.4": (2.50, 15.00),
-    "gpt-5.4-mini": (0.75, 4.50),
-    "gpt-5.4-nano": (0.20, 1.25),
-    "gpt-4o-mini": (0.15, 0.60),
-    "gpt-4.1-nano": (0.10, 0.40),
+    "gpt-6-luna": (0.10, 0.50),
+    "gpt-6.1-sol": (2.00, 10.00),
 }
 
 llm_temperature = 0.1

@@ -48,6 +48,7 @@ Literate Programs
    time_intervals.py
    pan_ui.py 
    ppdict.py
+   wiki_index.py
    wiki_num.py
    jira_stats.py
    explain_java.py
@@ -76,6 +77,7 @@ Literate Programs
    clean_youtube.py
    youtube_transcript.py
    fw_picture.py
+   chapter_argument.py
    checkers.py
    fonts.py
    PersistedList.py

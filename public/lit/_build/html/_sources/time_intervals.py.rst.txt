@@ -216,13 +216,25 @@ Display results
           selection_mode=["multi-row"],
       )
 
-      # Calculate total hours
-      total_hours = st.session_state.grouped_df['Hours'].sum()
-      st.write(f"**Total Hours: {total_hours}**")
-
 Click button
 
 ::
     
   if st.button("Process", type='primary', use_container_width=True):
       process()
+
+Export
+
+::
+
+  if "grouped_df" in st.session_state:
+          # Calculate total hours
+      total_hours = st.session_state.grouped_df['Hours'].sum()
+      st.write(f"**Total Hours: {total_hours}**")
+      # Format only for display, without changing the underlying dataframe
+      st.table(
+          st.session_state.grouped_df.style.format({
+              "Hours": "{:.2f}"
+          })
+      )
+        

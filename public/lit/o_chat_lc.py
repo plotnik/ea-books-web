@@ -11,6 +11,7 @@ import json
 import hashlib
 import tiktoken
 from pathlib import Path
+from dotenv import dotenv_values
 
 # Import LangChain
 #
@@ -82,14 +83,16 @@ EMBEDDING_COST_PER_1M = embedding_models[EMBEDDING_MODEL]
 index_folder = f"vectors/o-{EMBEDDING_MODEL}"
 
 llm_models = {
-    "gpt-5.4": (2.50, 15.00),
+    "gpt-5.6-luna": (0.20, 1.20),
+    "gpt-5.6-terra": (2.00, 12.00),
     "gpt-5.4-mini": (0.75, 4.50),
     "gpt-5.4-nano": (0.20, 1.25),
     "gpt-4o-mini": (0.15, 0.60),
 }
 
-LLM_MODEL = list(llm_models.keys())[1]
+LLM_MODEL = list(llm_models.keys())[0]
 LLM_INPUT_COST_PER_1M, LLM_OUTPUT_COST_PER_1M = llm_models[LLM_MODEL]
+st.sidebar.write(f"`{LLM_MODEL}`")
 
 embeddings = OpenAIEmbeddings(model=EMBEDDING_MODEL)
 llm = ChatOpenAI(model=LLM_MODEL, temperature=0)
@@ -98,15 +101,33 @@ llm = ChatOpenAI(model=LLM_MODEL, temperature=0)
 #
 # ::
 
-current_folder = os.getcwd()
-home_folders = os.listdir(current_folder)
-book_folders = [item for item in home_folders if os.path.isdir(os.path.join(current_folder, item)) and item.endswith(" Book")]
+def get_obsidian_path():
+    
+    current_folder = os.getcwd()
+    env_file = os.path.join(current_folder, ".o-chat")
+    
+    # Use OBSIDIAN_PATH from .o-chat when available
+    obsidian_path = None
+    
+    if os.path.isfile(env_file):
+        properties = dotenv_values(env_file)
+        obsidian_path = properties.get("OBSIDIAN_PATH")
+            
+    # Fall back to finding the first "* Book" subfolder
+    if obsidian_path is None:            
+        home_folders = os.listdir(current_folder)
+        book_folders = [item for item in home_folders if os.path.isdir(os.path.join(current_folder, item)) and item.endswith(" Book")]
 
-if (len(book_folders)==0):
+        if (len(book_folders)>0):
+            obsidian_path =  book_folders[0]
+            
+    return obsidian_path
+
+obsidian_path = get_obsidian_path()
+if obsidian_path is None: 
     st.error('The folder should contain a subfolder with a name that ends with " Book".')
     st.stop()
-
-obsidian_path =  book_folders[0]
+    
 st.title(obsidian_path)
 
 # Helpers
