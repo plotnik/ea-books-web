@@ -12,6 +12,7 @@ Literate Programs
 
    note_openai.py
    research_cli.py
+   mm2puml.py
    book_lc.py
    o_chat_lc.py
    udemy.py

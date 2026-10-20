@@ -184,7 +184,7 @@ Each item in the list represents a single prompt and must define:
 ::
 
   prompts_file = "openai_helper.yml"
-  with open(prompts_file, 'r') as file:
+  with open(prompts_file, 'r', encoding="utf-8") as file:
       prompts = yaml.safe_load(file)
 
 Text area to provide input text
