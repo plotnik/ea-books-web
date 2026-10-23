@@ -169,6 +169,8 @@ def render_asciidoc_index(
                     "",
                     "[CAUTION]",
                     "====",
+                    f"link:{target}[{label}]",
+                    "",
                 ]
             )
             for question_line in asciidoc_text(truncate(entry.question, 200)).splitlines():
@@ -179,8 +181,6 @@ def render_asciidoc_index(
             #lines.append("")
             lines.extend(
                 [
-                    "",
-                    f"link:{target}[{label}]",
                     "",
                     "====", 
                     "",

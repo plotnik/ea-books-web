@@ -171,6 +171,8 @@ Expected entry format:
                       "",
                       "[CAUTION]",
                       "====",
+                      f"link:{target}[{label}]",
+                      "",
                   ]
               )
               for question_line in asciidoc_text(truncate(entry.question, 200)).splitlines():
@@ -181,8 +183,6 @@ Expected entry format:
               #lines.append("")
               lines.extend(
                   [
-                      "",
-                      f"link:{target}[{label}]",
                       "",
                       "====", 
                       "",

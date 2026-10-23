@@ -46,6 +46,7 @@ st.write("### Chapter Argument")
 # ::
 
 llm_prices = {
+    "gemini-4-argon": (2.00, 10.00),
     "gemini-3.8-flash": (0.75, 3.75),
     "gpt-6-luna": (0.10, 0.50),
     "gpt-6.1-sol": (2.00, 10.00),
