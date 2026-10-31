@@ -49,9 +49,8 @@ llm_prices = {
     "gemini-4-argon": (2.00, 10.00),
     "gemini-3.8-flash": (0.75, 3.75),
     "gpt-6-luna": (0.10, 0.50),
+    "gpt-6.1-terra": (1.00, 5.00), 
     "gpt-6.1-sol": (2.00, 10.00),
-    # "gpt-5.6-sol": (5.00, 30.00),
-    # "gpt-6-astra": (10.00, 50.00),
 }
 
 llm_models = list(llm_prices.keys())
@@ -329,8 +328,13 @@ def process_text(text: str, prompt: str) -> LLMResult:
 #
 # ::
 
+OPENAI_LONG_LIMIT_TOKENS = 272 * 1024
+
 def calculate_cost(result: LLMResult) -> float:
     input_price, output_price = llm_prices[llm_model]
+    if llm_model.startswith("gpt-") and len(result.input_tokens) > OPENAI_LONG_LIMIT_TOKENS:
+        input_price *= 2
+        output_price *= 1.5
     return (
         result.input_tokens * input_price + result.output_tokens * output_price
     ) / 1_000_000

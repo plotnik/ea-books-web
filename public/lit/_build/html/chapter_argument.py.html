@@ -72,9 +72,8 @@ That contrast—grand bibliographical dignity applied to absurd events—is exac
     <span class="s2">&quot;gemini-4-argon&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span>
     <span class="s2">&quot;gemini-3.8-flash&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">3.75</span><span class="p">),</span>
     <span class="s2">&quot;gpt-6-luna&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span>
+    <span class="s2">&quot;gpt-6.1-terra&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.00</span><span class="p">,</span> <span class="mf">5.00</span><span class="p">),</span>
     <span class="s2">&quot;gpt-6.1-sol&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span>
-    <span class="c1"># &quot;gpt-5.6-sol&quot;: (5.00, 30.00),</span>
-    <span class="c1"># &quot;gpt-6-astra&quot;: (10.00, 50.00),</span>
 <span class="p">}</span>
 
 <span class="n">llm_models</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">llm_prices</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -348,8 +347,13 @@ That contrast—grand bibliographical dignity applied to absurd events—is exac
 <span class="sig-name descname"><span class="pre">calculate_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LLMResult</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#calculate_cost" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculate_cost</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">LLMResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OPENAI_LONG_LIMIT_TOKENS</span> <span class="o">=</span> <span class="mi">272</span> <span class="o">*</span> <span class="mi">1024</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_cost</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">LLMResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="n">input_price</span><span class="p">,</span> <span class="n">output_price</span> <span class="o">=</span> <span class="n">llm_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gpt-&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">input_tokens</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">OPENAI_LONG_LIMIT_TOKENS</span><span class="p">:</span>
+        <span class="n">input_price</span> <span class="o">*=</span> <span class="mi">2</span>
+        <span class="n">output_price</span> <span class="o">*=</span> <span class="mf">1.5</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">result</span><span class="o">.</span><span class="n">input_tokens</span> <span class="o">*</span> <span class="n">input_price</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">output_tokens</span> <span class="o">*</span> <span class="n">output_price</span>
     <span class="p">)</span> <span class="o">/</span> <span class="mi">1_000_000</span>

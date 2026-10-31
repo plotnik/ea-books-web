@@ -24,31 +24,17 @@
 #
 # ::
 
-import streamlit as st
-import yaml
-import json
 import os
-import tiktoken
-from openai import OpenAI
-import pyperclip
-from typing import List
 import time
-
+from dataclasses import dataclass
 from pathlib import Path
-from typing import List
-from collections import namedtuple
 
-# See: PersistedList_
-#
-# .. _PersistedList: PersistedList.py.html
-#  
-# ::
+import pyperclip
+import streamlit as st
 
 from PersistedList import PersistedList
 
-# Print banner.
-#
-# ::
+# Print banner in ASCII graphics
 
 st.set_page_config(
     page_title="O-AI"
@@ -58,344 +44,218 @@ st.set_page_config(
 def print_banner():
     print("""
        dBBBBP       dBBBBBb     dBP
-      dB'.BP             BB        
-     dB'.BP          dBP BB   dBP  
-    dB'.BP dBBBBBP  dBP  BB  dBP   
-   dBBBBP          dBBBBBBB dBP                                                                          
+      dB'.BP             BB
+     dB'.BP          dBP BB   dBP
+    dB'.BP dBBBBBP  dBP  BB  dBP
+   dBBBBP          dBBBBBBB dBP
     """)
     return 1
 
 print_banner()
 st.logo("https://ea-books.netlify.app/lit/ai_obsidian.svg")
 
-# Prompts
-# -------
+# Prompts and models
+# ------------------
+#
+# Resolve the user's Documents folder on Windows and Unix-like systems.
+# Remember selected prompt names separately from model names.
 #
 # ::
 
-prompt_summary = """You will be provided with statements in markdown, 
-and your task is to summarize the content you are provided."""
-
-prompt_summary_v2 = """You will be provided with statements in markdown, 
-and your task is to summarize the key topics and entities you are provided."""
-
-prompt_questions = """
-You will be provided with context in markdown, 
-and your task is to generate 3 questions this context can provide 
-specific answers to which are unlikely to be found elsewhere.
-
-Higher-level summaries of surrounding context may be provided 
-as well. Try using these summaries to generate better questions 
-that this context can answer.
-"""
-
-prompt_questions_v2 = """
-Given the provided context, generate 3 highly specific questions that:
-
-- Can be answered precisely using only this context.
-- Are unlikely to have answers easily found elsewhere.
-- Benefit from any provided higher-level summaries of surrounding context.
-
-Prioritize specificity and uniqueness in each question.
-"""
-
-prompt_improve = """You will be provided with statements in markdown,
-and your task is to improve the content you are provided.
-"""
-
-prompt = prompt_summary
-
-# Select LLM
-# ----------
-#
-# .. csv-table:: OpenAI
-#    :widths: 10 30
-#    :width: 100%
-#
-#    "OpenAI Models", https://platform.openai.com/docs/models
-#    "OpenAI Pricing", https://platform.openai.com/docs/pricing#latest-models
-#   
-# .. csv-table:: Gemini
-#    :widths: 10 30
-#    :width: 100%
-#   
-#    "Gemini Models", https://ai.google.dev/gemini-api/docs/models
-#    "Gemini Pricing", https://ai.google.dev/gemini-api/docs/pricing
-#   
-# ::
-
-llm_prices = {
-    "gemini-2.5-flash-preview-05-20": 0.0,
-    "gemma-3-27b-it": 0.0,
-    "gemini-2.0-flash": 0.0,
-  
-    "gpt-5": 1.25,
-    "gpt-5-mini": 0.25,
-    "gpt-5-nano": 0.05,
+prompts_folder = Path.home() / "Documents" / "prompts"
+prompt_files = {
+    path.stem: path for path in sorted(prompts_folder.glob("*.md"))
+    if path.is_file()
 }
+if not prompt_files:
+    st.error(f"No Markdown prompts found in {prompts_folder}.")
+    st.stop()
 
-def get_llm_properties(llm_model):
-    if llm_model.startswith("gemini"):
-        return {"google": True, "temperature": True, "xml": False}
-    
-    elif llm_model.startswith("gemma"): 
-        return {"google": True, "temperature": True, "xml": True}
-        
-    elif llm_model.startswith("gpt-5"): 
-        return {"google": False, "temperature": False, "xml": False}
-        
-    else: #o3
-        return {"google": False, "temperature": True, "xml": False}
-    
-# Select LLM.
-# Remember which LLM was used last time.
-# ::
+prompts_persisted = PersistedList(".o-ai-prompts")
+prompt_names = prompts_persisted.sort_by_pattern(sorted(prompt_files))
+prompt_name = st.sidebar.selectbox("Prompt", prompt_names)
+prompts_persisted.select(prompt_name)
+prompt = prompt_files[prompt_name].read_text(encoding="utf-8")
 
+# Prices are USD per 1 million input/output tokens.
+llm_prices = {
+    "gemini-4-argon": (2.00, 10.00),
+    "gemini-3.8-flash": (0.75, 3.75),
+    "gpt-6-luna": (0.10, 0.50),
+    "gpt-6.1-terra": (1.00, 5.00),
+    "gpt-6.1-sol": (2.00, 10.00),
+}
 llm_models = list(llm_prices.keys())
-llm_models_persisted = PersistedList(".o-ai") 
+llm_models_persisted = PersistedList(".o-ai")
 llm_models = llm_models_persisted.sort_by_pattern(llm_models)
+llm_model = st.sidebar.selectbox("LLM Model", llm_models)
 
-llm_temperatures = [0, 0.1, 0.7, 1]
-
-llm_model = st.sidebar.selectbox(
-   "LLM Model",
-   llm_models,
-   index = 0
-)
-
-llm_temperature = st.sidebar.select_slider(
-   "LLM Temperature",
-   options = llm_temperatures,
-   value = 0.1
-)
-
-# Select Obsidian folder from recent vaults.
+# Obsidian notes
+# --------------
+#
+# Find the first book folder in the working directory and select a recent note.
 #
 # ::
 
 def reset_llm_result():
-    if "llm_result" in st.session_state:
-        del st.session_state["llm_result"]
-    if "note_name" in st.session_state:
-        del st.session_state["note_name"]
+    for key in ("llm_result", "note_name", "execution_time", "llm_cost", "llm_usage"):
+        st.session_state.pop(key, None)
 
-home_folder = os.path.expanduser('~')
-obsidian_json_path = f"{home_folder}/Library/Application Support/obsidian/obsidian.json"
-with open(obsidian_json_path, "r") as json_file:
-    obsidian_json = json.load(json_file)
 
-obsidian_vaults = obsidian_json.get('vaults')
+def find_obsidian_folder():
+    current_folder = os.getcwd()
+    home_folders = os.listdir(current_folder)
+    book_folders = [
+        item for item in home_folders
+        if os.path.isdir(os.path.join(current_folder, item)) and item.endswith(" Book")
+    ]
+    if len(book_folders) == 0:
+        raise ValueError('The folder should contain a subfolder with a name that ends with " Book".')
+    return book_folders[0]
 
-# Extract the values from the dictionary and sort them based on the 'ts' key
-sorted_vaults = sorted(obsidian_vaults.values(), key=lambda x: x['ts'], reverse=True)
 
-# Extract the 'path' from each sorted entry
-obsidian_folders = [vault['path'] for vault in sorted_vaults]
-
-note_home = st.selectbox(
-   "Obsidian folder",
-   obsidian_folders,
-   on_change=reset_llm_result
-)
-
-# Load LLM prompts.
-#
-# ::
-
-prompts_file = "openai_helper.yml"
-with open(prompts_file, 'r') as file:
-    prompts = yaml.safe_load(file)
-
-def get_prompt(name):
-    for entry in prompts:
-        if entry['name'] == name:
-            return entry.get('note')
-    return None
-
-# Get ``num_files`` newest files from the provided ``directory``.
-#
-# ::
-    
 def get_newest_files(directory, num_files):
-    # Check if the directory exists
     if not os.path.isdir(directory):
         raise ValueError(f"The directory {directory} does not exist.")
+    files = [path for path in Path(directory).iterdir() if path.is_file()]
+    files.sort(key=lambda path: path.stat().st_mtime, reverse=True)
+    return [path.name for path in files[:num_files]]
 
-    # Get a list of files in the directory with their full paths and modification times
-    files_with_paths = []
-    for file_name in os.listdir(directory):
-        file_path = os.path.join(directory, file_name)
-        if os.path.isfile(file_path):
-            files_with_paths.append((file_path, os.path.getmtime(file_path)))
 
-    # Sort files by modification time in descending order (newest first)
-    sorted_files = sorted(files_with_paths, key=lambda x: x[1], reverse=True)
-
-    # Extract the num_files newest file names
-    newest_files = [os.path.basename(file_with_path[0]) for file_with_path in sorted_files[:num_files]]
-
-    return newest_files
-
-# Select ``note_name`` from 5 newest notes.
-#
-# ::
-        
+note_home = find_obsidian_folder()
 newest_files = get_newest_files(note_home, 5)
-note_name = st.selectbox(
-   "Note",
-   newest_files,
-   on_change=reset_llm_result
-)
+if not newest_files:
+    st.info(f"No notes found in {note_home}.")
+    st.stop()
+note_name = st.selectbox("Note", newest_files, on_change=reset_llm_result)
+text = (Path(note_home) / note_name).read_text(encoding="utf-8")
 
-# Get the number of tokens.
+# LLM clients and pricing
+# -----------------------
+#
+# Set OPENAI_API_KEY and GEMINI_API_KEY in the environment for the providers
+# you use. Clients are created only when processing a note.
+# Pre-request token counts are estimates; cost uses reported usage.
 #
 # ::
 
-file_path = os.path.join(note_home, note_name)
-with open(file_path, 'r', encoding='utf-8') as file:
-    text = file.read()
+@dataclass(frozen=True)
+class LLMResult:
+    text: str
+    input_tokens: int
+    output_tokens: int
 
-# Tokens & Price
-# --------------
+
+def count_tokens(value: str) -> int:
+    import tiktoken
+
+    try:
+        encoding = tiktoken.encoding_for_model(llm_model)
+    except KeyError:
+        # General-purpose fallback; Gemini counts are estimates only.
+        encoding = tiktoken.get_encoding("o200k_base")
+    return len(encoding.encode(value))
+
+
+def process_with_openai(text: str, prompt: str) -> LLMResult:
+    from openai import OpenAI
+
+    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    response = client.responses.create(
+        model=llm_model,
+        instructions=prompt.strip(),
+        input=text,
+    )
+    return LLMResult(
+        text=response.output_text,
+        input_tokens=response.usage.input_tokens,
+        output_tokens=response.usage.output_tokens,
+    )
+
+
+def process_with_gemini(text: str, prompt: str) -> LLMResult:
+    from google import genai
+    from google.genai import types
+
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    response = client.models.generate_content(
+        model=llm_model,
+        contents=text,
+        config=types.GenerateContentConfig(system_instruction=prompt.strip()),
+    )
+    usage = response.usage_metadata
+    # Gemini bills response and reasoning tokens at the output-token rate.
+    output_tokens = (usage.candidates_token_count or 0) + (
+        usage.thoughts_token_count or 0
+    )
+    return LLMResult(
+        text=response.text or "",
+        input_tokens=usage.prompt_token_count or 0,
+        output_tokens=output_tokens,
+    )
+
+
+def process_text(text: str, prompt: str) -> LLMResult:
+    if llm_model.startswith("gpt-"):
+        return process_with_openai(text, prompt)
+    if llm_model.startswith("gemini-"):
+        return process_with_gemini(text, prompt)
+    raise ValueError(f"Unsupported model: {llm_model}")
+
+
+OPENAI_LONG_LIMIT_TOKENS = 272 * 1024
+
+
+def calculate_cost(result: LLMResult) -> float:
+    input_price, output_price = llm_prices[llm_model]
+    if llm_model.startswith("gpt-") and result.input_tokens > OPENAI_LONG_LIMIT_TOKENS:
+        input_price *= 2
+        output_price *= 1.5
+    return (
+        result.input_tokens * input_price + result.output_tokens * output_price
+    ) / 1_000_000
+
+
+estimated_tokens = count_tokens(text) + count_tokens(prompt.strip())
+st.sidebar.write(f"Estimated input tokens: `{estimated_tokens:,}`")
+
+# Process and display the result
+# ------------------------------
 #
-# .. csv-table:: Useful Links
-#    :header: "Name", "URL"
-#    :widths: 10 30
-#
-#    "How to count tokens with tiktoken", https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
-#
-# Certain models are not compatible with ``tiktoken 0.7.0``, 
-# so we have added a separate configuration for them.
-#
-# ::
-
-def count_tokens():
-    llm_model_tiktoken = "gpt-4o-mini"
-
-    encoding = tiktoken.encoding_for_model(llm_model_tiktoken)
-    tokens = encoding.encode(text)
-
-    cents = round(len(tokens) * llm_prices[llm_model]/10000, 3)
-
-    st.sidebar.write(f'''
-        | Chars | Tokens | Cents |
-        |---|---|---|
-        | {len(text)} | {len(tokens)} | {cents} |
-        ''')
-
-#if llm_model.startswith("gpt-") or llm_model.startswith("o-"):
-count_tokens()
- 
-
-# OpenAI and Gemini clients
-#
-# ::
-
-client = OpenAI()
-
-g_key = os.getenv("GEMINI_API_KEY")
-g_client = OpenAI(
-    api_key=g_key,
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-)
-
-# Generic LLM call.
+# Store the cost with the result so changing the model does not reprice it.
 #
 # ::
 
 def call_llm():
     start_time = time.time()
-
-    st.write('')
-    st.info(prompt, icon="🤔")
-
-    # Remember LLM to push it to the top of selectbox
+    st.info(prompt)
     llm_models_persisted.select(llm_model)
-
-    # Call LLM
-    props = get_llm_properties(llm_model)
-
-    llm_client = g_client if props["google"] else client
-
-    if props["xml"]:
-        messages = [
-            {"role": "user", "content": f"<prompt>{prompt}</prompt>\n<query>{text}</query>"},
-        ]
-    else:
-        messages = [
-            {"role": "developer", "content": prompt},
-            {"role": "user", "content": text},
-        ] 
-    
-    if props["temperature"]:    
-        response = llm_client.chat.completions.create(
-            model=llm_model,
-            messages=messages,
-            temperature=llm_temperature,
-        )
-    else:  
-        response = llm_client.chat.completions.create(
-            model=llm_model,
-            messages=messages,
-        )        
-
-    choice = response.choices[0]
-
-    # Save result in session       
-    st.session_state.llm_result = choice.message.content 
+    result = process_text(text, prompt)
+    st.session_state.llm_result = result.text
+    st.session_state.llm_usage = (result.input_tokens, result.output_tokens)
+    st.session_state.llm_cost = calculate_cost(result)
     st.session_state.note_name = note_name
-
-    # Save result to clipboard  
-    pyperclip.copy(st.session_state.llm_result)
-    st.write(f'Copied to clipboard')
-
-    end_time = time.time()
-    st.session_state.execution_time = end_time - start_time
-
+    st.session_state.execution_time = time.time() - start_time
+    pyperclip.copy(result.text)
     st.rerun()
 
-# Print result
-#
-# ::
+
+if st.button("Process", type="primary", width="stretch"):
+    call_llm()
 
 if "llm_result" in st.session_state:
-    st.write('---')
+    st.write("---")
     st.write(st.session_state.llm_result)
-    st.write('---')  
+    st.write("---")
 
 if "execution_time" in st.session_state:
-    st.sidebar.write(f"Execution time: `{round(st.session_state.execution_time, 1)}` sec")    
+    st.sidebar.write(f"Execution time: `{st.session_state.execution_time:.1f}` sec")
 
-# Sidebar buttons
-#
-# ::    
+if "llm_cost" in st.session_state:
+    input_tokens, output_tokens = st.session_state.llm_usage
+    st.sidebar.write(f"Input tokens: `{input_tokens:,}`")
+    st.sidebar.write(f"Output tokens: `{output_tokens:,}`")
+    st.sidebar.write(f"Cents: `${st.session_state.llm_cost*100:.4f}`")
 
-st.write('')
-if st.button(':bulb: &nbsp; Summarize', type='primary', use_container_width=True):
-    prompt = prompt_summary
-    call_llm()
-
-if st.sidebar.button(':question: &nbsp; Ask questions', use_container_width=True):
-    prompt = prompt_questions
-    call_llm()
-
-if st.sidebar.button(':exclamation: &nbsp; Improve', use_container_width=True):
-    prompt = prompt_improve
-    call_llm()
-
-if "llm_result" in st.session_state and st.sidebar.button(':clipboard: &nbsp; Copy to clipboard', use_container_width=True):
+if "llm_result" in st.session_state and st.sidebar.button("Copy to clipboard", width="stretch"):
     pyperclip.copy(st.session_state.llm_result)
-
-st.sidebar.write('---')
-
-if st.sidebar.button(f' `Summarize` {"&nbsp;"*8} :test_tube: `v.2`'):
-    prompt = prompt_summary_v2
-    call_llm()
-
-if st.sidebar.button(f'`Ask questions` :test_tube: `v.2`'):
-    prompt = prompt_questions_v2
-    call_llm()
-
-
-
-

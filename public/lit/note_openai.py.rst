@@ -8,6 +8,10 @@ enhanced with AI-assisted features powered by OpenAI.
 
 It integrates with OpenAI's |robot| `Responses API`_ to provide intelligent text operations.
 
+----
+
+|moneybag| **See** `LLM Prices`_ for the list of LLMs available.
+
 .. _Responses API: https://developers.openai.com/api/reference/resources/responses/methods/create
 
 .. |jigsaw|     unicode:: 0x1F9E9 U+2002
@@ -32,6 +36,7 @@ It integrates with OpenAI's |robot| `Responses API`_ to provide intelligent text
 .. |speech_balloon|     unicode:: 0x1F4AC U+2002
 .. |hammer_and_wrench|  unicode:: 0x1F6E0 U+2002
 .. |page_facing_up|     unicode:: 0x1F4C4 U+2002
+.. |moneybag|           unicode:: 0x1F4B0 U+2002
 
 ----
 
@@ -99,6 +104,7 @@ It integrates with OpenAI's |robot| `Responses API`_ to provide intelligent text
 .. _literate programming: https://en.wikipedia.org/wiki/Literate_programming
 .. _reStructuredText Primer: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
 .. _PyLit Tutorial: https://slott56.github.io/PyLit-3/_build/html/tutorial/index.html
+
 
 ----
 
@@ -259,12 +265,19 @@ Select prompt body by its name
   st.write(prompt)  
 
 
-LLM Prices - (Short context, Long context)
+LLM Prices
+----------
+
+``(Short context, Long context)``
+
+Prompts with more than 272K input tokens are priced at 2x input and cache rates 
+and 1.5x output for the full request.
 
 ::
 
   llm_prices = {
       "gpt-6-luna": ((0.10, 0.50), (0.20, 0.75)),
+      "gpt-6.1-terra": ((1.00, 5.00), (2.00, 7.50)),
       "gpt-6.1-sol": ((2.00, 10.00), (4.00, 15.00)),
       "gpt-6-astra": ((10.00, 50.00), (20.00, 75.00)),
   }    

@@ -42,6 +42,8 @@ but with web interface, and
 enhanced with AI-assisted features powered by OpenAI.</p>
 <p>It integrates with OpenAI’s 🤖  <a class="reference external" href="https://developers.openai.com/api/reference/resources/responses/methods/create">Responses API</a> to provide intelligent text operations.</p>
 <hr class="docutils" />
+<p>💰  <strong>See</strong> <a class="reference internal" href="#llm-prices">LLM Prices</a> for the list of LLMs available.</p>
+<hr class="docutils" />
 <dl class="simple">
 <dt>🧩  <strong>OpenAI Models</strong></dt><dd><p><a class="reference external" href="https://developers.openai.com/api/docs/models">https://developers.openai.com/api/docs/models</a></p>
 </dd>
@@ -236,9 +238,14 @@ Each prompt entry includes a unique name, a descriptive note explaining its purp
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>LLM Prices - (Short context, Long context)</p>
+<section id="llm-prices">
+<h2>LLM Prices<a class="headerlink" href="#llm-prices" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">(Short</span> <span class="pre">context,</span> <span class="pre">Long</span> <span class="pre">context)</span></code></p>
+<p>Prompts with more than 272K input tokens are priced at 2x input and cache rates
+and 1.5x output for the full request.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;gpt-6-luna&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)),</span>
+    <span class="s2">&quot;gpt-6.1-terra&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mf">1.00</span><span class="p">,</span> <span class="mf">5.00</span><span class="p">),</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">7.50</span><span class="p">)),</span>
     <span class="s2">&quot;gpt-6.1-sol&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span> <span class="p">(</span><span class="mf">4.00</span><span class="p">,</span> <span class="mf">15.00</span><span class="p">)),</span>
     <span class="s2">&quot;gpt-6-astra&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mf">10.00</span><span class="p">,</span> <span class="mf">50.00</span><span class="p">),</span> <span class="p">(</span><span class="mf">20.00</span><span class="p">,</span> <span class="mf">75.00</span><span class="p">)),</span>
 <span class="p">}</span>
@@ -365,6 +372,7 @@ and display both the token count and the corresponding price.</p>
     <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output price: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">output_price</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="si">}</span><span class="s2">` cents&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
 <hr class="docutils" />
 <section id="environment-setup">
 <h2>Environment Setup<a class="headerlink" href="#environment-setup" title="Link to this heading">¶</a></h2>
@@ -604,7 +612,7 @@ activate <code class="docutils literal notranslate"><span class="pre">.venv</spa
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Note-OpenAI</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#get_prompt"><code class="docutils literal notranslate"><span class="pre">get_prompt()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#has_tag"><code class="docutils literal notranslate"><span class="pre">has_tag()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#call_llm"><code class="docutils literal notranslate"><span class="pre">call_llm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#llm-prices">LLM Prices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#environment-setup">Environment Setup</a></li>
 </ul>
 </li>

@@ -147,8 +147,8 @@ def render_asciidoc_index(
     lines = [
         f"= {root.name}",
         ":icons: font",
-        ":toc: left",
-        ":toclevels: 2",
+        #":toc: left",
+        #":toclevels: 2",
         "",
         f"Indexed {total} question{'s' if total != 1 else ''} "
         f"from {len(files_and_entries)} file{'s' if len(files_and_entries) != 1 else ''}.",
@@ -157,20 +157,18 @@ def render_asciidoc_index(
 
     for source, entries in files_and_entries:
         relative_name = source.relative_to(root).as_posix()
-        lines.extend([f"== {asciidoc_text(relative_name)}", ""])
+        lines.extend([f"`{asciidoc_text(relative_name)}`", ""])
 
         for entry in reversed(entries):
-            label = asciidoc_text(f"{relative_name[0:-3]} ({entry.line_number})")
+            label = asciidoc_text(f"({entry.line_number})")
             anchor = header_to_anchor(entry.title)
             target = link_target(source, anchor, output)
             lines.extend(
                 [
-                    f"=== {asciidoc_text(entry.title)}",
-                    "",
+                    f".{asciidoc_text(entry.title)} link:{target}[{label}]",
                     "[CAUTION]",
                     "====",
-                    f"link:{target}[{label}]",
-                    "",
+                    "---",
                 ]
             )
             for question_line in asciidoc_text(truncate(entry.question, 200)).splitlines():
@@ -183,7 +181,7 @@ def render_asciidoc_index(
                 [
                     "",
                     "====", 
-                    "",
+                    "---",
                 ]
             )
             
