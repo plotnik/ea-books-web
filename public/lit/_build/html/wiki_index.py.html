@@ -59,9 +59,9 @@ Answer text
 <span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">quote</span>
 
 
-<span class="n">TITLE_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^#(?!#)\s+(.+?)\s*$&quot;</span><span class="p">)</span>
-<span class="n">SEPARATOR_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\s*-{3,}\s*$&quot;</span><span class="p">)</span>
-<span class="n">BLOCKQUOTE_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\s*&gt; ?(.*)$&quot;</span><span class="p">)</span>
+<span class="n">TITLE_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^#(?!#)\s+(.+?)\s*$"</span><span class="p">)</span>
+<span class="n">SEPARATOR_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^\s*-{3,}\s*$"</span><span class="p">)</span>
+<span class="n">BLOCKQUOTE_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^\s*&gt; ?(.*)$"</span><span class="p">)</span>
 
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -77,7 +77,7 @@ Answer text
 <dd></dd></dl>
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">extract_entries</span><span class="p">(</span><span class="n">markdown</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Entry</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract valid title/question pairs from Markdown text.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Extract valid title/question pairs from Markdown text."""</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
     <span class="n">entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Entry</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -104,14 +104,14 @@ Answer text
         <span class="k">while</span> <span class="n">question_lines</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">question_lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
             <span class="n">question_lines</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
 
-        <span class="c1"># Remove Markdown&#39;s blockquote marker. Lines without a marker are kept:</span>
+        <span class="c1"># Remove Markdown's blockquote marker. Lines without a marker are kept:</span>
         <span class="c1"># Markdown permits them as lazy continuation lines in a blockquote.</span>
         <span class="n">cleaned_lines</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">question_line</span> <span class="ow">in</span> <span class="n">question_lines</span><span class="p">:</span>
             <span class="n">match</span> <span class="o">=</span> <span class="n">BLOCKQUOTE_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">question_line</span><span class="p">)</span>
             <span class="n">cleaned_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">match</span> <span class="k">else</span> <span class="n">question_line</span><span class="p">)</span>
 
-        <span class="n">question</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cleaned_lines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">question</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cleaned_lines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">question</span><span class="p">:</span>
             <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Entry</span><span class="p">(</span>
@@ -130,8 +130,8 @@ Answer text
 <dd></dd></dl>
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">asciidoc_text</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prevent accidental AsciiDoc substitutions in displayed prose.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">{&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Prevent accidental AsciiDoc substitutions in displayed prose."""</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"</span><span class="se">\\\\</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"{"</span><span class="p">,</span> <span class="s2">"</span><span class="se">\\</span><span class="s2">{"</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py function">
@@ -140,8 +140,8 @@ Answer text
 <dd></dd></dl>
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">link_target</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">anchor</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">relative</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="n">relative</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;/._-~&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="n">anchor</span>
+    <span class="n">relative</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="n">relative</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">"/._-~"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"#"</span> <span class="o">+</span> <span class="n">anchor</span>
 </pre></div>
 </div>
 <dl class="py function">
@@ -150,24 +150,24 @@ Answer text
 <dd></dd></dl>
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">header_to_anchor</span><span class="p">(</span><span class="n">header</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert a header into a URL-friendly HTML anchor ID.</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        &quot;GitLab Pipeline 2nd Error After Updating `.gitlab-ci.yml`&quot;</span>
-<span class="sd">        -&gt; &quot;gitlab-pipeline-2nd-error-after-updating-gitlab-ciyml&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        "GitLab Pipeline 2nd Error After Updating `.gitlab-ci.yml`"</span>
+<span class="sd">        -&gt; "gitlab-pipeline-2nd-error-after-updating-gitlab-ciyml"</span>
+<span class="sd">    """</span>
     <span class="c1"># Convert to lowercase</span>
     <span class="n">anchor</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="c1"># Remove punctuation, while preserving letters, numbers, spaces, and hyphens</span>
-    <span class="n">anchor</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^a-z0-9\s-]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">anchor</span><span class="p">)</span>
+    <span class="n">anchor</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[^a-z0-9\s-]"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">anchor</span><span class="p">)</span>
 
     <span class="c1"># Replace whitespace with a single hyphen</span>
-    <span class="n">anchor</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">anchor</span><span class="p">)</span>
+    <span class="n">anchor</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\s+"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="n">anchor</span><span class="p">)</span>
 
     <span class="c1"># Collapse repeated hyphens and remove leading/trailing ones</span>
-    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;-+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">anchor</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"-+"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="n">anchor</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py function">
@@ -175,55 +175,64 @@ Answer text
 <span class="sig-name descname"><span class="pre">render_asciidoc_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files_and_entries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Entry</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#render_asciidoc_index" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">truncate</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">maxlen</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">line</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">maxlen</span> <span class="k">else</span> <span class="n">line</span><span class="p">[:</span><span class="n">maxlen</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MAX_LINE_LEN</span> <span class="o">=</span> <span class="mi">120</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">truncate</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">maxlen</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">line</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">maxlen</span> <span class="k">else</span> <span class="n">line</span><span class="p">[:</span><span class="n">maxlen</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"....."</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">truncate_list</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">maxlen</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Return items unchanged if shorter than maxlen; otherwise truncate and add '...'."""</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">maxlen</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">items</span>
+    <span class="k">return</span> <span class="n">items</span><span class="p">[:</span><span class="n">maxlen</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"......."</span><span class="p">]</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">render_asciidoc_index</span><span class="p">(</span>
     <span class="n">files_and_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Entry</span><span class="p">]]],</span> <span class="n">output</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">Path</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">entries</span> <span class="ow">in</span> <span class="n">files_and_entries</span><span class="p">)</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="sa">f</span><span class="s2">&quot;= </span><span class="si">{</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;:icons: font&quot;</span><span class="p">,</span>
-        <span class="c1">#&quot;:toc: left&quot;,</span>
-        <span class="c1">#&quot;:toclevels: 2&quot;,</span>
-        <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;Indexed </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> question</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files_and_entries</span><span class="p">)</span><span class="si">}</span><span class="s2"> file</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">files_and_entries</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"= </span><span class="si">{</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="s2">":icons: font"</span><span class="p">,</span>
+        <span class="c1">#":toc: left",</span>
+        <span class="c1">#":toclevels: 2",</span>
+        <span class="s2">""</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"Indexed </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> question</span><span class="si">{</span><span class="s1">'s'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files_and_entries</span><span class="p">)</span><span class="si">}</span><span class="s2"> file</span><span class="si">{</span><span class="s1">'s'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">files_and_entries</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
+        <span class="s2">""</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">entries</span> <span class="ow">in</span> <span class="n">files_and_entries</span><span class="p">:</span>
         <span class="n">relative_name</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">asciidoc_text</span><span class="p">(</span><span class="n">relative_name</span><span class="p">)</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">])</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s2">"`</span><span class="si">{</span><span class="n">asciidoc_text</span><span class="p">(</span><span class="n">relative_name</span><span class="p">)</span><span class="si">}</span><span class="s2">`"</span><span class="p">,</span> <span class="s2">""</span><span class="p">])</span>
 
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">entries</span><span class="p">):</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="n">asciidoc_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">line_number</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">asciidoc_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">line_number</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
             <span class="n">anchor</span> <span class="o">=</span> <span class="n">header_to_anchor</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">link_target</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">anchor</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">asciidoc_text</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="si">}</span><span class="s2"> link:</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;[CAUTION]&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;====&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;---&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">".</span><span class="si">{</span><span class="n">asciidoc_text</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="si">}</span><span class="s2"> link:</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">]"</span><span class="p">,</span>
+                    <span class="s2">"[CAUTION]"</span><span class="p">,</span>
+                    <span class="s2">"===="</span><span class="p">,</span>
+                    <span class="s2">"---"</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-            <span class="k">for</span> <span class="n">question_line</span> <span class="ow">in</span> <span class="n">asciidoc_text</span><span class="p">(</span><span class="n">truncate</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+            <span class="n">question_list</span> <span class="o">=</span> <span class="n">truncate_list</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">question</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(),</span> <span class="mi">20</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">question_line</span> <span class="ow">in</span> <span class="n">question_list</span><span class="p">:</span>
                 <span class="c1"># Avoid prematurely closing the quote block.</span>
-                <span class="c1">#lines.append(&quot;\\____&quot; if question_line == &quot;____&quot; else question_line)</span>
-                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">question_line</span><span class="p">)</span>
-            <span class="c1">#lines.extend([&quot;====&quot;, &quot;&quot;])</span>
-            <span class="c1">#lines.append(&quot;&quot;)</span>
+                <span class="c1">#lines.append("\\____" if question_line == "____" else question_line)</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">truncate</span><span class="p">(</span><span class="n">question_line</span><span class="p">,</span> <span class="n">MAX_LINE_LEN</span><span class="p">))</span>
+            <span class="c1">#lines.extend(["====", ""])</span>
+            <span class="c1">#lines.append("")</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;====&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;---&quot;</span><span class="p">,</span>
+                    <span class="s2">""</span><span class="p">,</span>
+                    <span class="s2">"===="</span><span class="p">,</span>
+                    <span class="s2">"---"</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">)</span>
 
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 </pre></div>
 </div>
 <dl class="py function">
@@ -232,8 +241,14 @@ Answer text
 <dd></dd></dl>
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">markdown_label</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Escape text used as a Markdown link label.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">[&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Escape text used as a Markdown link label."""</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"</span><span class="se">\\\\</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"["</span><span class="p">,</span> <span class="s2">"</span><span class="se">\\</span><span class="s2">["</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"]"</span><span class="p">,</span> <span class="s2">"</span><span class="se">\\</span><span class="s2">]"</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">markdown_title</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Convert a filename like '56_bench_links.md' to '56. Bench Links'."""</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="s2">".md"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">)</span>
+    <span class="n">first</span><span class="p">,</span> <span class="o">*</span><span class="n">rest</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">first</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">word</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">rest</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
 </pre></div>
 </div>
 <dl class="py function">
@@ -246,35 +261,40 @@ Answer text
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">entries</span> <span class="ow">in</span> <span class="n">files_and_entries</span><span class="p">)</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="sa">f</span><span class="s2">&quot;# </span><span class="si">{</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;Indexed </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> question</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files_and_entries</span><span class="p">)</span><span class="si">}</span><span class="s2"> file</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">files_and_entries</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"# </span><span class="si">{</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="s2">""</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"Indexed </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> question</span><span class="si">{</span><span class="s1">'s'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files_and_entries</span><span class="p">)</span><span class="si">}</span><span class="s2"> file</span><span class="si">{</span><span class="s1">'s'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">files_and_entries</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
+        <span class="s2">""</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">entries</span> <span class="ow">in</span> <span class="n">files_and_entries</span><span class="p">:</span>
         <span class="n">relative_name</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
-        <span class="n">display_name</span> <span class="o">=</span> <span class="n">relative_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;`&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">`&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;## `</span><span class="si">{</span><span class="n">display_name</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">])</span>
+        <span class="n">display_name</span> <span class="o">=</span> <span class="n">relative_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"`"</span><span class="p">,</span> <span class="s2">"</span><span class="se">\\</span><span class="s2">`"</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+            <span class="s2">"---"</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"## </span><span class="si">{</span><span class="n">markdown_title</span><span class="p">(</span><span class="n">display_name</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="s2">""</span><span class="p">,</span>
+        <span class="p">])</span>
 
-        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="n">markdown_label</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">relative_name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">line_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">entries</span><span class="p">):</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">markdown_label</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">relative_name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">line_number</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">anchor</span> <span class="o">=</span> <span class="n">header_to_anchor</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">link_target</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">anchor</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="sa">f</span><span class="s2">&quot;### </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;Source: [</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">](</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">#L</span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">line_number</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"### </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="s2">""</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Source: [</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">](</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="c1">#L{entry.line_number}</span>
+                    <span class="s2">""</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-            <span class="k">for</span> <span class="n">question_line</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">question</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt; </span><span class="si">{</span><span class="n">question_line</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">question_line</span> <span class="k">else</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">question_list</span> <span class="o">=</span> <span class="n">truncate_list</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">question</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(),</span> <span class="mi">20</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">question_line</span> <span class="ow">in</span> <span class="n">question_list</span><span class="p">:</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&gt; </span><span class="si">{</span><span class="n">truncate</span><span class="p">(</span><span class="n">question_line</span><span class="p">,</span><span class="w"> </span><span class="n">MAX_LINE_LEN</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">question_line</span> <span class="k">else</span> <span class="s2">"&gt;"</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 </pre></div>
 </div>
 <dl class="py function">
@@ -284,7 +304,7 @@ Answer text
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">markdown_files</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.md&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()),</span>
+        <span class="p">(</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">"*.md"</span><span class="p">)</span> <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()),</span>
         <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">path</span><span class="p">:</span> <span class="n">path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="o">.</span><span class="n">casefold</span><span class="p">(),</span>
         <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
@@ -297,27 +317,27 @@ Answer text
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">parse_args</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Recursively create a Markdown or AsciiDoc wiki question index.&quot;</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Recursively create a Markdown or AsciiDoc wiki question index."</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;root&quot;</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+        <span class="s2">"root"</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"?"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;wiki directory to scan (default: current directory)&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"wiki directory to scan (default: current directory)"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--format&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;markdown&quot;</span><span class="p">,</span> <span class="s2">&quot;asciidoc&quot;</span><span class="p">),</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;markdown&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;index format (default: markdown)&quot;</span><span class="p">,</span>
+        <span class="s2">"-f"</span><span class="p">,</span>
+        <span class="s2">"--format"</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">"markdown"</span><span class="p">,</span> <span class="s2">"asciidoc"</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"markdown"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"index format (default: markdown)"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
+        <span class="s2">"-o"</span><span class="p">,</span>
+        <span class="s2">"--output"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output file (default: wiki_index.md or wiki_index.adoc)&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"output file (default: wiki_index.md or wiki_index.adoc)"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 </pre></div>
@@ -330,34 +350,34 @@ Answer text
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">()</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-    <span class="n">default_name</span> <span class="o">=</span> <span class="s2">&quot;wiki_index.md&quot;</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;markdown&quot;</span> <span class="k">else</span> <span class="s2">&quot;wiki_index.adoc&quot;</span>
+    <span class="n">default_name</span> <span class="o">=</span> <span class="s2">"wiki_index.md"</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">"markdown"</span> <span class="k">else</span> <span class="s2">"wiki_index.adoc"</span>
     <span class="n">output</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span> <span class="ow">or</span> <span class="n">Path</span><span class="p">(</span><span class="n">default_name</span><span class="p">))</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error: wiki root is not a directory: </span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"error: wiki root is not a directory: </span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">2</span>
 
     <span class="n">indexed</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Entry</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">markdown_files</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">entries</span> <span class="o">=</span> <span class="n">extract_entries</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+            <span class="n">entries</span> <span class="o">=</span> <span class="n">extract_entries</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">))</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">UnicodeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;warning: cannot read </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"warning: cannot read </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="n">entries</span><span class="p">:</span>
             <span class="n">indexed</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">source</span><span class="p">,</span> <span class="n">entries</span><span class="p">))</span>
 
     <span class="n">output</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">renderer</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">render_markdown_index</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;markdown&quot;</span> <span class="k">else</span> <span class="n">render_asciidoc_index</span>
+        <span class="n">render_markdown_index</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">"markdown"</span> <span class="k">else</span> <span class="n">render_asciidoc_index</span>
     <span class="p">)</span>
-    <span class="n">output</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">renderer</span><span class="p">(</span><span class="n">indexed</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">root</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">renderer</span><span class="p">(</span><span class="n">indexed</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">root</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
     <span class="n">count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">entries</span> <span class="ow">in</span> <span class="n">indexed</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> question(s) from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indexed</span><span class="p">)</span><span class="si">}</span><span class="s2"> file(s) to </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Wrote </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> question(s) from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indexed</span><span class="p">)</span><span class="si">}</span><span class="s2"> file(s) to </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">0</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>
 </div>
@@ -392,6 +412,7 @@ Answer text
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -501,7 +522,7 @@ Answer text
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

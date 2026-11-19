@@ -11,6 +11,7 @@ Literate Programs
    :caption: Contents:
 
    note_openai.py
+   o_find.py
    research_cli.py
    mm2puml.py
    book_lc.py

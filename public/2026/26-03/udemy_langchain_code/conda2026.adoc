@@ -1,0 +1,997 @@
+= Conda Cheat Sheet — Practical Guide
+:source-highlighter: pygments
+:icons: font
+:toc: left
+:toclevels: 4
+
+A comprehensive reference for managing Conda environments, installing
+packages, choosing between *conda-forge and pip*, maintaining
+`environment.yml`, troubleshooting dependency conflicts, and making
+environments reproducible.
+
+The examples use a project environment named `myenv`, with *conda-forge
+as the preferred Conda channel*.
+
+=== 1. Most important rules
+
+[arabic]
+. *Prefer conda-forge for packages available there*, especially NumPy,
+SciPy, PyTorch, geospatial libraries, and packages with compiled
+dependencies.
+. *Use pip when a package is unavailable or unsuitable through Conda.*
+Always use pip inside the correct activated environment.
+. *Treat `environment.yml` as the source of truth.* Edit the file when
+adding, upgrading, or removing dependencies, then apply it.
+. *Install Conda packages before pip packages.* If later changes require
+substantial Conda dependency modifications, consider rebuilding the
+environment.
+
+=== 2. Essential Conda commands
+
+==== Environment management
+
+[cols=",",options="header",]
+|===
+|Task |Command
+|Check Conda version |`conda --version`
+|Show Conda information |`conda info`
+|List environments |`conda env list`
+|Create an environment |`conda create -n myenv python=3.12`
+|Activate environment |`conda activate myenv`
+|Deactivate environment |`conda deactivate`
+|Show active environment |`conda info --envs`
+|Clone environment |`conda create -n myclone --clone myenv`
+|Rename environment |`conda rename -n myenv newenv`
+|Delete environment |`conda env remove -n myenv`
+|Update Conda itself |`conda update -n base conda`
+|Run without activating |`conda run -n myenv python script.py`
+|===
+
+==== Package management
+
+[cols=",",options="header",]
+|===
+|Task |Command
+|List installed packages |`conda list`
+|Check a specific package |`conda list numpy`
+|Show source channels |`conda list --show-channel-urls`
+|Install package |`conda install numpy`
+|Install from conda-forge |`conda install -c conda-forge numpy`
+|Install specific version |`conda install "numpy=2.1"`
+|Install multiple packages |`conda install numpy pandas scipy`
+|Update a package |`conda update numpy`
+|Update all Conda packages |`conda update --all`
+|Remove package |`conda remove numpy`
+|Preview installation changes |`conda install numpy --dry-run`
+|Search for package |`conda search numpy`
+|Inspect package metadata |`conda search numpy --info`
+|===
+
+*Reference:* Official
+https://docs.conda.io/projects/conda/en/stable/user-guide/cheatsheet.html?utm_source=chatgpt.com[Conda
+cheat sheet] and
+https://docs.conda.io/projects/conda/en/stable/commands/search.html?utm_source=chatgpt.com[package
+search documentation].
+
+
+=== 3. Conda-forge vs pip: which should you use?
+
+These tools serve different purposes:
+
+[cols=",,",options="header",]
+|===
+| |conda-forge |pip / PyPI
+|Package ecosystem |Conda packages |Python packages
+
+|Python packages |Yes |Yes
+
+|Native dependencies |Strong support |Depends on wheels/system libraries
+
+|Non-Python libraries |Yes |Limited
+
+|GPU/CUDA compatibility |Can manage compatible binary stacks |Depends on
+package wheels
+
+|New Python-only releases |Sometimes slower |Often available first
+
+|Dependency management |Conda solver |pip resolver
+
+|Best for |Scientific and binary-heavy environments |Python-only and
+PyPI-exclusive packages
+|===
+
+*Default recommendation:* For a Conda-managed project, check conda-forge
+first. Use pip selectively, rather than mixing both package managers
+unnecessarily.
+
+==== How to check whether a package exists on conda-forge
+
+Suppose you want to install `polars`.
+
+*Step 1 — Search conda-forge exclusively*
+
+```python
+conda search -c conda-forge --override-channels polars
+```
+
+`--override-channels` is important: it ensures that you search only
+conda-forge, not channels configured elsewhere.
+
+*Step 2 — Inspect details*
+
+```python
+conda search -c conda-forge --override-channels \
+  polars --info
+```
+
+Check the available versions, supported platforms, dependencies, and
+builds.
+
+*Step 3 — Preview the installation*
+
+```python
+conda install -c conda-forge --override-channels \
+  polars --dry-run
+```
+
+This resolves dependencies without installing anything. Review whether
+it proposes unexpected upgrades, downgrades, or removals.
+
+*Step 4 — Compare PyPI if needed*
+
+```python
+python -m pip index versions polars
+```
+
+Or examine the package's PyPI page: https://pypi.org/project/polars/?utm_source=chatgpt.com[PyPI — polars]
+
+Check whether the desired version exists and whether compatible wheels
+are available for your Python version and operating system.
+
+*Step 5 — Choose*
+
+If conda-forge provides a suitable build and its dependency solve is
+clean, install with:
+
+```python
+conda install -c conda-forge polars
+```
+
+Otherwise, if pip provides the necessary version or platform support:
+
+```python
+python -m pip install polars
+```
+
+Note that a package may have different names on Conda and PyPI, so
+search by project name as well as import name.
+
+==== Examples of typical choices
+
+[cols=",,",options="header",]
+|===
+|Package |Usually choose |Reason
+|`numpy`, `scipy` |conda-forge |Compiled numerical dependencies
+
+|`pandas`, `scikit-learn` |conda-forge |Well-supported scientific stack
+
+|`gdal`, `rasterio`, `shapely` |conda-forge |Complex native libraries
+
+|`polars`, `pyarrow` |conda-forge |Binary dependencies
+
+|`requests`, `click`, `rich` |Either |Mostly straightforward Python
+dependencies
+
+|`fastapi`, `pydantic` |Either |Choose based on version availability
+
+|`torch` |Case-dependent |GPU, CUDA, operating system, and official
+installation support matter
+
+|New PyPI-only library |pip |Not available in Conda channels
+
+|Your own Python package |pip editable install |Best for local
+development
+|===
+
+These are practical defaults, not guarantees that every package/version
+is currently published on both platforms.
+
+=== 4. Configure conda-forge correctly
+
+Channel consistency matters. Conda packages often depend on particular
+builds of native libraries, and mixing `defaults` and `conda-forge` can
+introduce compatibility problems.
+
+==== Recommended configuration
+
+```sh
+# Add conda-forge as the highest-priority channel
+conda config --add channels conda-forge
+
+# Enable strict channel priority
+conda config --set channel_priority strict
+
+# Inspect your configuration
+conda config --show channels
+conda config --show channel_priority
+```
+
+A conda-forge-centered `.condarc` can look like:
+
+```yaml
+channels:
+  - conda-forge
+channel_priority: strict
+```
+
+For an environment using both conda-forge and defaults:
+
+```python
+channels:
+  - conda-forge
+  - defaults
+channel_priority: strict
+```
+
+With strict priority, if a package name exists in the higher-priority
+channel, packages with the same name from lower-priority channels are
+excluded from consideration, even if the lower-priority channel has a
+newer version.
+
+Source:
+https://conda-forge.org/docs/user/tipsandtricks/?utm_source=chatgpt.com[conda-forge
+channel recommendations].
+
+
+==== Useful channel commands
+
+```sh
+# Show configured channels
+conda config --show channels
+
+# Show which files configure Conda
+conda config --show-sources
+
+# Show installed packages with channel information
+conda list --show-channel-urls
+
+# Force a search to use only conda-forge
+conda search -c conda-forge --override-channels numpy
+
+# Install specifically from conda-forge
+conda install conda-forge::numpy
+```
+
+Note: `conda-forge::numpy` selects the package's channel, but doesn't
+guarantee all dependencies come exclusively from conda-forge. Channel
+priority and configuration still matter.
+
+=== 5. Understanding `environment.yml`
+
+This is the most important file in a reproducible Conda project.
+
+Here is a realistic example:
+
+```yaml
+
+name: myenv
+
+channels:
+  - conda-forge
+
+dependencies:
+  # Python interpreter
+  - python=3.12
+
+  # Core scientific packages
+  - numpy>=2.0,<3
+  - pandas>=2.2,<3
+  - scipy
+  - scikit-learn
+
+  # Development tools
+  - ipykernel
+  - pytest
+
+  # Install pip inside the Conda environment
+  - pip
+
+  # PyPI-only dependencies
+  - pip:
+      - some-pypi-only-package==1.2.3
+      - another-python-package>=0.5,<1
+
+```
+
+The two pip entries are illustrative placeholders; replace them with
+actual published packages before creating the environment.
+
+==== What each part means
+
+[cols=",",options="header",]
+|===
+|Field |Purpose
+|`name` |Conda environment name
+|`channels` |Conda repositories used for packages
+|`dependencies` |Conda-managed packages
+|`python=3.12` |Select Python 3.12
+|`numpy++>++=2.0,++<++3` |Permit versions in a specified range
+|`pip` |Install pip within the environment
+|`pip:` |Packages installed from PyPI using pip
+|===
+
+Version syntax is slightly different between Conda and pip:
+
+[cols=",,",options="header",]
+|===
+|Requirement |Conda syntax |pip syntax
+|Specific version |`numpy=2.1.3` |`numpy==2.1.3`
+|At least a version |`numpy++>++=2.0` |`numpy++>++=2.0`
+|Range |`numpy++>++=2,++<++3` |`numpy++>++=2,++<++3`
+|No version constraint |`numpy` |`numpy`
+|===
+
+YAML files should quote constraints containing comparison operators or
+commas for clarity and portability, especially when tooling parses YAML
+strictly:
+
+```yaml
+dependencies:
+  - "numpy>=2,<3"
+  - "pandas>=2.2"
+  - pip
+  - pip:
+      - "requests>=2.31,<3"
+```
+
+=== 6. How to add a new package to `environment.yml`
+
+There are two workflows. *Workflow A is recommended* for projects
+maintained in Git.
+
+=== Workflow A — Edit YAML first
+
+_Recommended_
+
+Suppose you want to add `seaborn` to your existing project.
+
+*Step 1 — Check if the package is on conda-forge*
+
+```sh
+conda search -c conda-forge \
+  --override-channels seaborn
+```
+
+*Step 2 — Add the package to `environment.yml`*
+
+Before:
+
+```yaml
+name: myenv
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy
+  - pandas
+```
+
+After:
+
+```yaml
+name: myenv
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy
+  - pandas
+  - seaborn   # NEW
+```
+
+*Step 3 — Apply the file*
+
+```sh
+conda env update -n myenv -f environment.yml
+```
+
+If you want Conda to remove dependencies no longer required by the file:
+
+```sh
+conda env update -n myenv -f environment.yml --prune
+```
+
+`--prune` does not mean that every unlisted installed package will
+necessarily be removed; transitive dependencies may still be needed. Use
+caution with environments containing manually installed or pip-installed
+packages.
+
+*Step 4 — Verify the installation*
+
+```sh
+conda activate myenv
+conda list seaborn
+
+python -c "import seaborn; print(seaborn.__version__)"
+```
+
+*Step 5 — Commit the dependency change*
+
+```sh
+git add environment.yml
+git commit -m "Add seaborn dependency"
+```
+
+==== Workflow B — Install first, update YAML afterward
+
+Useful when experimenting in a notebook or investigating a dependency
+before deciding whether it belongs in your project.
+
+*Step 1 — Install*
+
+```sh
+conda activate myenv
+conda install -c conda-forge seaborn
+```
+
+*Step 2 — Verify*
+
+```sh
+python -c "import seaborn"
+```
+
+*Step 3 — Add `seaborn` manually to `environment.yml`.*
+
+This is the recommended way of preserving a clean, human-readable
+specification.
+
+Alternatively, regenerate a candidate YAML file from the installed Conda
+package history:
+
+```sh
+conda export -n myenv --from-history \
+  --format=environment-yaml \
+  --file environment.generated.yml
+```
+
+Then inspect the generated file and merge intentional changes into the
+committed `environment.yml`.
+
+*Important:* Do not blindly overwrite a carefully maintained environment
+file with an export. A history-based export may omit pip packages or
+manually maintained constraints, while a full export includes large
+numbers of transitive dependencies.
+
+*Reference:*
+https://docs.conda.io/projects/conda/en/stable/commands/env/update.html?utm_source=chatgpt.com[Conda
+env update] and
+https://docs.conda.io/projects/conda/en/stable/commands/env/export.html?utm_source=chatgpt.com[Conda
+environment exports].
+
+
+=== 7. How to add a pip-only package to `environment.yml`
+
+Suppose a package called `example-tool` is available on PyPI but not on
+conda-forge.
+
+*Step 1 — Verify PyPI availability*
+
+```sh
+python -m pip index versions example-tool
+```
+
+*Step 2 — Add it under the `pip:` subsection*
+
+```yaml
+name: myenv
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.12
+  - numpy
+  - pandas
+  - pip
+  - pip:
+      - example-tool==1.2.3
+```
+
+`example-tool==1.2.3` is an illustrative dependency name/version;
+substitute the real package you intend to install.
+
+*Step 3 — Apply the environment*
+
+```sh
+conda env update -n myenv -f environment.yml
+```
+
+*Step 4 — Verify*
+
+```sh
+conda activate myenv
+
+python -m pip show example-tool
+python -m pip check
+```
+
+`pip check` detects incompatible or missing dependencies in pip-visible
+package metadata. It is useful, but does not validate the entire Conda
+dependency graph.
+
+==== Why `python -m pip` instead of `pip`?
+
+Both work when configured correctly, but:
+
+```sh
+python -m pip install example-tool
+```
+
+explicitly runs pip for the current Python interpreter.
+
+Verify:
+
+```python
+which python         # macOS / Linux
+which pip
+
+where python         # Windows CMD
+where pip
+```
+
+And across all platforms:
+
+```python
+python -c "import sys; print(sys.executable)"
+python -m pip --version
+```
+
+Avoid `pip install --user` inside Conda environments.
+
+==== Important warning about mixing pip and Conda
+
+The safest installation sequence is:
+
+*Conda packages*
+
+Resolve native dependencies
+
+*pip packages*
+
+Install remaining Python packages
+
+Avoid using pip to upgrade or replace packages that Conda manages, for
+example:
+
+```sh
+# Risky in an existing Conda-managed scientific stack
+python -m pip install --upgrade numpy
+```
+
+Pip can replace files or change dependencies without Conda fully
+incorporating those changes into its solver state.
+
+If you need to change major Conda dependencies after pip packages have
+already been installed, rebuilding the environment from the YAML file is
+generally safer than repeatedly patching it.
+
+=== 8. Create, update, export, and reproduce environments
+
+[cols=",",options="header",]
+|===
+|Goal |Command
+|Create from YAML |`conda env create -f environment.yml`
+
+|Create with another name
+|`conda env create -f environment.yml -n testenv`
+
+|Update existing env |`conda env update -n myenv -f environment.yml`
+
+|Update and prune
+|`conda env update -n myenv -f environment.yml --prune`
+
+|Export full environment
+|`conda env export -n myenv ++>++ environment.full.yml`
+
+|Export intentional Conda specs
+|`conda export -n myenv --from-history --file environment.history.yml`
+
+|Export exact package URLs
+|`conda export -n myenv --format=explicit --file explicit.txt`
+
+|Clone installed env |`conda create -n myclone --clone myenv`
+|===
+
+==== Different types of exports
+
+*Full export*
+
+```sh
+conda env export -n myenv \
+  > environment.full.yml
+```
+
+Records resolved packages, versions, and potentially platform-specific
+builds. It can include pip-installed packages.
+
+*History-based export*
+
+```sh
+conda export -n myenv \
+  --from-history \
+  --file environment.history.yml
+```
+
+Records explicitly requested Conda specifications, helping portability.
+Review pip dependencies separately.
+
+
+*Explicit export*
+
+```sh
+conda export -n myenv \
+  --format=explicit \
+  --file explicit.txt
+```
+
+Captures exact Conda package builds for matching platforms.
+Pip-installed packages require separate handling.
+
+
+For most Git repositories, 
+*a manually maintained `environment.yml` is preferable to a full environment export*.
+
+For stricter reproducibility, use a supported lockfile solution, with
+platform-specific resolutions and pip dependencies accounted for, rather
+than relying on loose version constraints alone.
+
+=== 9. How to identify where an installed package came from
+
+This is particularly useful when debugging Conda/pip conflicts.
+
+==== Inspect Conda's package list
+
+```sh
+conda activate myenv
+conda list --show-channel-urls
+```
+
+Example output (illustrative):
+
+```sh
+# Name       Version   Build          Channel
+numpy        2.1.3     py312...       conda-forge
+pandas       2.2.3     py312...       conda-forge
+requests     2.32.3    pyhd8ed1ab_0  conda-forge
+custom-lib   1.0.0     pypi_0         pypi
+```
+
+The `pypi` marker generally means that Conda identifies the package as
+installed through pip.
+
+Other useful checks:
+
+```sh
+# Packages seen by pip
+python -m pip list
+
+# Inspect metadata for one package
+python -m pip show numpy
+
+# Detect broken Python dependency requirements
+python -m pip check
+
+# Identify actual imported module path
+python -c "import numpy; print(numpy.__file__)"
+```
+
+Remember that `pip list` can also show packages originally installed
+through Conda. *Presence in pip's package list does not prove pip installed the package.*
+
+=== 10. Managing versions and upgrades
+
+==== Version constraints
+
+```sh
+# Exactly the requested version
+conda install "numpy=2.1.3"
+
+# Any version at least 2.0
+conda install "numpy>=2.0"
+
+# Compatible range
+conda install "numpy>=2,<3"
+
+# Upgrade to newest compatible version
+conda update numpy
+
+# Upgrade all Conda packages in environment
+conda update --all
+```
+
+Recommended YAML version strategy:
+
+```yaml
+dependencies:
+  - python=3.12
+  - "numpy>=2,<3"
+  - "pandas>=2.2,<3"
+  - scipy
+  - pip
+  - pip:
+      - "httpx>=0.27,<1"
+```
+
+Exact versions are useful for applications that require carefully
+controlled releases, while ranges are often more convenient during
+library development. For high-reproducibility use cases, combine
+intentional constraints with a lockfile.
+
+==== Update `environment.yml` after a package upgrade
+
+Suppose you want to upgrade pandas from version 2 to version 3.
+
+Change:
+
+```yaml
+- "pandas>=2,<3"
+```
+
+to:
+
+```python
+- "pandas>=3,<4"
+```
+
+Then:
+
+```python
+conda env update -n myenv -f environment.yml
+
+# Check the resulting version
+conda run -n myenv python -c \
+  "import pandas; print(pandas.__version__)"
+```
+
+This is an example of changing a constraint, not a guarantee that a
+particular pandas version or compatible dependency combination is
+available on your platform.
+
+=== 11. Troubleshooting: common problems
+
+==== Roll back a Conda change
+
+Conda records package transaction revisions:
+
+```sh
+# Inspect revision history
+conda list -n myenv --revisions
+
+# Roll back Conda packages to an earlier revision
+conda install -n myenv --revision 3
+```
+
+Conda revision rollback does *not* reliably reverse independent pip
+installations or modifications. For environments using pip, clean
+recreation is frequently the better recovery method.
+
+==== Clean Conda caches
+
+```sh
+# Preview removable cache files
+conda clean --all --dry-run
+
+# Remove unused caches
+conda clean --all
+```
+
+Be cautious when cleaning caches if you rely on offline operation.
+
+=== 12. Conda {plus} Jupyter {plus} VS Code
+
+==== Install Jupyter support
+
+```sh
+conda activate myenv
+conda install -c conda-forge ipykernel
+```
+
+Register a kernel:
+
+```sh
+python -m ipykernel install --user \
+  --name myenv \
+  --display-name "Python (myenv)"
+```
+
+Then select *Python (myenv)* inside Jupyter or your IDE.
+
+==== Diagnose a notebook using the wrong environment
+
+Inside a notebook:
+
+```python
+import sysprint(sys.executable)
+```
+
+Compare against the expected interpreter:
+
+```sh
+conda run -n myenv python -c \
+  "import sys; print(sys.executable)"
+```
+
+If these paths differ, you may be running the wrong notebook kernel.
+
+=== 13. Team collaboration and reproducibility
+
+A recommended project structure:
+
+```sh
+my-project/
+├── environment.yml
+├── pyproject.toml          # Optional
+├── src/
+│   └── my_project/
+├── tests/
+│   └── test_example.py
+├── notebooks/
+├── README.md
+└── .gitignore
+```
+
+For a Python project with its own package, a practical workflow is:
+
+```sh
+# Create all Conda and pip dependencies from YAML
+conda env create -f environment.yml
+
+# Activate it
+conda activate myenv
+
+# Install your local project in editable mode
+python -m pip install -e . --no-deps
+
+# Validate
+python -m pip check
+python -m pytest
+```
+
+Use `--no-deps` only if the dependencies declared by your project are
+already installed through the environment file.
+
+This helps prevent pip from silently changing the Conda-managed
+scientific stack.
+
+==== Rebuild safely after dependency changes
+
+```sh
+# Build a separate test environment
+conda env create -f environment.yml -n myenv-test
+
+# Test it
+conda run -n myenv-test python -m pip check
+conda run -n myenv-test python -m pytest
+
+# Delete test environment when finished
+conda env remove -n myenv-test
+```
+
+A clean environment is one of the best ways to discover missing
+dependencies in `environment.yml`.
+
+For team projects, test the specification on each supported platform
+(Windows, macOS, Linux) and record any OS-specific dependencies
+explicitly.
+
+
+=== 14. Copy-and-paste quick reference
+
+*Daily-use commands*
+
+ Copy all
+
+```sh
+
+# List environments
+conda env list
+
+# Activate project environment
+conda activate myenv
+
+# Check installed packages and channels
+conda list --show-channel-urls
+
+# Check conda-forge availability
+conda search -c conda-forge \
+  --override-channels PACKAGE
+
+# Preview package installation
+conda install -c conda-forge PACKAGE --dry-run
+
+# Apply environment.yml
+conda env update -n myenv -f environment.yml
+
+# Apply and remove unnecessary Conda dependencies
+conda env update -n myenv -f environment.yml --prune
+
+# Check pip dependency conflicts
+python -m pip check
+
+# Export explicitly requested Conda packages
+conda export -n myenv --from-history \
+  --file environment.history.yml
+
+# Verify that your YAML builds from scratch
+conda env create -f environment.yml -n myenv-test
+
+```
+
+=== 15. Frequently asked questions
+
+*Q: Does `conda install seaborn` automatically update `environment.yml`?*
+
+No. Installing or updating a package changes the actual environment, not
+the YAML file stored in your project. You must edit the file or
+explicitly export an environment definition.
+
+*Q: Does `conda env update -f environment.yml` install new packages?*
+
+Yes. It reconciles the environment with the specifications in your file,
+including resolving newly added dependencies and potentially upgrading
+or downgrading existing ones.
+
+*Q: Should I run `conda env update --prune` every time?*
+
+Not necessarily. It is useful for synchronizing a controlled environment
+but can remove packages not needed by the current Conda specification.
+For exploratory environments or those modified manually, test carefully
+or rebuild separately.
+
+*Q: Should I pin every package to an exact version?*
+
+Not always. Pin important constraints in the project specification and
+use a lockfile for strict reproducibility. Locking every transitive
+package directly in a hand-maintained YAML can make upgrades difficult.
+
+*Q: Is pip always worse than Conda?*
+
+No. Pip is the standard Python package installer and often the right
+choice for Python-only packages or projects distributed primarily
+through PyPI. Conda is especially useful for integrated native and
+non-Python dependencies.
+
+*Q: Can I install the same package with both pip and Conda?*
+
+Avoid it. This can create ambiguous package ownership and dependency
+conflicts. Choose one manager for each package in an environment.
+
+*Q: Does `conda export --from-history` include everything?*
+
+No. It focuses on explicitly requested Conda specifications. Don't
+assume it fully preserves pip dependencies or all runtime requirements.
+Always inspect the output before relying on it.
+
+=== 16. Recommended workflow in one minute
+
+For most data science, machine learning, and research projects, I'd
+standardize on:
+
+[arabic]
+. Use Miniforge with `conda-forge` and strict channel priority.
+. Keep a hand-maintained `environment.yml` under version control.
+. Check a new package with
+`conda search -c conda-forge --override-channels PACKAGE`.
+. Add it to `dependencies:` if available and compatible; otherwise use
+the `pip:` subsection.
+. Apply with `conda env update -n myenv -f environment.yml`.
+. Rebuild from scratch periodically to prove the YAML is complete.
+. Use lockfiles when exact reproducibility matters.
+
+*Further official references:*
+https://docs.conda.io/projects/conda/en/stable/user-guide/?utm_source=chatgpt.com[Conda
+User Guide],
+https://conda-forge.org/docs/?utm_source=chatgpt.com[conda-forge
+documentation], and
+https://pip.pypa.io/en/stable/?utm_source=chatgpt.com[pip
+documentation].

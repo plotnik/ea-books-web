@@ -137,8 +137,16 @@ def header_to_anchor(header: str) -> str:
 #
 # ::
 
+MAX_LINE_LEN = 120
+
 def truncate(line, maxlen):
-    return line if len(line) <= maxlen else line[:maxlen] + "..."
+    return line if len(line) <= maxlen else line[:maxlen] + "....."
+
+def truncate_list(items, maxlen):
+    """Return items unchanged if shorter than maxlen; otherwise truncate and add '...'."""
+    if len(items) < maxlen:
+        return items
+    return items[:maxlen] + ["......."]
     
 def render_asciidoc_index(
     files_and_entries: list[tuple[Path, list[Entry]]], output: Path, root: Path
@@ -171,10 +179,11 @@ def render_asciidoc_index(
                     "---",
                 ]
             )
-            for question_line in asciidoc_text(truncate(entry.question, 200)).splitlines():
+            question_list = truncate_list(entry.question.splitlines(), 20)
+            for question_line in question_list:
                 # Avoid prematurely closing the quote block.
                 #lines.append("\\____" if question_line == "____" else question_line)
-                lines.append(question_line)
+                lines.append(truncate(question_line, MAX_LINE_LEN))
             #lines.extend(["====", ""])
             #lines.append("")
             lines.extend(
@@ -196,6 +205,11 @@ def markdown_label(text: str) -> str:
     """Escape text used as a Markdown link label."""
     return text.replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
 
+def markdown_title(filename: str) -> str:
+    """Convert a filename like '56_bench_links.md' to '56. Bench Links'."""
+    name = filename.removesuffix(".md").replace("_", " ")
+    first, *rest = name.split()
+    return f"{first}. {' '.join(word.capitalize() for word in rest)}"
 
 # .. function:: render_markdown_index(files_and_entries: list[tuple[Path, list[Entry]]], output: Path, root: Path) -> str
 #
@@ -216,9 +230,13 @@ def render_markdown_index(
     for source, entries in files_and_entries:
         relative_name = source.relative_to(root).as_posix()
         display_name = relative_name.replace("`", "\\`")
-        lines.extend([f"## `{display_name}`", ""])
+        lines.extend([
+            "---",    
+            f"## {markdown_title(display_name)}", 
+            "",
+        ])
 
-        for entry in entries:
+        for entry in reversed(entries):
             label = markdown_label(f"{relative_name}:{entry.line_number}")
             anchor = header_to_anchor(entry.title)
             target = link_target(source, anchor, output)
@@ -226,12 +244,13 @@ def render_markdown_index(
                 [
                     f"### {entry.title}",
                     "",
-                    f"Source: [{label}]({target}#L{entry.line_number})",
+                    f"Source: [{label}]({target})", #L{entry.line_number}
                     "",
                 ]
             )
-            for question_line in entry.question.splitlines():
-                lines.append(f"> {question_line}" if question_line else ">")
+            question_list = truncate_list(entry.question.splitlines(), 20)
+            for question_line in question_list:
+                lines.append(f"> {truncate(question_line, MAX_LINE_LEN)}" if question_line else ">")
             lines.append("")
 
     return "\n".join(lines).rstrip() + "\n"
