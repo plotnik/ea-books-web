@@ -15,7 +15,7 @@
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Research Agent" href="research_cli.py.html" />
+    <link rel="next" title="Obsidian Find" href="o_find.py.html" />
     <link rel="prev" title="Literate Programs" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -108,22 +108,22 @@ enhanced with AI-assisted features powered by OpenAI.</p>
 </div>
 <p>Prints a stylized banner to the console when the application starts.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
-    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;Note-AI&quot;</span><span class="p">,</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">"Note-AI"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">        _   __      __             ___    ____</span>
 <span class="s2">       / | / /___  / /____        /   |  /  _/</span>
 <span class="s2">      /  |/ / __ </span><span class="se">\\</span><span class="s2">/ __/ _ </span><span class="se">\\</span><span class="s2">______/ /| |  / /</span>
 <span class="s2">     / /|  / /_/ / /_/  __/_____/ ___ |_/ /</span>
 <span class="s2">    /_/ |_/</span><span class="se">\\</span><span class="s2">____/</span><span class="se">\\</span><span class="s2">__/</span><span class="se">\\</span><span class="s2">___/     /_/  |_/___/</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">    """</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">print_banner</span><span class="p">()</span>
-<span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">&quot;https://ea-books.netlify.app/lit/ai_note.svg&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">"https://ea-books.netlify.app/lit/ai_note.svg"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>OpenAI client.</p>
@@ -165,31 +165,31 @@ Each prompt entry includes a unique name, a descriptive note explaining its purp
 <li><p><code class="docutils literal notranslate"><span class="pre">note</span></code>: Prompt body.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code>: A list of categories (for example, <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">python</span></code>) that describe the prompt’s domain or usage.</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompts_file</span> <span class="o">=</span> <span class="s2">&quot;openai_helper.yml&quot;</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">prompts_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompts_file</span> <span class="o">=</span> <span class="s2">"openai_helper.yml"</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">prompts_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
     <span class="n">prompts</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Text area to provide input text</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">input_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">input_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Note"</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>See: <a class="reference external" href="PersistedList.py.html">PersistedList</a></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">PersistedList</span><span class="w"> </span><span class="kn">import</span> <span class="n">PersistedList</span>
-<span class="n">tags_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.tags&quot;</span><span class="p">)</span>
-<span class="n">prompts_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.prompts&quot;</span><span class="p">)</span>
-<span class="n">llms_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.llms&quot;</span><span class="p">)</span>
-<span class="n">efforts_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.efforts&quot;</span><span class="p">)</span>
+<span class="n">tags_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">".tags"</span><span class="p">)</span>
+<span class="n">prompts_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">".prompts"</span><span class="p">)</span>
+<span class="n">llms_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">".llms"</span><span class="p">)</span>
+<span class="n">efforts_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">".efforts"</span><span class="p">)</span>
 </pre></div>
 </div>
 <ol class="arabic simple">
 <li><p>Select <strong>category</strong>, aka <strong>group</strong>, aka <strong>tag</strong>.</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">all_tags_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">tag</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">prompts</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">,</span> <span class="p">[])}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">all_tags_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">tag</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">prompts</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'tags'</span><span class="p">,</span> <span class="p">[])}</span>
 <span class="n">all_tags</span> <span class="o">=</span> <span class="n">tags_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">all_tags_set</span><span class="p">))</span>
 
 <span class="n">tag_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-   <span class="s2">&quot;Category&quot;</span><span class="p">,</span>
+   <span class="s2">"Category"</span><span class="p">,</span>
    <span class="n">all_tags</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -202,8 +202,8 @@ Each prompt entry includes a unique name, a descriptive note explaining its purp
 <p>Select prompt body by its name</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_prompt</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;note&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'note'</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
 </div>
@@ -214,15 +214,15 @@ Each prompt entry includes a unique name, a descriptive note explaining its purp
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">has_tag</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">tag_name</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tag_name</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'tags'</span><span class="p">,</span> <span class="p">[])</span>
     <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
 <li><p>Select <strong>prompt</strong>.</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">all_prompt_names_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">all_prompt_names_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">}</span>
 
 <span class="n">all_prompt_names</span> <span class="o">=</span> <span class="n">prompts_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span>
     <span class="nb">list</span><span class="p">(</span><span class="n">all_prompt_names_set</span><span class="p">),</span>
@@ -231,7 +231,7 @@ Each prompt entry includes a unique name, a descriptive note explaining its purp
 <span class="n">prompt_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">all_prompt_names</span> <span class="k">if</span> <span class="n">has_tag</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">)]</span>
 
 <span class="n">prompt_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-   <span class="s2">&quot;Prompt&quot;</span><span class="p">,</span>
+   <span class="s2">"Prompt"</span><span class="p">,</span>
    <span class="n">prompt_names</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">prompt</span> <span class="o">=</span> <span class="n">get_prompt</span><span class="p">(</span><span class="n">prompt_name</span><span class="p">)</span>
@@ -244,10 +244,10 @@ Each prompt entry includes a unique name, a descriptive note explaining its purp
 <p>Prompts with more than 272K input tokens are priced at 2x input and cache rates
 and 1.5x output for the full request.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;gpt-6-luna&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)),</span>
-    <span class="s2">&quot;gpt-6.1-terra&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mf">1.00</span><span class="p">,</span> <span class="mf">5.00</span><span class="p">),</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">7.50</span><span class="p">)),</span>
-    <span class="s2">&quot;gpt-6.1-sol&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span> <span class="p">(</span><span class="mf">4.00</span><span class="p">,</span> <span class="mf">15.00</span><span class="p">)),</span>
-    <span class="s2">&quot;gpt-6-astra&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mf">10.00</span><span class="p">,</span> <span class="mf">50.00</span><span class="p">),</span> <span class="p">(</span><span class="mf">20.00</span><span class="p">,</span> <span class="mf">75.00</span><span class="p">)),</span>
+    <span class="s2">"gpt-6-luna"</span><span class="p">:</span> <span class="p">((</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)),</span>
+    <span class="s2">"gpt-6.1-terra"</span><span class="p">:</span> <span class="p">((</span><span class="mf">1.00</span><span class="p">,</span> <span class="mf">5.00</span><span class="p">),</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">7.50</span><span class="p">)),</span>
+    <span class="s2">"gpt-6.1-sol"</span><span class="p">:</span> <span class="p">((</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span> <span class="p">(</span><span class="mf">4.00</span><span class="p">,</span> <span class="mf">15.00</span><span class="p">)),</span>
+    <span class="s2">"gpt-6-astra"</span><span class="p">:</span> <span class="p">((</span><span class="mf">10.00</span><span class="p">,</span> <span class="mf">50.00</span><span class="p">),</span> <span class="p">(</span><span class="mf">20.00</span><span class="p">,</span> <span class="mf">75.00</span><span class="p">)),</span>
 <span class="p">}</span>
 
 <span class="n">LONG_LIMIT_TOKENS</span> <span class="o">=</span> <span class="mi">272</span> <span class="o">*</span> <span class="mi">1024</span>
@@ -260,11 +260,11 @@ and 1.5x output for the full request.</p>
 
 <span class="n">all_llm_models</span> <span class="o">=</span> <span class="n">llms_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span>
     <span class="n">llm_models</span><span class="p">,</span>
-    <span class="n">group</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">group</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tag_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 
 <span class="n">llm_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-   <span class="s2">&quot;LLM Model&quot;</span><span class="p">,</span>
+   <span class="s2">"LLM Model"</span><span class="p">,</span>
    <span class="n">all_llm_models</span>
 <span class="p">)</span>
 </pre></div>
@@ -273,39 +273,39 @@ and 1.5x output for the full request.</p>
 <li><p>Select <strong>reasoning effort</strong></p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reasoning_efforts</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;none&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;low&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;medium&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;high&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;xhigh&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+    <span class="s2">"none"</span><span class="p">,</span>
+    <span class="s2">"low"</span><span class="p">,</span>
+    <span class="s2">"medium"</span><span class="p">,</span>
+    <span class="s2">"high"</span><span class="p">,</span>
+    <span class="s2">"xhigh"</span><span class="p">,</span>
+    <span class="s2">"max"</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="n">all_reasoning_efforts</span> <span class="o">=</span> <span class="n">efforts_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span>
     <span class="n">reasoning_efforts</span><span class="p">,</span>
-    <span class="n">group</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">llm_model</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">group</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tag_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">llm_model</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 
 <span class="n">reasoning_effort</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-   <span class="s2">&quot;Reasoning&quot;</span><span class="p">,</span>
+   <span class="s2">"Reasoning"</span><span class="p">,</span>
    <span class="n">all_reasoning_efforts</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>Count the number of tokens in the user’s input using the <code class="docutils literal notranslate"><span class="pre">tiktoken</span></code> library,
 and display both the token count and the corresponding price.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="s2">&quot;o200k_base&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="s2">"o200k_base"</span><span class="p">)</span>
 <span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span>
 <span class="n">token_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
 
 <span class="n">prices</span> <span class="o">=</span> <span class="n">llm_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">token_count</span> <span class="o">&gt;</span> <span class="n">LONG_LIMIT_TOKENS</span> <span class="k">else</span> <span class="n">llm_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">cents</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">token_count</span> <span class="o">*</span> <span class="n">prices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
-<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">'''</span>
 <span class="s1">    | Chars | Tokens | Cents |</span>
 <span class="s1">    |---|---|---|</span>
 <span class="s1">    | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">cents</span><span class="si">}</span><span class="s1"> |</span>
-<span class="s1">    &#39;&#39;&#39;</span><span class="p">)</span>
+<span class="s1">    '''</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py function">
@@ -316,7 +316,7 @@ and display both the token count and the corresponding price.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">call_llm</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">responses</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
         <span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span>
-        <span class="n">reasoning</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;effort&quot;</span><span class="p">:</span> <span class="n">reasoning_effort</span><span class="p">},</span>
+        <span class="n">reasoning</span><span class="o">=</span><span class="p">{</span><span class="s2">"effort"</span><span class="p">:</span> <span class="n">reasoning_effort</span><span class="p">},</span>
         <span class="n">instructions</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
         <span class="nb">input</span><span class="o">=</span><span class="n">input_text</span>
     <span class="p">)</span>
@@ -325,7 +325,7 @@ and display both the token count and the corresponding price.</p>
 </pre></div>
 </div>
 <p>Run Query</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Query&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;:material/cyclone:&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">'Query'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"primary"</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">":material/cyclone:"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">):</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
     <span class="c1"># Call LLM</span>
@@ -344,32 +344,32 @@ and display both the token count and the corresponding price.</p>
     <span class="c1"># Remember persisted selections</span>
     <span class="n">tags_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)</span>
     <span class="n">prompts_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">prompt_name</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">tag_name</span><span class="p">)</span>
-    <span class="n">llms_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">llm_model</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">efforts_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">reasoning_effort</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">llm_model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">llms_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">llm_model</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tag_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">efforts_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">reasoning_effort</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tag_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prompt_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">llm_model</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Darwin&#39;</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;afplay /System/Library/Sounds/Glass.aiff&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'Darwin'</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">"afplay /System/Library/Sounds/Glass.aiff"</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>LLM output is cached in <code class="docutils literal notranslate"><span class="pre">session_state</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;llm_output&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">"llm_output"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
     <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
-<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'---'</span><span class="p">)</span>
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_output</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Clipboard&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;:material/content_copy:&quot;</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Clipboard"</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">":material/content_copy:"</span><span class="p">):</span>
     <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_output</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Copied to clipboard'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Show last execution time</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;execution_time&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution time: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">` sec&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">"execution_time"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Execution time: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">` sec"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="s2">&quot;output_price&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output price: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">output_price</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="si">}</span><span class="s2">` cents&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">"output_price"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Output price: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">output_price</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="si">}</span><span class="s2">` cents"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -616,6 +616,7 @@ activate <code class="docutils literal notranslate"><span class="pre">.venv</spa
 <li class="toctree-l2"><a class="reference internal" href="#environment-setup">Environment Setup</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -690,7 +691,7 @@ activate <code class="docutils literal notranslate"><span class="pre">.venv</spa
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">Literate Programs</a></li>
-      <li>Next: <a href="research_cli.py.html" title="next chapter">Research Agent</a></li>
+      <li>Next: <a href="o_find.py.html" title="next chapter">Obsidian Find</a></li>
   </ul></li>
 </ul>
 </div>
@@ -713,7 +714,7 @@ activate <code class="docutils literal notranslate"><span class="pre">.venv</spa
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

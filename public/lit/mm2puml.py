@@ -58,7 +58,7 @@ class Graph:
 
 
 # Recognizing and cleaning Mermaid
-# -------------------------------
+# --------------------------------
 #
 # Node patterns put nested stadium brackets before simpler shapes. Arrow
 # alternatives capture conditional labels and ordinary pipe-delimited labels.
@@ -162,7 +162,7 @@ def parse_mermaid(source: str) -> Graph:
 
 
 # Resolving colors and writing PlantUML
-# ------------------------------------
+# -------------------------------------
 #
 # Start with the default class and apply explicit classes in order. Only hex
 # colors are emitted; unsupported CSS values fall back to a readable lavender.
@@ -202,7 +202,7 @@ def to_plantuml(graph: Graph) -> str:
 
 
 # Writing a yEd-compatible GraphML document
-# ----------------------------------------
+# -----------------------------------------
 #
 # GraphML contains topology; yWorks extension elements describe the appearance.
 # ElementTree escapes labels for XML. Nodes receive label-sized boxes and grid
@@ -252,22 +252,15 @@ def to_graphml(graph: Graph) -> str:
 # The interactive application
 # ---------------------------
 #
-# Streamlit reruns this function when the input or format changes. Conversion
+# The form submits the input and output format together on Convert. Conversion
 # errors are shown next to the input; successful output includes counts, a copy
-# button, and a download. UTF-8 text is base64-encoded before insertion into the
-# copy button's script, preserving Unicode and keeping diagram text out of HTML
-# and JavaScript syntax. Clipboard access first uses the browser API and then
-# a temporary textarea; if both fail, the user can copy the output manually.
-#
-#
+# button provided by the Streamlit code block, and a download.
 #
 # ::
 
 def main() -> None:
     """Present the converter in Streamlit."""
-    import base64
     import streamlit as st
-    import streamlit.components.v1 as components
   
     @st.cache_data
     def print_banner():
@@ -288,38 +281,35 @@ def main() -> None:
   
     print_banner()
   
-    source = st.text_area('Mermaid input', height=340, placeholder='graph TD;\n    __start__ --> prepare_turn;\n    prepare_turn -. done .-> __end__;')
-    format_name = st.radio('Output format', ['PlantUML', 'GraphML (yEd)'], horizontal=True)
-    output = ''
-    if source.strip():
-        try:
-            graph = parse_mermaid(source)
-            output = to_plantuml(graph) if format_name == 'PlantUML' else to_graphml(graph)
-            st.caption(f'{len(graph.nodes)} nodes · {len(graph.edges)} edges')
-        except ValueError as error:
-            st.error(str(error))
-    st.text_area('Converted output', value=output, height=340, disabled=True)
+    with st.form('conversion', border=False):
+        source = st.text_area('Mermaid input', height=340, placeholder='graph TD;\n    __start__ --> prepare_turn;\n    prepare_turn -. done .-> __end__;')
+        format_name = st.radio('Output format', ['PlantUML', 'GraphML (yEd)'], horizontal=True)
+        submitted = st.form_submit_button('Convert', type='primary', width='stretch')
+
+    if submitted:
+        st.session_state.pop('conversion_result', None)
+        st.session_state.pop('conversion_error', None)
+        if source.strip():
+            try:
+                graph = parse_mermaid(source)
+                is_puml = format_name == 'PlantUML'
+                output = to_plantuml(graph) if is_puml else to_graphml(graph)
+                counts = f'{len(graph.nodes)} nodes · {len(graph.edges)} edges'
+                st.session_state.conversion_result = output, is_puml, counts
+            except ValueError as error:
+                st.session_state.conversion_error = str(error)
+        else:
+            st.session_state.conversion_error = 'Enter Mermaid input to convert.'
+
+    if 'conversion_error' in st.session_state:
+        st.error(st.session_state.conversion_error)
+    output, is_puml, counts = st.session_state.get('conversion_result', ('', True, ''))
+    if counts:
+        st.caption(counts)
+    st.caption('Converted output')
+    st.code(output, language=None if is_puml else 'xml', height=340)
     if output:
-        payload = base64.b64encode(output.encode('utf-8')).decode('ascii')
-        components.html('''
-        <button id="copy" style="padding:8px 18px;cursor:pointer;border:1px solid #aaa;border-radius:6px;background:white">Copy</button>
-        <span id="status" role="status" style="font:14px sans-serif;margin-left:10px"></span>
-        <script>
-        const text = new TextDecoder().decode(Uint8Array.from(atob("''' + payload + '''"), c => c.charCodeAt(0)));
-        document.getElementById('copy').onclick = async () => {
-          let copied = false;
-          try { await navigator.clipboard.writeText(text); copied = true; } catch (_) {
-            const area = document.createElement('textarea');
-            area.value = text; area.style.position = 'fixed'; area.style.opacity = '0';
-            document.body.appendChild(area); area.select();
-            try { copied = document.execCommand('copy'); } finally { area.remove(); }
-          }
-          document.getElementById('status').textContent = copied ? 'Copied!' : 'Select the output and press Ctrl+C / Cmd+C.';
-        };
-        </script>
-        ''', height=55)
-        is_puml = format_name == 'PlantUML'
-        st.download_button('Download', output, file_name='graph.puml' if is_puml else 'graph.graphml', mime='text/plain' if is_puml else 'application/xml')
+        st.download_button('Download', output, width='stretch', file_name='graph.puml' if is_puml else 'graph.graphml', mime='text/plain' if is_puml else 'application/xml')
         if not is_puml:
             st.caption('Open the .graphml file in yEd, then choose Layout → Hierarchical to arrange the graph.')
 

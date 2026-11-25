@@ -50,17 +50,17 @@
 
 <span class="c1"># Initialize Firebase</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">initialize_firebase</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize Firebase connection&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Initialize Firebase connection"""</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Check if Firebase is already initialized</span>
         <span class="n">firebase_admin</span><span class="o">.</span><span class="n">get_app</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="c1"># Initialize Firebase with service account</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;firebase-credentials.json&#39;</span><span class="p">):</span>
-            <span class="n">cred</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">Certificate</span><span class="p">(</span><span class="s1">&#39;firebase-credentials.json&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">'firebase-credentials.json'</span><span class="p">):</span>
+            <span class="n">cred</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">Certificate</span><span class="p">(</span><span class="s1">'firebase-credentials.json'</span><span class="p">)</span>
             <span class="n">firebase_admin</span><span class="o">.</span><span class="n">initialize_app</span><span class="p">(</span><span class="n">cred</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Firebase credentials file not found. Please add &#39;firebase-credentials.json&#39; to the project root.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Firebase credentials file not found. Please add 'firebase-credentials.json' to the project root."</span><span class="p">)</span>
             <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
 <span class="c1"># Initialize Firebase</span>
@@ -68,74 +68,74 @@
 <span class="n">db</span> <span class="o">=</span> <span class="n">firestore</span><span class="o">.</span><span class="n">client</span><span class="p">()</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">add_prompt</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">prompt_text</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a new prompt to Firebase&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Add a new prompt to Firebase"""</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">doc_ref</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;prompts&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">document</span><span class="p">()</span>
+        <span class="n">doc_ref</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">'prompts'</span><span class="p">)</span><span class="o">.</span><span class="n">document</span><span class="p">()</span>
         <span class="n">doc_ref</span><span class="o">.</span><span class="n">set</span><span class="p">({</span>
-            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
-            <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="n">prompt_text</span><span class="p">,</span>
-            <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="n">tags</span><span class="p">,</span>
-            <span class="s1">&#39;created_at&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-            <span class="s1">&#39;updated_at&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="s1">'name'</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+            <span class="s1">'note'</span><span class="p">:</span> <span class="n">prompt_text</span><span class="p">,</span>
+            <span class="s1">'tags'</span><span class="p">:</span> <span class="n">tags</span><span class="p">,</span>
+            <span class="s1">'created_at'</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="s1">'updated_at'</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="p">})</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error adding prompt: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error adding prompt: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_all_prompts</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all prompts from Firebase&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get all prompts from Firebase"""</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">prompts</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">docs</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;prompts&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;updated_at&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">firestore</span><span class="o">.</span><span class="n">Query</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">)</span><span class="o">.</span><span class="n">stream</span><span class="p">()</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">'prompts'</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">'updated_at'</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">firestore</span><span class="o">.</span><span class="n">Query</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">)</span><span class="o">.</span><span class="n">stream</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">prompt_data</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-            <span class="n">prompt_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">prompt_data</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">id</span>
             <span class="n">prompts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prompt_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">prompts</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error fetching prompts: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error fetching prompts: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[]</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">update_prompt</span><span class="p">(</span><span class="n">prompt_id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">prompt_text</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update an existing prompt&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Update an existing prompt"""</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">doc_ref</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;prompts&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">prompt_id</span><span class="p">)</span>
+        <span class="n">doc_ref</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">'prompts'</span><span class="p">)</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">prompt_id</span><span class="p">)</span>
         <span class="n">doc_ref</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
-            <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="n">prompt_text</span><span class="p">,</span>
-            <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="n">tags</span><span class="p">,</span>
-            <span class="s1">&#39;updated_at&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="s1">'name'</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+            <span class="s1">'note'</span><span class="p">:</span> <span class="n">prompt_text</span><span class="p">,</span>
+            <span class="s1">'tags'</span><span class="p">:</span> <span class="n">tags</span><span class="p">,</span>
+            <span class="s1">'updated_at'</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="p">})</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error updating prompt: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error updating prompt: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">delete_prompt</span><span class="p">(</span><span class="n">prompt_id</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete a prompt&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Delete a prompt"""</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;prompts&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">prompt_id</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">'prompts'</span><span class="p">)</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">prompt_id</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error deleting prompt: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error deleting prompt: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">search_prompts</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">tags_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search prompts by title, text, or tags&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Search prompts by title, text, or tags"""</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">prompts</span> <span class="o">=</span> <span class="n">get_all_prompts</span><span class="p">()</span>
         <span class="n">filtered_prompts</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">:</span>
             <span class="c1"># Search in title and prompt text</span>
-            <span class="n">title_match</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">query</span> <span class="k">else</span> <span class="kc">True</span>
-            <span class="n">text_match</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;note&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">query</span> <span class="k">else</span> <span class="kc">True</span>
+            <span class="n">title_match</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">query</span> <span class="k">else</span> <span class="kc">True</span>
+            <span class="n">text_match</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">'note'</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">query</span> <span class="k">else</span> <span class="kc">True</span>
 
             <span class="c1"># Filter by tags</span>
             <span class="n">tags_match</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="n">tags_filter</span><span class="p">:</span>
-                <span class="n">prompt_tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]]</span>
+                <span class="n">prompt_tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">'tags'</span><span class="p">]]</span>
                 <span class="n">tags_match</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">filter_tag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">prompt_tags</span> <span class="k">for</span> <span class="n">filter_tag</span> <span class="ow">in</span> <span class="n">tags_filter</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="p">(</span><span class="n">title_match</span> <span class="ow">or</span> <span class="n">text_match</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tags_match</span><span class="p">:</span>
@@ -143,19 +143,19 @@
 
         <span class="k">return</span> <span class="n">filtered_prompts</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error searching prompts: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error searching prompts: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[]</span>
 
 <span class="c1"># Streamlit UI</span>
 <span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
-    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;Prompt Notes&quot;</span><span class="p">,</span>
-    <span class="n">page_icon</span><span class="o">=</span><span class="s2">&quot;📝&quot;</span><span class="p">,</span>
-    <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;wide&quot;</span><span class="p">,</span>
-    <span class="n">initial_sidebar_state</span><span class="o">=</span><span class="s2">&quot;expanded&quot;</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">"Prompt Notes"</span><span class="p">,</span>
+    <span class="n">page_icon</span><span class="o">=</span><span class="s2">"📝"</span><span class="p">,</span>
+    <span class="n">layout</span><span class="o">=</span><span class="s2">"wide"</span><span class="p">,</span>
+    <span class="n">initial_sidebar_state</span><span class="o">=</span><span class="s2">"expanded"</span>
 <span class="p">)</span>
 
 <span class="c1"># Custom CSS for better styling</span>
-<span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">&lt;style&gt;</span>
 <span class="s2">    .main-header {</span>
 <span class="s2">        font-size: 3rem;</span>
@@ -181,145 +181,145 @@
 <span class="s2">        display: inline-block;</span>
 <span class="s2">    }</span>
 <span class="s2">&lt;/style&gt;</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="s2">"""</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Header</span>
-<span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s1">&#39;&lt;h1 class=&quot;main-header&quot;&gt;📝 Prompt Notes&lt;/h1&gt;&#39;</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s1">'&lt;h1 class="main-header"&gt;📝 Prompt Notes&lt;/h1&gt;'</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Sidebar for navigation</span>
-<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Navigation&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Navigation"</span><span class="p">)</span>
 <span class="n">page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-    <span class="s2">&quot;Choose a page&quot;</span><span class="p">,</span>
-    <span class="p">[</span><span class="s2">&quot;View Prompts&quot;</span><span class="p">,</span> <span class="s2">&quot;Add New Prompt&quot;</span><span class="p">,</span> <span class="s2">&quot;Search Prompts&quot;</span><span class="p">]</span>
+    <span class="s2">"Choose a page"</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">"View Prompts"</span><span class="p">,</span> <span class="s2">"Add New Prompt"</span><span class="p">,</span> <span class="s2">"Search Prompts"</span><span class="p">]</span>
 <span class="p">)</span>
 
-<span class="k">if</span> <span class="n">page</span> <span class="o">==</span> <span class="s2">&quot;View Prompts&quot;</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="s2">&quot;All Prompts&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">page</span> <span class="o">==</span> <span class="s2">"View Prompts"</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="s2">"All Prompts"</span><span class="p">)</span>
 
     <span class="c1"># Get all prompts</span>
     <span class="n">prompts</span> <span class="o">=</span> <span class="n">get_all_prompts</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">prompts</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No prompts found. Add your first prompt!&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No prompts found. Add your first prompt!"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">expander</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;📄 </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">expanded</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">expander</span><span class="p">(</span><span class="sa">f</span><span class="s2">"📄 </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">expanded</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
                 <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 
                 <span class="k">with</span> <span class="n">col1</span><span class="p">:</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Title:** </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Prompt:**&quot;</span><span class="p">)</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;prompt_text&#39;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;view_</span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Title:** </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Prompt:**"</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">'prompt_text'</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">"view_</span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;**Tags:**&quot;</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]:</span>
-                        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;span class=&quot;tag&quot;&gt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">&lt;/span&gt;&#39;</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">"**Tags:**"</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">'tags'</span><span class="p">]:</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&lt;span class="tag"&gt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">&lt;/span&gt;'</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Created:** </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;created_at&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Updated:** </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;updated_at&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Created:** </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'created_at'</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Updated:** </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'updated_at'</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
                 <span class="k">with</span> <span class="n">col2</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Edit&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;edit_</span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Edit"</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">"edit_</span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">):</span>
                         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">editing_prompt</span> <span class="o">=</span> <span class="n">prompt</span>
-                        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">current_page</span> <span class="o">=</span> <span class="s2">&quot;Edit Prompt&quot;</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">current_page</span> <span class="o">=</span> <span class="s2">"Edit Prompt"</span>
                         <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
-                    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Delete&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;delete_</span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="n">delete_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]):</span>
-                            <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s2">&quot;Prompt deleted successfully!&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Delete"</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">"delete_</span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">delete_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]):</span>
+                            <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s2">"Prompt deleted successfully!"</span><span class="p">)</span>
                             <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
-<span class="k">elif</span> <span class="n">page</span> <span class="o">==</span> <span class="s2">&quot;Add New Prompt&quot;</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="s2">&quot;Add New Prompt&quot;</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">page</span> <span class="o">==</span> <span class="s2">"Add New Prompt"</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="s2">"Add New Prompt"</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="s2">&quot;add_prompt_form&quot;</span><span class="p">):</span>
-        <span class="n">title</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Title&quot;</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">&quot;Enter prompt title...&quot;</span><span class="p">)</span>
-        <span class="n">prompt_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;Prompt Text&quot;</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">&quot;Enter your prompt here...&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-        <span class="n">tags_input</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Tags (comma-separated)&quot;</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">&quot;e.g., coding, python, ai&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="s2">"add_prompt_form"</span><span class="p">):</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">"Title"</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">"Enter prompt title..."</span><span class="p">)</span>
+        <span class="n">prompt_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">"Prompt Text"</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">"Enter your prompt here..."</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="n">tags_input</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">"Tags (comma-separated)"</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">"e.g., coding, python, ai"</span><span class="p">)</span>
 
-        <span class="n">submitted</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">form_submit_button</span><span class="p">(</span><span class="s2">&quot;Add Prompt&quot;</span><span class="p">)</span>
+        <span class="n">submitted</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">form_submit_button</span><span class="p">(</span><span class="s2">"Add Prompt"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">submitted</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">title</span> <span class="ow">and</span> <span class="n">prompt_text</span><span class="p">:</span>
                 <span class="c1"># Process tags</span>
-                <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags_input</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="k">if</span> <span class="n">tags_input</span> <span class="k">else</span> <span class="p">[]</span>
+                <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags_input</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="k">if</span> <span class="n">tags_input</span> <span class="k">else</span> <span class="p">[]</span>
 
                 <span class="k">if</span> <span class="n">add_prompt</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">prompt_text</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s2">&quot;Prompt added successfully!&quot;</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s2">"Prompt added successfully!"</span><span class="p">)</span>
                     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Please fill in both title and prompt text.&quot;</span><span class="p">)</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Please fill in both title and prompt text."</span><span class="p">)</span>
 
-<span class="k">elif</span> <span class="n">page</span> <span class="o">==</span> <span class="s2">&quot;Search Prompts&quot;</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="s2">&quot;Search Prompts&quot;</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">page</span> <span class="o">==</span> <span class="s2">"Search Prompts"</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="s2">"Search Prompts"</span><span class="p">)</span>
 
     <span class="c1"># Search form</span>
-    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="s2">&quot;search_form&quot;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="s2">"search_form"</span><span class="p">):</span>
         <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">col1</span><span class="p">:</span>
-            <span class="n">search_query</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Search query&quot;</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">&quot;Search in title and prompt text...&quot;</span><span class="p">)</span>
+            <span class="n">search_query</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">"Search query"</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">"Search in title and prompt text..."</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">col2</span><span class="p">:</span>
-            <span class="n">tags_filter</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Filter by tags (comma-separated)&quot;</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">&quot;e.g., coding, python&quot;</span><span class="p">)</span>
+            <span class="n">tags_filter</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">"Filter by tags (comma-separated)"</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">"e.g., coding, python"</span><span class="p">)</span>
 
-        <span class="n">search_submitted</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">form_submit_button</span><span class="p">(</span><span class="s2">&quot;Search&quot;</span><span class="p">)</span>
+        <span class="n">search_submitted</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">form_submit_button</span><span class="p">(</span><span class="s2">"Search"</span><span class="p">)</span>
 
     <span class="c1"># Display search results</span>
     <span class="k">if</span> <span class="n">search_submitted</span> <span class="ow">or</span> <span class="n">search_query</span> <span class="ow">or</span> <span class="n">tags_filter</span><span class="p">:</span>
-        <span class="n">tags_filter_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags_filter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="k">if</span> <span class="n">tags_filter</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">tags_filter_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags_filter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="k">if</span> <span class="n">tags_filter</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">search_prompts</span><span class="p">(</span><span class="n">search_query</span><span class="p">,</span> <span class="n">tags_filter_list</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span><span class="p">:</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No prompts found matching your search criteria.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No prompts found matching your search criteria."</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> prompt(s)&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> prompt(s)"</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">expander</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;📄 </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">expanded</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Title:** </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Prompt:**&quot;</span><span class="p">)</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;prompt_text&#39;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;search_</span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">expander</span><span class="p">(</span><span class="sa">f</span><span class="s2">"📄 </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">expanded</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Title:** </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Prompt:**"</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">'prompt_text'</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">"search_</span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;**Tags:**&quot;</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]:</span>
-                        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;span class=&quot;tag&quot;&gt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">&lt;/span&gt;&#39;</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">"**Tags:**"</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">[</span><span class="s1">'tags'</span><span class="p">]:</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&lt;span class="tag"&gt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">&lt;/span&gt;'</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Updated:** </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;updated_at&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Updated:** </span><span class="si">{</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'updated_at'</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># Handle editing state</span>
-<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">,</span> <span class="s1">&#39;editing_prompt&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">editing_prompt</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="s2">&quot;Edit Prompt&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">,</span> <span class="s1">'editing_prompt'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">editing_prompt</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="s2">"Edit Prompt"</span><span class="p">)</span>
 
     <span class="n">prompt</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">editing_prompt</span>
 
-    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="s2">&quot;edit_prompt_form&quot;</span><span class="p">):</span>
-        <span class="n">title</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Title&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
-        <span class="n">prompt_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;Prompt Text&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;prompt_text&#39;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-        <span class="n">tags_input</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Tags (comma-separated)&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]))</span>
+    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="s2">"edit_prompt_form"</span><span class="p">):</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">"Title"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'title'</span><span class="p">])</span>
+        <span class="n">prompt_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">"Prompt Text"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'prompt_text'</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="n">tags_input</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">"Tags (comma-separated)"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'tags'</span><span class="p">]))</span>
 
         <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">col1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">form_submit_button</span><span class="p">(</span><span class="s2">&quot;Update Prompt&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">form_submit_button</span><span class="p">(</span><span class="s2">"Update Prompt"</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">title</span> <span class="ow">and</span> <span class="n">prompt_text</span><span class="p">:</span>
-                    <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags_input</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="k">if</span> <span class="n">tags_input</span> <span class="k">else</span> <span class="p">[]</span>
+                    <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags_input</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="k">if</span> <span class="n">tags_input</span> <span class="k">else</span> <span class="p">[]</span>
 
-                    <span class="k">if</span> <span class="n">update_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">title</span><span class="p">,</span> <span class="n">prompt_text</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
-                        <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s2">&quot;Prompt updated successfully!&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">update_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">[</span><span class="s1">'id'</span><span class="p">],</span> <span class="n">title</span><span class="p">,</span> <span class="n">prompt_text</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s2">"Prompt updated successfully!"</span><span class="p">)</span>
                         <span class="k">del</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">editing_prompt</span>
                         <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Please fill in both title and prompt text.&quot;</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Please fill in both title and prompt text."</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">col2</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">form_submit_button</span><span class="p">(</span><span class="s2">&quot;Cancel&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">form_submit_button</span><span class="p">(</span><span class="s2">"Cancel"</span><span class="p">):</span>
                 <span class="k">del</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">editing_prompt</span>
                 <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
 <span class="c1"># Footer</span>
-<span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
-<span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;**Prompt Notes** - Built with Streamlit and Firebase&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">"---"</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">"**Prompt Notes** - Built with Streamlit and Firebase"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -353,6 +353,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -450,7 +451,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

@@ -47,8 +47,8 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_system_font_names</span><span class="p">():</span>
-    <span class="n">fonts</span> <span class="o">=</span> <span class="n">font_manager</span><span class="o">.</span><span class="n">findSystemFonts</span><span class="p">(</span><span class="n">fontpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontext</span><span class="o">=</span><span class="s2">&quot;ttf&quot;</span><span class="p">)</span>
-    <span class="n">fonts</span> <span class="o">+=</span> <span class="n">font_manager</span><span class="o">.</span><span class="n">findSystemFonts</span><span class="p">(</span><span class="n">fontpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontext</span><span class="o">=</span><span class="s2">&quot;otf&quot;</span><span class="p">)</span>
+    <span class="n">fonts</span> <span class="o">=</span> <span class="n">font_manager</span><span class="o">.</span><span class="n">findSystemFonts</span><span class="p">(</span><span class="n">fontpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontext</span><span class="o">=</span><span class="s2">"ttf"</span><span class="p">)</span>
+    <span class="n">fonts</span> <span class="o">+=</span> <span class="n">font_manager</span><span class="o">.</span><span class="n">findSystemFonts</span><span class="p">(</span><span class="n">fontpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontext</span><span class="o">=</span><span class="s2">"otf"</span><span class="p">)</span>
 
     <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
@@ -69,55 +69,55 @@
     <span class="n">font_names</span> <span class="o">=</span> <span class="n">get_system_font_names</span><span class="p">()</span>
 
     <span class="n">html_parts</span> <span class="o">=</span> <span class="p">[</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;&lt;html&gt;</span>
+<span class="w">        </span><span class="sd">"""&lt;html&gt;</span>
 <span class="sd">&lt;head&gt;</span>
 <span class="sd">  &lt;title&gt;System Fonts&lt;/title&gt;</span>
-<span class="sd">  &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;</span>
+<span class="sd">  &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;</span>
 <span class="sd">&lt;/head&gt;</span>
 <span class="sd">&lt;body&gt;</span>
 <span class="sd">&lt;ul&gt;</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
     <span class="p">]</span>
 
     <span class="n">prev_ch</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">font_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">font_names</span><span class="p">):</span>
-        <span class="n">first_ch</span> <span class="o">=</span> <span class="n">font_name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">if</span> <span class="n">font_name</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">first_ch</span> <span class="o">=</span> <span class="n">font_name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">if</span> <span class="n">font_name</span> <span class="k">else</span> <span class="s2">""</span>
 
         <span class="k">if</span> <span class="n">first_ch</span> <span class="o">!=</span> <span class="n">prev_ch</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">prev_ch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">html_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/li&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">html_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;li&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">html_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;/li&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">html_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;li&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">prev_ch</span> <span class="o">=</span> <span class="n">first_ch</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">font_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">font_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">safe_font_name</span> <span class="o">=</span> <span class="n">escape</span><span class="p">(</span><span class="n">font_name</span><span class="p">,</span> <span class="n">quote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">html_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;&lt;span style=&quot;font-family: </span><span class="se">\&#39;</span><span class="si">{</span><span class="n">safe_font_name</span><span class="si">}</span><span class="se">\&#39;</span><span class="s1">, sans-serif;&quot;&gt;&#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">safe_font_name</span><span class="si">}</span><span class="s1"> &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;&lt;span style=&quot;color: silver;&quot;&gt;зпт&lt;/span&gt;&#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;&lt;/span&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">'&lt;span style="font-family: </span><span class="se">\'</span><span class="si">{</span><span class="n">safe_font_name</span><span class="si">}</span><span class="se">\'</span><span class="s1">, sans-serif;"&gt;'</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">safe_font_name</span><span class="si">}</span><span class="s1"> '</span>
+            <span class="sa">f</span><span class="s1">'&lt;span style="color: silver;"&gt;зпт&lt;/span&gt;'</span>
+            <span class="sa">f</span><span class="s1">'&lt;/span&gt;</span><span class="se">\n</span><span class="s1">'</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">prev_ch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">html_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/li&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">html_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;/li&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">html_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;&lt;/ul&gt;</span>
+<span class="w">        </span><span class="sd">"""&lt;/ul&gt;</span>
 <span class="sd">&lt;/body&gt;</span>
 <span class="sd">&lt;/html&gt;</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
     <span class="p">)</span>
 
-    <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;fonts.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">html_parts</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">Path</span><span class="p">(</span><span class="s2">"fonts.html"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">html_parts</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---------------&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;total: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">font_names</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"---------------"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"total: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">font_names</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -152,6 +152,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -249,7 +250,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

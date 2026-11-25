@@ -1,6 +1,8 @@
 # Split Log
 # =========
 #
+# .. currentmodule:: split_log
+#
 # This script splits a given log file into multiple output files based on a list
 # of signatures provided in the text file ``split_log.txt``.
 #

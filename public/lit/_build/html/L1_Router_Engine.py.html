@@ -96,10 +96,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;data_dir&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Directory containing Markdown documents&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"data_dir"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Directory containing Markdown documents"</span><span class="p">)</span>
 <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data dir: &quot;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">data_dir</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Data dir: "</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">data_dir</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">llama_index.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleDirectoryReader</span>
 
@@ -174,8 +174,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">llama_index.llms.openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">llama_index.embeddings.openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIEmbedding</span>
 
-<span class="n">Settings</span><span class="o">.</span><span class="n">llm</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">)</span>
-<span class="n">Settings</span><span class="o">.</span><span class="n">embed_model</span> <span class="o">=</span> <span class="n">OpenAIEmbedding</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">)</span>
+<span class="n">Settings</span><span class="o">.</span><span class="n">llm</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">"gpt-4o-mini"</span><span class="p">)</span>
+<span class="n">Settings</span><span class="o">.</span><span class="n">embed_model</span> <span class="o">=</span> <span class="n">OpenAIEmbedding</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">"text-embedding-3-small"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Index Creation:</strong></p>
@@ -220,7 +220,7 @@
 <li><p><cite>vector_query_engine</cite>: Configured for retrieving specific contexts from the documents.</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">summary_query_engine</span> <span class="o">=</span> <span class="n">summary_index</span><span class="o">.</span><span class="n">as_query_engine</span><span class="p">(</span>
-    <span class="n">response_mode</span><span class="o">=</span><span class="s2">&quot;tree_summarize&quot;</span><span class="p">,</span>
+    <span class="n">response_mode</span><span class="o">=</span><span class="s2">"tree_summarize"</span><span class="p">,</span>
     <span class="n">use_async</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">vector_query_engine</span> <span class="o">=</span> <span class="n">vector_index</span><span class="o">.</span><span class="n">as_query_engine</span><span class="p">()</span>
@@ -237,14 +237,14 @@
 <span class="n">summary_tool</span> <span class="o">=</span> <span class="n">QueryEngineTool</span><span class="o">.</span><span class="n">from_defaults</span><span class="p">(</span>
     <span class="n">query_engine</span><span class="o">=</span><span class="n">summary_query_engine</span><span class="p">,</span>
     <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-        <span class="s2">&quot;Useful for summarization questions related to the book&quot;</span>
+        <span class="s2">"Useful for summarization questions related to the book"</span>
     <span class="p">),</span>
 <span class="p">)</span>
 
 <span class="n">vector_tool</span> <span class="o">=</span> <span class="n">QueryEngineTool</span><span class="o">.</span><span class="n">from_defaults</span><span class="p">(</span>
     <span class="n">query_engine</span><span class="o">=</span><span class="n">vector_query_engine</span><span class="p">,</span>
     <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-        <span class="s2">&quot;Useful for retrieving specific context from the book.&quot;</span>
+        <span class="s2">"Useful for retrieving specific context from the book."</span>
     <span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
@@ -272,7 +272,7 @@
 <li><p>The <cite>query_engine</cite> is used to execute a query asking for a summary of the document.</p></li>
 <li><p>The response is printed, along with the number of source nodes (chunks of text) involved in generating the response.</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">query_engine</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;What is the summary of the document?&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">query_engine</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"What is the summary of the document?"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">))</span>
@@ -310,6 +310,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -407,7 +408,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

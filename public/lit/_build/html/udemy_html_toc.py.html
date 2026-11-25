@@ -41,56 +41,56 @@
 </pre></div>
 </div>
 <p>Input and output file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INPUT_FILE</span> <span class="o">=</span> <span class="s2">&quot;toc.html&quot;</span>
-<span class="n">OUTPUT_FILE</span> <span class="o">=</span> <span class="s2">&quot;toc.txt&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INPUT_FILE</span> <span class="o">=</span> <span class="s2">"toc.html"</span>
+<span class="n">OUTPUT_FILE</span> <span class="o">=</span> <span class="s2">"toc.txt"</span>
 </pre></div>
 </div>
 <p>Remove inner spaces</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">normalize_inner_spaces</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="k">return</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>Extract TOC</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">extract_toc</span><span class="p">(</span><span class="n">html_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="s2">"html.parser"</span><span class="p">)</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="n">section_no</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">lecture_no</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="c1"># Each curriculum section panel</span>
-    <span class="n">panels</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;div[class*=&#39;curriculum-section-module&#39;][class*=&#39;panel&#39;]&quot;</span><span class="p">)</span>
+    <span class="n">panels</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">"div[class*='curriculum-section-module'][class*='panel']"</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">panels</span><span class="p">:</span>
         <span class="c1"># Section title</span>
-        <span class="n">title_el</span> <span class="o">=</span> <span class="n">panel</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;span[class*=&#39;section-title&#39;]&quot;</span><span class="p">)</span>
+        <span class="n">title_el</span> <span class="o">=</span> <span class="n">panel</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">"span[class*='section-title']"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">title_el</span><span class="p">:</span>
             <span class="k">continue</span>
 
-        <span class="n">section_title</span> <span class="o">=</span> <span class="n">normalize_inner_spaces</span><span class="p">(</span><span class="n">title_el</span><span class="o">.</span><span class="n">get_text</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">section_title</span> <span class="o">=</span> <span class="n">normalize_inner_spaces</span><span class="p">(</span><span class="n">title_el</span><span class="o">.</span><span class="n">get_text</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">section_title</span><span class="p">:</span>
             <span class="k">continue</span>
 
         <span class="n">section_no</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;### </span><span class="si">{</span><span class="n">section_no</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">section_title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"### </span><span class="si">{</span><span class="n">section_no</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">section_title</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
 
         <span class="c1"># Lecture items inside the section</span>
-        <span class="n">item_rows</span> <span class="o">=</span> <span class="n">panel</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;div.ud-block-list-item-content&quot;</span><span class="p">)</span>
+        <span class="n">item_rows</span> <span class="o">=</span> <span class="n">panel</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">"div.ud-block-list-item-content"</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">item_rows</span><span class="p">:</span>
-            <span class="n">lecture_el</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;span[class*=&#39;course-lecture-title&#39;]&quot;</span><span class="p">)</span>
+            <span class="n">lecture_el</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">"span[class*='course-lecture-title']"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">lecture_el</span><span class="p">:</span>
                 <span class="n">lecture_title</span> <span class="o">=</span> <span class="n">normalize_inner_spaces</span><span class="p">(</span>
-                    <span class="n">lecture_el</span><span class="o">.</span><span class="n">get_text</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">lecture_el</span><span class="o">.</span><span class="n">get_text</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">lecture_title</span><span class="p">:</span>
                     <span class="n">lecture_no</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">lecture_no</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">lecture_title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">lecture_no</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">lecture_title</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 </pre></div>
 </div>
 <p>Main</p>
@@ -98,14 +98,14 @@
     <span class="n">input_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">INPUT_FILE</span><span class="p">)</span>
     <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">OUTPUT_FILE</span><span class="p">)</span>
 
-    <span class="n">html_text</span> <span class="o">=</span> <span class="n">input_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">html_text</span> <span class="o">=</span> <span class="n">input_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
     <span class="n">toc_text</span> <span class="o">=</span> <span class="n">extract_toc</span><span class="p">(</span><span class="n">html_text</span><span class="p">)</span>
-    <span class="n">output_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">toc_text</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">output_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">toc_text</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Created </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -140,6 +140,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -237,7 +238,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

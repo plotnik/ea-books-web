@@ -109,29 +109,29 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 </div>
 <p>Prints a stylized banner to the console when the application starts.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
-    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;Book-Chat&quot;</span><span class="p">,</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">"Book-Chat"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">    ___  ____ ____ _  _    ____ _  _ ____ ___</span>
 <span class="s2">    |__] |  | |  | |_/  __ |    |__| |__|  |</span>
 <span class="s2">    |__] |__| |__| | </span><span class="se">\\</span><span class="s2">_    |___ |  | |  |  |</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">    """</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">print_banner</span><span class="p">()</span>
-<span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">&quot;https://ea-books.netlify.app/lit/book_lc.svg&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">"https://ea-books.netlify.app/lit/book_lc.svg"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>LangSmith tracing</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">langsmith_tracing</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">&quot;LangSmith Tracing&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">langsmith_tracing</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">"LangSmith Tracing"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">tracing_context</span> <span class="o">=</span> <span class="n">tracing_v2_enabled</span><span class="p">()</span> <span class="k">if</span> <span class="n">langsmith_tracing</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Get <code class="docutils literal notranslate"><span class="pre">GEMINI_API_KEY</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"GEMINI_API_KEY"</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="embeddings">
@@ -160,32 +160,32 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 </tbody>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">embedding_models</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;openai/text-embedding-3-small&quot;</span><span class="p">,</span>
+    <span class="s2">"openai/text-embedding-3-small"</span><span class="p">,</span>
 
-    <span class="s2">&quot;google/gemini-embedding-001&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;google/text-embedding-004&quot;</span><span class="p">,</span>           <span class="c1"># April 2024</span>
-    <span class="s2">&quot;google/gemini-embedding-exp-03-07&quot;</span><span class="p">,</span>   <span class="c1"># March 2025 # Exceeds rate limit when selected</span>
-    <span class="s2">&quot;google/embedding-001&quot;</span><span class="p">,</span>                <span class="c1"># December 2023</span>
+    <span class="s2">"google/gemini-embedding-001"</span><span class="p">,</span>
+    <span class="s2">"google/text-embedding-004"</span><span class="p">,</span>           <span class="c1"># April 2024</span>
+    <span class="s2">"google/gemini-embedding-exp-03-07"</span><span class="p">,</span>   <span class="c1"># March 2025 # Exceeds rate limit when selected</span>
+    <span class="s2">"google/embedding-001"</span><span class="p">,</span>                <span class="c1"># December 2023</span>
 <span class="p">]</span>
 
 <span class="n">embedding_prices</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;openai/text-embedding-3-small&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+    <span class="s2">"openai/text-embedding-3-small"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
 
-    <span class="s2">&quot;google/text-embedding-004&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="s2">&quot;google/gemini-embedding-exp-03-07&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="s2">&quot;google/embedding-001&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="s2">&quot;google/gemini-embedding-001&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">"google/text-embedding-004"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">"google/gemini-embedding-exp-03-07"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">"google/embedding-001"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">"google/gemini-embedding-001"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">embedding_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.book-chat-embeddings&quot;</span><span class="p">)</span>
+<span class="n">embedding_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">".book-chat-embeddings"</span><span class="p">)</span>
 <span class="n">embedding_models</span> <span class="o">=</span> <span class="n">embedding_models_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span><span class="n">embedding_models</span><span class="p">)</span>
 
-<span class="n">embedding_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;Embedding&quot;</span><span class="p">,</span> <span class="n">embedding_models</span><span class="p">)</span>
+<span class="n">embedding_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">"Embedding"</span><span class="p">,</span> <span class="n">embedding_models</span><span class="p">)</span>
 
-<span class="c1"># split `embedding_model` into `model_vendor` before &quot;/&quot; and `embed_model_name` after</span>
-<span class="n">embedding_model_vendor</span><span class="p">,</span> <span class="n">embed_model_name</span> <span class="o">=</span> <span class="n">embedding_model</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="c1"># split `embedding_model` into `model_vendor` before "/" and `embed_model_name` after</span>
+<span class="n">embedding_model_vendor</span><span class="p">,</span> <span class="n">embed_model_name</span> <span class="o">=</span> <span class="n">embedding_model</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">embedding_model_vendor</span> <span class="o">==</span> <span class="s2">&quot;google&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">embedding_model_vendor</span> <span class="o">==</span> <span class="s2">"google"</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Try to get the current event loop</span>
@@ -195,95 +195,95 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
         <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
         <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
 
-    <span class="n">embedding</span> <span class="o">=</span> <span class="n">GoogleGenerativeAIEmbeddings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;models/</span><span class="si">{</span><span class="n">embed_model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
-<span class="k">elif</span> <span class="n">embedding_model_vendor</span> <span class="o">==</span> <span class="s2">&quot;openai&quot;</span><span class="p">:</span>
+    <span class="n">embedding</span> <span class="o">=</span> <span class="n">GoogleGenerativeAIEmbeddings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="sa">f</span><span class="s2">"models/</span><span class="si">{</span><span class="n">embed_model_name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">embedding_model_vendor</span> <span class="o">==</span> <span class="s2">"openai"</span><span class="p">:</span>
     <span class="n">embedding</span> <span class="o">=</span> <span class="n">OpenAIEmbeddings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">embed_model_name</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported embedding model vendor: </span><span class="si">{</span><span class="n">embedding_model_vendor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported embedding model vendor: </span><span class="si">{</span><span class="n">embedding_model_vendor</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Folder to save index</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">index_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;vectors/book-</span><span class="si">{</span><span class="n">embed_model_name</span><span class="si">}</span><span class="s2">&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">index_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"vectors/book-</span><span class="si">{</span><span class="n">embed_model_name</span><span class="si">}</span><span class="s2">"</span>
 
 <span class="n">embedding_models_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">embedding_model</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Input HTML file with the book’s contents and a log of the questions asked.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">book_html</span> <span class="o">=</span> <span class="s2">&quot;html/index.html&quot;</span>
-<span class="n">history_file</span> <span class="o">=</span> <span class="s2">&quot;vectors/questions.txt&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">book_html</span> <span class="o">=</span> <span class="s2">"html/index.html"</span>
+<span class="n">history_file</span> <span class="o">=</span> <span class="s2">"vectors/questions.txt"</span>
 </pre></div>
 </div>
 <p>Print current folder name as a title</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">current_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
-<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;### </span><span class="si">{</span><span class="n">current_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"### </span><span class="si">{</span><span class="n">current_folder</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">book_html</span><span class="p">):</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Book HTML file not found: </span><span class="si">{</span><span class="n">book_html</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Book HTML file not found: </span><span class="si">{</span><span class="n">book_html</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Select LLM</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;openai/gpt-5.4&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;openai/gpt-5.4-mini&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;openai/gpt-5.4-nano&quot;</span><span class="p">,</span>
+    <span class="s2">"openai/gpt-5.4"</span><span class="p">,</span>
+    <span class="s2">"openai/gpt-5.4-mini"</span><span class="p">,</span>
+    <span class="s2">"openai/gpt-5.4-nano"</span><span class="p">,</span>
 
-    <span class="s2">&quot;google/gemini-2.5-flash-preview-04-17&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;google/gemini-2.0-flash&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;google/gemma-3-27b-it&quot;</span><span class="p">,</span>
+    <span class="s2">"google/gemini-2.5-flash-preview-04-17"</span><span class="p">,</span>
+    <span class="s2">"google/gemini-2.0-flash"</span><span class="p">,</span>
+    <span class="s2">"google/gemma-3-27b-it"</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;gpt-5.4&quot;</span><span class="p">:</span> <span class="mf">2.50</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-5.4-mini&quot;</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-5.4-nano&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span>
+    <span class="s2">"gpt-5.4"</span><span class="p">:</span> <span class="mf">2.50</span><span class="p">,</span>
+    <span class="s2">"gpt-5.4-mini"</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">,</span>
+    <span class="s2">"gpt-5.4-nano"</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span>
 
-    <span class="s2">&quot;gpt-4.1-mini&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4.1-nano&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4.1&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4o&quot;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
+    <span class="s2">"gpt-4.1-mini"</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="s2">"gpt-4.1-nano"</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="s2">"gpt-4.1"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="s2">"gpt-4o-mini"</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="s2">"gpt-4o"</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">llm_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.book-chat-models&quot;</span><span class="p">)</span>
+<span class="n">llm_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">".book-chat-models"</span><span class="p">)</span>
 <span class="n">llm_models</span> <span class="o">=</span> <span class="n">llm_models_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span><span class="n">llm_models</span><span class="p">)</span>
 
-<span class="n">llm_model_selected</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;LLM&quot;</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
-<span class="n">llm_model_vendor</span><span class="p">,</span> <span class="n">llm_model</span> <span class="o">=</span> <span class="n">llm_model_selected</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">llm_model_selected</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">"LLM"</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
+<span class="n">llm_model_vendor</span><span class="p">,</span> <span class="n">llm_model</span> <span class="o">=</span> <span class="n">llm_model_selected</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">llm_model_vendor</span> <span class="o">==</span> <span class="s2">&quot;google&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">llm_model_vendor</span> <span class="o">==</span> <span class="s2">"google"</span><span class="p">:</span>
     <span class="n">llm</span> <span class="o">=</span> <span class="n">ChatGoogleGenerativeAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span> <span class="n">google_api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">)</span>
-<span class="k">elif</span> <span class="n">llm_model_vendor</span> <span class="o">==</span> <span class="s2">&quot;openai&quot;</span><span class="p">:</span>
+<span class="k">elif</span> <span class="n">llm_model_vendor</span> <span class="o">==</span> <span class="s2">"openai"</span><span class="p">:</span>
     <span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 
 <span class="n">llm_models_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">llm_model_selected</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Load history</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="s2">""</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">update_history</span><span class="p">(</span><span class="n">prompt</span><span class="p">):</span>
     <span class="c1"># Add current date in YYYY-MM-DD format</span>
-    <span class="n">current_date</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">new_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="se">\n\n</span><span class="si">{</span><span class="n">current_date</span><span class="si">}</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">current_date</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y-%m-</span><span class="si">%d</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">new_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="se">\n\n</span><span class="si">{</span><span class="n">current_date</span><span class="si">}</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="s2">"</span>
 
-    <span class="c1"># If contents of history_file already starts with new_text then don&#39;t update history.</span>
+    <span class="c1"># If contents of history_file already starts with new_text then don't update history.</span>
     <span class="k">if</span> <span class="n">history</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">new_text</span><span class="p">):</span>
         <span class="k">return</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">history_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">history_file</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">new_text</span> <span class="o">+</span> <span class="n">history</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">history_file</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">history_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">history_file</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">history</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
-<span class="n">history</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;History&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">history</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">"History"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">history</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 
-<span class="c1">#if st.sidebar.button(&quot;:recycle: &amp;nbsp; Update history&quot;, use_container_width=True):</span>
-<span class="c1">#    update_history(&quot;&quot;)</span>
-<span class="c1">#    st.toast(f&#39;History updated&#39;)</span>
+<span class="c1">#if st.sidebar.button(":recycle: &amp;nbsp; Update history", use_container_width=True):</span>
+<span class="c1">#    update_history("")</span>
+<span class="c1">#    st.toast(f'History updated')</span>
 </pre></div>
 </div>
 </section>
@@ -314,7 +314,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
         <span class="n">chunks</span><span class="p">,</span>
         <span class="n">embedding</span><span class="p">,</span>
         <span class="n">persist_directory</span><span class="o">=</span><span class="n">persist_dir</span><span class="p">,</span>     <span class="c1"># &lt;- where it lives on disk</span>
-        <span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;book&quot;</span>             <span class="c1"># any name you like</span>
+        <span class="n">collection_name</span><span class="o">=</span><span class="s2">"book"</span>             <span class="c1"># any name you like</span>
     <span class="p">)</span>
 
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">vstore</span> <span class="o">=</span> <span class="n">vectorstore</span>
@@ -325,18 +325,18 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
         <span class="n">vectorstore</span> <span class="o">=</span> <span class="n">Chroma</span><span class="p">(</span>
             <span class="n">persist_directory</span><span class="o">=</span><span class="n">persist_dir</span><span class="p">,</span>
             <span class="n">embedding_function</span><span class="o">=</span><span class="n">embedding</span><span class="p">,</span>  <span class="c1"># same embedder you used to build it</span>
-            <span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;book&quot;</span><span class="p">,</span>        <span class="c1"># must match create_index</span>
+            <span class="n">collection_name</span><span class="o">=</span><span class="s2">"book"</span><span class="p">,</span>        <span class="c1"># must match create_index</span>
         <span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">vstore</span> <span class="o">=</span> <span class="n">vectorstore</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading index: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error loading index: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="indexing-logic">
 <h2>Indexing logic<a class="headerlink" href="#indexing-logic" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">index_folder</span><span class="p">):</span>
-    <span class="c1"># if &quot;vstore&quot; not in st.session_state:</span>
+    <span class="c1"># if "vstore" not in st.session_state:</span>
     <span class="n">load_index</span><span class="p">(</span><span class="n">index_folder</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="c1"># No index folder</span>
@@ -345,7 +345,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
     <span class="c1"># Calculate token count and cost if tiktoken is available</span>
     <span class="k">if</span> <span class="n">tiktoken</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">enc</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">)</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">"text-embedding-3-small"</span><span class="p">)</span>
             <span class="n">total_tokens</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">enc</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">page_content</span><span class="p">))</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">)</span>
             <span class="n">cost</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tokens</span> <span class="o">/</span> <span class="mi">1_000_000</span><span class="p">)</span> <span class="o">*</span> <span class="n">embedding_prices</span><span class="p">[</span><span class="n">embedding_model</span><span class="p">]</span>
             <span class="n">cents</span> <span class="o">=</span> <span class="n">cost</span><span class="o">/</span><span class="mi">100</span>
@@ -362,14 +362,14 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
         <span class="n">cost</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tokens</span> <span class="o">/</span> <span class="mi">1_000_000</span><span class="p">)</span> <span class="o">*</span> <span class="n">embedding_prices</span><span class="p">[</span><span class="n">embedding_model</span><span class="p">]</span>
         <span class="n">cents</span> <span class="o">=</span> <span class="n">cost</span><span class="o">/</span><span class="mi">100</span>
 
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;**Embeddings price**&quot;</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"**Embeddings price**"</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">'''</span>
 <span class="s1">        | Chunks | Tokens | Cents |</span>
 <span class="s1">        |---|---|---|</span>
 <span class="s1">        | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">total_tokens</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">cents</span><span class="si">}</span><span class="s1"> |</span>
-<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
+<span class="s1">        '''</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:construction: &amp;nbsp; Create Index&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">':construction: &amp;nbsp; Create Index'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">'primary'</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">tracing_context</span><span class="p">:</span>
             <span class="n">create_index</span><span class="p">(</span><span class="n">index_folder</span><span class="p">,</span> <span class="n">chunks</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
@@ -379,9 +379,9 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 </div>
 <p>Setup QA chain</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_rag_prompt</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a simple RAG prompt combining context and question.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Answer the user&#39;s question based only on the following context.</span>
-<span class="s2">If the context doesn&#39;t contain the answer, state that you don&#39;t have enough information.</span>
+<span class="w">    </span><span class="sd">"""Create a simple RAG prompt combining context and question."""</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"""Answer the user's question based only on the following context.</span>
+<span class="s2">If the context doesn't contain the answer, state that you don't have enough information.</span>
 
 <span class="s2">Context:</span>
 <span class="si">{</span><span class="n">context</span><span class="si">}</span>
@@ -389,11 +389,11 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 <span class="s2">Question: </span><span class="si">{</span><span class="n">question</span><span class="si">}</span>
 
 <span class="s2">Answer:</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">format_docs</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format retrieved documents into a single string.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Format retrieved documents into a single string."""</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">)</span>
 
 <span class="n">retriever</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">vstore</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">()</span>
 </pre></div>
@@ -401,9 +401,9 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 </section>
 <section id="ask-a-question">
 <h2>Ask a question<a class="headerlink" href="#ask-a-question" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">question</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Question&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">question</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Question"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;:question: &amp;nbsp; Ask&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">":question: &amp;nbsp; Ask"</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">update_history</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">with</span> <span class="n">tracing_context</span><span class="p">:</span>
@@ -417,23 +417,23 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 
         <span class="c1"># Format response to match original structure</span>
         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="n">answer</span><span class="o">.</span><span class="n">content</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">answer</span><span class="p">),</span>
-            <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="n">docs</span>
+            <span class="s2">"answer"</span><span class="p">:</span> <span class="n">answer</span><span class="o">.</span><span class="n">content</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="s1">'content'</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">answer</span><span class="p">),</span>
+            <span class="s2">"context"</span><span class="p">:</span> <span class="n">docs</span>
         <span class="p">}</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
-<span class="k">if</span> <span class="s2">&quot;response&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;:clipboard: &amp;nbsp; Copy to clipboard&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">])</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">"response"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">"answer"</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">":clipboard: &amp;nbsp; Copy to clipboard"</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">"answer"</span><span class="p">])</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Copied to clipboard'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Show last execution time</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;execution_time&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution time: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">` sec&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">"execution_time"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Execution time: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">` sec"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -468,6 +468,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Book Chat (LC)</a><ul>
@@ -572,7 +573,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </s
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

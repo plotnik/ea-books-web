@@ -1,6 +1,8 @@
 # Obsidian Chat (LC)
 # ==================
 #
+# .. currentmodule:: o_chat_lc
+#
 # *Obsidian Chat using LangChain*
 #
 # ::
@@ -21,28 +23,28 @@ placeholder = st.sidebar.empty()
 with placeholder.status("Importing langchain...", expanded=True) as status:
     st.write("Importing langchain_openai...")
     from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-    
+  
     st.write("Importing langchain_chroma...")
     from langchain_chroma import Chroma
-    
+  
     st.write("Importing langchain_core.documents...")     
     from langchain_core.documents import Document
-    
+  
     st.write("Importing langchain_text_splitters...")    
     from langchain_text_splitters import RecursiveCharacterTextSplitter
-    
+  
     st.write("Importing langchain_core.prompts...")     
     from langchain_core.prompts import ChatPromptTemplate
-    
+  
     st.write("Importing langchain_core.runnables...")      
     from langchain_core.runnables import RunnablePassthrough
-    
+  
     st.write("Importing langchain_core.output_parsers...")     
     from langchain_core.output_parsers import StrOutputParser
-    
+  
     st.write("Importing langchain_community.document_loaders...")    
     from langchain_community.document_loaders import TextLoader
-    
+  
     # status.update(label="Obsidian Chat", state="complete", expanded=False)
 
 placeholder.empty()
@@ -102,17 +104,17 @@ llm = ChatOpenAI(model=LLM_MODEL, temperature=0)
 # ::
 
 def get_obsidian_path():
-    
+  
     current_folder = os.getcwd()
     env_file = os.path.join(current_folder, ".o-chat")
-    
+  
     # Use OBSIDIAN_PATH from .o-chat when available
     obsidian_path = None
-    
+  
     if os.path.isfile(env_file):
         properties = dotenv_values(env_file)
         obsidian_path = properties.get("OBSIDIAN_PATH")
-            
+          
     # Fall back to finding the first "* Book" subfolder
     if obsidian_path is None:            
         home_folders = os.listdir(current_folder)
@@ -120,14 +122,14 @@ def get_obsidian_path():
 
         if (len(book_folders)>0):
             obsidian_path =  book_folders[0]
-            
+          
     return obsidian_path
 
 obsidian_path = get_obsidian_path()
 if obsidian_path is None: 
     st.error('The folder should contain a subfolder with a name that ends with " Book".')
     st.stop()
-    
+  
 st.title(obsidian_path)
 
 # Helpers
@@ -208,7 +210,7 @@ def detect_changes(obsidian_path: str, index_folder: str):
         if fp not in current_hashes
     ]
     return changed_files, deleted_files, current_hashes
-    
+  
 # .. method:: convert_to_obsidian_uri(path_string: str) -> str
 #
 # ::
@@ -219,15 +221,15 @@ def convert_to_obsidian_uri(path_string: str) -> str:
     # Splits by the first "/" to separate vault from file
     if "/" not in path_string:
         return ""
-    
+  
     vault, file_path = path_string.split("/", 1)
-    
+  
     # Encode spaces and special characters
     encoded_vault = urllib.parse.quote(vault)
     encoded_file = urllib.parse.quote(file_path)
-    
+  
     return f"obsidian://open?vault={encoded_vault}&file={encoded_file}"
-    
+  
 # .. method:: o_file(path_string: str) -> str
 #
 # ::
@@ -237,7 +239,7 @@ def o_file(path_string: str) -> str:
     # Then removes the ".md" extension from the end
     file_part = path_string.split("/")[-1]
     return file_part.removesuffix(".md")
-    
+  
 # Core pipeline
 # -------------
 #
@@ -393,9 +395,9 @@ Sources:
         # save result to index_folder as "formatted_docs.xml"
         with open(os.path.join(index_folder, "formatted_docs.xml"), "w", encoding="utf-8") as f:
             f.write(result)
-            
+          
         return result
-        
+      
     chain = (
         {"context": retriever | format_docs, "question": RunnablePassthrough()}
         | prompt
@@ -449,11 +451,11 @@ question = st.text_area(f"Question", height=200)
 if st.button('Ask', type='primary', width="stretch"):
     response = ask(question, vectorstore, llm)
     st.write(response)
-    
+  
 if "sources" in st.session_state:
     st.divider()
     st.write("Sources:")
     for i, src in enumerate(st.session_state.sources):
         st.link_button(f"{i+1}. {o_file(src)}", url=convert_to_obsidian_uri(src))
 
-    
+  

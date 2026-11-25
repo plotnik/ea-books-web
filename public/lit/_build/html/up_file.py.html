@@ -42,34 +42,34 @@
 </pre></div>
 </div>
 <p>Path for the folder to save the uploaded files</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SAVE_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/Downloads&quot;</span>
-<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;### Upload File to `</span><span class="si">{</span><span class="n">SAVE_PATH</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SAVE_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">'~'</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"/Downloads"</span>
+<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"### Upload File to `</span><span class="si">{</span><span class="n">SAVE_PATH</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Print banner.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">                             _____.__.__</span>
 <span class="s2">     __ ________           _/ ____</span><span class="se">\\</span><span class="s2">__|  |   ____</span>
 <span class="s2">    |  |  </span><span class="se">\\</span><span class="s2">____ </span><span class="se">\\</span><span class="s2">   ______ </span><span class="se">\\</span><span class="s2">   __</span><span class="se">\\</span><span class="s2">|  |  | _/ __ </span><span class="se">\\</span>
 <span class="s2">    |  |  /  |_&gt; &gt; /_____/  |  |  |  |  |_</span><span class="se">\\</span><span class="s2">  ___/</span>
 <span class="s2">    |____/|   __/           |__|  |__|____/</span><span class="se">\\</span><span class="s2">___  &gt;</span>
 <span class="s2">          |__|</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">    """</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">print_banner</span><span class="p">()</span>
 
 
-<span class="n">up_type</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Upload type:&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;zip&quot;</span><span class="p">,</span> <span class="s2">&quot;md&quot;</span><span class="p">])</span>
+<span class="n">up_type</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">"Upload type:"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"jpg"</span><span class="p">,</span> <span class="s2">"png"</span><span class="p">,</span> <span class="s2">"webp"</span><span class="p">,</span> <span class="s2">"zip"</span><span class="p">,</span> <span class="s2">"md"</span><span class="p">])</span>
 
-<span class="n">uploaded_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">file_uploader</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Choose </span><span class="si">{</span><span class="n">up_type</span><span class="si">}</span><span class="s2"> file&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">up_type</span><span class="p">)</span>
+<span class="n">uploaded_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">file_uploader</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Choose </span><span class="si">{</span><span class="n">up_type</span><span class="si">}</span><span class="s2"> file"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">up_type</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">uploaded_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">uploaded_file</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SAVE_PATH</span><span class="p">,</span> <span class="n">uploaded_file</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SAVE_PATH</span><span class="p">,</span> <span class="n">uploaded_file</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">uploaded_file</span><span class="o">.</span><span class="n">getbuffer</span><span class="p">())</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved file: `</span><span class="si">{</span><span class="n">uploaded_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">` to `</span><span class="si">{</span><span class="n">SAVE_PATH</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Saved file: `</span><span class="si">{</span><span class="n">uploaded_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">` to `</span><span class="si">{</span><span class="n">SAVE_PATH</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -103,6 +103,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -200,7 +201,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

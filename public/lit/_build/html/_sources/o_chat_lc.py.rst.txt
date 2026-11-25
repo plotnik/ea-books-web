@@ -1,6 +1,8 @@
 Obsidian Chat (LC)
 ==================
 
+.. currentmodule:: o_chat_lc
+
 *Obsidian Chat using LangChain*
 
 ::

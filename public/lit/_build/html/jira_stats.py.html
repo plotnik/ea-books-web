@@ -44,14 +44,14 @@
 </div>
 <p>Page header</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
-    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;JIRA-Stats&quot;</span><span class="p">,</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">"JIRA-Stats"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>List CSV files</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">csv_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">)]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">csv_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.csv'</span><span class="p">)]</span>
 <span class="n">csv_files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-<span class="n">csv_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Select exported JIRA filter CSV file to process:&quot;</span><span class="p">,</span> <span class="n">csv_files</span><span class="p">)</span>
+<span class="n">csv_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">"Select exported JIRA filter CSV file to process:"</span><span class="p">,</span> <span class="n">csv_files</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Read dataframe</p>
@@ -60,19 +60,19 @@
 </div>
 <p>Drop unnecessary columns</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">drop_columns_from_list</span><span class="p">():</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;drop_columns.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"drop_columns.txt"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">drop_columns_by_prefix</span><span class="p">():</span>
     <span class="n">prefixes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s1">&#39;Watchers Id&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Watchers&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Log Work&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Attachment&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Comment&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Components&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Labels&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Sprint&#39;</span><span class="p">,</span>
+        <span class="s1">'Watchers Id'</span><span class="p">,</span>
+        <span class="s1">'Watchers'</span><span class="p">,</span>
+        <span class="s1">'Log Work'</span><span class="p">,</span>
+        <span class="s1">'Attachment'</span><span class="p">,</span>
+        <span class="s1">'Comment'</span><span class="p">,</span>
+        <span class="s1">'Components'</span><span class="p">,</span>
+        <span class="s1">'Labels'</span><span class="p">,</span>
+        <span class="s1">'Sprint'</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">cols_to_drop</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="p">)]</span>
     <span class="c1"># st.write(cols_to_drop)</span>
@@ -83,27 +83,27 @@
 </pre></div>
 </div>
 <p>Print stats</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"---"</span><span class="p">)</span>
 <span class="n">num_rows</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Jiras: `</span><span class="si">{</span><span class="n">num_rows</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Jiras: `</span><span class="si">{</span><span class="n">num_rows</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 
-<span class="n">total_time_spent</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Time Spent&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">total_time_spent</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'Time Spent'</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="n">hours</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">total_time_spent</span><span class="o">/</span><span class="mi">3600</span><span class="p">)</span>
-<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time spent: `</span><span class="si">{</span><span class="n">hours</span><span class="si">}</span><span class="s2">` h&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Time spent: `</span><span class="si">{</span><span class="n">hours</span><span class="si">}</span><span class="s2">` h"</span><span class="p">)</span>
 
-<span class="n">remaining_estimate</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Remaining Estimate&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">remaining_estimate</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'Remaining Estimate'</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="n">hours</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">remaining_estimate</span><span class="o">/</span><span class="mi">3600</span><span class="p">)</span>
-<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Remaining Estimate: `</span><span class="si">{</span><span class="n">hours</span><span class="si">}</span><span class="s2">` h&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Remaining Estimate: `</span><span class="si">{</span><span class="n">hours</span><span class="si">}</span><span class="s2">` h"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Select row</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">num</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span><span class="s2">&quot;Row&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">num_rows</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">num</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span><span class="s2">"Row"</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">num_rows</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Extract row to Series</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dfs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
 <span class="n">drops</span> <span class="o">=</span> <span class="n">dfs</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Num cols: `</span><span class="si">{</span><span class="n">dfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">`, not empty: `</span><span class="si">{</span><span class="n">drops</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Num cols: `</span><span class="si">{</span><span class="n">dfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">`, not empty: `</span><span class="si">{</span><span class="n">drops</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 
 <span class="c1"># st.table(dfs)</span>
 <span class="n">st</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">drops</span><span class="p">)</span>
@@ -111,21 +111,21 @@
 </div>
 <p>Create report</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_report</span><span class="p">():</span>
-    <span class="n">report_name</span> <span class="o">=</span> <span class="n">csv_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.report.md&quot;</span>
+    <span class="n">report_name</span> <span class="o">=</span> <span class="n">csv_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">".report.md"</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-            <span class="n">issue_key</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Issue key&#39;</span><span class="p">,</span> <span class="s1">&#39;N/A&#39;</span><span class="p">)</span>
-            <span class="n">summary</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Summary&#39;</span><span class="p">,</span> <span class="s1">&#39;N/A&#39;</span><span class="p">)</span>
-            <span class="n">status</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Status&#39;</span><span class="p">,</span> <span class="s1">&#39;N/A&#39;</span><span class="p">)</span>
-            <span class="n">assignee</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Assignee&#39;</span><span class="p">,</span> <span class="s1">&#39;N/A&#39;</span><span class="p">)</span>
+            <span class="n">issue_key</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'Issue key'</span><span class="p">,</span> <span class="s1">'N/A'</span><span class="p">)</span>
+            <span class="n">summary</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'Summary'</span><span class="p">,</span> <span class="s1">'N/A'</span><span class="p">)</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'Status'</span><span class="p">,</span> <span class="s1">'N/A'</span><span class="p">)</span>
+            <span class="n">assignee</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'Assignee'</span><span class="p">,</span> <span class="s1">'N/A'</span><span class="p">)</span>
 
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">issue_key</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">summary</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">issue_key</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">summary</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
 
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Report created: </span><span class="si">{</span><span class="n">report_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Report created: </span><span class="si">{</span><span class="n">report_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Create report&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Create report"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"primary"</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">create_report</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -160,6 +160,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -257,7 +258,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

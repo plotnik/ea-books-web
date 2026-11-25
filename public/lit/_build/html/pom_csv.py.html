@@ -47,7 +47,7 @@
 <p>Print banner.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">     _______  _______  __   __         _______  _______  __   __</span>
 <span class="s2">    |       ||       ||  |_|  |       |       ||       ||  | |  |</span>
 <span class="s2">    |    _  ||   _   ||       | ____  |       ||  _____||  |_|  |</span>
@@ -55,31 +55,31 @@
 <span class="s2">    |    ___||  |_|  ||       |       |      _||_____  ||       |</span>
 <span class="s2">    |   |    |       || ||_|| |       |     |_  _____| | |     |</span>
 <span class="s2">    |___|    |_______||_|   |_|       |_______||_______|  |___|</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">    """</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">print_banner</span><span class="p">()</span>
 
-<span class="n">pom_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;POM&quot;</span><span class="p">)</span>
+<span class="n">pom_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">"POM"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Parse dependencies in “pom.xml” and store them to dataframe.</p>
 <p>Dataframe is stored in <code class="docutils literal notranslate"><span class="pre">session_state</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Parse&quot;</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Parse"</span><span class="p">):</span>
     <span class="n">tree</span> <span class="o">=</span> <span class="n">xmltodict</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">pom_text</span><span class="p">)</span>
-    <span class="n">dependencies</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">][</span><span class="s1">&#39;dependencies&#39;</span><span class="p">][</span><span class="s1">&#39;dependency&#39;</span><span class="p">]</span>
+    <span class="n">dependencies</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="s1">'project'</span><span class="p">][</span><span class="s1">'dependencies'</span><span class="p">][</span><span class="s1">'dependency'</span><span class="p">]</span>
 
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
 
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;### `</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span><span class="si">}</span><span class="s2">` dependencies&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"### `</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span><span class="si">}</span><span class="s2">` dependencies"</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Save dataframe to csv file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;df&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Save CSV&quot;</span><span class="p">):</span>
-    <span class="n">csv_name</span> <span class="o">=</span> <span class="s1">&#39;pom.csv&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">"df"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Save CSV"</span><span class="p">):</span>
+    <span class="n">csv_name</span> <span class="o">=</span> <span class="s1">'pom.csv'</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csv_name</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">csv_name</span><span class="si">}</span><span class="s2">` created&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"`</span><span class="si">{</span><span class="n">csv_name</span><span class="si">}</span><span class="s2">` created"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -113,6 +113,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -210,7 +211,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

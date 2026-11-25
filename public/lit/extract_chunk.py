@@ -1,5 +1,9 @@
 # Log Chunk
 # =========
+#
+# .. currentmodule:: extract_chunk
+#
+# ::
 
 import argparse
 import os
@@ -7,6 +11,8 @@ import sys
 
 
 # .. function:: truncate_filename(filename: str, max_length: int = 16) -> str
+#
+# ::
 
 def truncate_filename(filename: str, max_length: int = 16) -> str:
     """
@@ -15,8 +21,10 @@ def truncate_filename(filename: str, max_length: int = 16) -> str:
     base = os.path.basename(filename)
     name, _ = os.path.splitext(base)
     return name[:max_length]
-       
+     
 # .. function:: extract_chunk(source_file: str, start: int, number: int) -> str
+#
+# ::
 
 def extract_chunk(source_file: str, start: int, number: int) -> str:
     """
@@ -46,6 +54,8 @@ def extract_chunk(source_file: str, start: int, number: int) -> str:
 
 
 # .. function:: main()
+#
+# ::
 
 def main():
     parser = argparse.ArgumentParser(
@@ -63,7 +73,7 @@ def main():
         default=1,
         help="Start line (1-based). Default: 1"
     )
-   
+ 
     parser.add_argument(
         "-n", "--number",
         type=int,

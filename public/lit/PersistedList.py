@@ -7,7 +7,7 @@
 #    :collapsible: closed
 #
 #    .. code:: python
-#    
+#   
 #         persisted = PersistedList(".persisted")
 #         options = [
 #             "Email", 
@@ -15,14 +15,14 @@
 #             "Mobile phone"
 #         ]
 #         ordered = persisted.sort_by_pattern(options)
-#        
+#       
 #         import streamlit as st
-#        
+#       
 #         option = st.selectbox(
 #             "How would you like to be contacted?",
 #             ordered,
 #         )
-#        
+#       
 #         st.write("You selected:", option)   
 #         persisted.select(option)  
 #
@@ -44,7 +44,7 @@ class PersistedList:
     def __init__(self, filename: str) -> None:
         self.filename = Path(filename)
         self.group = ""
-        
+      
 # .. classmethod:: sort_by_pattern(all_names: List[str], group: str = "") -> List[str]
 #
 #     Sort ``all_names`` so that previously‑stored names keep their old
@@ -60,7 +60,7 @@ class PersistedList:
         self.names: List[str] = self._read_from_file()
 
         extracted = self._extract_groups(self.names, group)
-        
+      
         # Create a priority mapping for persisted names, 
         # like {"A|Home phone": 0, "A|Mobile phone": 1, "A|Email": 2}
         priority = {name: idx for idx, name in enumerate(extracted)}
@@ -76,7 +76,7 @@ class PersistedList:
 #
 #       Move ``name`` to the top of the list (inserting it if it
 #       wasn’t present) and persist the change.
-#          
+#         
 # ::
     
     def select(self, name: str, group: str = "") -> None:
@@ -150,7 +150,7 @@ class PersistedList:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.filename!s}, {self.names})"
-        
+      
 # .. csv-table:: History
 #    :header: "Date", "Comment"
 #    :widths: 10 30
@@ -160,7 +160,7 @@ class PersistedList:
 #    "2025-11-07", "Read file in ``sort_by_pattern``"   
 #    "2025-07-30", "Cache in ``select``"
 #    "2025-06-13", "New elements come first"
-#    "", "Copied from: ``explain_java.py``_"
+#    "", "Copied from: `explain_java.py`_"
 #
 # .. _explain_java.py: explain_java.py.html#persisted-list
-#  
+# 

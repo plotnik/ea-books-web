@@ -51,7 +51,7 @@ to ChatGPT for review.</p>
 </pre></div>
 </div>
 <p>Initialize OpenAI client</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">"gpt-4o"</span>
 <span class="n">openai_temperature</span> <span class="o">=</span> <span class="mf">0.7</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
@@ -59,7 +59,7 @@ to ChatGPT for review.</p>
 </pre></div>
 </div>
 <p>Get names of files in current folder.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;*.java&#39;</span><span class="p">)]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span> <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'*.java'</span><span class="p">)]</span>
 <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">java_files</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -67,13 +67,13 @@ to ChatGPT for review.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-  <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;</span>
+  <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"system"</span><span class="p">,</span>
+  <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"""</span>
 <span class="s2">      You are a helpful assistant that reviews Java code</span>
 <span class="s2">      and compares it with corresponding patch files.</span>
 <span class="s2">      For each pair of files, analyze the differences,</span>
 <span class="s2">      check code quality, suggest improvements, and flag potential bugs.</span>
-<span class="s2">      Provide feedback for each set.&quot;&quot;&quot;</span>
+<span class="s2">      Provide feedback for each set."""</span>
 <span class="p">})</span>
 </pre></div>
 </div>
@@ -82,59 +82,59 @@ and add them to <code class="docutils literal notranslate"><span class="pre">mes
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tokens</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="k">for</span> <span class="n">java_file</span> <span class="ow">in</span> <span class="n">java_files</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">java_file</span> <span class="o">+</span> <span class="s2">&quot;.java&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">java_file</span> <span class="o">+</span> <span class="s2">".java"</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">java</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">java_file</span> <span class="o">+</span> <span class="s2">&quot;.patch&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">java_file</span> <span class="o">+</span> <span class="s2">".patch"</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">patch</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">tokens</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">java</span><span class="p">))</span>
         <span class="n">tokens</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">patch</span><span class="p">))</span>
         <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;### Java File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2"> ###</span><span class="se">\n</span><span class="si">{</span><span class="n">java</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span>
+        <span class="s2">"content"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"### Java File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2"> ###</span><span class="se">\n</span><span class="si">{</span><span class="n">java</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">})</span>
         <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;### Patch File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2"> ###</span><span class="se">\n</span><span class="si">{</span><span class="n">patch</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span>
+        <span class="s2">"content"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"### Patch File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2"> ###</span><span class="se">\n</span><span class="si">{</span><span class="n">patch</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">})</span>
         <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Please review the changes in Patch File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2"> for Java File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span>
+        <span class="s2">"content"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Please review the changes in Patch File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2"> for Java File </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">})</span>
 
-<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tokens: `</span><span class="si">{</span><span class="n">tokens</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Tokens: `</span><span class="si">{</span><span class="n">tokens</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 
-<span class="n">openai_result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">openai_result</span> <span class="o">=</span> <span class="s2">""</span>
 </pre></div>
 </div>
 <p>Join the strings with their corresponding numbers</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">format_list_with_numbers</span><span class="p">(</span><span class="n">string_list</span><span class="p">):</span>
-    <span class="n">formatted_strings</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">string_list</span><span class="p">))</span>
+    <span class="n">formatted_strings</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">string_list</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">formatted_strings</span>
 </pre></div>
 </div>
 <p>Write output file</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">save_result</span><span class="p">(</span><span class="n">out_file</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">            # Code Review</span>
 
 <span class="s2">            ## Files</span>
 
-<span class="s2">            &quot;&quot;&quot;</span><span class="p">))</span>
+<span class="s2">            """</span><span class="p">))</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">format_list_with_numbers</span><span class="p">(</span><span class="n">java_files</span><span class="p">))</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""</span>
 
 <span class="s2">            ## Result</span>
 
-<span class="s2">            &quot;&quot;&quot;</span><span class="p">))</span>
+<span class="s2">            """</span><span class="p">))</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openai_result</span><span class="p">)</span>
 
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File saved: `</span><span class="si">{</span><span class="n">out_file</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File saved: `</span><span class="si">{</span><span class="n">out_file</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Button to send OpenAI request.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Call OpenAI&quot;</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Call OpenAI"</span><span class="p">):</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
         <span class="n">model</span><span class="o">=</span><span class="n">openai_model</span><span class="p">,</span>
         <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
@@ -144,7 +144,7 @@ and add them to <code class="docutils literal notranslate"><span class="pre">mes
     <span class="n">openai_result</span> <span class="o">=</span> <span class="n">choice</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">openai_result</span><span class="p">)</span>
 
-    <span class="n">save_result</span><span class="p">(</span><span class="s2">&quot;code_review.md&quot;</span><span class="p">)</span>
+    <span class="n">save_result</span><span class="p">(</span><span class="s2">"code_review.md"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -178,6 +178,7 @@ and add them to <code class="docutils literal notranslate"><span class="pre">mes
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -275,7 +276,7 @@ and add them to <code class="docutils literal notranslate"><span class="pre">mes
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

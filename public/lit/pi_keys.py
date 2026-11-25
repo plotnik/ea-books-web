@@ -1,6 +1,8 @@
 # Rasp Hotkeys
 # ------------
 #
+# .. currentmodule:: pi_keys
+#
 # Keyboard shortcuts can be found in ``/etc/xdg/openbox/lxde-pi-rc.xml`` file on 
 # Raspberry Pi. We need to extract the list of ``keybind`` records at ``/openbox_config/keyboard`` xpath.
 # Each record looks like this:
@@ -46,7 +48,7 @@ print("""
 #
 #     Parses the keybind records from the specified XML file and returns a list of tuples.
 #     Each tuple contains the key and the corresponding action name.
-#    
+#   
 #     :param xml_file: Path to the XML file to parse.
 #     :type xml_file: str
 #
@@ -80,14 +82,14 @@ def parse_keybinds(xml_file):
             keybinds.append((key, actions))
 
     return keybinds
-    
+  
 # .. function:: generate_html(keybinds, output_file)
 #
 #     Generates an HTML file with two columns: key and action name.
-#    
+#   
 #     :param keybinds: List of tuples containing key and action name.
 #     :type keybinds: list
-#    
+#   
 #     :param output_file: Path to the HTML file to generate. 
 #     :type output_file: str
 #
@@ -129,13 +131,13 @@ def generate_html(keybinds, output_file):
     # Populate the table with keybinds
     for key, actions in keybinds:
         key = html.escape(key)  
-        
+      
         actions_content = ""
         for action, command in actions:         
             action = html.escape(action) 
             command = html.escape(command) 
             actions_content += f"<li>{action} <code>{command}</code></li>"
-            
+          
         html_content += f"""
             <tr>
                 <td>{key}</td>
@@ -151,7 +153,7 @@ def generate_html(keybinds, output_file):
         file.write(html_content)
     print(f"HTML file '{output_file}' has been created successfully.")
 
-    
+  
 # .. function:: main()
 #
 # ::

@@ -1,6 +1,8 @@
 # Research Agent
 # ==============
 #
+# .. currentmodule:: research_cli
+#
 # Command-line, multi-agent research system using LangGraph.
 #
 # * Uses an OpenAI model.
@@ -129,7 +131,7 @@ class ResearchState(TypedDict):
     iteration: int
 
 # .. class:: Pricing
-#    
+#   
 # ::
 
 @dataclass

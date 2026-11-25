@@ -1,6 +1,8 @@
 Rasp Hotkeys
 ------------
 
+.. currentmodule:: pi_keys
+
 Keyboard shortcuts can be found in ``/etc/xdg/openbox/lxde-pi-rc.xml`` file on 
 Raspberry Pi. We need to extract the list of ``keybind`` records at ``/openbox_config/keyboard`` xpath.
 Each record looks like this:

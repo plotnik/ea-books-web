@@ -50,10 +50,13 @@ Model specifications
   ]
 
 Extracts provider and model name from a model ID.
+
 Args:
   model_id: The model ID in the format "provider/model".
+  
 Returns:
   A tuple (provider, model).
+  
 ::
 
   def extract_model_spec(model_id: str) -> dict:

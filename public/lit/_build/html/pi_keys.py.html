@@ -39,8 +39,8 @@
 <p>Keyboard shortcuts can be found in <code class="docutils literal notranslate"><span class="pre">/etc/xdg/openbox/lxde-pi-rc.xml</span></code> file on
 Raspberry Pi. We need to extract the list of <code class="docutils literal notranslate"><span class="pre">keybind</span></code> records at <code class="docutils literal notranslate"><span class="pre">/openbox_config/keyboard</span></code> xpath.
 Each record looks like this:</p>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;keybind</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;C-S-Escape&quot;</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="nt">&lt;action</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Execute&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;keybind</span><span class="w"> </span><span class="na">key=</span><span class="s">"C-S-Escape"</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;action</span><span class="w"> </span><span class="na">name=</span><span class="s">"Execute"</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;command&gt;</span>lxtask<span class="nt">&lt;/command&gt;</span>
 <span class="w">  </span><span class="nt">&lt;/action&gt;</span>
 <span class="nt">&lt;/keybind&gt;</span>
@@ -71,20 +71,20 @@ Each record looks like this:</p>
 </pre></div>
 </div>
 <p>Print banner.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">888 888             d8     888 88P</span>
-<span class="s2">888 888  e88 88e   d88     888 8P   ,e e,  Y8b Y888P  dP&quot;Y</span>
+<span class="s2">888 888  e88 88e   d88     888 8P   ,e e,  Y8b Y888P  dP"Y</span>
 <span class="s2">8888888 d888 888b d88888   888 K   d88 88b  Y8b Y8P  C88b</span>
 <span class="s2">888 888 Y888 888P  888     888 8b  888   ,   Y8b Y    Y88D</span>
-<span class="s2">888 888  &quot;88 88&quot;   888     888 88b  &quot;YeeP&quot;    888    d,dP</span>
+<span class="s2">888 888  "88 88"   888     888 88b  "YeeP"    888    d,dP</span>
 <span class="s2">                                              888</span>
 <span class="s2">                                              888</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">"""</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py function">
-<dt class="sig sig-object py" id="parse_keybinds">
-<span class="sig-name descname"><span class="pre">parse_keybinds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse_keybinds" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pi_keys.parse_keybinds">
+<span class="sig-prename descclassname"><span class="pre">pi_keys.</span></span><span class="sig-name descname"><span class="pre">parse_keybinds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pi_keys.parse_keybinds" title="Link to this definition">¶</a></dt>
 <dd><p>Parses the keybind records from the specified XML file and returns a list of tuples.
 Each tuple contains the key and the corresponding action name.</p>
 <dl class="field-list simple">
@@ -99,26 +99,26 @@ Each tuple contains the key and the corresponding action name.</p>
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">parse_keybinds</span><span class="p">(</span><span class="n">xml_file</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">xml_file</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The file </span><span class="si">{</span><span class="n">xml_file</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The file </span><span class="si">{</span><span class="n">xml_file</span><span class="si">}</span><span class="s2"> does not exist."</span><span class="p">)</span>
 
     <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">xml_file</span><span class="p">)</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
 
     <span class="c1"># Find the namespace (if any) in the XML</span>
-    <span class="n">namespace</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">):</span>
-        <span class="n">namespace</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;}&#39;</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="s1">''</span>
+    <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'{'</span><span class="p">):</span>
+        <span class="n">namespace</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'}'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">'}'</span>
 
     <span class="n">keybinds</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">keybind</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.//</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">keybind&quot;</span><span class="p">):</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">keybind</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span>
-        <span class="n">action_els</span> <span class="o">=</span> <span class="n">keybind</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">action&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">keybind</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">f</span><span class="s2">".//</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">keybind"</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">keybind</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'key'</span><span class="p">)</span>
+        <span class="n">action_els</span> <span class="o">=</span> <span class="n">keybind</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">f</span><span class="s2">"./</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">action"</span><span class="p">)</span>
         <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">action_els</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">action_el</span> <span class="ow">in</span> <span class="n">action_els</span><span class="p">:</span>
-                <span class="n">action</span> <span class="o">=</span> <span class="n">action_el</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-                <span class="n">command_el</span> <span class="o">=</span> <span class="n">action_el</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">command&quot;</span><span class="p">)</span>
-                <span class="n">command</span> <span class="o">=</span> <span class="n">command_el</span><span class="o">.</span><span class="n">text</span> <span class="k">if</span> <span class="n">command_el</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">action_el</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+                <span class="n">command_el</span> <span class="o">=</span> <span class="n">action_el</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">f</span><span class="s2">"./</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">command"</span><span class="p">)</span>
+                <span class="n">command</span> <span class="o">=</span> <span class="n">command_el</span><span class="o">.</span><span class="n">text</span> <span class="k">if</span> <span class="n">command_el</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">''</span>
                 <span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">action</span><span class="p">,</span> <span class="n">command</span><span class="p">))</span>
             <span class="n">keybinds</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">actions</span><span class="p">))</span>
 
@@ -126,8 +126,8 @@ Each tuple contains the key and the corresponding action name.</p>
 </pre></div>
 </div>
 <dl class="py function">
-<dt class="sig sig-object py" id="generate_html">
-<span class="sig-name descname"><span class="pre">generate_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keybinds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#generate_html" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pi_keys.generate_html">
+<span class="sig-prename descclassname"><span class="pre">pi_keys.</span></span><span class="sig-name descname"><span class="pre">generate_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keybinds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pi_keys.generate_html" title="Link to this definition">¶</a></dt>
 <dd><p>Generates an HTML file with two columns: key and action name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -140,11 +140,11 @@ Each tuple contains the key and the corresponding action name.</p>
 </dd></dl>
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">generate_html</span><span class="p">(</span><span class="n">keybinds</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
-    <span class="n">html_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;!DOCTYPE html&gt;</span>
-<span class="s2">&lt;html lang=&quot;en&quot;&gt;</span>
+    <span class="n">html_content</span> <span class="o">=</span> <span class="s2">"""&lt;!DOCTYPE html&gt;</span>
+<span class="s2">&lt;html lang="en"&gt;</span>
 <span class="s2">&lt;head&gt;</span>
-<span class="s2">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span>
-<span class="s2">    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</span>
+<span class="s2">    &lt;meta charset="UTF-8"&gt;</span>
+<span class="s2">    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</span>
 <span class="s2">    &lt;title&gt;Raspberry Pi Hotkeys&lt;/title&gt;</span>
 <span class="s2">    &lt;style&gt;</span>
 <span class="s2">        table {</span>
@@ -170,42 +170,42 @@ Each tuple contains the key and the corresponding action name.</p>
 <span class="s2">            &lt;th&gt;Key&lt;/th&gt;</span>
 <span class="s2">            &lt;th&gt;Actions&lt;/th&gt;</span>
 <span class="s2">        &lt;/tr&gt;</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
     <span class="c1"># Populate the table with keybinds</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">actions</span> <span class="ow">in</span> <span class="n">keybinds</span><span class="p">:</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-        <span class="n">actions_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">actions_content</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="k">for</span> <span class="n">action</span><span class="p">,</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
             <span class="n">action</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
             <span class="n">command</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-            <span class="n">actions_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;li&gt;</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> &lt;code&gt;</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&lt;/code&gt;&lt;/li&gt;&quot;</span>
+            <span class="n">actions_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"&lt;li&gt;</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> &lt;code&gt;</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&lt;/code&gt;&lt;/li&gt;"</span>
 
-        <span class="n">html_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">html_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">            &lt;tr&gt;</span>
 <span class="s2">                &lt;td&gt;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&lt;/td&gt;</span>
 <span class="s2">                &lt;td&gt;&lt;ul&gt;</span><span class="si">{</span><span class="n">actions_content</span><span class="si">}</span><span class="s2">&lt;/ul&gt;&lt;/td&gt;</span>
 <span class="s2">            &lt;/tr&gt;</span>
-<span class="s2">        &quot;&quot;&quot;</span>
+<span class="s2">        """</span>
 
-    <span class="n">html_content</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;    &lt;/table&gt;</span>
+    <span class="n">html_content</span> <span class="o">+=</span> <span class="s2">"""    &lt;/table&gt;</span>
 <span class="s2">&lt;/body&gt;</span>
-<span class="s2">&lt;/html&gt;&quot;&quot;&quot;</span>
+<span class="s2">&lt;/html&gt;"""</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html_content</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTML file &#39;</span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s2">&#39; has been created successfully.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"HTML file '</span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s2">' has been created successfully."</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py function">
-<dt class="sig sig-object py" id="main">
-<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pi_keys.main">
+<span class="sig-prename descclassname"><span class="pre">pi_keys.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pi_keys.main" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-    <span class="n">xml_file</span> <span class="o">=</span> <span class="s1">&#39;lxde-pi-rc.xml&#39;</span>
-    <span class="n">output_file</span> <span class="o">=</span> <span class="s1">&#39;raspberry_pi_hotkeys.html&#39;</span>
+    <span class="n">xml_file</span> <span class="o">=</span> <span class="s1">'lxde-pi-rc.xml'</span>
+    <span class="n">output_file</span> <span class="o">=</span> <span class="s1">'raspberry_pi_hotkeys.html'</span>
 
     <span class="c1"># Parse keybinds from the XML file</span>
     <span class="n">keybinds</span> <span class="o">=</span> <span class="n">parse_keybinds</span><span class="p">(</span><span class="n">xml_file</span><span class="p">)</span>
@@ -213,7 +213,7 @@ Each tuple contains the key and the corresponding action name.</p>
     <span class="c1"># Generate the HTML file</span>
     <span class="n">generate_html</span><span class="p">(</span><span class="n">keybinds</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -248,6 +248,7 @@ Each tuple contains the key and the corresponding action name.</p>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -304,9 +305,9 @@ Each tuple contains the key and the corresponding action name.</p>
 <li class="toctree-l1"><a class="reference internal" href="ollama_chat.py.html">Ollama Chat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="google_search.py.html">Google Search</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Rasp Hotkeys</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#parse_keybinds"><code class="docutils literal notranslate"><span class="pre">parse_keybinds()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#generate_html"><code class="docutils literal notranslate"><span class="pre">generate_html()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pi_keys.parse_keybinds"><code class="docutils literal notranslate"><span class="pre">parse_keybinds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pi_keys.generate_html"><code class="docutils literal notranslate"><span class="pre">generate_html()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pi_keys.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bi.py.html">Bilingua</a></li>
@@ -350,7 +351,7 @@ Each tuple contains the key and the corresponding action name.</p>
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

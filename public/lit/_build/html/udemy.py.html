@@ -95,61 +95,61 @@ Also can remove newlines from Udemy transcripts.</p>
 </div>
 <p>Print banner.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
-    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;Udemy&quot;</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">"Udemy"</span>
 <span class="p">)</span>
 
 <span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">     _____  _____      __</span>
 <span class="s2">    |_   _||_   _|    |  ]</span>
 <span class="s2">      | |    | |  .--.| | .---.  _ .--..--.    _   __</span>
-<span class="s2">      | &#39;    &#39; |/ /&#39;`</span><span class="se">\\</span><span class="s2">&#39; |/ /__</span><span class="se">\\\\</span><span class="s2">[ `.-. .-. |  [ </span><span class="se">\\</span><span class="s2"> [  ]</span>
-<span class="s2">       </span><span class="se">\\</span><span class="s2"> </span><span class="se">\\</span><span class="s2">__/ / | </span><span class="se">\\</span><span class="s2">__/  || </span><span class="se">\\</span><span class="s2">__., | | | | | |   </span><span class="se">\\</span><span class="s2"> &#39;/ /</span>
-<span class="s2">        `.__.&#39;   &#39;.__.;__]&#39;.__.&#39;[___||__||__][</span><span class="se">\\</span><span class="s2">_:  /</span>
-<span class="s2">                                              </span><span class="se">\\</span><span class="s2">__.&#39;</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">      | '    ' |/ /'`</span><span class="se">\\</span><span class="s2">' |/ /__</span><span class="se">\\\\</span><span class="s2">[ `.-. .-. |  [ </span><span class="se">\\</span><span class="s2"> [  ]</span>
+<span class="s2">       </span><span class="se">\\</span><span class="s2"> </span><span class="se">\\</span><span class="s2">__/ / | </span><span class="se">\\</span><span class="s2">__/  || </span><span class="se">\\</span><span class="s2">__., | | | | | |   </span><span class="se">\\</span><span class="s2"> '/ /</span>
+<span class="s2">        `.__.'   '.__.;__]'.__.'[___||__||__][</span><span class="se">\\</span><span class="s2">_:  /</span>
+<span class="s2">                                              </span><span class="se">\\</span><span class="s2">__.'</span>
+<span class="s2">    """</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">print_banner</span><span class="p">()</span>
-<span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">&quot;https://ea-books.netlify.app/lit/udemy.svg&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">"https://ea-books.netlify.app/lit/udemy.svg"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Select OpenAI LLM.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;gpt-6-luna&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span>
-    <span class="s2">&quot;gpt-6.1-sol&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span>
+    <span class="s2">"gpt-6-luna"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span>
+    <span class="s2">"gpt-6.1-sol"</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span>
 <span class="p">}</span>
 
 <span class="n">llm_temperature</span> <span class="o">=</span> <span class="mf">0.1</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_llm_properties</span><span class="p">(</span><span class="n">llm_model</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemini&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;google&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"gemini"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"google"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"temperature"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"xml"</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 
-    <span class="k">elif</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemma&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;google&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"gemma"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"google"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"temperature"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"xml"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
-    <span class="k">elif</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gpt-4&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;google&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"gpt-4"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"google"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"temperature"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"xml"</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 
     <span class="k">else</span><span class="p">:</span> <span class="c1"># o3 | gpt-5</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;google&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"google"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"temperature"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"xml"</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">reset_execution_time</span><span class="p">():</span>
-    <span class="k">if</span> <span class="s2">&quot;execution_time&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-        <span class="k">del</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;execution_time&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="s2">&quot;output_price&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-        <span class="k">del</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;output_price&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">"execution_time"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">"execution_time"</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">"output_price"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">"output_price"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Remember which LLM was used last time.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_models</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">llm_prices</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-<span class="n">llm_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.udemy&quot;</span><span class="p">)</span>
+<span class="n">llm_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">".udemy"</span><span class="p">)</span>
 <span class="n">llm_models</span> <span class="o">=</span> <span class="n">llm_models_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span><span class="n">llm_models</span><span class="p">)</span>
 
 <span class="n">llm_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-    <span class="s2">&quot;LLM Models&quot;</span><span class="p">,</span>
+    <span class="s2">"LLM Models"</span><span class="p">,</span>
     <span class="n">llm_models</span><span class="p">,</span>
     <span class="n">on_change</span><span class="o">=</span><span class="n">reset_execution_time</span>
 <span class="p">)</span>
@@ -160,33 +160,33 @@ Also can remove newlines from Udemy transcripts.</p>
 <p>Find the Obsidian folder, which is the first subfolder within the current folder that has a name ending with “ Book”.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">current_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
 <span class="n">home_folders</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">current_folder</span><span class="p">)</span>
-<span class="n">book_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">home_folders</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_folder</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot; Book&quot;</span><span class="p">)]</span>
+<span class="n">book_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">home_folders</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_folder</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">" Book"</span><span class="p">)]</span>
 
 <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">book_folders</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;The folder should contain a subfolder with a name that ends with &quot; Book&quot;.&#39;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">'The folder should contain a subfolder with a name that ends with " Book".'</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
 <span class="n">note_home</span> <span class="o">=</span>  <span class="n">book_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="c1"># print(&quot;OBSIDIAN_HOME: &quot; + note_home)</span>
+<span class="c1"># print("OBSIDIAN_HOME: " + note_home)</span>
 </pre></div>
 </div>
 <p>Output file to save response.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">home_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span>
-<span class="n">output_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home_directory</span><span class="p">,</span> <span class="s2">&quot;.a-services&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">home_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">"~"</span><span class="p">)</span>
+<span class="n">output_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home_directory</span><span class="p">,</span> <span class="s2">".a-services"</span><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_folder</span><span class="p">):</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_folder</span><span class="p">)</span>
 
-<span class="n">out_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s1">&#39;udemy.txt&#39;</span><span class="p">)</span>
-<span class="n">adoc_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s1">&#39;udemy.adoc&#39;</span><span class="p">)</span>
+<span class="n">out_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s1">'udemy.txt'</span><span class="p">)</span>
+<span class="n">adoc_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s1">'udemy.adoc'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>OpenAI and Gemini clients</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
 
-<span class="n">g_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY&quot;</span><span class="p">)</span>
+<span class="n">g_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"GEMINI_API_KEY"</span><span class="p">)</span>
 <span class="n">g_client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span>
     <span class="n">api_key</span><span class="o">=</span><span class="n">g_key</span><span class="p">,</span>
-    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://generativelanguage.googleapis.com/v1beta/openai/&quot;</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">"https://generativelanguage.googleapis.com/v1beta/openai/"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -197,7 +197,7 @@ Also can remove newlines from Udemy transcripts.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_newest_files</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">num_files</span><span class="p">):</span>
     <span class="c1"># Check if the directory exists</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The directory </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The directory </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> does not exist."</span><span class="p">)</span>
 
     <span class="c1"># Get a list of files in the directory with their full paths and modification times</span>
     <span class="n">files_with_paths</span> <span class="o">=</span> <span class="p">[]</span>
@@ -218,7 +218,7 @@ Also can remove newlines from Udemy transcripts.</p>
 <p>Select <code class="docutils literal notranslate"><span class="pre">note_name</span></code> from 5 newest notes.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">newest_files</span> <span class="o">=</span> <span class="n">get_newest_files</span><span class="p">(</span><span class="n">note_home</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="n">note_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-   <span class="s2">&quot;Note&quot;</span><span class="p">,</span>
+   <span class="s2">"Note"</span><span class="p">,</span>
    <span class="n">newest_files</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -227,7 +227,7 @@ Also can remove newlines from Udemy transcripts.</p>
 <section id="load-obsidian-note">
 <h2><a class="toc-backref" href="#id5" role="doc-backlink">Load Obsidian note</a><a class="headerlink" href="#load-obsidian-note" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">note_home</span><span class="p">,</span> <span class="n">note_name</span><span class="p">)</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -239,32 +239,32 @@ Also can remove newlines from Udemy transcripts.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">max_len</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">text</span>
-    <span class="k">return</span> <span class="n">text</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="s1">'...'</span>
 
-<span class="n">c_input</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">c_input</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""</span>
 
 <span class="si">{</span><span class="n">max_len</span><span class="p">(</span><span class="n">text</span><span class="p">,</span><span class="w"> </span><span class="mi">250</span><span class="p">)</span><span class="si">}</span>
 
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">"""</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="tokens-price">
 <h2><a class="toc-backref" href="#id6" role="doc-backlink">Tokens &amp; price</a><a class="headerlink" href="#tokens-price" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tiktoken_model</span> <span class="o">=</span> <span class="s2">&quot;o200k_base&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tiktoken_model</span> <span class="o">=</span> <span class="s2">"o200k_base"</span>
 <span class="c1">#encoding = tiktoken.get_encoding(tiktoken_model)</span>
-<span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">)</span>
+<span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="s2">"gpt-4o-mini"</span><span class="p">)</span>
 <span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Calculate price in cents.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cents</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">*</span> <span class="n">llm_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
-<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">'''</span>
 <span class="s1">    | Chars | Tokens | Cents |</span>
 <span class="s1">    |---|---|---|</span>
 <span class="s1">    | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">cents</span><span class="si">}</span><span class="s1"> |</span>
-<span class="s1">    &#39;&#39;&#39;</span><span class="p">)</span>
+<span class="s1">    '''</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Remove empty lines from text</p>
@@ -274,21 +274,21 @@ Also can remove newlines from Udemy transcripts.</p>
 
     <span class="c1"># Remove leading hyphens</span>
     <span class="n">stripped</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">line</span>
+        <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'-'</span><span class="p">)</span> <span class="k">else</span> <span class="n">line</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">non_empty_lines</span>
     <span class="p">]</span>
 
-    <span class="n">cleaned_text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stripped</span><span class="p">)</span>
+    <span class="n">cleaned_text</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stripped</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cleaned_text</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">replace_newlines_with_spaces</span><span class="p">(</span><span class="n">input_string</span><span class="p">):</span>
     <span class="c1"># An inexpensive method to remove empty lines without using extra logic such as leading hyphens.</span>
-    <span class="k">return</span> <span class="n">input_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">input_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="s1">' '</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:small_red_triangle_down: &amp;nbsp; Remove empty lines&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">':small_red_triangle_down: &amp;nbsp; Remove empty lines'</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">remove_empty_lines_and_leading_hyphens</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
@@ -302,11 +302,11 @@ Also can remove newlines from Udemy transcripts.</p>
 </section>
 <section id="prompts">
 <h2><a class="toc-backref" href="#id7" role="doc-backlink">Prompts</a><a class="headerlink" href="#prompts" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_summarize</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_summarize</span> <span class="o">=</span> <span class="s2">"""You will be provided with statements in markdown,</span>
 <span class="s2">and your task is to summarize the content you are provided.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
-<span class="n">prompt_questions</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">prompt_questions</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">You will be provided with context in markdown,</span>
 <span class="s2">and your task is to generate 3 questions this context can provide</span>
 <span class="s2">specific answers to which are unlikely to be found elsewhere.</span>
@@ -314,41 +314,41 @@ Also can remove newlines from Udemy transcripts.</p>
 <span class="s2">Higher-level summaries of surrounding context may be provided</span>
 <span class="s2">as well. Try using these summaries to generate better questions</span>
 <span class="s2">that this context can answer.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
-<span class="n">prompt_keywords</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown.</span>
+<span class="n">prompt_keywords</span> <span class="o">=</span> <span class="s2">"""You will be provided with statements in markdown.</span>
 <span class="s2">Extract 5 keywords from the following text.</span>
 <span class="s2">Return only the keywords delimited by spaces with # added at the beginning.</span>
 <span class="s2">Spaces in keywords should be replaced by -.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
-<span class="n">prompt_improve</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
+<span class="n">prompt_improve</span> <span class="o">=</span> <span class="s2">"""You will be provided with statements in markdown,</span>
 <span class="s2">and your task is to improve the content you are provided.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 </pre></div>
 </div>
 </section>
 <section id="call-llm">
 <h2><a class="toc-backref" href="#id8" role="doc-backlink">Call LLM</a><a class="headerlink" href="#call-llm" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s1">&#39;openai_result&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s1">'openai_result'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span> <span class="o">=</span> <span class="s2">""</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">call_llm</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
     <span class="n">llm_models_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">llm_model</span><span class="p">)</span>
     <span class="n">props</span> <span class="o">=</span> <span class="n">get_llm_properties</span><span class="p">(</span><span class="n">llm_model</span><span class="p">)</span>
-    <span class="n">llm_client</span> <span class="o">=</span> <span class="n">g_client</span> <span class="k">if</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;google&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="n">client</span>
+    <span class="n">llm_client</span> <span class="o">=</span> <span class="n">g_client</span> <span class="k">if</span> <span class="n">props</span><span class="p">[</span><span class="s2">"google"</span><span class="p">]</span> <span class="k">else</span> <span class="n">client</span>
 
-    <span class="k">if</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;xml&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">props</span><span class="p">[</span><span class="s2">"xml"</span><span class="p">]:</span>
         <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&lt;prompt&gt;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&lt;/prompt&gt;</span><span class="se">\n</span><span class="s2">&lt;query&gt;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&lt;/query&gt;&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"&lt;prompt&gt;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&lt;/prompt&gt;</span><span class="se">\n</span><span class="s2">&lt;query&gt;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&lt;/query&gt;"</span><span class="p">},</span>
         <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;developer&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
-            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"developer"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">text</span><span class="p">},</span>
         <span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;temperature&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">props</span><span class="p">[</span><span class="s2">"temperature"</span><span class="p">]:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">llm_client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span>
             <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
@@ -366,15 +366,15 @@ Also can remove newlines from Udemy transcripts.</p>
 
     <span class="c1"># st.write(st.session_state.openai_result)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_text</span><span class="p">)</span>
-    <span class="c1"># st.sidebar.write(f&#39;Response saved: `{out_file}`&#39;)</span>
+    <span class="c1"># st.sidebar.write(f'Response saved: `{out_file}`')</span>
 
     <span class="n">tokens</span> <span class="o">=</span> <span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">out_text</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">output_price</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">*</span> <span class="n">llm_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">10000</span>
 
-    <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Darwin&#39;</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;afplay /System/Library/Sounds/Glass.aiff&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'Darwin'</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">"afplay /System/Library/Sounds/Glass.aiff"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Show OpenAI result.</p>
@@ -383,88 +383,88 @@ Also can remove newlines from Udemy transcripts.</p>
 <span class="n">c_output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">col1</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:sparkles: &amp;nbsp; **Summarize**&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">':sparkles: &amp;nbsp; **Summarize**'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"primary"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">):</span>
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">call_llm</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt_summarize</span><span class="p">)</span>
         <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s2">&quot;Summarize&quot;</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s2">"Summarize"</span>
         <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:question: &amp;nbsp; **Ask questions**&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">':question: &amp;nbsp; **Ask questions**'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">):</span>
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">call_llm</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt_questions</span><span class="p">)</span>
         <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s2">&quot;Ask questions&quot;</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s2">"Ask questions"</span>
         <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
 <span class="k">with</span> <span class="n">col2</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:key: &amp;nbsp; **Keywords**&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">':key: &amp;nbsp; **Keywords**'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">):</span>
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">call_llm</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt_keywords</span><span class="p">)</span>
         <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s2">&quot;Keywords&quot;</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s2">"Keywords"</span>
         <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:pencil2: &amp;nbsp; **Improve**&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">':pencil2: &amp;nbsp; **Improve**'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"primary"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">):</span>
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">call_llm</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt_improve</span><span class="p">)</span>
         <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s2">&quot;Improve&quot;</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s2">"Improve"</span>
         <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Convert to Asciidoc</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">convert_to_asciidoc</span><span class="p">(</span><span class="n">markdown</span><span class="p">):</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;pandoc&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="s2">&quot;gfm&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">adoc_file</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">adoc_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">"pandoc"</span><span class="p">,</span> <span class="s2">"-f"</span><span class="p">,</span> <span class="s2">"gfm"</span><span class="p">,</span> <span class="s2">"-s"</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="s2">"-o"</span><span class="p">,</span> <span class="n">adoc_file</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">adoc_file</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">result</span>
 </pre></div>
 </div>
 <p>Copy to clipboard</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:clipboard: &amp;nbsp; Copy to clipboard&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">':clipboard: &amp;nbsp; Copy to clipboard'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">'primary'</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Copied to clipboard'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Copy Asciidoc to clipboard</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bump_headers</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add n &#39;=&#39; characters to the start of each AsciiDoc header line.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Add n '=' characters to the start of each AsciiDoc header line."""</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">text</span>
 
-    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="n">n</span>
-    <span class="c1"># Match lines starting with one or more &#39;=&#39; but not lines with only &#39;=&#39; (adornments)</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(=+)(?=\s)&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">'='</span> <span class="o">*</span> <span class="n">n</span>
+    <span class="c1"># Match lines starting with one or more '=' but not lines with only '=' (adornments)</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^(=+)(?=\s)'</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pattern</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">text</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">asciidoc_headers</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
     <span class="c1"># This will remove the entire line if it matches, including the newline.</span>
-    <span class="n">cleaned_content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\[\[.*?\]\]\s*\n&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+    <span class="n">cleaned_content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^\[\[.*?\]\]\s*\n'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cleaned_content</span>
 
-<span class="n">bump_headers_n</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span><span class="s2">&quot;Bump headers&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">bump_headers_n</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span><span class="s2">"Bump headers"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;:clipboard: &amp;nbsp; Copy Asciidoc to clipboard&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">':clipboard: &amp;nbsp; Copy Asciidoc to clipboard'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">'primary'</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">asciidoc_headers</span><span class="p">(</span><span class="n">bump_headers</span><span class="p">(</span><span class="n">convert_to_asciidoc</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">openai_result</span><span class="p">),</span> <span class="n">bump_headers_n</span><span class="p">)))</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Copied to clipboard'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Show last execution time</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;operation&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operation: `</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">operation</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">"operation"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Operation: `</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">operation</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="s2">&quot;execution_time&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution time: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">` sec&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">"execution_time"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Execution time: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">` sec"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="s2">&quot;output_price&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output price: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">output_price</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="si">}</span><span class="s2">` cents&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">"output_price"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Output price: `</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">output_price</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="si">}</span><span class="s2">` cents"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -499,6 +499,7 @@ Also can remove newlines from Udemy transcripts.</p>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -604,7 +605,7 @@ Also can remove newlines from Udemy transcripts.</p>
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

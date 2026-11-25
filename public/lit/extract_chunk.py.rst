@@ -1,6 +1,8 @@
 Log Chunk
 =========
 
+.. currentmodule:: extract_chunk
+
 ::
 
   import argparse

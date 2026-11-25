@@ -50,10 +50,13 @@ MODEL_ORDER_DEFAULT = [
 ]
 
 # Extracts provider and model name from a model ID.
+#
 # Args:
 #   model_id: The model ID in the format "provider/model".
+#  
 # Returns:
 #   A tuple (provider, model).
+#  
 # ::
 
 def extract_model_spec(model_id: str) -> dict:
@@ -63,7 +66,7 @@ def extract_model_spec(model_id: str) -> dict:
 # See: PersistedList_
 #
 # .. _PersistedList: PersistedList.py.html
-#   
+#  
 # ::
 
 from PersistedList import PersistedList
@@ -107,6 +110,8 @@ def get_llm(model_id: str):
 
 
 # Use ``ChatPromptTemplate`` to separate prompt and user input
+#
+# ::
 
 def build_chain(llm):
     prompt = ChatPromptTemplate.from_messages(
@@ -128,6 +133,8 @@ st.set_page_config(page_title="FW Picture", page_icon="🎨")
 st.title("🎨 FW Picture")
 
 # Persisted order
+#
+# ::
 
 model_order_persisted = PersistedList(".fw_picture")
 order = model_order_persisted.sort_by_pattern(MODEL_ORDER_DEFAULT)
@@ -151,7 +158,7 @@ diary_text = st.text_area(
     key="diary_text",
 )
 
-if st.button("Suggest picture plot", type="primary", width="stretch"):
+if st.button("Suggest picture plot", type="primary"):
     if not diary_text.strip():
         st.warning("Please enter a diary entry.")
         st.stop()

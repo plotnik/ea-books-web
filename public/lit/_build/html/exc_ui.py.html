@@ -43,7 +43,7 @@
 </pre></div>
 </div>
 <p>Step 1: Get the list of .log files in the current directory</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.log&#39;</span><span class="p">)]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.log'</span><span class="p">)]</span>
 </pre></div>
 </div>
 <p>Step 2: Sort log files based on their modification time</p>
@@ -51,20 +51,20 @@
 </pre></div>
 </div>
 <p>Step 3: Create radio buttons to select a file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">selected_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Select a log file to process:&quot;</span><span class="p">,</span> <span class="n">log_files</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">selected_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">"Select a log file to process:"</span><span class="p">,</span> <span class="n">log_files</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Step 4: Button to process the selected file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;:rocket: Process&quot;</span><span class="p">):</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;exc&quot;</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">,</span> <span class="s1">&#39;--html&#39;</span><span class="p">,</span> <span class="s1">&#39;--skip=20&#39;</span><span class="p">,</span> <span class="s1">&#39;--tformat=yyyy/MM/dd HH:mm:ss&#39;</span><span class="p">,</span> <span class="s1">&#39;--restart=wrapper.tanukisoftware.org&#39;</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;exc_yaml&quot;</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">":rocket: Process"</span><span class="p">):</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">"exc"</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">,</span> <span class="s1">'--html'</span><span class="p">,</span> <span class="s1">'--skip=20'</span><span class="p">,</span> <span class="s1">'--tformat=yyyy/MM/dd HH:mm:ss'</span><span class="p">,</span> <span class="s1">'--restart=wrapper.tanukisoftware.org'</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">"exc_yaml"</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processed: `</span><span class="si">{</span><span class="n">selected_file</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processed: `</span><span class="si">{</span><span class="n">selected_file</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We can open log file in <a class="reference external" href="https://www.jedit.org">jEdit</a> editor</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;:pencil: jEdit&quot;</span><span class="p">):</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;/Applications/jEdit.app/Contents/MacOS/jedit&quot;</span><span class="p">,</span> <span class="s2">&quot;-reuseview&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">selected_file</span><span class="p">)],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">":pencil: jEdit"</span><span class="p">):</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">"/Applications/jEdit.app/Contents/MacOS/jedit"</span><span class="p">,</span> <span class="s2">"-reuseview"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">selected_file</span><span class="p">)],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -98,6 +98,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -195,7 +196,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

@@ -1,6 +1,8 @@
 # Wiki Index
 # ==========
 #
+# .. currentmodule:: wiki_index
+#
 # Build a Markdown or AsciiDoc index of questions in a Markdown wiki.
 #
 # Expected entry format:
@@ -112,6 +114,8 @@ def link_target(source: Path, anchor: str, output: Path) -> str:
     return quote(relative, safe="/._-~") + "#" + anchor
 
 # .. function:: header_to_anchor(header: str) -> str
+#
+# ::
 
 def header_to_anchor(header: str) -> str:
     """
@@ -132,7 +136,7 @@ def header_to_anchor(header: str) -> str:
 
     # Collapse repeated hyphens and remove leading/trailing ones
     return re.sub(r"-+", "-", anchor).strip("-")
-    
+  
 # .. function:: render_asciidoc_index(files_and_entries: list[tuple[Path, list[Entry]]], output: Path, root: Path) -> str
 #
 # ::
@@ -147,7 +151,7 @@ def truncate_list(items, maxlen):
     if len(items) < maxlen:
         return items
     return items[:maxlen] + ["......."]
-    
+  
 def render_asciidoc_index(
     files_and_entries: list[tuple[Path, list[Entry]]], output: Path, root: Path
 ) -> str:
@@ -193,7 +197,7 @@ def render_asciidoc_index(
                     "---",
                 ]
             )
-            
+          
     return "\n".join(lines).rstrip() + "\n"
 
 

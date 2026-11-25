@@ -1,6 +1,8 @@
 # Compare Logs
 # ============
 #
+# .. currentmodule:: cmp_logs
+#
 # Compare two log files produced by the same code by matching configurable
 # signature substrings.
 #

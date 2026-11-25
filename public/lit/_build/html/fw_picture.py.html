@@ -61,37 +61,35 @@ or enter them in the sidebar inputs.</p></li>
 </pre></div>
 </div>
 <p>Prompt</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PICTURE_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PICTURE_PROMPT</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">You are a creative assistant. Given a personal diary entry,</span>
 <span class="s2">propose a single, vivid, camera-ready picture plot that could illustrate the entry.</span>
 <span class="s2">Keep it concise (60–120 words). Include: subject, setting, mood, style/medium, key visual elements.</span>
-<span class="s2">&quot;Avoid first person; write as a scene description.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"Avoid first person; write as a scene description.</span>
+<span class="s2">"""</span>
 </pre></div>
 </div>
 <p>Model specifications</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MODEL_ORDER_DEFAULT</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;openai/gpt-5&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;google/gemma-3-27b-it&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;openai/gpt-5-mini&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;google/gemini-2.5-pro&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;google/gemini-2.5-flash&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;google/gemini-2.5-flash-lite&quot;</span><span class="p">,</span>
+    <span class="s2">"openai/gpt-5"</span><span class="p">,</span>
+    <span class="s2">"google/gemma-3-27b-it"</span><span class="p">,</span>
+    <span class="s2">"openai/gpt-5-mini"</span><span class="p">,</span>
+    <span class="s2">"google/gemini-2.5-pro"</span><span class="p">,</span>
+    <span class="s2">"google/gemini-2.5-flash"</span><span class="p">,</span>
+    <span class="s2">"google/gemini-2.5-flash-lite"</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 </div>
-<p>Extracts provider and model name from a model ID.
-Args:</p>
-<blockquote>
-<div><p>model_id: The model ID in the format “provider/model”.</p>
-</div></blockquote>
+<p>Extracts provider and model name from a model ID.</p>
 <dl class="simple">
+<dt>Args:</dt><dd><p>model_id: The model ID in the format “provider/model”.</p>
+</dd>
 <dt>Returns:</dt><dd><p>A tuple (provider, model).</p>
 </dd>
 </dl>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">extract_model_spec</span><span class="p">(</span><span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="n">provider</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">model_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="n">provider</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">model</span><span class="p">}</span>
+    <span class="n">provider</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">model_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"provider"</span><span class="p">:</span> <span class="n">provider</span><span class="p">,</span> <span class="s2">"model"</span><span class="p">:</span> <span class="n">model</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>See: <a class="reference external" href="PersistedList.py.html">PersistedList</a></p>
@@ -102,35 +100,35 @@ Args:</p>
 <h2>LLM<a class="headerlink" href="#llm" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_llm</span><span class="p">(</span><span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="n">extract_model_spec</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
-    <span class="n">provider</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;provider&quot;</span><span class="p">]</span>
-    <span class="n">model_name</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span>
+    <span class="n">provider</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">"provider"</span><span class="p">]</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">"model"</span><span class="p">]</span>
     <span class="n">temperature</span> <span class="o">=</span> <span class="mf">0.1</span>
 
-    <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;openai&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">"openai"</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;Missing dependency: pip install langchain-openai&quot;</span>
+                <span class="s2">"Missing dependency: pip install langchain-openai"</span>
             <span class="p">)</span>
         <span class="c1"># ChatOpenAI will read OPENAI_API_KEY from env</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY is not set.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"OPENAI_API_KEY"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"OPENAI_API_KEY is not set."</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;google&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">"google"</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_google_genai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatGoogleGenerativeAI</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;Missing dependency: pip install langchain-google-genai&quot;</span>
+                <span class="s2">"Missing dependency: pip install langchain-google-genai"</span>
             <span class="p">)</span>
         <span class="c1"># ChatGoogleGenerativeAI will read GEMINI_API_KEY from env</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY is not set.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"GEMINI_API_KEY"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"GEMINI_API_KEY is not set."</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ChatGoogleGenerativeAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">)</span>
 
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown provider: </span><span class="si">{</span><span class="n">provider</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown provider: </span><span class="si">{</span><span class="n">provider</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Use <code class="docutils literal notranslate"><span class="pre">ChatPromptTemplate</span></code> to separate prompt and user input</p>
@@ -138,62 +136,62 @@ Args:</p>
     <span class="n">prompt</span> <span class="o">=</span> <span class="n">ChatPromptTemplate</span><span class="o">.</span><span class="n">from_messages</span><span class="p">(</span>
         <span class="p">[</span>
             <span class="p">(</span>
-                <span class="s2">&quot;system&quot;</span><span class="p">,</span>
+                <span class="s2">"system"</span><span class="p">,</span>
                 <span class="n">PICTURE_PROMPT</span><span class="p">,</span>
             <span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;human&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{diary}</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"human"</span><span class="p">,</span> <span class="s2">"</span><span class="si">{diary}</span><span class="s2">"</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">prompt</span> <span class="o">|</span> <span class="n">llm</span> <span class="o">|</span> <span class="n">StrOutputParser</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>main</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span><span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;FW Picture&quot;</span><span class="p">,</span> <span class="n">page_icon</span><span class="o">=</span><span class="s2">&quot;🎨&quot;</span><span class="p">)</span>
-<span class="n">st</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;🎨 FW Picture&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span><span class="n">page_title</span><span class="o">=</span><span class="s2">"FW Picture"</span><span class="p">,</span> <span class="n">page_icon</span><span class="o">=</span><span class="s2">"🎨"</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"🎨 FW Picture"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Persisted order</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model_order_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.fw_picture&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model_order_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">".fw_picture"</span><span class="p">)</span>
 <span class="n">order</span> <span class="o">=</span> <span class="n">model_order_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span><span class="n">MODEL_ORDER_DEFAULT</span><span class="p">)</span>
 
 <span class="c1"># Determine current selection id (persisted across reruns)</span>
-<span class="n">selected_id</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_selected_id&quot;</span><span class="p">)</span>
+<span class="n">selected_id</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"model_selected_id"</span><span class="p">)</span>
 
 <span class="c1"># Build options by current order</span>
 <span class="n">option_labels</span> <span class="o">=</span> <span class="n">order</span>
 
 <span class="c1"># Always show the last-selected model first in the list (index 0)</span>
-<span class="n">new_selected_id</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;Model&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">option_labels</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;model_select_label&quot;</span><span class="p">)</span>
+<span class="n">new_selected_id</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">"Model"</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">option_labels</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">"model_select_label"</span><span class="p">)</span>
 
 <span class="c1"># Update selected_id and persist ordering if changed</span>
 <span class="k">if</span> <span class="n">new_selected_id</span> <span class="o">!=</span> <span class="n">selected_id</span><span class="p">:</span>
     <span class="n">model_order_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">new_selected_id</span><span class="p">)</span>
 
 <span class="n">diary_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span>
-    <span class="s2">&quot;Freewrite&quot;</span><span class="p">,</span>
+    <span class="s2">"Freewrite"</span><span class="p">,</span>
     <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
-    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;diary_text&quot;</span><span class="p">,</span>
+    <span class="n">key</span><span class="o">=</span><span class="s2">"diary_text"</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Suggest picture plot&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Suggest picture plot"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"primary"</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">diary_text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Please enter a diary entry.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Please enter a diary entry."</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">llm</span> <span class="o">=</span> <span class="n">get_llm</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">model_selected_id</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model initialization failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Model initialization failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
     <span class="n">chain</span> <span class="o">=</span> <span class="n">build_chain</span><span class="p">(</span><span class="n">llm</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">spinner</span><span class="p">(</span><span class="s2">&quot;Thinking up a picture plot...&quot;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">spinner</span><span class="p">(</span><span class="s2">"Thinking up a picture plot..."</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">suggestion</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">invoke</span><span class="p">({</span><span class="s2">&quot;diary&quot;</span><span class="p">:</span> <span class="n">diary_text</span><span class="p">})</span>
+            <span class="n">suggestion</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">invoke</span><span class="p">({</span><span class="s2">"diary"</span><span class="p">:</span> <span class="n">diary_text</span><span class="p">})</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generation failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Generation failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
-    <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Suggested picture plot&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">"Suggested picture plot"</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">suggestion</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -229,6 +227,7 @@ Args:</p>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -329,7 +328,7 @@ Args:</p>
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

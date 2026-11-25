@@ -1,6 +1,8 @@
 Wiki Index
 ==========
 
+.. currentmodule:: wiki_index
+
 Build a Markdown or AsciiDoc index of questions in a Markdown wiki.
 
 Expected entry format:

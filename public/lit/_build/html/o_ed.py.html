@@ -46,7 +46,7 @@
 <p>Print banner.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">                                               o</span>
 <span class="s2">                                              &lt;|&gt;</span>
 <span class="s2">                                              &lt; </span><span class="se">\\</span>
@@ -56,32 +56,32 @@
 <span class="s2">    </span><span class="se">\\</span><span class="s2">         /           </span><span class="se">\\</span><span class="s2">o    o/     </span><span class="se">\\</span><span class="s2">      </span><span class="se">\\</span><span class="s2">o/</span>
 <span class="s2">     o       o             v</span><span class="se">\\</span><span class="s2">  /v __o   o      |</span>
 <span class="s2">     &lt;</span><span class="se">\\</span><span class="s2">__ __/&gt;              &lt;</span><span class="se">\\</span><span class="s2">/&gt; __/&gt;   &lt;</span><span class="se">\\</span><span class="s2">__  / </span><span class="se">\\</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">    """</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">print_banner</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Get the list of Obsidian recent vaults from JSON.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">home_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
-<span class="n">obsidian_json_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">home_folder</span><span class="si">}</span><span class="s2">/Library/Application Support/obsidian/obsidian.json&quot;</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">obsidian_json_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">home_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">'~'</span><span class="p">)</span>
+<span class="n">obsidian_json_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">home_folder</span><span class="si">}</span><span class="s2">/Library/Application Support/obsidian/obsidian.json"</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">obsidian_json_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
     <span class="n">obsidian_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
 
-<span class="n">obsidian_vaults</span> <span class="o">=</span> <span class="n">obsidian_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;vaults&#39;</span><span class="p">)</span>
+<span class="n">obsidian_vaults</span> <span class="o">=</span> <span class="n">obsidian_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'vaults'</span><span class="p">)</span>
 
-<span class="c1"># Extract the values from the dictionary and sort them based on the &#39;ts&#39; key</span>
-<span class="n">sorted_vaults</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">obsidian_vaults</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;ts&#39;</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Extract the values from the dictionary and sort them based on the 'ts' key</span>
+<span class="n">sorted_vaults</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">obsidian_vaults</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">'ts'</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="c1"># Extract the &#39;path&#39; from each sorted entry</span>
-<span class="n">obsidian_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">vault</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">vault</span> <span class="ow">in</span> <span class="n">sorted_vaults</span><span class="p">]</span>
+<span class="c1"># Extract the 'path' from each sorted entry</span>
+<span class="n">obsidian_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">vault</span><span class="p">[</span><span class="s1">'path'</span><span class="p">]</span> <span class="k">for</span> <span class="n">vault</span> <span class="ow">in</span> <span class="n">sorted_vaults</span><span class="p">]</span>
 
 <span class="n">obsidian_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span> <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">obsidian_folders</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Select Obsidian vault as <code class="docutils literal notranslate"><span class="pre">note_home</span></code> from the list of recent vaults.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">obsidian_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-   <span class="s2">&quot;Obsidian&quot;</span><span class="p">,</span>
+   <span class="s2">"Obsidian"</span><span class="p">,</span>
    <span class="n">obsidian_names</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -90,11 +90,11 @@
 </div>
 <p>Get subfolders of Obsidian folder.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">all_dir_items</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">note_home</span><span class="p">)</span>
-<span class="n">subfolders</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">all_dir_items</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">note_home</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span> <span class="ow">and</span> <span class="n">item</span> <span class="o">!=</span> <span class="s2">&quot;.obsidian&quot;</span><span class="p">]</span>
-<span class="n">subfolders</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+<span class="n">subfolders</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">all_dir_items</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">note_home</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span> <span class="ow">and</span> <span class="n">item</span> <span class="o">!=</span> <span class="s2">".obsidian"</span><span class="p">]</span>
+<span class="n">subfolders</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">"."</span><span class="p">)</span>
 
 <span class="n">subfolder</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-   <span class="s2">&quot;Folder&quot;</span><span class="p">,</span>
+   <span class="s2">"Folder"</span><span class="p">,</span>
    <span class="n">subfolders</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -105,7 +105,7 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_newest_files</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">num_files</span><span class="p">):</span>
     <span class="c1"># Check if the directory exists</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The directory </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The directory </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> does not exist."</span><span class="p">)</span>
 
     <span class="c1"># Get a list of files in the directory with their full paths and modification times</span>
     <span class="n">files_with_paths</span> <span class="o">=</span> <span class="p">[]</span>
@@ -126,29 +126,29 @@
 <p>Select <code class="docutils literal notranslate"><span class="pre">note_name</span></code> from 5 newest notes</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">newest_files</span> <span class="o">=</span> <span class="n">get_newest_files</span><span class="p">(</span><span class="n">note_folder</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="n">note_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
-   <span class="s2">&quot;Page&quot;</span><span class="p">,</span>
+   <span class="s2">"Page"</span><span class="p">,</span>
    <span class="n">newest_files</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>Read the contents of Obsidian page to <code class="docutils literal notranslate"><span class="pre">note_text</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">note_folder</span><span class="p">,</span> <span class="n">note_name</span><span class="p">)</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
     <span class="n">note_text</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Add Streamlit widgets for editing.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="n">note_name</span><span class="p">,</span> <span class="n">divider</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">note_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="n">note_text</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+<span class="n">note_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">"Note"</span><span class="p">,</span> <span class="n">note_text</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Save updates.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Save&#39;</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">'Save'</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">note_text</span><span class="p">)</span>
 
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Page saved: `</span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Page saved: `</span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s1">`'</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -182,6 +182,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -279,7 +280,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

@@ -160,7 +160,7 @@ Convenience
    "2025-11-07", "Read file in ``sort_by_pattern``"   
    "2025-07-30", "Cache in ``select``"
    "2025-06-13", "New elements come first"
-   "", "Copied from: ``explain_java.py``_"
+   "", "Copied from: `explain_java.py`_"
 
 .. _explain_java.py: explain_java.py.html#persisted-list
  

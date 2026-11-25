@@ -43,35 +43,35 @@
 </div>
 <p>Print banner.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
-    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;MD-View&quot;</span><span class="p">,</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">"MD-View"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
-  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">    d s   sb d ss         d    b d d sss   d  d  b</span>
 <span class="s2">    S  S S S S   ~o       S    S S S       S  S  S</span>
 <span class="s2">    S   S  S S     b      S    S S S       S  S  S</span>
 <span class="s2">    S      S S     S sSSs S    S S S sSSs  S  S  S</span>
 <span class="s2">    S      S S     P      S    S S S       S  S  S</span>
 <span class="s2">    S      S S    S        S   S S S        S  S S</span>
-<span class="s2">    P      P P ss</span><span class="se">\&quot;</span><span class="s2">          </span><span class="se">\&quot;</span><span class="s2">ssS P P sSSss   </span><span class="se">\&quot;</span><span class="s2">ss</span><span class="se">\&quot;</span><span class="s2">S</span>
-<span class="s2">  &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">    P      P P ss</span><span class="se">\"</span><span class="s2">          </span><span class="se">\"</span><span class="s2">ssS P P sSSss   </span><span class="se">\"</span><span class="s2">ss</span><span class="se">\"</span><span class="s2">S</span>
+<span class="s2">  """</span><span class="p">)</span>
   <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">print_banner</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>We can show <code class="docutils literal notranslate"><span class="pre">.q.md</span></code> files only.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">&quot;Questions only&quot;</span><span class="p">):</span>
-    <span class="n">md_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.q.md&#39;</span><span class="p">)]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">"Questions only"</span><span class="p">):</span>
+    <span class="n">md_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.q.md'</span><span class="p">)]</span>
 
 <span class="k">else</span><span class="p">:</span>
 </pre></div>
 </div>
 <p>Find all files in the current directory with a <code class="docutils literal notranslate"><span class="pre">.md</span></code> extension (these may contain LLM-generated text).</p>
 <p>Exclude any question files with the <code class="docutils literal notranslate"><span class="pre">.q.md</span></code> suffix. If a response file corresponds to a specific question, that question will be stored separately in a file sharing the same base name and ending in <code class="docutils literal notranslate"><span class="pre">.q.md</span></code>; do not include those <code class="docutils literal notranslate"><span class="pre">.q.md</span></code> files in the final list.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">md_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.md&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.q.md&#39;</span><span class="p">)]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">md_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.md'</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.q.md'</span><span class="p">)]</span>
 </pre></div>
 </div>
 <p>Sort files based on their modification time</p>
@@ -79,57 +79,57 @@
 </pre></div>
 </div>
 <p>Create radio buttons to select a file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">selected_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Markdown file:&quot;</span><span class="p">,</span> <span class="n">md_files</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">selected_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">"Markdown file:"</span><span class="p">,</span> <span class="n">md_files</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Adds a prefix to each line of a multi-line string.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">prefix_lines</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
     <span class="n">prefixed_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefixed_lines</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefixed_lines</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Check if query file exists.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">query_file_path</span> <span class="o">=</span> <span class="n">selected_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.q.md&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">query_file_path</span> <span class="o">=</span> <span class="n">selected_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s2">".q.md"</span>
 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">query_file_path</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">query_file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">query_file_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">query</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Query&quot;</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prefix_lines</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="s2">&quot;&gt; &quot;</span><span class="p">))</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">);</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"### Query"</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prefix_lines</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="s2">"&gt; "</span><span class="p">))</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"---"</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Check if summary file exists.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">summary_file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;.md-view/</span><span class="si">{</span><span class="n">selected_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">.summary.md&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">summary_file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">".md-view/</span><span class="si">{</span><span class="n">selected_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">.summary.md"</span>
 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">summary_file_path</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">summary_file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">summary_file_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">summary</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Summary&quot;</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prefix_lines</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="s2">&quot;&gt; &quot;</span><span class="p">))</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">);</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"### Summary"</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prefix_lines</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="s2">"&gt; "</span><span class="p">))</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"---"</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Read the contents of selected file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">selected_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">selected_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
     <span class="n">md_text</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Display the contents of the file that has been selected.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">md_text</span><span class="p">)</span>
 
-<span class="n">html_format</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Output HTML:&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Tailwind&quot;</span><span class="p">,</span> <span class="s2">&quot;Bootstrap&quot;</span><span class="p">],</span> <span class="n">horizontal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">html_format</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">"Output HTML:"</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">"Tailwind"</span><span class="p">,</span> <span class="s2">"Bootstrap"</span><span class="p">],</span> <span class="n">horizontal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Add a button to save the markdown text as an HTML file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Save HTML&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Save HTML"</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">save_html</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="n">html_format</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTML file saved&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">toast</span><span class="p">(</span><span class="sa">f</span><span class="s2">"HTML file saved"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Summarize</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_summarize</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You will be provided with statements in markdown,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_summarize</span> <span class="o">=</span> <span class="s2">"""You will be provided with statements in markdown,</span>
 <span class="s2">and your task is to summarize the content you are provided.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>
 
@@ -137,7 +137,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">llm_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-5-mini&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm_model</span> <span class="o">=</span> <span class="s2">"gpt-5-mini"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">call_llm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">responses</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
@@ -154,7 +154,7 @@
     <span class="n">summary</span> <span class="o">=</span> <span class="n">openai_helper</span><span class="o">.</span><span class="n">call_llm</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">prompt_summarize</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Summarize&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Summarize"</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">summarize</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">selected_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -189,6 +189,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -286,7 +287,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

@@ -36,7 +36,10 @@
             
   <section id="asciidoc-defs">
 <h1>AsciiDoc Defs<a class="headerlink" href="#asciidoc-defs" title="Link to this heading">¶</a></h1>
-<p><em>Extract useful links from ADOC files</em></p>
+<p>This script collects named HTTPS links from AsciiDoc files in the current
+directory and writes an index called <code class="docutils literal notranslate"><span class="pre">useful_links.adoc</span></code>. For example,
+running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">extract_adoc_defs.py</span> <span class="pre">contents</span></code> adds a link back to
+<code class="docutils literal notranslate"><span class="pre">contents.html</span></code> at the top of the index.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
@@ -45,39 +48,55 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </pre></div>
 </div>
-<p>First argument used to create backlink to home page.</p>
+<section id="recognizing-a-link-definition">
+<h2>Recognizing a link definition<a class="headerlink" href="#recognizing-a-link-definition" title="Link to this heading">¶</a></h2>
+<p>The single argument supplies the target of the Contents link. The search
+directory comes from the working directory, independently of that argument.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Usage: extract_adoc_defs &lt;content_link&gt;&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Usage: extract_adoc_defs &lt;content_link&gt;"</span><span class="p">)</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="n">content_link</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="n">PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-    <span class="sa">r</span><span class="s1">&#39;^(?P&lt;def_name&gt;[A-Za-z0-9_.-]+)::\s*$\n^\s*(?P&lt;url&gt;https://\S+)\s*$&#39;</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>A definition starts at the left margin with a name and a double colon.
+Names may contain ASCII letters, digits, underscores, dots, hyphens and spaces.
+The URL must occupy a line of its own. Indentation and intervening blank
+lines are allowed. For example, the name <code class="docutils literal notranslate"><span class="pre">PyLit</span></code> in this input becomes
+the visible link text:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PyLit</span><span class="p">::</span>
+    <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">example</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">pylit</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s1">'^(?P&lt;def_name&gt;[A-Za-z0-9_. -]+)::\s*$\n^\s*(?P&lt;url&gt;https://\S+)\s*$'</span><span class="p">,</span>
     <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Output file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OUTPUT_FILE</span> <span class="o">=</span> <span class="s2">&quot;useful_links.adoc&quot;</span>
+<p>The index lives alongside its sources. Reserving its filename also keeps
+subsequent runs from reading the previous index as input.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OUTPUT_FILE</span> <span class="o">=</span> <span class="s2">"useful_links.adoc"</span>
 <span class="n">EXCLUDED_FILES</span> <span class="o">=</span> <span class="p">{</span><span class="n">OUTPUT_FILE</span><span class="p">}</span>
 </pre></div>
 </div>
-<dl class="py method">
-<dt class="sig sig-object py" id="find_definitions_in_file">
-<span class="sig-name descname"><span class="pre">find_definitions_in_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#find_definitions_in_file" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<p>Each match contributes a (name, URL) pair. Reading the whole UTF-8
+document lets one match span both the name and the URL lines.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">find_definitions_in_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;def_name&quot;</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">PATTERN</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"def_name"</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"url"</span><span class="p">))</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">PATTERN</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
 </pre></div>
 </div>
-<dl class="py method">
-<dt class="sig sig-object py" id="build_output">
-<span class="sig-name descname"><span class="pre">build_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definitions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#build_output" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
+</section>
+<section id="rendering-the-index">
+<h2>Rendering the index<a class="headerlink" href="#rendering-the-index" title="Link to this heading">¶</a></h2>
+<p>Sorting by the case-folded name orders entries within each section while
+preserving their original spelling for display. The uppercase initial
+supplies the section heading, so names beginning with a digit or
+punctuation also have a place in the index.</p>
+<p>Each heading is ordinary AsciiDoc so it can appear in the table of
+contents. Its list is an HTML passthrough block so each anchor can
+specify <code class="docutils literal notranslate"><span class="pre">target=&quot;_blank&quot;</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">build_output</span><span class="p">(</span><span class="n">definitions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">grouped</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
 
@@ -88,18 +107,18 @@
     <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">grouped</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;=== </span><span class="si">{</span><span class="n">letter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;++++&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;ul&gt;&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"=== </span><span class="si">{</span><span class="n">letter</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"++++"</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;ul&gt;"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">def_name</span><span class="p">,</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">grouped</span><span class="p">[</span><span class="n">letter</span><span class="p">]:</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;li&gt;&lt;a href=&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&quot; target=&quot;_blank&quot;&gt;</span><span class="si">{</span><span class="n">def_name</span><span class="si">}</span><span class="s1">&lt;/a&gt;&lt;/li&gt;&#39;</span><span class="p">)</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/ul&gt;&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;++++&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&lt;li&gt;&lt;a href="</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">" target="_blank"&gt;</span><span class="si">{</span><span class="n">def_name</span><span class="si">}</span><span class="s1">&lt;/a&gt;&lt;/li&gt;'</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;/ul&gt;"</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"++++"</span><span class="p">)</span>
 
-    <span class="n">def_list</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;= Useful Links</span>
+    <span class="n">def_list</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"""= Useful Links</span>
 <span class="s2">:toc: left</span>
 
 <span class="s2">link:</span><span class="si">{</span><span class="n">content_link</span><span class="si">}</span><span class="s2">.html[&lt;Contents&gt;]</span>
@@ -107,32 +126,35 @@
 <span class="s2">---</span>
 
 <span class="si">{</span><span class="n">def_list</span><span class="si">}</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 </pre></div>
 </div>
-<dl class="py method">
-<dt class="sig sig-object py" id="main">
-<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
+</section>
+<section id="collecting-links-across-files">
+<h2>Collecting links across files<a class="headerlink" href="#collecting-links-across-files" title="Link to this heading">¶</a></h2>
+<p>Only immediate <code class="docutils literal notranslate"><span class="pre">*.adoc</span></code> entries in the working directory are scanned.
+The set merges repeated (name, URL) pairs across all sources. Two names
+for one URL survive, as do two URLs listed under the same name.
+Each run replaces the index, even when the collection is empty.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="n">current_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
 
     <span class="n">definitions</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">current_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.adoc&quot;</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">current_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"*.adoc"</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">EXCLUDED_FILES</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">definitions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">find_definitions_in_file</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
     <span class="n">output</span> <span class="o">=</span> <span class="n">build_output</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span>
-    <span class="p">(</span><span class="n">current_dir</span> <span class="o">/</span> <span class="n">OUTPUT_FILE</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span><span class="si">}</span><span class="s2"> definitions to </span><span class="si">{</span><span class="n">OUTPUT_FILE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">current_dir</span> <span class="o">/</span> <span class="n">OUTPUT_FILE</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Wrote </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span><span class="si">}</span><span class="s2"> definitions to </span><span class="si">{</span><span class="n">OUTPUT_FILE</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
+</section>
 </section>
 
 
@@ -164,6 +186,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -194,9 +217,9 @@
 <li class="toctree-l1"><a class="reference internal" href="neo_rag.py.html">Neo RAG</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_chat.py.html">Book Chat (LI)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">AsciiDoc Defs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#find_definitions_in_file"><code class="docutils literal notranslate"><span class="pre">find_definitions_in_file()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#build_output"><code class="docutils literal notranslate"><span class="pre">build_output()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#recognizing-a-link-definition">Recognizing a link definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rendering-the-index">Rendering the index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collecting-links-across-files">Collecting links across files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adoc_links.py.html">AsciiDoc links</a></li>
@@ -266,7 +289,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

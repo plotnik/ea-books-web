@@ -59,22 +59,22 @@
 </pre></div>
 </div>
 <p>Parse arguments:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create AsciiDoc links from YAML.&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"Create AsciiDoc links from YAML."</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;input_yaml&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Input YAML file&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"input_yaml"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Input YAML file"</span><span class="p">)</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;output_adoc&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output AsciiDoc file&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"output_adoc"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Output AsciiDoc file"</span><span class="p">)</span>
 
 <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Read YAML file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_yaml</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_yaml</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">format_note</span><span class="p">(</span><span class="n">note</span><span class="p">):</span>
-    <span class="n">lines</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">note</span> <span class="o">=</span> <span class="s2">&quot; - &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">note</span> <span class="o">=</span> <span class="s2">" - "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">note</span>
 </pre></div>
 </div>
@@ -84,28 +84,28 @@
 </div>
 <p>Specify <code class="docutils literal notranslate"><span class="pre">n_cols</span></code> headers of <code class="docutils literal notranslate"><span class="pre">1</span></code> width.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">repeat_string_n_times</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-    <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
 
-<span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">[cols=&quot;</span><span class="si">{</span><span class="n">repeat_string_n_times</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="n">n_cols</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;]</span>
+<span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
+<span class="s2">[cols="</span><span class="si">{</span><span class="n">repeat_string_n_times</span><span class="p">(</span><span class="s1">'1'</span><span class="p">,</span><span class="n">n_cols</span><span class="p">)</span><span class="si">}</span><span class="s2">"]</span>
 <span class="s2">|===</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-    <span class="n">icon</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;icon&#39;</span><span class="p">]</span>
-    <span class="n">link</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;link&#39;</span><span class="p">]</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-    <span class="n">note</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;note&#39;</span><span class="p">]</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">'icon'</span><span class="p">]</span>
+    <span class="n">link</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">'link'</span><span class="p">]</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span>
+    <span class="n">note</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">'note'</span><span class="p">]</span>
     <span class="n">note</span> <span class="o">=</span> <span class="n">format_note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 
-    <span class="n">text</span> <span class="o">+=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">+=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">        a|</span>
 <span class="s2">        ====</span>
 <span class="s2">        icon:</span><span class="si">{</span><span class="n">icon</span><span class="si">}</span><span class="s2">[2x,role=</span><span class="se">{{</span><span class="s2">c</span><span class="se">}}</span><span class="s2">flag] &amp;nbsp;</span>
 <span class="s2">        link:</span><span class="si">{</span><span class="n">link</span><span class="si">}</span><span class="s2">[*</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">*] +</span>
 <span class="s2">        &amp;nbsp;&amp;nbsp;&amp;nbsp;</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">note</span><span class="si">}</span><span class="s2">_</span><span class="se">\n</span><span class="s2">====</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="s2">        """</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">note</span><span class="si">}</span><span class="s2">_</span><span class="se">\n</span><span class="s2">====</span><span class="se">\n</span><span class="s2">"</span>
 </pre></div>
 </div>
 <p>Fill the remaining columns with blanks:</p>
@@ -121,20 +121,20 @@
     <span class="k">return</span> <span class="n">n_col</span> <span class="o">-</span> <span class="n">elements_in_last_row</span>
 
 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">calculate_empty_elements</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">n_cols</span><span class="p">)):</span>
-    <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;a|</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"a|</span><span class="se">\n</span><span class="s2">"</span>
 </pre></div>
 </div>
 <p>Close the table:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">+=</span> <span class="s2">"""</span>
 <span class="s2">|===</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 </pre></div>
 </div>
 <p>Write output file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output_adoc</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output_adoc</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
     <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AsciiDoc links created: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">output_adoc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"AsciiDoc links created: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">output_adoc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -168,6 +168,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -265,7 +266,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

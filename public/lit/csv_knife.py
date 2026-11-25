@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
-
 # CSV Knife
 # =========
+#
+# .. currentmodule:: csv_knife
 #
 # A small command-line utility for applying focused CSV
 # transformations.
@@ -25,7 +25,7 @@
 #
 #     For example, truncating ``"abcdefghijklmnopqrstuvwxyz"`` to ``10``
 #     characters produces:
-#    
+#  
 #     .. code-block:: text
 #
 #         abcdefghij(...16 more)

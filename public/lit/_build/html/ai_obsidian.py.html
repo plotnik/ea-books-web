@@ -75,55 +75,55 @@
 </div>
 <p>Print banner in ASCII graphics</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
-    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;O-AI&quot;</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">"O-AI"</span>
 <span class="p">)</span>
 
 <span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">       dBBBBP       dBBBBBb     dBP</span>
-<span class="s2">      dB&#39;.BP             BB</span>
-<span class="s2">     dB&#39;.BP          dBP BB   dBP</span>
-<span class="s2">    dB&#39;.BP dBBBBBP  dBP  BB  dBP</span>
+<span class="s2">      dB'.BP             BB</span>
+<span class="s2">     dB'.BP          dBP BB   dBP</span>
+<span class="s2">    dB'.BP dBBBBBP  dBP  BB  dBP</span>
 <span class="s2">   dBBBBP          dBBBBBBB dBP</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">    """</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">print_banner</span><span class="p">()</span>
-<span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">&quot;https://ea-books.netlify.app/lit/ai_obsidian.svg&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">logo</span><span class="p">(</span><span class="s2">"https://ea-books.netlify.app/lit/ai_obsidian.svg"</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="prompts-and-models">
 <h2>Prompts and models<a class="headerlink" href="#prompts-and-models" title="Link to this heading">¶</a></h2>
 <p>Resolve the user’s Documents folder on Windows and Unix-like systems.
 Remember selected prompt names separately from model names.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompts_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;Documents&quot;</span> <span class="o">/</span> <span class="s2">&quot;prompts&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompts_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"Documents"</span> <span class="o">/</span> <span class="s2">"prompts"</span>
 <span class="n">prompt_files</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="p">:</span> <span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">prompts_folder</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.md&quot;</span><span class="p">))</span>
+    <span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="p">:</span> <span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">prompts_folder</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"*.md"</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
 <span class="p">}</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">prompt_files</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No Markdown prompts found in </span><span class="si">{</span><span class="n">prompts_folder</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No Markdown prompts found in </span><span class="si">{</span><span class="n">prompts_folder</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
-<span class="n">prompts_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.o-ai-prompts&quot;</span><span class="p">)</span>
+<span class="n">prompts_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">".o-ai-prompts"</span><span class="p">)</span>
 <span class="n">prompt_names</span> <span class="o">=</span> <span class="n">prompts_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">prompt_files</span><span class="p">))</span>
-<span class="n">prompt_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;Prompt&quot;</span><span class="p">,</span> <span class="n">prompt_names</span><span class="p">)</span>
+<span class="n">prompt_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">"Prompt"</span><span class="p">,</span> <span class="n">prompt_names</span><span class="p">)</span>
 <span class="n">prompts_persisted</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">prompt_name</span><span class="p">)</span>
-<span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_files</span><span class="p">[</span><span class="n">prompt_name</span><span class="p">]</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_files</span><span class="p">[</span><span class="n">prompt_name</span><span class="p">]</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
 
 <span class="c1"># Prices are USD per 1 million input/output tokens.</span>
 <span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;gemini-4-argon&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span>
-    <span class="s2">&quot;gemini-3.8-flash&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">3.75</span><span class="p">),</span>
-    <span class="s2">&quot;gpt-6-luna&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span>
-    <span class="s2">&quot;gpt-6.1-terra&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.00</span><span class="p">,</span> <span class="mf">5.00</span><span class="p">),</span>
-    <span class="s2">&quot;gpt-6.1-sol&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span>
+    <span class="s2">"gemini-4-argon"</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span>
+    <span class="s2">"gemini-3.8-flash"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">3.75</span><span class="p">),</span>
+    <span class="s2">"gpt-6-luna"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span>
+    <span class="s2">"gpt-6.1-terra"</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.00</span><span class="p">,</span> <span class="mf">5.00</span><span class="p">),</span>
+    <span class="s2">"gpt-6.1-sol"</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mf">10.00</span><span class="p">),</span>
 <span class="p">}</span>
 <span class="n">llm_models</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">llm_prices</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-<span class="n">llm_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">&quot;.o-ai&quot;</span><span class="p">)</span>
+<span class="n">llm_models_persisted</span> <span class="o">=</span> <span class="n">PersistedList</span><span class="p">(</span><span class="s2">".o-ai"</span><span class="p">)</span>
 <span class="n">llm_models</span> <span class="o">=</span> <span class="n">llm_models_persisted</span><span class="o">.</span><span class="n">sort_by_pattern</span><span class="p">(</span><span class="n">llm_models</span><span class="p">)</span>
-<span class="n">llm_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;LLM Model&quot;</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
+<span class="n">llm_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">"LLM Model"</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -131,7 +131,7 @@ Remember selected prompt names separately from model names.</p>
 <h2>Obsidian notes<a class="headerlink" href="#obsidian-notes" title="Link to this heading">¶</a></h2>
 <p>Find the first book folder in the working directory and select a recent note.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">reset_llm_result</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;llm_result&quot;</span><span class="p">,</span> <span class="s2">&quot;note_name&quot;</span><span class="p">,</span> <span class="s2">&quot;execution_time&quot;</span><span class="p">,</span> <span class="s2">&quot;llm_cost&quot;</span><span class="p">,</span> <span class="s2">&quot;llm_usage&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"llm_result"</span><span class="p">,</span> <span class="s2">"note_name"</span><span class="p">,</span> <span class="s2">"execution_time"</span><span class="p">,</span> <span class="s2">"llm_cost"</span><span class="p">,</span> <span class="s2">"llm_usage"</span><span class="p">):</span>
         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
 
@@ -140,16 +140,16 @@ Remember selected prompt names separately from model names.</p>
     <span class="n">home_folders</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">current_folder</span><span class="p">)</span>
     <span class="n">book_folders</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">home_folders</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_folder</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot; Book&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_folder</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">" Book"</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">book_folders</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The folder should contain a subfolder with a name that ends with &quot; Book&quot;.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'The folder should contain a subfolder with a name that ends with " Book".'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">book_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_newest_files</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">num_files</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The directory </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The directory </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> does not exist."</span><span class="p">)</span>
     <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span> <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()]</span>
     <span class="n">files</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">path</span><span class="p">:</span> <span class="n">path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[:</span><span class="n">num_files</span><span class="p">]]</span>
@@ -158,10 +158,10 @@ Remember selected prompt names separately from model names.</p>
 <span class="n">note_home</span> <span class="o">=</span> <span class="n">find_obsidian_folder</span><span class="p">()</span>
 <span class="n">newest_files</span> <span class="o">=</span> <span class="n">get_newest_files</span><span class="p">(</span><span class="n">note_home</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">newest_files</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No notes found in </span><span class="si">{</span><span class="n">note_home</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No notes found in </span><span class="si">{</span><span class="n">note_home</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-<span class="n">note_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="n">newest_files</span><span class="p">,</span> <span class="n">on_change</span><span class="o">=</span><span class="n">reset_llm_result</span><span class="p">)</span>
-<span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">note_home</span><span class="p">)</span> <span class="o">/</span> <span class="n">note_name</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+<span class="n">note_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">"Note"</span><span class="p">,</span> <span class="n">newest_files</span><span class="p">,</span> <span class="n">on_change</span><span class="o">=</span><span class="n">reset_llm_result</span><span class="p">)</span>
+<span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">note_home</span><span class="p">)</span> <span class="o">/</span> <span class="n">note_name</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -184,14 +184,14 @@ Pre-request token counts are estimates; cost uses reported usage.</p>
         <span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">encoding_for_model</span><span class="p">(</span><span class="n">llm_model</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
         <span class="c1"># General-purpose fallback; Gemini counts are estimates only.</span>
-        <span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="s2">&quot;o200k_base&quot;</span><span class="p">)</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="s2">"o200k_base"</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">process_with_openai</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMResult</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>
 
-    <span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">])</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OPENAI_API_KEY"</span><span class="p">])</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">responses</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
         <span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span>
         <span class="n">instructions</span><span class="o">=</span><span class="n">prompt</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
@@ -208,7 +208,7 @@ Pre-request token counts are estimates; cost uses reported usage.</p>
     <span class="kn">from</span><span class="w"> </span><span class="nn">google</span><span class="w"> </span><span class="kn">import</span> <span class="n">genai</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">google.genai</span><span class="w"> </span><span class="kn">import</span> <span class="n">types</span>
 
-    <span class="n">client</span> <span class="o">=</span> <span class="n">genai</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;GEMINI_API_KEY&quot;</span><span class="p">])</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">genai</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"GEMINI_API_KEY"</span><span class="p">])</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">generate_content</span><span class="p">(</span>
         <span class="n">model</span><span class="o">=</span><span class="n">llm_model</span><span class="p">,</span>
         <span class="n">contents</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
@@ -220,18 +220,18 @@ Pre-request token counts are estimates; cost uses reported usage.</p>
         <span class="n">usage</span><span class="o">.</span><span class="n">thoughts_token_count</span> <span class="ow">or</span> <span class="mi">0</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">LLMResult</span><span class="p">(</span>
-        <span class="n">text</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">,</span>
         <span class="n">input_tokens</span><span class="o">=</span><span class="n">usage</span><span class="o">.</span><span class="n">prompt_token_count</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">output_tokens</span><span class="o">=</span><span class="n">output_tokens</span><span class="p">,</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">process_text</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMResult</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gpt-&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"gpt-"</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">process_with_openai</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemini-&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"gemini-"</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">process_with_gemini</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported model: </span><span class="si">{</span><span class="n">llm_model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported model: </span><span class="si">{</span><span class="n">llm_model</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 
 <span class="n">OPENAI_LONG_LIMIT_TOKENS</span> <span class="o">=</span> <span class="mi">272</span> <span class="o">*</span> <span class="mi">1024</span>
@@ -239,7 +239,7 @@ Pre-request token counts are estimates; cost uses reported usage.</p>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_cost</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">LLMResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="n">input_price</span><span class="p">,</span> <span class="n">output_price</span> <span class="o">=</span> <span class="n">llm_prices</span><span class="p">[</span><span class="n">llm_model</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gpt-&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">input_tokens</span> <span class="o">&gt;</span> <span class="n">OPENAI_LONG_LIMIT_TOKENS</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"gpt-"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">input_tokens</span> <span class="o">&gt;</span> <span class="n">OPENAI_LONG_LIMIT_TOKENS</span><span class="p">:</span>
         <span class="n">input_price</span> <span class="o">*=</span> <span class="mi">2</span>
         <span class="n">output_price</span> <span class="o">*=</span> <span class="mf">1.5</span>
     <span class="k">return</span> <span class="p">(</span>
@@ -248,7 +248,7 @@ Pre-request token counts are estimates; cost uses reported usage.</p>
 
 
 <span class="n">estimated_tokens</span> <span class="o">=</span> <span class="n">count_tokens</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">count_tokens</span><span class="p">(</span><span class="n">prompt</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated input tokens: `</span><span class="si">{</span><span class="n">estimated_tokens</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+<span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Estimated input tokens: `</span><span class="si">{</span><span class="n">estimated_tokens</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -269,24 +269,24 @@ Pre-request token counts are estimates; cost uses reported usage.</p>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Process&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Process"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"primary"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">):</span>
     <span class="n">call_llm</span><span class="p">()</span>
 
-<span class="k">if</span> <span class="s2">&quot;llm_result&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">"llm_result"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"---"</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_result</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"---"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="s2">&quot;execution_time&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution time: `</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">` sec&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">"execution_time"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Execution time: `</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">execution_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">` sec"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="s2">&quot;llm_cost&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+<span class="k">if</span> <span class="s2">"llm_cost"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
     <span class="n">input_tokens</span><span class="p">,</span> <span class="n">output_tokens</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_usage</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input tokens: `</span><span class="si">{</span><span class="n">input_tokens</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output tokens: `</span><span class="si">{</span><span class="n">output_tokens</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cents: `$</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_cost</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Input tokens: `</span><span class="si">{</span><span class="n">input_tokens</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Output tokens: `</span><span class="si">{</span><span class="n">output_tokens</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cents: `$</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_cost</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="s2">&quot;llm_result&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Copy to clipboard&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">):</span>
+<span class="k">if</span> <span class="s2">"llm_result"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Copy to clipboard"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">):</span>
     <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">llm_result</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -322,6 +322,7 @@ Pre-request token counts are estimates; cost uses reported usage.</p>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -425,7 +426,7 @@ Pre-request token counts are estimates; cost uses reported usage.</p>
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       

@@ -81,12 +81,12 @@
 </div>
 <p>Prints a stylized banner to the console when the application starts.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
-    <span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;You-T&quot;</span>
+    <span class="n">page_title</span><span class="o">=</span><span class="s2">"You-T"</span>
 <span class="p">)</span>
 
 <span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_banner</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">             )</span>
 <span class="s2">          ( /(                  *   )</span>
 <span class="s2">          )</span><span class="se">\\</span><span class="s2">())       (       ` )  /(</span>
@@ -95,7 +95,7 @@
 <span class="s2">        </span><span class="se">\\</span><span class="s2"> </span><span class="se">\\</span><span class="s2"> / /((_)(_))(      |_   _|</span>
 <span class="s2">         </span><span class="se">\\</span><span class="s2"> V // _ </span><span class="se">\\</span><span class="s2">| || |       | |</span>
 <span class="s2">          |_| </span><span class="se">\\</span><span class="s2">___/ </span><span class="se">\\</span><span class="s2">_,_|       |_|</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">        """</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">1</span>
 
 <span class="n">print_banner</span><span class="p">()</span>
@@ -103,17 +103,17 @@
 </div>
 <section id="get-transcript-from-youtube-url">
 <h2><a class="toc-backref" href="#id3" role="doc-backlink">Get transcript from YouTube URL</a><a class="headerlink" href="#get-transcript-from-youtube-url" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">youtube_url</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;YouTube URL&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">youtube_url</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">"YouTube URL"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Extract video_id</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">video_id</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">youtube_url</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="n">video_id</span> <span class="o">=</span> <span class="n">youtube_url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;v=&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">video_id</span> <span class="o">=</span> <span class="n">youtube_url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"v="</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"&amp;"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Show timecodes toggle</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">show_timecodes</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">&quot;Show timecodes&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">show_timecodes</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">"Show timecodes"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Initialize YouTubeTranscriptApi</p>
@@ -123,7 +123,7 @@
 <p>If <cite>transcript_file</cite> exists, output the contents</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">print_transcript</span><span class="p">():</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">transcript_file</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">transcript_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">transcript_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">existing_transcript</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">existing_transcript</span><span class="p">)</span>
 </pre></div>
@@ -131,91 +131,91 @@
 <p>Fetch languages</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="k">if</span> <span class="s2">&quot;transcript_list&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">video_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">spinner</span><span class="p">(</span><span class="s2">&quot;Fetching languages...&quot;</span><span class="p">,</span> <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">if</span> <span class="s2">"transcript_list"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span> <span class="ow">and</span> <span class="n">video_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">spinner</span><span class="p">(</span><span class="s2">"Fetching languages..."</span><span class="p">,</span> <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">transcript_list</span> <span class="o">=</span> <span class="n">ytt_api</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">video_id</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="s2">&quot;transcript_list&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+<span class="k">if</span> <span class="s2">"transcript_list"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
     <span class="n">language_codes</span> <span class="o">=</span> <span class="p">[</span><span class="n">lang</span><span class="o">.</span><span class="n">language_code</span> <span class="k">for</span> <span class="n">lang</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">transcript_list</span><span class="p">]</span>
-    <span class="n">lang</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Fetched languages&quot;</span><span class="p">,</span> <span class="n">language_codes</span><span class="p">)</span>
+    <span class="n">lang</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">"Fetched languages"</span><span class="p">,</span> <span class="n">language_codes</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Output file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">transcript_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Output file:&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;transcript.md&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">transcript_file</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">"Output file:"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"transcript.md"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="save-transcript">
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Save Transcript</a><a class="headerlink" href="#save-transcript" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">disabled_fetch_transcript</span><span class="p">():</span>
-    <span class="c1"># Cannot fetch transcript if &quot;lang&quot; is not selected</span>
+    <span class="c1"># Cannot fetch transcript if "lang" is not selected</span>
     <span class="k">return</span> <span class="n">lang</span> <span class="ow">is</span> <span class="kc">None</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">disabled_save_transcript</span><span class="p">():</span>
-    <span class="k">return</span> <span class="s2">&quot;fetched_transcript&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span>
+    <span class="k">return</span> <span class="s2">"fetched_transcript"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">disabled_copy_transcript</span><span class="p">():</span>
-    <span class="k">return</span> <span class="s2">&quot;transcript&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span>
+    <span class="k">return</span> <span class="s2">"transcript"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Fetch Transcript&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="n">disabled_fetch_transcript</span><span class="p">()):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Fetch Transcript"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"primary"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="n">disabled_fetch_transcript</span><span class="p">()):</span>
     <span class="c1"># Fetching transcript</span>
-    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">spinner</span><span class="p">(</span><span class="s2">&quot;Fetching transcript...&quot;</span><span class="p">,</span> <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">spinner</span><span class="p">(</span><span class="s2">"Fetching transcript..."</span><span class="p">,</span> <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">transcript_list</span> <span class="o">=</span> <span class="n">ytt_api</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">video_id</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">transcript_list</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">fetched_transcript</span> <span class="o">=</span> <span class="n">ytt_api</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">video_id</span><span class="p">,</span> <span class="n">languages</span><span class="o">=</span><span class="p">[</span><span class="n">lang</span><span class="p">])</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Save Transcript&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="n">disabled_save_transcript</span><span class="p">()):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Save Transcript"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="n">disabled_save_transcript</span><span class="p">()):</span>
     <span class="c1"># collect all `snippet.text` into `transcript` variable</span>
-    <span class="n">transcript</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">transcript</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="k">if</span> <span class="n">show_timecodes</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">snippet</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">fetched_transcript</span><span class="p">:</span>
-            <span class="c1"># translate seconds into &quot;HH:MM:SS&quot; format</span>
+            <span class="c1"># translate seconds into "HH:MM:SS" format</span>
             <span class="n">m</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">snippet</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="mi">60</span><span class="p">)</span>
             <span class="c1">#h, m = divmod(m, 60)</span>
-            <span class="c1">#timestamp = f&quot;{h:02d}:{m:02d}:{s:02d}&quot;</span>
-            <span class="n">timestamp</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">m</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">s</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">transcript</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">` </span><span class="si">{</span><span class="n">snippet</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">  </span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="c1">#timestamp = f"{h:02d}:{m:02d}:{s:02d}"</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">m</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">s</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">"</span>
+            <span class="n">transcript</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"`</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">` </span><span class="si">{</span><span class="n">snippet</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">  </span><span class="se">\n</span><span class="s2">"</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">snippet</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">fetched_transcript</span><span class="p">:</span>
-            <span class="n">transcript</span> <span class="o">+=</span> <span class="n">snippet</span><span class="o">.</span><span class="n">text</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+            <span class="n">transcript</span> <span class="o">+=</span> <span class="n">snippet</span><span class="o">.</span><span class="n">text</span> <span class="o">+</span> <span class="s2">" "</span>
         <span class="n">transcript</span> <span class="o">=</span> <span class="n">transcript</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">transcript</span> <span class="o">=</span> <span class="n">transcript</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">transcript_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">transcript_file</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">transcript</span><span class="p">)</span>
 
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transcript saved: `</span><span class="si">{</span><span class="n">transcript_file</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Transcript saved: `</span><span class="si">{</span><span class="n">transcript_file</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
     <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
 
-<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Copy Transcript&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="n">disabled_copy_transcript</span><span class="p">()):</span>
+<span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Copy Transcript"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">,</span> <span class="n">disabled</span><span class="o">=</span><span class="n">disabled_copy_transcript</span><span class="p">()):</span>
     <span class="n">pyperclip</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">transcript</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copied to clipboard&#39;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Copied to clipboard'</span><span class="p">)</span>
 
 <span class="c1"># print_transcript()</span>
-<span class="k">if</span> <span class="s2">&quot;transcript&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+<span class="k">if</span> <span class="s2">"transcript"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
     <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">transcript</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="get-trunscript-summary">
 <h2><a class="toc-backref" href="#id5" role="doc-backlink">Get trunscript summary</a><a class="headerlink" href="#get-trunscript-summary" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_summary</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_summary</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Тебе будет передана расшифровка видео.</span>
 <span class="s2">Твоя задача: подготовить ёмкое резюме.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">llm_prices</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;gemini-2.5-flash-preview-05-20&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="s2">&quot;gemini-2.0-flash&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="s2">&quot;gemma-3-27b-it&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4.1-mini&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4.1-nano&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4.1&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
-    <span class="s2">&quot;o4-mini&quot;</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">,</span>
-    <span class="s2">&quot;o3-mini&quot;</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">,</span>
-    <span class="s2">&quot;gpt-4o&quot;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
-    <span class="s2">&quot;o1&quot;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+    <span class="s2">"gemini-2.5-flash-preview-05-20"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">"gemini-2.0-flash"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">"gemma-3-27b-it"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">"gpt-4.1-mini"</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="s2">"gpt-4.1-nano"</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="s2">"gpt-4.1"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="s2">"gpt-4o-mini"</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="s2">"o4-mini"</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">,</span>
+    <span class="s2">"o3-mini"</span><span class="p">:</span> <span class="mf">1.10</span><span class="p">,</span>
+    <span class="s2">"gpt-4o"</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
+    <span class="s2">"o1"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="n">llm_models</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">llm_prices</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 </pre></div>
@@ -229,10 +229,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">llm_temperature</span> <span class="o">=</span> <span class="n">llm_temperature</span>
 
         <span class="n">vendor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vendor</span><span class="p">(</span><span class="n">llm_model</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">vendor</span> <span class="o">==</span> <span class="s2">&quot;google&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">vendor</span> <span class="o">==</span> <span class="s2">"google"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span>
-                <span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY&quot;</span><span class="p">),</span>
-                <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://generativelanguage.googleapis.com/v1beta/openai/&quot;</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"GEMINI_API_KEY"</span><span class="p">),</span>
+                <span class="n">base_url</span><span class="o">=</span><span class="s2">"https://generativelanguage.googleapis.com/v1beta/openai/"</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
@@ -241,16 +241,16 @@
 <p>Determines the vendor based on the model name.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_vendor</span><span class="p">(</span><span class="n">llm_model</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;gemini&quot;</span><span class="p">,</span> <span class="s2">&quot;gemma&quot;</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="s2">&quot;google&quot;</span>
-    <span class="k">return</span> <span class="s2">&quot;openai&quot;</span>
+    <span class="k">if</span> <span class="n">llm_model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"gemini"</span><span class="p">,</span> <span class="s2">"gemma"</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="s2">"google"</span>
+    <span class="k">return</span> <span class="s2">"openai"</span>
 </pre></div>
 </div>
 <p>Calls a GPT-like model with standard message format and temperature.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_call_gpt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"system"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">text</span><span class="p">},</span>
     <span class="p">]</span>
     <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
         <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_model</span><span class="p">,</span>
@@ -263,7 +263,7 @@
 <p>Calls a Gemma model with custom message format and temperature.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_call_gemma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&lt;instructions&gt;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&lt;/instructions&gt;</span><span class="se">\n</span><span class="s2">&lt;user_input&gt;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&lt;/user_input&gt;&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"&lt;instructions&gt;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&lt;/instructions&gt;</span><span class="se">\n</span><span class="s2">&lt;user_input&gt;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&lt;/user_input&gt;"</span><span class="p">},</span>
     <span class="p">]</span>
     <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
         <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_model</span><span class="p">,</span>
@@ -276,8 +276,8 @@
 <p>Calls an ‘o’-prefixed model with standard message format, no temperature.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_call_o_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"system"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">text</span><span class="p">},</span>
     <span class="p">]</span>
     <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
         <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_model</span><span class="p">,</span>
@@ -289,23 +289,23 @@
 <p>Calls the appropriate LLM based on the model name.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">call_llm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;gemini&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt&quot;</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"gemini"</span><span class="p">,</span> <span class="s2">"gpt"</span><span class="p">)):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_gpt</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gemma&quot;</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"gemma"</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_gemma</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"o"</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_o_model</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown model prefix for: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown model prefix for: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llm_model</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="select-llm">
 <h3><a class="toc-backref" href="#id7" role="doc-backlink">Select LLM</a><a class="headerlink" href="#select-llm" title="Link to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;LLM Model&quot;</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">llm_model</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">"LLM Model"</span><span class="p">,</span> <span class="n">llm_models</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">create_summary</span><span class="p">():</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">transcript_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">transcript_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">transcript</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
     <span class="n">llm</span> <span class="o">=</span> <span class="n">MultiModel</span><span class="p">(</span><span class="n">llm_model</span><span class="p">)</span>
@@ -315,19 +315,19 @@
 </pre></div>
 </div>
 <p>Summary button</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Summary&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Summary"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"stretch"</span><span class="p">):</span>
     <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="n">create_summary</span><span class="p">()</span>
 
-<span class="k">if</span> <span class="s2">&quot;summary&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Summary&quot;</span><span class="p">)</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;summary&quot;</span><span class="p">))</span>
+<span class="k">if</span> <span class="s2">"summary"</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"### Summary"</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"summary"</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Truncate text to max len</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">max_len</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">text</span>
-    <span class="k">return</span> <span class="n">text</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="s1">'...'</span>
 </pre></div>
 </div>
 </section>
@@ -363,6 +363,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="note_openai.py.html">Note-OpenAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="o_find.py.html">Obsidian Find</a></li>
 <li class="toctree-l1"><a class="reference internal" href="research_cli.py.html">Research Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mm2puml.py.html">Mermaid to PlantUML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="book_lc.py.html">Book Chat (LC)</a></li>
@@ -465,7 +466,7 @@
       Powered by 
       <a href="https://slott56.github.io/PyLit-3/_build/html/index.html">PyLit 3.1.1</a>
       &amp; 
-      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
       &amp; 
       <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
